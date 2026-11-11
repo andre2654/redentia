@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // /tesouro — hub do Tesouro Direto (70 títulos). Anatomia na linguagem Nu:
-// hero (NuPageHero + NuFilterPills por indexador, reativo a ?indexer=) →
-// toolbar (contador) → TesouroTable (linha → /tesouro/{slug}) → answer-first
+// hero (NuPageHero) → toolbar (contador + o trilho por indexador, reativo a
+// ?indexer=) → TesouroTable (linha → /tesouro/{slug}) → answer-first
 // → split educacional curto → ferramentas relacionadas → CTA.
 //
 // SEO indexável: SSR-first (a tabela completa sai no HTML da 1ª resposta),
@@ -78,14 +78,17 @@ usePageSeo({
       subtitle="As taxas e os preços de todos os títulos públicos, atualizados diariamente com os dados do Tesouro Nacional. Clique em um título pra ver o histórico completo."
     >
       <template #title>Tesouro Direto<br>hoje.</template>
-      <NuFilterPills :items="pillItems" :model-value="activePill" @update:model-value="onPill" />
     </NuPageHero>
 
     <!-- ============ Toolbar + tabela ============ -->
     <section class="tsh__body">
       <header class="tsh__toolbar">
-        <NuEyebrow como="p">Lista completa</NuEyebrow>
-        <p class="tsh__toolbar-count">{{ count }} {{ count === 1 ? 'título' : 'títulos' }} · ordenados por vencimento</p>
+        <div class="tsh__toolbar-meta">
+          <NuEyebrow como="p">Lista completa</NuEyebrow>
+          <p class="tsh__toolbar-count">{{ count }} {{ count === 1 ? 'título' : 'títulos' }} · ordenados por vencimento</p>
+        </div>
+        <!-- o filtro por indexador: o trilho das páginas de mercado -->
+        <MercadoTrilho :itens="pillItems" :model-value="activePill" rotulo="Filtrar por indexador" @update:model-value="onPill" />
       </header>
 
       <!-- loading é sempre esqueleto (contrato da Aportou) -->
@@ -138,24 +141,25 @@ usePageSeo({
         <NuxtLink to="/ranking/tesouro-direto" class="tsh__card-link">
           <h3 class="tsh__card-link-title">Ranking do Tesouro Direto</h3>
           <p class="tsh__card-link-desc">Os títulos ordenados pela maior taxa de hoje, em uma lista só.</p>
+          <span class="tsh__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
         <NuxtLink to="/calculadora/juros-compostos" class="tsh__card-link">
           <h3 class="tsh__card-link-title">Calculadora de juros compostos</h3>
           <p class="tsh__card-link-desc">Simule quanto rende um aporte mensal na taxa do título que você escolher.</p>
+          <span class="tsh__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
       </div>
     </CalcBand>
 
-    <!-- ============ CTA final full-bleed (só deslogado — mesmo padrão dos
-         outros CTAs da Aportou: NuCtaPhoto) ============ -->
-    <NuCtaPhoto
-      v-if="!isAuthenticated"
+    <!-- ============ Fecho (só deslogado): o painel azul da marca, com o corte de fundo ============ -->
+    <MercadoFecho
+      v-if="!isAuthenticated" eyebrow="Sua carteira" fundo="faixa"
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
       :secondary="{ label: 'Ver rankings', to: '/rankings' }"
     >
-      <template #title>Acompanhe a renda fixa<br>na sua carteira</template>
+      <template #title>Acompanhe a renda fixa na sua carteira</template>
       <template #subtitle>Cadastre-se e veja renda fixa, ações e FIIs em uma carteira só, com análises automáticas e dados atualizados diariamente.</template>
-    </NuCtaPhoto>
+    </MercadoFecho>
   </div>
 </template>
 
@@ -168,7 +172,8 @@ usePageSeo({
   display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 28px);
   animation: nu-fade .5s ease both;
 }
-.tsh__toolbar { display: flex; flex-direction: column; gap: 8px; }
+.tsh__toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.tsh__toolbar-meta { display: flex; flex-direction: column; gap: 8px; }
 .tsh__toolbar-count {
   margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800;
   font-variant-numeric: tabular-nums; letter-spacing: -0.025em; line-height: 1.1;
@@ -206,7 +211,8 @@ usePageSeo({
 .tsh__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; transition: color .2s ease; }
 .tsh__card-link:hover .tsh__card-link-title { color: var(--nu-blue-text); }
 .tsh__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
-@media (prefers-reduced-motion: reduce) { .tsh__card-link { transition: none; } .tsh__card-link:hover { transform: none; } }
-
-/* (CTA final = NuCtaPhoto full-bleed, estilos no componente) */
+.tsh__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.tsh__card-link-ir svg { transition: transform .2s ease; }
+.tsh__card-link:hover .tsh__card-link-ir svg { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) { .tsh__card-link, .tsh__card-link-ir svg { transition: none; } .tsh__card-link:hover, .tsh__card-link:hover .tsh__card-link-ir svg { transform: none; } }
 </style>

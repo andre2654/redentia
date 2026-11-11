@@ -21,6 +21,14 @@
 import type { BuscaGrupo, BuscaItem, BuscaType } from '~/composables/useBuscaIndex'
 
 const VALID_TIPOS: BuscaType[] = ['todos', 'acoes', 'fiis', 'bdrs', 'etfs', 'eua', 'cripto', 'tesouro']
+// o estado vazio aponta para as páginas de mercado (2ª rodada da Aportou, 11/11/2026)
+const SUGESTOES = [
+  { rotulo: 'Rankings da B3', to: '/rankings' },
+  { rotulo: 'Setores', to: '/setor' },
+  { rotulo: 'Teses', to: '/teses' },
+  { rotulo: 'Tesouro Direto', to: '/tesouro' },
+  { rotulo: 'Notícias', to: '/noticias' },
+]
 
 usePageSeo({
   title: 'Busca',
@@ -222,6 +230,13 @@ if (linkDeChat.tipo === 'login') {
         <button v-if="emTodos" type="button" class="bp__outline" @click="setTipo('todos')">
           {{ emTodos === 1 ? 'Ver 1 resultado' : `Ver ${emTodos} resultados` }} em Todos
         </button>
+        <!-- sugestões: por onde continuar quando a busca não achou -->
+        <p class="bp__sug-rotulo">Ou explore por aqui</p>
+        <ul class="bp__sug">
+          <li v-for="s in SUGESTOES" :key="s.to">
+            <NuxtLink :to="s.to" class="bp__sug-chip">{{ s.rotulo }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></NuxtLink>
+          </li>
+        </ul>
       </div>
 
       <p
@@ -288,6 +303,18 @@ if (linkDeChat.tipo === 'login') {
   overflow-wrap: anywhere;
 }
 .bp__vazio-txt { margin: 12px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
+.bp__sug-rotulo { margin: 28px 0 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.bp__sug { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; }
+.bp__sug-chip {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: var(--nu-r-pill);
+  background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14.5px; font-weight: 600; white-space: nowrap;
+  transition: background .2s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
+}
+.bp__sug-chip svg { color: var(--nu-blue-text); transition: transform .2s ease; }
+.bp__sug-chip:hover { background: var(--nu-line-2); color: var(--nu-ink); }
+.bp__sug-chip:hover svg { transform: translateX(3px); }
+.bp__sug-chip:active { transform: scale(.98); }
+@media (prefers-reduced-motion: reduce) { .bp__sug-chip, .bp__sug-chip svg { transition: none; } .bp__sug-chip:hover svg, .bp__sug-chip:active { transform: none; } }
 .bp__erro { margin: 0 0 24px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
 
 .bp__outline {

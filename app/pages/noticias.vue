@@ -2,8 +2,8 @@
 // /noticias — feed editorial com a leitura do Atlas (PR3). Contrato de UX:
 // docs/redentia-nu/designs/Redentia Noticias Nu.dc.html. O layout default já
 // renderiza NuHeader + NuMarketTicker + NuFooter; aqui vive o miolo:
-// hero creme (eyebrow + H1 + tabs de filtro) → feed alternado imagem/texto →
-// carregar mais.
+// hero creme (eyebrow + H1 + o trilho de filtro) → a lista de leitura (a
+// primeira notícia em destaque, as demais em linhas) → carregar mais.
 //
 // SEO: SSR-first (a 1ª leva do feed vem do servidor via useAsyncData — HTML
 // indexável com notícia real), canonical /noticias, JSON-LD BreadcrumbList +
@@ -63,14 +63,16 @@ usePageSeo({
       subtitle="Toda notícia chega com a leitura da nossa IA: o que muda de verdade, para quais ativos e para a sua carteira."
     >
       <template #title>O mercado,<br>lido pela IA.</template>
-      <NuFilterPills :items="tabs" :model-value="tab" @update:model-value="setTab" />
+      <MercadoTrilho :itens="tabs" :model-value="tab" rotulo="Filtrar notícias" @update:model-value="setTab" />
     </NuPageHero>
 
     <section class="nof">
+      <!-- a lista de leitura: a primeira em destaque, as demais em linhas com fio -->
       <div v-if="filtered.length" class="nof__stack">
         <NoticiasFeedRow
           v-for="(n, i) in filtered" :key="n.id"
-          :item="n" :reverse="i % 2 === 1" :na-carteira="inCarteira(n)"
+          :item="n" :destaque="i === 0" :na-carteira="inCarteira(n)"
+          class="nof__item" :style="{ '--i': Math.min(i, 6) }"
         />
       </div>
 
@@ -102,11 +104,13 @@ usePageSeo({
 /* Aportou: o feed corre sobre o creme da página (não há faixa branca) */
 .nof {
   background: var(--nu-page);
-  padding: clamp(44px, 5.5vw, 72px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
-  animation: nu-fade .5s ease both;
+  padding: clamp(16px, 2.4vw, 32px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
 }
-.nof__stack { display: flex; flex-direction: column; gap: clamp(52px, 6.5vw, 92px); }
-.nof__more { text-align: center; margin-top: clamp(48px, 6vw, 72px); }
+.nof__stack { display: flex; flex-direction: column; }
+/* entrada em cascata (60ms por linha, só nas primeiras) */
+.nof__item { animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms); }
+.nof__more { text-align: center; margin-top: clamp(28px, 3.6vw, 44px); padding-top: clamp(28px, 3.6vw, 44px); border-top: 1.5px solid var(--nu-line-2); }
+@media (prefers-reduced-motion: reduce) { .nof__item { animation: none; } }
 
 /* estado vazio: o cartão creme da marca, com a pílula da seta */
 .nof__empty {

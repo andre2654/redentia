@@ -4,6 +4,9 @@
 // Filtro por pills reativo a ?classe= (acoes|fiis|bdrs|renda-fixa) — o link
 // do header chega filtrado. Preview top-3 dos cards hidrata LAZY no client
 // (IntersectionObserver; nada de 22 fetches no SSR — backend cacheia 15 min).
+// 2ª rodada da Aportou (11/11/2026): o filtro é o trilho das páginas de mercado,
+// as linhas (destaque e prévias) ganham o logo do ativo, os cartões entram em
+// cascata e o fecho é o painel azul com o corte (MercadoFecho).
 import type { RankingClasse, RankingMeta, RankingRowApi } from '~/types/rankings'
 import { RANKINGS, RANKING_TEMAS } from '~/content/rankings/registry'
 
@@ -167,7 +170,7 @@ function cardTypes(meta: RankingMeta): string[] {
       subtitle="A B3 inteira ranqueada do maior pro menor: dividendos, tamanho, valuation, crescimento e o Aportou Score. Atualizado diariamente após o pregão."
     >
       <template #title>Rankings da B3.</template>
-      <NuFilterPills :items="pillItems" :model-value="activePill" @update:model-value="setPill" />
+      <MercadoTrilho :itens="pillItems" :model-value="activePill" rotulo="Filtrar rankings por classe" @update:model-value="setPill" />
     </NuPageHero>
 
     <!-- ============ Destaque: Redentia Score top 5 (SSR real) ============ -->
@@ -186,6 +189,7 @@ function cardTypes(meta: RankingMeta): string[] {
             <ol class="rkh__spot-list">
               <li v-for="(row, i) in scoreTop" :key="rankingTicker(row)" v-contexto-chat="{ id: `ranking:redentia-score:${rankingTicker(row)}`, tipo: 'ranking', rotulo: `${i + 1}º ${rankingTicker(row)} · Score`, texto: `${i + 1}º no Aportou Score: ${rankingTicker(row)} (${rankingName(row)}), nota ${scoreOf(row)}` }" class="rkh__spot-row">
                 <span class="rkh__spot-pos">{{ i + 1 }}</span>
+                <NuAssetLogo :ticker="rankingTicker(row)" :letter="rankingTicker(row).charAt(0) || '?'" tile-bg="var(--nu-dark-chip)" tile-fg="var(--nu-white)" :size="32" :radius="10" />
                 <span class="rkh__spot-ticker">{{ rankingTicker(row) }}</span>
                 <span class="rkh__spot-name">{{ rankingName(row) }}</span>
                 <span class="rkh__spot-score">{{ scoreOf(row) }}</span>
@@ -199,11 +203,14 @@ function cardTypes(meta: RankingMeta): string[] {
     <!-- ============ Grid dos 22, agrupado por tema ============ -->
     <section class="rkh__grid-wrap">
       <div v-for="g in grupos" :key="g.tema" v-contexto-chat="{ id: `rankings:${g.tema}`, tipo: 'ranking', rotulo: rotuloCurto(`Rankings · ${g.tema}`) }" class="rkh__group">
-        <h2 class="rkh__group-title">{{ g.tema }}</h2>
+        <div class="rkh__group-head">
+          <h2 class="rkh__group-title">{{ g.tema }}</h2>
+          <span class="rkh__group-n">{{ g.items.length }} {{ g.items.length === 1 ? 'ranking' : 'rankings' }}</span>
+        </div>
         <div class="rkh__grid">
           <NuxtLink
-            v-for="m in g.items" :key="m.slug" v-contexto-chat="{ id: `ranking:${m.slug}`, tipo: 'ranking', rotulo: rotuloCurto(`Ranking · ${m.title}`) }" :to="`/ranking/${m.slug}`"
-            class="rkh__card" :data-slug="m.slug"
+            v-for="(m, k) in g.items" :key="m.slug" v-contexto-chat="{ id: `ranking:${m.slug}`, tipo: 'ranking', rotulo: rotuloCurto(`Ranking · ${m.title}`) }" :to="`/ranking/${m.slug}`"
+            class="rkh__card" :data-slug="m.slug" :style="{ '--i': Math.min(k, 6) }"
           >
             <div class="rkh__card-chips">
               <span v-for="t in cardTypes(m)" :key="t" class="rkh__card-chip">{{ t }}</span>
@@ -213,6 +220,7 @@ function cardTypes(meta: RankingMeta): string[] {
             <ol v-if="previews[m.slug]?.length" class="rkh__card-preview">
               <li v-for="(p, i) in previews[m.slug]" :key="p.ticker" class="rkh__card-preview-row">
                 <span class="rkh__card-preview-pos">{{ i + 1 }}</span>
+                <NuAssetLogo v-if="m.endpoint !== 'tesouro'" :ticker="p.ticker" :letter="p.ticker.charAt(0) || '?'" tile-bg="var(--nu-cream-2)" tile-fg="var(--nu-gray-3)" :size="26" :radius="8" />
                 <span class="rkh__card-preview-ticker">{{ p.ticker }}</span>
                 <span class="rkh__card-preview-value">{{ p.value }}</span>
               </li>
@@ -223,16 +231,15 @@ function cardTypes(meta: RankingMeta): string[] {
       </div>
     </section>
 
-    <!-- ============ CTA final full-bleed (direção André 2026-07-13:
-         "faça desse card uma seção, ocupando a tela inteira e mais impactante"
-         — padrão NuCtaPhoto, o mesmo da CTA final do /mercado) ============ -->
-    <NuCtaPhoto
+    <!-- ============ Fecho: o painel azul da marca, com o corte de fundo ============ -->
+    <MercadoFecho
+      eyebrow="Sua carteira"
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
       :secondary="{ label: 'Ver como funciona', to: '/institucional/how-works' }"
     >
-      <template #title>Acompanhe os rankings<br>na sua carteira</template>
+      <template #title>Acompanhe os rankings na sua carteira</template>
       <template #subtitle>Crie sua conta grátis e veja como os seus ativos aparecem em cada ranking, com dados atualizados diariamente.</template>
-    </NuCtaPhoto>
+    </MercadoFecho>
   </div>
 </template>
 
@@ -263,11 +270,11 @@ function cardTypes(meta: RankingMeta): string[] {
 .rkh__spot:hover .rkh__spot-cta svg { transform: translateX(3px); }
 .rkh__spot-list { flex: 1 1 340px; min-width: min(300px, 100%); margin: 0; padding: 0; list-style: none; }
 .rkh__spot-row {
-  display: flex; align-items: center; gap: 14px; padding: 14px 0;
+  display: flex; align-items: center; gap: 12px; padding: 12px 0;
   font-variant-numeric: tabular-nums;
 }
 .rkh__spot-row + .rkh__spot-row { border-top: 1.5px solid var(--nu-dark-line); }
-.rkh__spot-pos { width: 22px; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 700; }
+.rkh__spot-pos { width: 18px; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 700; }
 .rkh__spot-ticker { color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: 0.04em; }
 .rkh__spot-name {
   flex: 1; min-width: 0; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 500;
@@ -278,15 +285,16 @@ function cardTypes(meta: RankingMeta): string[] {
 /* ——— grid por tema (sobre o creme da página; os cartões são creme com a sombra quente) ——— */
 .rkh__grid-wrap {
   background: var(--nu-page);
-  /* bottom maior: a CTA full-bleed (NuCtaPhoto) cola logo abaixo */
-  padding: clamp(40px, 5vw, 64px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
+  padding: clamp(40px, 5vw, 64px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(16px, 2vw, 28px);
   animation: nu-fade .5s ease both;
 }
 .rkh__group + .rkh__group { margin-top: clamp(44px, 5.5vw, 72px); }
+.rkh__group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; margin: 0 0 clamp(18px, 2.5vw, 28px); padding-bottom: 14px; border-bottom: 1.5px solid var(--nu-line-2); }
 .rkh__group-title {
-  margin: 0 0 clamp(18px, 2.5vw, 28px); color: var(--nu-ink);
+  margin: 0; color: var(--nu-ink);
   font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
 }
+.rkh__group-n { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
 .rkh__grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 16px;
@@ -295,6 +303,8 @@ function cardTypes(meta: RankingMeta): string[] {
   display: flex; flex-direction: column; gap: 10px;
   background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px; box-shadow: var(--nu-shadow-quente);
   transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  /* entrada em cascata (60ms por cartão) */
+  animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
 }
 .rkh__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .rkh__card-chips { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -323,9 +333,7 @@ function cardTypes(meta: RankingMeta): string[] {
 .rkh__card-cta svg { transition: transform .2s ease; }
 .rkh__card:hover .rkh__card-cta svg { transform: translateX(3px); }
 @media (prefers-reduced-motion: reduce) {
-  .rkh__spot, .rkh__card, .rkh__card-cta svg, .rkh__spot-cta svg { transition: none; }
+  .rkh__spot, .rkh__card, .rkh__card-cta svg, .rkh__spot-cta svg { transition: none; animation: none; }
   .rkh__spot:hover, .rkh__card:hover, .rkh__card:hover .rkh__card-cta svg, .rkh__spot:hover .rkh__spot-cta svg { transform: none; }
 }
-/* (CTA final = NuCtaPhoto full-bleed, estilos no componente; o grid acima
-   fecha com o próprio padding-bottom) */
 </style>

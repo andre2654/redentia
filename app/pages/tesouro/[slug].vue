@@ -3,8 +3,8 @@
 // visual): Frontend/app/pages/tesouro/[slug].vue (taxa como "preço", cards
 // compra/venda, gráfico com toggle cotação↔taxa, interpretações por regra).
 // O layout default já renderiza NuHeader + NuMarketTicker + NuFooter; aqui
-// vive o miolo na linguagem Nu: hero (creme, taxa-herói) → cards Compra/Venda
-// → gráfico (navy, toggle preço↔taxa + ranges) → leituras por regra →
+// vive o miolo na linguagem Nu: topo em duas colunas (creme: taxa-herói |
+// Compra/Venda no cartão carvão) → gráfico (navy, toggle preço↔taxa + ranges) → leituras por regra →
 // ferramentas relacionadas → FAQ → CTA.
 //
 // SEO: SSR-first (detalhe buscado no servidor via useAsyncData — taxa real no
@@ -131,11 +131,14 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero (badge + nome + taxa-herói + prazo) ============ -->
-    <TesouroHero :hero="titulo.hero" />
-
-    <!-- ============ Cards Compra / Venda ============ -->
-    <TesouroSideCards :cards="sideCards" />
+    <!-- ============ Topo em duas colunas: o título e a taxa-herói à esquerda,
+         Compra e Venda no cartão carvão à direita ============ -->
+    <section class="tsd__topo">
+      <div class="tsd__topo-grade">
+        <TesouroHero :hero="titulo.hero" />
+        <TesouroSideCards :cards="sideCards" />
+      </div>
+    </section>
 
     <!-- ============ Histórico (navy, toggle preço↔taxa + ranges) ============ -->
     <TesouroChartSection
@@ -167,14 +170,17 @@ usePageSeo({
         <NuxtLink to="/ranking/tesouro-direto" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Ranking do Tesouro Direto</h3>
           <p class="tsd__card-link-desc">Compare este título com os demais, ordenados pela maior taxa de hoje.</p>
+          <span class="tsd__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
         <NuxtLink v-if="quantoRendeHref" :to="quantoRendeHref" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Quanto rende um valor neste título</h3>
           <p class="tsd__card-link-desc">A taxa de hoje aplicada a um valor, com o bruto e o IR quando a conta fecha.</p>
+          <span class="tsd__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
         <NuxtLink :to="titulo.calcHref" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Simular na calculadora de juros compostos</h3>
           <p class="tsd__card-link-desc">Abre a simulação já preenchida com uma taxa nominal estimada pra este título.</p>
+          <span class="tsd__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
       </div>
     </CalcBand>
@@ -188,20 +194,29 @@ usePageSeo({
       <NuFaqAccordion :items="titulo.faq" surface="white" />
     </CalcSplit>
 
-    <!-- ============ CTA final full-bleed (só deslogado — mesmo padrão dos
-         outros CTAs da Aportou: NuCtaPhoto) ============ -->
-    <NuCtaPhoto
-      v-if="!isAuthenticated"
+    <!-- ============ Fecho (só deslogado): o painel azul da marca, com o corte de fundo ============ -->
+    <MercadoFecho
+      v-if="!isAuthenticated" eyebrow="Sua carteira" fundo="faixa"
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
       :secondary="{ label: 'Ver todos os títulos', to: '/tesouro' }"
     >
-      <template #title>Acompanhe seus títulos<br>na Aportou</template>
+      <template #title>Acompanhe seus títulos na Aportou</template>
       <template #subtitle>Cadastre-se e veja renda fixa, ações e FIIs em uma carteira só, com análises automáticas e dados atualizados diariamente.</template>
-    </NuCtaPhoto>
+    </MercadoFecho>
   </div>
 </template>
 
 <style scoped>
+/* ——— o topo em duas colunas (2ª rodada da Aportou): como o topo do /asset ——— */
+.tsd__topo {
+  background: var(--nu-page);
+  padding: clamp(36px, 4.6vw, 68px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(44px, 5vw, 72px);
+}
+.tsd__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(28px, 3.4vw, 40px); }
+@media (min-width: 1080px) {
+  .tsd__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(36px, 4.4vw, 72px); align-items: center; }
+}
+
 /* ——— leituras (cartões brancos na faixa, com o fio carvão dos passos da marca) ——— */
 .tsd__readings {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
@@ -227,9 +242,11 @@ usePageSeo({
 .tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; transition: color .2s ease; }
 .tsd__card-link:hover .tsd__card-link-title { color: var(--nu-blue-text); }
 .tsd__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
-@media (prefers-reduced-motion: reduce) { .tsd__card-link { transition: none; } .tsd__card-link:hover { transform: none; } }
+.tsd__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.tsd__card-link-ir svg { transition: transform .2s ease; }
+.tsd__card-link:hover .tsd__card-link-ir svg { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) { .tsd__card-link, .tsd__card-link-ir svg { transition: none; } .tsd__card-link:hover, .tsd__card-link:hover .tsd__card-link-ir svg { transform: none; } }
 
 /* ——— a pílula da IA no FAQ ——— */
 .tsd__pill { margin-top: 28px; }
-/* (CTA final = NuCtaPhoto full-bleed, estilos no componente) */
 </style>

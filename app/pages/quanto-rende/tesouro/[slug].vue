@@ -171,10 +171,12 @@ if (data.value) {
         <NuxtLink :to="`/tesouro/${slug}`" class="qrt__link">
           <h3>{{ titulo.nome }}</h3>
           <p>Taxa, preço de compra e de venda, e o histórico do título.</p>
+          <span class="qrt__link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
         <NuxtLink to="/tesouro" class="qrt__link">
           <h3>Tesouro Direto hoje</h3>
           <p>As taxas de todos os títulos, da mesma fonte.</p>
+          <span class="qrt__link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
       </div>
     </CalcBand>
@@ -209,4 +211,8 @@ if (data.value) {
 .qrt__link p {
   margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5;
 }
+.qrt__link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.qrt__link-ir svg { transition: transform .2s ease; }
+.qrt__link:hover .qrt__link-ir svg { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) { .qrt__link-ir svg { transition: none; } .qrt__link:hover .qrt__link-ir svg { transform: none; } }
 </style>

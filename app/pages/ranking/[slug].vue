@@ -4,7 +4,8 @@
 // calculadoras) + tesouro-direto novo.
 //
 // Ordem EXATA de seções da Redentia antiga (contrato de SEO):
-//   hero (h1 + lead + chips) → RankLeader (#1) → toolbar (contador + tabs)
+//   topo em duas colunas (h1 + lead + chips | RankLeader, o nº 1, no cartão
+//   carvão) → toolbar (contador + tabs)
 //   → RankTable (limit=50, SSR no HTML) → answer-first → seções h2
 //   educacionais (anatomias CalcBand/CalcSplit alternando, como as
 //   calculadoras) → Ferramentas relacionadas → FAQ (NuFaqAccordion white +
@@ -45,6 +46,8 @@ const {
 } = useRanking(meta)
 
 const isScore = slug === 'redentia-score'
+// o cartão do nº 1 senta à direita do topo; sem líder (carregando, fora do ar) o topo é uma coluna só
+const temLider = computed(() => (isTesouro ? !!tesouroLeader.value : !!leader.value))
 const primaryLabel = computed(() => {
   if (meta.primaryMetric === 'change' && meta.changeLabel) return `Variação ${meta.changeLabel}`
   return RANKING_COLUMNS[meta.primaryMetric].label
@@ -118,35 +121,44 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero (h1 + lead + chips) ============ -->
-    <NuPageHero eyebrow="Ranking" :subtitle="meta.lead">
-      <template #title>{{ meta.h1 }}</template>
-      <div class="rks__chips">
-        <span v-for="c in meta.chips" :key="c" class="rks__chip">{{ c }}</span>
-      </div>
-    </NuPageHero>
-
-    <!-- ============ Leader + toolbar + tabela ============ -->
-    <section class="rks__body">
-      <RankLeader
-        v-if="!isTesouro && leader"
-        :row="leader" :primary-metric="meta.primaryMetric" :metric-label="primaryLabel"
-      />
-      <!-- líder do tesouro: card simples com o título de maior taxa -->
-      <div v-else-if="isTesouro && tesouroLeader" class="rks__tleader">
-        <span class="rks__tleader-crown">Maior taxa de hoje</span>
-        <div class="rks__tleader-main">
-          <div class="rks__tleader-who">
-            <span class="rks__tleader-name">{{ tesouroLeader.name }}</span>
-            <span class="rks__tleader-sub">{{ tesouroLeader.indexer }}</span>
-          </div>
-          <div class="rks__tleader-metric">
-            <span class="rks__tleader-rate">{{ tesouroLeader.rate }}</span>
-            <span class="rks__tleader-label">Taxa de compra</span>
+    <!-- ============ Topo: o ranking à esquerda, o nº 1 no cartão carvão à direita ============ -->
+    <section class="rks__topo" :class="{ 'rks__topo--so': !temLider }">
+      <div class="rks__topo-grade">
+        <div class="rks__topo-texto">
+          <p class="nu-eyebrow rks__eyebrow">
+            <MarcaCorte />
+            <span><NuxtLink to="/rankings" class="rks__volta">Rankings</NuxtLink><span aria-hidden="true"> · </span>{{ meta.tema }}</span>
+          </p>
+          <h1 class="rks__h1">{{ meta.h1 }}</h1>
+          <p class="rks__lead">{{ meta.lead }}</p>
+          <div v-if="meta.chips.length" class="rks__chips">
+            <span v-for="c in meta.chips" :key="c" class="rks__chip">{{ c }}</span>
           </div>
         </div>
+        <div v-if="temLider" class="rks__topo-palco">
+          <RankLeader
+            v-if="!isTesouro && leader"
+            :row="leader" :primary-metric="meta.primaryMetric" :metric-label="primaryLabel" :podio="rows.slice(1, 3)"
+          />
+          <!-- líder do tesouro: o título de maior taxa, no mesmo cartão -->
+          <NuFaixaMarca v-else-if="isTesouro && tesouroLeader" rotulo="Maior taxa de hoje" como="p" :altura="56" class="rks__tleader">
+            <NuxtLink :to="`/tesouro/${tesouroLeader.slug}`" class="rks__tleader-main">
+              <span class="rks__tleader-who">
+                <span class="rks__tleader-name">{{ tesouroLeader.name }}</span>
+                <span class="rks__tleader-sub">{{ tesouroLeader.indexer }}</span>
+              </span>
+              <span class="rks__tleader-metric">
+                <span class="rks__tleader-rate">{{ tesouroLeader.rate }}</span>
+                <span class="rks__tleader-label">Taxa de compra</span>
+              </span>
+            </NuxtLink>
+          </NuFaixaMarca>
+        </div>
       </div>
+    </section>
 
+    <!-- ============ Toolbar + tabela ============ -->
+    <section class="rks__body">
       <header class="rks__toolbar">
         <div class="rks__toolbar-meta">
           <NuEyebrow como="p">Lista completa</NuEyebrow>
@@ -177,7 +189,7 @@ usePageSeo({
       <RankTesouroTable v-else-if="isTesouro" :rows="tesouroRows" />
       <RankTable
         v-else :rows="rows" :columns="columns" :change-label="meta.changeLabel"
-        :breakdown="isScore"
+        :breakdown="isScore" :primary="meta.primaryMetric"
       />
 
       <!-- ============ Answer-first (abaixo da tabela, centralizado) ============ -->
@@ -238,6 +250,7 @@ usePageSeo({
         <NuxtLink v-for="link in copy.crossLinks" :key="link.href" :to="link.href" class="rks__card-link">
           <h3 class="rks__card-link-title">{{ link.title }}</h3>
           <p class="rks__card-link-desc">{{ link.desc }}</p>
+          <span class="rks__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
       </div>
     </CalcBand>
@@ -251,19 +264,16 @@ usePageSeo({
       <NuFaqAccordion :items="copy.faqItems" surface="white" />
     </CalcSplit>
 
-    <!-- ============ CTA ============ -->
-    <CalcBand tone="white" tight>
-      <div class="rks__cta">
-        <MarcaCorte :largura="420" cor="var(--nu-white)" class="rks__cta-corte nu-corte-fundo" />
-        <!-- o nome próprio (Aportou Score) não vai para a caixa baixa -->
-        <h2 class="rks__cta-title">Acompanhe {{ isScore ? `o ${meta.title}` : meta.title.toLowerCase() }} na sua carteira</h2>
-        <p class="rks__cta-sub">Cadastre-se na Aportou e receba análises automáticas sobre os ativos que você acompanha, com dados atualizados diariamente.</p>
-        <div class="rks__cta-actions">
-          <NuBotaoSeta to="/login" variante="creme" tamanho="m">Criar conta grátis</NuBotaoSeta>
-          <NuxtLink to="/rankings" class="rks__cta-link">Ver outros rankings</NuxtLink>
-        </div>
-      </div>
-    </CalcBand>
+    <!-- ============ Fecho: o painel azul da marca, com o corte de fundo ============ -->
+    <!-- o nome próprio (Aportou Score) não vai para a caixa baixa -->
+    <MercadoFecho
+      eyebrow="Sua carteira"
+      :primary="{ label: 'Criar conta grátis', to: '/login' }"
+      :secondary="{ label: 'Ver outros rankings', to: '/rankings' }"
+    >
+      <template #title>Acompanhe {{ isScore ? `o ${meta.title}` : meta.title.toLowerCase() }} na sua carteira</template>
+      <template #subtitle>Cadastre-se na Aportou e receba análises automáticas sobre os ativos que você acompanha, com dados atualizados diariamente.</template>
+    </MercadoFecho>
   </div>
 </template>
 
@@ -271,23 +281,45 @@ usePageSeo({
 /* Aportou (11/11/2026): o corpo corre sobre o creme da página, a tabela e o
    líder são cartões brancos, os selos têm raio 8 e a chamada final é o painel
    de gradiente cobalto com o corte gigante. O conteúdo é o de antes. */
-/* ——— hero chips ——— */
-.rks__chips { display: flex; gap: 8px; flex-wrap: wrap; }
+/* 2ª rodada: o topo em duas colunas (o ranking e o nº 1 no cartão carvão com
+   a faixa da marca), como o topo do /asset e da tese. */
+.rks__topo {
+  background: var(--nu-page); color: var(--nu-ink);
+  padding: clamp(36px, 4.6vw, 68px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(36px, 4.4vw, 60px);
+}
+.rks__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(28px, 3.4vw, 40px); }
+.rks__topo-texto { min-width: 0; animation: nu-fade .5s ease both; }
+.rks__topo-palco { min-width: 0; animation: nu-fade .5s ease .1s both; }
+.rks__eyebrow { margin: 0; }
+.rks__volta {
+  display: inline-block; padding: 14px 0; margin: -14px 0; color: inherit;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
+  transition: text-decoration-color .2s ease, color .2s ease;
+}
+.rks__volta:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
+.rks__h1 { margin: 20px 0 0; font-size: clamp(40px, 4.8vw, 68px); font-weight: 800; letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
+.rks__lead { margin: 20px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: clamp(17px, 1.4vw, 19px); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
+.rks__chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
 .rks__chip {
-  display: inline-flex; align-items: center; min-height: 32px; background: var(--nu-cream-2); color: var(--nu-ink); border-radius: var(--nu-r-tag);
-  padding: 0 12px; font-size: 13.5px; font-weight: 700;
+  display: inline-flex; align-items: center; min-height: 30px; background: var(--nu-cream-2); color: var(--nu-ink); border-radius: var(--nu-r-tag);
+  padding: 0 11px; font-size: 13.5px; font-weight: 700;
+}
+@media (min-width: 1080px) {
+  .rks__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(36px, 4.4vw, 72px); align-items: center; }
+  .rks__topo--so .rks__topo-grade { grid-template-columns: minmax(0, 1fr); }
+  .rks__topo--so .rks__h1 { max-width: 18ch; }
 }
 
-/* ——— corpo (leader + toolbar + tabela) ——— */
+/* ——— corpo (toolbar + tabela) ——— */
 .rks__body {
   background: var(--nu-page);
   padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
   display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 28px);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade .5s ease .15s both;
 }
 .rks__toolbar {
   display: flex; align-items: flex-end; justify-content: space-between;
-  gap: 16px; flex-wrap: wrap; margin-top: clamp(8px, 1.4vw, 16px);
+  gap: 16px; flex-wrap: wrap;
 }
 .rks__toolbar-meta { display: flex; flex-direction: column; gap: 8px; }
 .rks__toolbar-count {
@@ -305,26 +337,23 @@ usePageSeo({
   color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.6;
 }
 
-/* ——— líder do tesouro ——— */
-.rks__tleader { background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(24px, 3vw, 36px); }
-.rks__tleader-crown {
-  display: inline-flex; align-items: center; min-height: 28px; background: var(--nu-blue-bg); color: var(--nu-blue-text);
-  border-radius: var(--nu-r-tag); padding: 0 10px;
-  font-size: 13.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-}
+/* ——— líder do tesouro: o mesmo cartão carvão ——— */
+.rks__tleader { overflow: hidden; }
 .rks__tleader-main {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 24px; flex-wrap: wrap; margin-top: 20px;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 20px 28px; flex-wrap: wrap;
+  padding: clamp(22px, 2.6vw, 32px) clamp(20px, 2.4vw, 32px) clamp(24px, 2.8vw, 34px); color: var(--nu-white);
 }
-.rks__tleader-who { display: flex; flex-direction: column; gap: 2px; }
-.rks__tleader-name { color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
-.rks__tleader-sub { color: var(--nu-gray); font-size: 14.5px; font-weight: 700; }
-.rks__tleader-metric { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.rks__tleader-who { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.rks__tleader-name { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; transition: color .2s ease; }
+.rks__tleader-main:hover .rks__tleader-name { color: var(--nu-blue-soft); }
+.rks__tleader-sub { color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 600; }
+.rks__tleader-metric { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; }
 .rks__tleader-rate {
-  color: var(--nu-ink); font-size: clamp(46px, 5.2vw, 68px); font-weight: 800;
+  color: var(--nu-white); font-size: clamp(40px, 4.6vw, 60px); font-weight: 800;
   letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums;
 }
-.rks__tleader-label { color: var(--nu-gray); font-size: 14.5px; font-weight: 700; }
+.rks__tleader-label { color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 600; }
+@media (max-width: 560px) { .rks__tleader-metric { align-items: flex-start; margin-left: 0; } }
 
 /* ——— prosa educacional (mesma família das calculadoras) ——— */
 .rks__prose p {
@@ -377,22 +406,11 @@ usePageSeo({
 .rks__card-link:hover .rks__card-link-title { color: var(--nu-blue-text); }
 .rks__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
 
-/* ——— pílula da IA e a chamada final (o painel azul da marca) ——— */
+.rks__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.rks__card-link-ir svg { transition: transform .2s ease; }
+.rks__card-link:hover .rks__card-link-ir svg { transform: translateX(3px); }
+
+/* ——— pílula da IA no FAQ (o fecho é o MercadoFecho) ——— */
 .rks__pill { margin-top: 28px; }
-.rks__cta {
-  position: relative; overflow: hidden; isolation: isolate;
-  background: var(--nu-grad-cobalto); border-radius: var(--nu-r-secao);
-  padding: clamp(36px, 5vw, 64px);
-  max-width: 1240px; margin: 0 auto;
-}
-.rks__cta-corte { position: absolute; right: -40px; bottom: -70px; z-index: -1; opacity: .08; pointer-events: none; }
-.rks__cta-title { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; max-width: 20ch; }
-.rks__cta-sub { margin: 16px 0 0; color: var(--nu-blue-on-blue); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5; max-width: 560px; }
-.rks__cta-actions { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; margin-top: 28px; }
-.rks__cta-link {
-  display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 700;
-  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-white-35); transition: text-decoration-color .2s ease;
-}
-.rks__cta-link:hover { color: var(--nu-white); text-decoration-color: currentColor; }
-@media (prefers-reduced-motion: reduce) { .rks__card-link { transition: none; } .rks__card-link:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .rks__card-link, .rks__card-link-ir svg { transition: none; } .rks__card-link:hover, .rks__card-link:hover .rks__card-link-ir svg { transform: none; } }
 </style>

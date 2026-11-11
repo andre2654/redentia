@@ -6,6 +6,14 @@
 // a convicção com o desenho dos últimos meses e a última mudança. No celular
 // vira um feed vertical, com a barra rolando de lado.
 //
+// 2ª rodada da Aportou (11/11/2026): o cartão conversa com a tela de tese nova.
+// Os mesmos selos de raio 8 (TeseSelo): convicção em azul, o retorno desde o
+// lançamento em verde ou vermelho, o nº de ativos em carvão; os papéis em
+// etiqueta carvão (os três primeiros) e "+N"; a capa só quando a tese tem
+// imagem; no pé o desenho da convicção, a última mudança e "Abrir tese". Tipo e
+// ordem usam o trilho das páginas de mercado (MercadoTrilho). Campo vazio não
+// vira selo. Os dados, os filtros, a ordem e os links são os de antes.
+//
 // Sem catalisador no cartão: a lista de /theses não traz, e o campo `catalyst`
 // do detalhe (~440 KB por tese) é texto que empilha vereditos antigos, não uma
 // data próxima confiável. Sem "status" (Núcleo / Em risco) pelo mesmo motivo:
@@ -39,6 +47,8 @@ const TIPOS: { id: Tipo; rotulo: string }[] = [
   { id: 'tema', rotulo: 'Grandes ideias' },
   { id: 'estrategia', rotulo: 'Estratégias' },
 ]
+const tiposDoTrilho = computed(() => TIPOS.map((o) => ({ ...o, n: contagem.value[o.id] })))
+const ordensDoTrilho = computed(() => ORDENS.map((o) => ({ ...o, desligado: o.id === 'mudanca' && estado.value !== 'pronto' })))
 const ORDENS: { id: Ordem; rotulo: string }[] = [
   { id: 'conviccao', rotulo: 'Convicção' },
   { id: 'mudanca', rotulo: 'Mudou por último' },
@@ -55,6 +65,23 @@ const visiveis = computed(() => {
 function limpar() { tipo.value = 'todas'; recentes.value = false }
 
 const falhouImagem = ref<Record<string, boolean>>({})
+
+// ——— os selos do cartão: o que a lista de /theses já traz, por tese ———
+// (returnLabel é o retorno desde o lançamento, o mesmo do selo da tela de tese;
+// a lista não traz o mês do lançamento, então o selo diz "desde o lançamento")
+const QUANTOS_PAPEIS = 3
+const extras = computed(() => {
+  const m: Record<string, { retorno: { texto: string; queda: boolean } | null; ativos: number }> = {}
+  for (const c of props.cards) {
+    const r = c.returnLabel?.trim()
+    m[c.id] = {
+      retorno: r ? { texto: `${r} desde o lançamento`, queda: c.returnPct != null ? c.returnPct < 0 : /^[-−]/.test(r) } : null,
+      ativos: c.companiesCount > 0 ? c.companiesCount : (c.tickers?.length ?? 0) + Math.max(0, c.extraTickers ?? 0),
+    }
+  }
+  return m
+})
+const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_PAPEIS) + t.mais
 </script>
 
 <template>
@@ -68,11 +95,8 @@ const falhouImagem = ref<Record<string, boolean>>({})
     <!-- a barra que gruda -->
     <div class="tgr__barra">
       <div class="tgr__barra-in">
-        <div class="tgr__chips" role="group" aria-label="Filtrar teses">
-          <button
-            v-for="o in TIPOS" :key="o.id" type="button" class="tgr__chip" :class="{ 'tgr__chip--on': tipo === o.id }"
-            :aria-pressed="tipo === o.id" @click="tipo = o.id"
-          >{{ o.rotulo }}<span class="tgr__chip-n">{{ contagem[o.id] }}</span></button>
+        <div class="tgr__chips">
+          <MercadoTrilho class="tgr__trilho" :itens="tiposDoTrilho" :model-value="tipo" rotulo="Filtrar teses por tipo" @update:model-value="tipo = $event as Tipo" />
           <span class="tgr__sep" aria-hidden="true" />
           <button
             type="button" class="tgr__chip" :class="{ 'tgr__chip--on': recentes }" :aria-pressed="recentes"
@@ -80,13 +104,8 @@ const falhouImagem = ref<Record<string, boolean>>({})
           >Mudou em 30 dias<span v-if="estado === 'pronto'" class="tgr__chip-n">{{ contagem.recentes }}</span></button>
         </div>
         <div class="tgr__ordem">
-          <span class="tgr__ordem-r" id="tgr-ordem">Ordem</span>
-          <div class="tgr__seg" role="radiogroup" aria-labelledby="tgr-ordem">
-            <button
-              v-for="o in ORDENS" :key="o.id" type="button" role="radio" class="tgr__seg-b" :class="{ 'tgr__seg-b--on': ordem === o.id }"
-              :aria-checked="ordem === o.id" :disabled="o.id === 'mudanca' && estado !== 'pronto'" @click="ordem = o.id"
-            >{{ o.rotulo }}</button>
-          </div>
+          <span id="tgr-ordem" class="tgr__ordem-r">Ordem</span>
+          <MercadoTrilho class="tgr__seg" :itens="ordensDoTrilho" :model-value="ordem" papel="radiogroup" rotulo="Ordenar as teses" @update:model-value="ordem = $event as Ordem" />
           <label class="tgr__select">
             <span class="tgr__sr">Ordenar por</span>
             <select v-model="ordem">
@@ -114,45 +133,58 @@ const falhouImagem = ref<Record<string, boolean>>({})
     <ul v-if="carregando && !teses.length" class="tgr__grade" aria-hidden="true">
       <li v-for="i in 6" :key="i">
         <span class="tgr__cartao tgr__cartao--sk">
-          <span class="tgr__capa"><NuSkeleton variant="block" width="100%" height="100%" radius="0" /></span>
           <span class="tgr__corpo">
             <NuSkeleton variant="line" width="140px" height="12px" />
             <NuSkeleton variant="text" :lines="2" last-width="60%" height="22px" class="tgr__sk-nome" />
             <NuSkeleton variant="text" :lines="2" last-width="80%" height="13px" class="tgr__sk-frase" />
+            <span class="tgr__selos"><NuSkeleton variant="line" width="150px" height="30px" radius="8px" /><NuSkeleton variant="line" width="120px" height="30px" radius="8px" /></span>
             <span class="tgr__pe">
-              <span class="tgr__conv"><NuSkeleton variant="line" width="56px" height="12px" /><NuSkeleton variant="line" width="48px" height="32px" /></span>
-              <NuSkeleton variant="line" width="100%" height="30px" radius="8px" />
+              <NuSkeleton variant="line" width="120px" height="30px" radius="8px" />
+              <NuSkeleton variant="line" width="92px" height="14px" />
             </span>
           </span>
         </span>
       </li>
     </ul>
     <ul v-else-if="visiveis.length" class="tgr__grade">
-      <li v-for="t in visiveis" :key="t.slug">
+      <li v-for="(t, i) in visiveis" :key="t.slug" class="tgr__item" :style="{ '--i': Math.min(i, 8) }">
         <NuxtLink v-contexto-chat="contextoDaTese(t)" :to="t.href" class="tgr__cartao">
-          <span class="tgr__capa">
-            <img v-if="t.capa && !falhouImagem[t.slug]" :src="t.capa" :alt="t.titulo" loading="lazy" class="tgr__capa-img" @error="falhouImagem[t.slug] = true">
-            <span v-if="t.seguindo" class="tgr__seguindo">Seguindo</span>
+          <span v-if="t.capa && !falhouImagem[t.slug]" class="tgr__capa">
+            <img :src="t.capa" :alt="t.titulo" loading="lazy" class="tgr__capa-img" @error="falhouImagem[t.slug] = true">
           </span>
           <span class="tgr__corpo">
-            <span class="tgr__tema">{{ t.tema }}<span class="tgr__ponto" aria-hidden="true">·</span>{{ t.tipo === 'estrategia' ? 'Estratégia' : 'Grande ideia' }}</span>
+            <span class="tgr__topo-l">
+              <span class="tgr__tema">{{ t.tema }}<span class="tgr__ponto" aria-hidden="true">·</span>{{ t.tipo === 'estrategia' ? 'Estratégia' : 'Grande ideia' }}</span>
+              <span v-if="t.seguindo" class="tgr__seguindo">Seguindo</span>
+            </span>
             <span class="tgr__nome">{{ t.titulo }}</span>
             <span class="tgr__frase">{{ t.frase }}</span>
-            <TesesLogos class="tgr__logos" :tickers="t.tickers" :mais="t.mais" :tamanho="26" />
+            <span v-if="t.conviccao != null || extras[t.slug]?.retorno" class="tgr__selos">
+              <TeseSelo v-if="t.conviccao != null" tom="azul">Convicção {{ t.conviccao }} de 100</TeseSelo>
+              <TeseSelo v-if="extras[t.slug]?.retorno" :tom="extras[t.slug]!.retorno!.queda ? 'vermelho' : 'verde'">{{ extras[t.slug]!.retorno!.texto }}</TeseSelo>
+            </span>
+            <!-- o que tem dentro: quantos ativos (selo carvão) e os primeiros papéis em etiqueta -->
+            <span v-if="extras[t.slug]?.ativos || t.tickers.length" class="tgr__papeis">
+              <TeseSelo v-if="extras[t.slug]?.ativos" tom="carvao">{{ extras[t.slug]!.ativos }} {{ extras[t.slug]!.ativos === 1 ? 'ativo' : 'ativos' }}</TeseSelo>
+              <span v-if="extras[t.slug]?.ativos && t.tickers.length" class="tgr__fio" aria-hidden="true" />
+              <span v-for="(tk, k) in t.tickers.slice(0, QUANTOS_PAPEIS)" :key="tk" class="tgr__tk" :class="{ 'tgr__tk--3': k === 2 }">{{ tk }}</span>
+              <!-- no cartão estreito cabem dois papéis: o "+N" conta o terceiro -->
+              <span v-if="maisPapeis(t)" class="tgr__tk tgr__tk--mais tgr__tk--larga">+{{ maisPapeis(t) }}</span>
+              <span v-if="maisPapeis(t) || t.tickers.length > 2" class="tgr__tk tgr__tk--mais tgr__tk--estreita">+{{ maisPapeis(t) + (t.tickers.length > 2 ? 1 : 0) }}</span>
+            </span>
             <span class="tgr__pe">
-              <span v-if="t.conviccao != null" class="tgr__conv">
-                <span class="tgr__r">Convicção</span>
-                <span class="tgr__conv-n">{{ t.conviccao }}</span>
+              <span class="tgr__evol">
+                <span v-if="t.serie || estado === 'esperando'" class="tgr__conv-linha">
+                  <TesesConviccaoLinha v-if="t.serie" :serie="t.serie" :altura="30" :largura="120" />
+                  <NuSkeleton v-else variant="line" width="100%" height="30px" radius="8px" />
+                </span>
+                <span class="tgr__mudou">
+                  <template v-if="t.mudancaFrase">{{ t.mudancaFrase }}</template>
+                  <template v-else-if="t.serie">Estável desde {{ t.serie[0]!.d.slice(8, 10) }}/{{ t.serie[0]!.d.slice(5, 7) }}</template>
+                  <NuSkeleton v-else-if="estado === 'esperando'" variant="line" width="120px" height="12px" />
+                </span>
               </span>
-              <span class="tgr__conv-linha">
-                <TesesConviccaoLinha v-if="t.serie" :serie="t.serie" :altura="30" :largura="160" />
-                <NuSkeleton v-else-if="estado === 'esperando'" variant="line" width="100%" height="30px" radius="8px" />
-              </span>
-              <span class="tgr__mudou">
-                <template v-if="t.mudancaFrase">{{ t.mudancaFrase }}</template>
-                <template v-else-if="t.serie">Estável desde {{ t.serie[0]!.d.slice(8, 10) }}/{{ t.serie[0]!.d.slice(5, 7) }}</template>
-                <NuSkeleton v-else-if="estado === 'esperando'" variant="line" width="160px" height="12px" />
-              </span>
+              <span class="tgr__abrir">Abrir tese<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
             </span>
           </span>
         </NuxtLink>
@@ -190,6 +222,8 @@ const falhouImagem = ref<Record<string, boolean>>({})
 }
 .tgr__barra-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px var(--lado); }
 .tgr__chips { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.tgr__trilho { flex: none; }
+/* "mudou em 30 dias" é liga/desliga, não uma escolha do trilho: um chip creme que vira carvão */
 .tgr__chip {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: var(--nu-r-pill);
   background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; white-space: nowrap;
@@ -204,15 +238,6 @@ const falhouImagem = ref<Record<string, boolean>>({})
 .tgr__sep { flex-shrink: 0; width: 1.5px; height: 22px; margin: 0 4px; background: var(--nu-line); }
 .tgr__ordem { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .tgr__ordem-r { color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
-.tgr__seg { display: inline-flex; padding: 4px; border-radius: var(--nu-r-pill); background: var(--nu-cream-2); }
-.tgr__seg-b {
-  height: 36px; padding: 0 16px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-gray-3);
-  font: inherit; font-size: 14.5px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: background .2s, color .2s;
-}
-.tgr__seg-b:hover:not(:disabled) { color: var(--nu-ink); }
-.tgr__seg-b--on { background: var(--nu-ink); color: var(--nu-white); font-weight: 700; }
-.tgr__seg-b--on:hover:not(:disabled) { color: var(--nu-white); }
-.tgr__seg-b:disabled { opacity: .4; cursor: not-allowed; }
 .tgr__select { display: none; position: relative; }
 .tgr__select select {
   appearance: none; height: 44px; padding: 0 36px 0 16px; border: 0; border-radius: var(--nu-r-pill);
@@ -236,13 +261,17 @@ const falhouImagem = ref<Record<string, boolean>>({})
   display: grid; gap: var(--gap);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, max(280px, calc((100% - 2 * var(--gap)) / 3))), 1fr));
 }
+/* entrada em cascata (60ms por cartão) */
+.tgr__item { animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms); }
 .tgr__cartao {
   display: flex; flex-direction: column; height: 100%; border-radius: var(--nu-r-card); overflow: hidden;
   background: var(--nu-white); box-shadow: var(--nu-shadow-quente); color: inherit;
+  container: tese / inline-size;
   transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .tgr__cartao:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .tgr__cartao:focus-visible { outline-offset: 3px; }
+/* a capa: só quando a tese tem imagem */
 .tgr__capa { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--nu-ink); overflow: hidden; }
 .tgr__capa-img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
@@ -253,31 +282,50 @@ const falhouImagem = ref<Record<string, boolean>>({})
   transition: transform .6s cubic-bezier(.2, .8, .2, 1);
 }
 .tgr__cartao:hover .tgr__capa-img { transform: scale(1.18); }
+.tgr__corpo { flex: 1; display: flex; flex-direction: column; padding: 22px 22px 18px; }
+.tgr__topo-l { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 28px; }
+.tgr__tema { display: flex; align-items: center; gap: 7px; min-width: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.tgr__ponto { color: var(--nu-sand); }
 .tgr__seguindo {
-  position: absolute; left: 14px; top: 14px; display: inline-flex; align-items: center; height: 28px; padding: 0 10px;
+  flex: none; display: inline-flex; align-items: center; height: 28px; padding: 0 10px;
   border-radius: var(--nu-r-tag); background: var(--nu-green-bg); color: var(--nu-green-text); font-size: 13.5px; font-weight: 700;
 }
-.tgr__corpo { flex: 1; display: flex; flex-direction: column; padding: 20px 22px 20px; }
-.tgr__tema { display: flex; align-items: center; gap: 7px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-.tgr__ponto { color: var(--nu-sand); }
-.tgr__nome { margin-top: 10px; color: var(--nu-ink); font-size: clamp(22px, 2vw, 27px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance; transition: color .2s ease; }
+.tgr__nome { margin-top: 8px; color: var(--nu-ink); font-size: clamp(22px, 2vw, 27px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance; transition: color .2s ease; }
 .tgr__cartao:hover .tgr__nome { color: var(--nu-blue-text); }
-.tgr__frase { margin-top: 10px; color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.5; }
-.tgr__logos { margin-top: 16px; }
-.tgr__pe {
-  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; gap: 8px 18px; align-items: end;
-  margin-top: auto; padding-top: 18px; border-top: 1.5px solid var(--nu-line-2);
+/* a tese numa frase, em até duas linhas */
+.tgr__frase {
+  margin-top: 10px; color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.tgr__corpo > .tgr__logos { margin-bottom: 18px; }
-.tgr__conv { display: flex; flex-direction: column; gap: 4px; }
-.tgr__r { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-.tgr__conv-n { color: var(--nu-ink); font-size: clamp(34px, 3vw, 42px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums; }
-.tgr__conv-linha { display: block; height: 30px; color: var(--nu-blue); }
-.tgr__mudou { grid-column: 1 / -1; min-height: 18px; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
+/* os selos da tela de tese (raio 8): convicção, retorno, ativos */
+.tgr__selos { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 16px; }
+.tgr__selos :deep(.tsl--m), .tgr__papeis :deep(.tsl--m) { min-height: 28px; padding: 4px 9px; font-size: 13.5px; }
+/* os papéis: etiqueta carvão, os primeiros e "+N" */
+.tgr__papeis { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+.tgr__tk {
+  display: inline-flex; align-items: center; min-height: 28px; padding: 0 8px; border-radius: var(--nu-r-tag);
+  background: var(--nu-ink); color: var(--nu-white); font-size: 13px; font-weight: 800; letter-spacing: .03em; font-variant-numeric: tabular-nums;
+}
+.tgr__tk--mais { background: var(--nu-cream-2); color: var(--nu-ink); letter-spacing: 0; }
+.tgr__tk--estreita { display: none; }
+.tgr__fio { flex: none; width: 1.5px; height: 18px; margin: 0 2px; background: var(--nu-line); }
+/* o que vier logo antes do pé (os papéis, ou os selos sem papéis) abre o respiro */
+.tgr__corpo > :nth-last-child(2) { margin-bottom: 18px; }
+/* o pé: o desenho da convicção e a última mudança; a seta que abre */
+.tgr__pe {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-top: auto; padding-top: 14px; border-top: 1.5px solid var(--nu-line-2); min-height: 62px;
+}
+.tgr__evol { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.tgr__conv-linha { flex: none; display: block; width: 84px; height: 30px; color: var(--nu-blue); }
+.tgr__mudou { min-width: 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.tgr__abrir { flex: none; display: inline-flex; align-items: center; gap: 6px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; white-space: nowrap; }
+.tgr__abrir svg { transition: transform .2s ease; }
+.tgr__cartao:hover .tgr__abrir svg { transform: translateX(3px); }
 
 .tgr__cartao--sk { pointer-events: none; }
 .tgr__sk-nome { margin-top: 12px; }
-.tgr__sk-frase { margin-top: 10px; margin-bottom: 18px; }
+.tgr__sk-frase { margin-top: 10px; }
 .tgr__vazio { padding: 40px var(--lado) 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
 .tgr__vazio p { margin: 0; }
 .tgr__limpar {
@@ -297,11 +345,17 @@ const falhouImagem = ref<Record<string, boolean>>({})
   .tgr__barra-in { padding: 6px 0 6px var(--lado); gap: 10px; }
   .tgr__chips { flex: 1; overflow-x: auto; scrollbar-width: none; padding: 2px var(--lado) 2px 0; }
   .tgr__chips::-webkit-scrollbar { display: none; }
+  .tgr__trilho { max-width: none; overflow: visible; }
   .tgr__ordem { display: none; }
   .tgr__conta .tgr__select { display: block; }
   .tgr__conta .tgr__select select { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-line); }
   .tgr__chip { padding: 0 16px; }
   .tgr__nome { font-size: var(--nu-fs-xl); }
+}
+/* cartão estreito (celular, duas colunas no tablet): cabem dois papéis e o "+N" conta o terceiro */
+@container tese (max-width: 372px) {
+  .tgr__tk--3, .tgr__tk--larga { display: none; }
+  .tgr__tk--estreita { display: inline-flex; }
 }
 @media (max-width: 560px) {
   .tgr__conta-rev { display: none; }
@@ -309,7 +363,7 @@ const falhouImagem = ref<Record<string, boolean>>({})
   .tgr__capa { aspect-ratio: 2 / 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tgr, .tgr__cartao, .tgr__capa-img, .tgr__barra, .tgr__chip, .tgr__limpar { animation: none; transition: none; }
-  .tgr__cartao:hover, .tgr__chip:active, .tgr__limpar:active { transform: none; }
+  .tgr, .tgr__item, .tgr__cartao, .tgr__capa-img, .tgr__barra, .tgr__chip, .tgr__limpar, .tgr__abrir svg { animation: none; transition: none; }
+  .tgr__cartao:hover, .tgr__chip:active, .tgr__limpar:active, .tgr__cartao:hover .tgr__abrir svg { transform: none; }
 }
 </style>

@@ -77,8 +77,8 @@ usePageSeo({
     <section class="sth__grid-wrap">
       <div class="sth__grid">
         <NuxtLink
-          v-for="s in cards" :key="s.ptSlug" :to="`/setor/${s.ptSlug}`"
-          class="sth__card"
+          v-for="(s, i) in cards" :key="s.ptSlug" :to="`/setor/${s.ptSlug}`"
+          class="sth__card" :style="{ '--i': Math.min(i, 8) }"
         >
           <div class="sth__card-top">
             <h2 class="sth__card-title">{{ s.name }}</h2>
@@ -92,14 +92,15 @@ usePageSeo({
       </div>
     </section>
 
-    <!-- ============ CTA final full-bleed (padrão NuCtaPhoto) ============ -->
-    <NuCtaPhoto
+    <!-- ============ Fecho: o painel azul da marca, com o corte de fundo ============ -->
+    <MercadoFecho
+      eyebrow="Sua carteira"
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
       :secondary="{ label: 'Ver os rankings', to: '/rankings' }"
     >
-      <template #title>Descubra os melhores<br>ativos de cada setor</template>
+      <template #title>Descubra os melhores ativos de cada setor</template>
       <template #subtitle>Crie sua conta grátis e acompanhe as empresas de cada setor da B3 na sua carteira, com dados atualizados diariamente.</template>
-    </NuCtaPhoto>
+    </MercadoFecho>
   </div>
 </template>
 
@@ -108,8 +109,7 @@ usePageSeo({
    com a sombra quente, que sobe 2px ao passar o ponteiro */
 .sth__grid-wrap {
   background: var(--nu-page);
-  padding: clamp(24px, 3vw, 40px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
-  animation: nu-fade .5s ease both;
+  padding: clamp(8px, 1.4vw, 16px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(16px, 2vw, 28px);
 }
 .sth__grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
@@ -119,14 +119,16 @@ usePageSeo({
   display: flex; flex-direction: column; gap: 10px;
   background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-quente);
   transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  /* entrada em cascata (60ms por cartão) */
+  animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
 }
 .sth__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .sth__card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .sth__card-title { margin: 0; color: var(--nu-ink); font-size: clamp(20px, 1.8vw, 24px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; transition: color .2s ease; }
 .sth__card:hover .sth__card-title { color: var(--nu-blue-text); }
 .sth__card-count {
-  display: inline-flex; align-items: center; min-height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-white);
-  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink);
+  color: var(--nu-white); font-size: 13.5px; font-weight: 800; letter-spacing: .02em;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .sth__card-desc {
@@ -136,7 +138,7 @@ usePageSeo({
 .sth__card-cta svg { transition: transform .2s ease; }
 .sth__card:hover .sth__card-cta svg { transform: translateX(3px); }
 @media (prefers-reduced-motion: reduce) {
-  .sth__card, .sth__card-cta svg { transition: none; }
+  .sth__card, .sth__card-cta svg { transition: none; animation: none; }
   .sth__card:hover, .sth__card:hover .sth__card-cta svg { transform: none; }
 }
 </style>

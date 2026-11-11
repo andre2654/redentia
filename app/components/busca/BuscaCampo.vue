@@ -22,6 +22,7 @@ const emit = defineEmits<{
   (e: 'tecla', ev: KeyboardEvent): void
 }>()
 
+const tipos = BUSCA_TIPOS.map((t) => ({ id: t.key as string, rotulo: t.label }))
 const input = ref<HTMLInputElement | null>(null)
 const caixa = ref<HTMLElement | null>(null)
 
@@ -83,20 +84,16 @@ defineExpose({ focus: () => input.value?.focus() })
       <kbd v-else class="bc__kbd" data-nu-hide aria-hidden="true">/</kbd>
     </div>
 
-    <div class="bc__tipos" role="group" aria-label="Tipo de ativo">
-      <button
-        v-for="t in BUSCA_TIPOS" :key="t.key" type="button"
-        class="bc__tipo" :class="{ 'bc__tipo--on': t.key === props.tipo }"
-        :aria-pressed="t.key === props.tipo"
-        @click="emit('update:tipo', t.key)"
-      >{{ t.label }}</button>
+    <!-- os tipos: o trilho das páginas de mercado (creme, a escolhida em pílula carvão) -->
+    <div class="bc__tipos">
+      <MercadoTrilho :itens="tipos" :model-value="props.tipo" rotulo="Tipo de ativo" @update:model-value="emit('update:tipo', $event as BuscaType)" />
     </div>
   </section>
 </template>
 
 <style scoped>
 /* Aportou (11/11/2026): o herói é creme, o título em 800, o campo é o da marca
-   (borda 1,5px, foco cobalto de 3px) e os tipos são chips de 44px. */
+   (borda 1,5px, foco cobalto de 3px) e os tipos moram no trilho de 44px. */
 .bc {
   background: var(--nu-page);
   padding: clamp(36px, 5vw, 76px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(24px, 3vw, 40px);
@@ -137,27 +134,11 @@ defineExpose({ focus: () => input.value?.focus() })
   color: var(--nu-gray); font: inherit; font-size: var(--nu-fs-dense); font-weight: 700;
 }
 
-/* tipos: a pílula carvão ligada, o chip creme desligado */
-.bc__tipos { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; max-width: 880px; }
-.bc__tipo {
-  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill);
-  border: 0; background: var(--nu-cream-2); color: var(--nu-ink);
-  font-size: 14.5px; font-weight: 600; white-space: nowrap; cursor: pointer;
-  transition: color .2s, background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
-}
-.bc__tipo:hover { background: var(--nu-line-2); }
-.bc__tipo:active { transform: scale(.98); }
-.bc__tipo--on, .bc__tipo--on:hover { background: var(--nu-ink); color: var(--nu-white); font-weight: 700; }
+/* os tipos: o trilho (MercadoTrilho); no celular ele rola de lado por dentro */
+.bc__tipos { margin-top: 18px; max-width: 880px; }
 
 @media (max-width: 760px) {
   .bc__campo { height: 56px; padding-left: 18px; }
-  /* no celular os tipos são uma fileira só que rola de lado (a página não
-     rola no X; o container rola), para os resultados subirem junto do campo */
-  .bc__tipos {
-    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
-    margin: 14px calc(-1 * clamp(20px, 5.5vw, 80px)) 0; padding: 2px max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
-    scroll-padding-inline: clamp(20px, 5.5vw, 80px);
-  }
-  .bc__tipos::-webkit-scrollbar { display: none; }
+  .bc__tipos { margin-top: 14px; }
 }
 </style>

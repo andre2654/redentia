@@ -26,6 +26,7 @@ const sobre = useSobreDoContexto()
   <section v-contexto-chat="{ id: `dividendos-resumo:${sobre}`, tipo: 'proventos', rotulo: rotuloComSobre('Proventos', sobre) }" class="dvr">
     <div class="dvr__cols">
       <div class="dvr__left">
+        <NuEyebrow como="p">{{ isFii ? 'Rendimentos' : 'Proventos' }}</NuEyebrow>
         <h2 class="dvr__title">{{ heading[0] }}<br>{{ heading[1] }}</h2>
         <div class="dvr__sub">{{ subtitle }}</div>
         <div class="dvr__stats">
@@ -57,7 +58,7 @@ const sobre = useSobreDoContexto()
 .dvr__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .dvr__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .dvr__title {
-  margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
+  margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
   font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
 .dvr__sub { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.5; margin-top: 22px; }
@@ -67,5 +68,7 @@ const sobre = useSobreDoContexto()
   font-weight: 500; line-height: 1.5; max-width: 46ch;
 }
 .dvr__cta-row { margin-top: 28px; }
-.dvr__right { flex: 1.6 1 460px; min-width: min(320px, 100%); }
+/* as barras no tom do /asset: creme de fio as passadas, cobalto a corrente */
+.dvr__right { flex: 1.6 1 460px; min-width: min(320px, 100%); --nu-bar-inactive: var(--nu-line); }
+.dvr__right :deep(.ndb__bar) { max-width: 132px; border-radius: 12px 12px 4px 4px; }
 </style>

@@ -3,7 +3,8 @@
 // ptSlug pt-BR (imobiliario, financeiro, …); validado contra o registry
 // (404 fora dele). Resolve pro apiSlug inglês na chamada da API.
 //
-// Anatomia (espelha o /ranking/[slug]): hero → faixa de aggregates reais →
+// Anatomia (espelha o /ranking/[slug]): topo em duas colunas (h1 + lead | os
+// aggregates reais no cartão carvão) →
 // tabela de ativos (RankTable, colunas honestas) → answer-first → seção
 // educacional → ferramentas relacionadas → FAQ → CTA.
 //
@@ -58,6 +59,11 @@ const statCards = computed(() => {
   }
   return cards
 })
+
+// o cartão carvão do topo: o número do dia (a variação média, quando existe) em
+// destaque e os demais agregados embaixo. São os mesmos cartões de antes.
+const statHeroi = computed(() => statCards.value.find((c) => c.tone) ?? statCards.value[0] ?? null)
+const statDemais = computed(() => statCards.value.filter((c) => c !== statHeroi.value))
 
 // ————— answer-first (curto, otimizado pra citação) —————
 const answerFirst = computed(() => {
@@ -161,24 +167,40 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero ============ -->
-    <NuPageHero eyebrow="Setor" :subtitle="`O setor ${entry.name.toLowerCase()} na B3: as empresas e fundos que compõem o segmento, com dados atualizados diariamente.`">
-      <template #title>{{ entry.name }}</template>
-    </NuPageHero>
-
-    <!-- ============ Corpo (aggregates + tabela) ============ -->
-    <section class="sts__body">
-      <!-- faixa de aggregates reais (só os campos com dado) -->
-      <div v-if="statCards.length" class="sts__stats">
-        <div v-for="c in statCards" :key="c.label" v-contexto-chat="{ id: `setor:${slug}:${c.label}`, tipo: 'grafico', rotulo: rotuloCurto(`${c.label} · ${entry.name}`), texto: `${c.label} (setor ${entry.name}): ${c.value}` }" class="sts__stat">
-          <span class="sts__stat-label">{{ c.label }}</span>
-          <span
-            class="sts__stat-value"
-            :class="{ 'sts__stat-value--up': c.tone === 'up', 'sts__stat-value--down': c.tone === 'down' }"
-          >{{ c.value }}</span>
+    <!-- ============ Topo: o setor à esquerda, os números reais no cartão carvão à direita ============ -->
+    <section class="sts__topo" :class="{ 'sts__topo--so': !statHeroi }">
+      <div class="sts__topo-grade">
+        <div class="sts__topo-texto">
+          <p class="nu-eyebrow sts__eyebrow">
+            <MarcaCorte />
+            <span><NuxtLink to="/setor" class="sts__volta">Setores</NuxtLink><span aria-hidden="true"> · </span>B3</span>
+          </p>
+          <h1 class="sts__h1">{{ entry.name }}</h1>
+          <p class="sts__lead">O setor {{ entry.name.toLowerCase() }} na B3: as empresas e fundos que compõem o segmento, com dados atualizados diariamente.</p>
+        </div>
+        <!-- os agregados reais (só os campos com dado) -->
+        <div v-if="statHeroi" class="sts__topo-palco">
+          <NuFaixaMarca rotulo="O setor em números" como="p" :altura="56" class="sts__cartao">
+            <div
+              v-contexto-chat="{ id: `setor:${slug}:${statHeroi.label}`, tipo: 'grafico', rotulo: rotuloCurto(`${statHeroi.label} · ${entry.name}`), texto: `${statHeroi.label} (setor ${entry.name}): ${statHeroi.value}` }"
+              class="sts__heroi"
+            >
+              <span class="sts__heroi-v" :class="{ 'sts__heroi-v--up': statHeroi.tone === 'up', 'sts__heroi-v--down': statHeroi.tone === 'down' }">{{ statHeroi.value }}</span>
+              <span class="sts__heroi-l">{{ statHeroi.label }}</span>
+            </div>
+            <dl v-if="statDemais.length" class="sts__stats">
+              <div v-for="c in statDemais" :key="c.label" v-contexto-chat="{ id: `setor:${slug}:${c.label}`, tipo: 'grafico', rotulo: rotuloCurto(`${c.label} · ${entry.name}`), texto: `${c.label} (setor ${entry.name}): ${c.value}` }" class="sts__stat">
+                <dt class="sts__stat-label">{{ c.label }}</dt>
+                <dd class="sts__stat-value">{{ c.value }}</dd>
+              </div>
+            </dl>
+          </NuFaixaMarca>
         </div>
       </div>
+    </section>
 
+    <!-- ============ Corpo (tabela) ============ -->
+    <section class="sts__body">
       <header class="sts__toolbar">
         <div class="sts__toolbar-meta">
           <NuEyebrow como="p">Ativos do setor</NuEyebrow>
@@ -196,7 +218,7 @@ usePageSeo({
       <div v-else-if="empty" class="sts__state">
         Nenhum ativo com dados pra esse setor no momento. Veja os outros setores no <NuxtLink to="/setor" class="sts__inline-link">hub de setores</NuxtLink>.
       </div>
-      <RankTable v-else :rows="rows" :columns="['change', 'marketCap']" />
+      <RankTable v-else :rows="rows" :columns="['change', 'marketCap']" primary="marketCap" />
 
       <!-- answer-first -->
       <p v-if="!pending && rows.length" class="sts__answer">{{ answerFirst }}</p>
@@ -227,6 +249,7 @@ usePageSeo({
         <NuxtLink v-for="link in crossLinks" :key="link.href" :to="link.href" class="sts__card-link">
           <h3 class="sts__card-link-title">{{ link.title }}</h3>
           <p class="sts__card-link-desc">{{ link.desc }}</p>
+          <span class="sts__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
       </div>
     </CalcBand>
@@ -240,49 +263,72 @@ usePageSeo({
       <NuFaqAccordion :items="faqItems" surface="white" />
     </CalcSplit>
 
-    <!-- ============ CTA ============ -->
-    <NuCtaPhoto
+    <!-- ============ Fecho: o painel azul da marca, com o corte de fundo ============ -->
+    <MercadoFecho
+      eyebrow="Sua carteira" fundo="faixa"
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
       :secondary="{ label: 'Ver todos os setores', to: '/setor' }"
     >
-      <template #title>Acompanhe o setor<br>{{ entry.name.toLowerCase() }} na sua carteira</template>
+      <template #title>Acompanhe o setor {{ entry.name.toLowerCase() }} na sua carteira</template>
       <template #subtitle>Crie sua conta grátis e veja como as empresas deste setor aparecem em cada ranking, com dados atualizados diariamente.</template>
-    </NuCtaPhoto>
+    </MercadoFecho>
   </div>
 </template>
 
 <style scoped>
-/* Aportou (11/11/2026): o corpo corre sobre o creme da página; os números do
-   setor e a tabela são cartões brancos. O conteúdo é o de antes. */
+/* Aportou (11/11/2026): o corpo corre sobre o creme da página e a tabela é um
+   cartão branco. 2ª rodada: o topo em duas colunas, com os números reais do
+   setor no cartão carvão com a faixa da marca (como o topo do /asset). */
+.sts__topo {
+  background: var(--nu-page); color: var(--nu-ink);
+  padding: clamp(36px, 4.6vw, 68px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(36px, 4.4vw, 60px);
+}
+.sts__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(28px, 3.4vw, 40px); }
+.sts__topo-texto { min-width: 0; animation: nu-fade .5s ease both; }
+.sts__topo-palco { min-width: 0; animation: nu-fade .5s ease .1s both; }
+.sts__eyebrow { margin: 0; }
+.sts__volta {
+  display: inline-block; padding: 14px 0; margin: -14px 0; color: inherit;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
+  transition: text-decoration-color .2s ease, color .2s ease;
+}
+.sts__volta:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
+.sts__h1 { margin: 20px 0 0; font-size: clamp(42px, 5vw, 72px); font-weight: 800; letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
+.sts__lead { margin: 20px 0 0; max-width: 44ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
+@media (min-width: 1080px) {
+  .sts__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(36px, 4.4vw, 72px); align-items: center; }
+  .sts__topo--so .sts__topo-grade { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ——— o cartão dos agregados ——— */
+.sts__cartao { --pad: clamp(20px, 2.4vw, 32px); overflow: hidden; }
+.sts__heroi { display: flex; flex-direction: column; gap: 8px; padding: clamp(22px, 2.6vw, 32px) var(--pad) clamp(20px, 2.4vw, 28px); }
+.sts__heroi-v {
+  color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: 800;
+  letter-spacing: -.035em; font-variant-numeric: tabular-nums; line-height: 1;
+}
+.sts__heroi-v--up { color: var(--nu-green-soft); }
+.sts__heroi-v--down { color: var(--nu-red-soft); }
+.sts__heroi-l { color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 600; }
+.sts__stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 18px 28px;
+  margin: 0 var(--pad); padding: clamp(18px, 2vw, 24px) 0 clamp(22px, 2.6vw, 30px); border-top: 1.5px solid var(--nu-dark-line);
+}
+.sts__stat { display: flex; flex-direction: column; gap: 8px; }
+.sts__stat-label { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; }
+.sts__stat-value {
+  margin: 0; color: var(--nu-white); font-size: clamp(26px, 2.6vw, 34px); font-weight: 800;
+  letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1;
+}
+
 .sts__body {
   background: var(--nu-page);
   padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
   display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 28px);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade .5s ease .15s both;
 }
 
-/* ——— faixa de aggregates ——— */
-.sts__stats {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
-  gap: 14px;
-}
-.sts__stat {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-quente);
-  padding: clamp(20px, 2.4vw, 28px);
-  display: flex; flex-direction: column; gap: 10px;
-}
-.sts__stat-label {
-  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .16em;
-}
-.sts__stat-value {
-  color: var(--nu-ink); font-size: clamp(30px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -.035em; font-variant-numeric: tabular-nums; line-height: 1;
-}
-.sts__stat-value--up { color: var(--nu-green-text); }
-.sts__stat-value--down { color: var(--nu-red-text); }
-
-.sts__toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: clamp(8px, 1.4vw, 16px); }
+.sts__toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .sts__toolbar-meta { display: flex; flex-direction: column; gap: 8px; }
 .sts__toolbar-count {
   margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800;
@@ -323,7 +369,11 @@ usePageSeo({
 .sts__card-link:hover .sts__card-link-title { color: var(--nu-blue-text); }
 .sts__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
 
+.sts__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.sts__card-link-ir svg { transition: transform .2s ease; }
+.sts__card-link:hover .sts__card-link-ir svg { transform: translateX(3px); }
+
 /* ——— a pílula da IA no FAQ ——— */
 .sts__pill { margin-top: 28px; }
-@media (prefers-reduced-motion: reduce) { .sts__card-link { transition: none; } .sts__card-link:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .sts__card-link, .sts__card-link-ir svg { transition: none; } .sts__card-link:hover, .sts__card-link:hover .sts__card-link-ir svg { transform: none; } }
 </style>

@@ -5,6 +5,8 @@
 // do dia que o índice tem; sem número, o lado direito some.
 // A linha marcada (teclado ou mouse) ganha o fundo creme: é o mesmo estado
 // para os dois, então nunca há duas linhas acesas.
+// 2ª rodada da Aportou (11/11/2026): o ticker do ativo vai na etiqueta carvão
+// (como nas tabelas de mercado) e a variação do dia no selo de raio 8.
 // `data-sem-espiar` (03/11/2026): a busca é o "ir até o ativo", e o Enter já
 // navega direto (busca.vue); o clique faz o mesmo, sem a janelinha de espiar.
 import type { BuscaItem } from '~/composables/useBuscaIndex'
@@ -53,7 +55,8 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
     </span>
 
     <span class="bl__id">
-      <span class="bl__titulo" :class="{ 'bl__titulo--quebra': props.item.tipo !== 'ativo' }">{{ props.item.titulo }}</span>
+      <span v-if="props.item.tipo === 'ativo' && props.item.ticker" class="bl__titulo bl__titulo--tk"><span class="bl__tk">{{ props.item.titulo }}</span></span>
+      <span v-else class="bl__titulo" :class="{ 'bl__titulo--quebra': props.item.tipo !== 'ativo' }">{{ props.item.titulo }}</span>
       <span v-if="props.item.sub" class="bl__sub">{{ props.item.sub }}</span>
     </span>
 
@@ -70,7 +73,7 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
 <style scoped>
 .bl {
   display: flex; align-items: center; gap: 14px;
-  min-height: 64px; padding: 10px 12px; margin: 0 -12px;
+  min-height: 68px; padding: 10px 12px; margin: 0 -12px;
   border-radius: 14px; color: var(--nu-ink);
   transition: background .15s;
 }
@@ -90,20 +93,36 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
   display: block; font-size: var(--nu-fs-md); font-weight: 800; line-height: 1.3;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+/* o ticker na etiqueta carvão */
+.bl__titulo--tk { display: flex; overflow: visible; }
+.bl__tk {
+  display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: var(--nu-r-tag);
+  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: 800; letter-spacing: .04em; line-height: 1;
+}
 /* título de Tesouro, tese e guia é frase: quebra em até duas linhas em vez de
    cortar o vencimento ("Tesouro IPCA+ com Juros Semestrais 2035") */
 .bl__titulo--quebra {
   white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
 }
 .bl__sub {
-  display: block; margin-top: 2px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500;
+  display: block; margin-top: 4px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-.bl__num { flex: none; display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+.bl__num { flex: none; display: flex; align-items: center; gap: 10px; text-align: right; }
 .bl__valor { font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bl__valor--leve { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; }
-.bl__pct { margin-top: 2px; font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.bl__pct--up { color: var(--nu-green-text); }
-.bl__pct--down { color: var(--nu-red-text); }
+/* a variação do dia no selo de raio 8 */
+.bl__pct {
+  display: inline-flex; align-items: center; justify-content: flex-end; min-width: 68px; min-height: 28px; padding: 0 9px; border-radius: var(--nu-r-tag);
+  font-size: 14.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.bl__pct--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.bl__pct--down { background: var(--nu-red-bg); color: var(--nu-red-text); }
+@media (max-width: 480px) {
+  .bl { gap: 12px; }
+  .bl__num { flex-direction: column; align-items: flex-end; gap: 4px; }
+  .bl__pct { min-width: 0; min-height: 24px; padding: 0 7px; font-size: 13.5px; }
+}
+@media (prefers-reduced-motion: reduce) { .bl { transition: none; } }
 </style>

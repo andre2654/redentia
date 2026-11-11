@@ -190,10 +190,12 @@ if (data.value) {
         <NuxtLink :to="`/dividendos/${ticker}`" class="qr-page__link">
           <h3>Dividendos de {{ ticker }}</h3>
           <p>Histórico, datas e o dividend yield na página de proventos.</p>
+          <span class="qr-page__link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
         <NuxtLink :to="`/asset/${ticker}`" class="qr-page__link">
           <h3>Página de {{ ticker }}</h3>
           <p>Cotação, fundamentos e o histórico de proventos no ativo.</p>
+          <span class="qr-page__link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
       </div>
     </CalcBand>
@@ -234,4 +236,8 @@ if (data.value) {
 .qr-page__link p {
   margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5;
 }
+.qr-page__link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.qr-page__link-ir svg { transition: transform .2s ease; }
+.qr-page__link:hover .qr-page__link-ir svg { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) { .qr-page__link-ir svg { transition: none; } .qr-page__link:hover .qr-page__link-ir svg { transform: none; } }
 </style>

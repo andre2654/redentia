@@ -3,7 +3,8 @@
 // petr4", top orgânico da Redentia antiga). A estrutura vem da página antiga
 // (Frontend/app/pages/dividendos/[ticker].vue): hero com DY + resposta
 // direta, histórico, seções educacionais e FAQ. O visual é 100% linguagem Nu
-// (NuPageHero, bandas Calc, NuDividendBars, NuFaqAccordion, NuCtaBanner) e o
+// (topo em duas colunas com os números no cartão carvão, bandas Calc,
+// NuDividendBars, NuFaqAccordion, NuCtaBanner) e o
 // conteúdo é 100% dinâmico dos dados reais (a antiga era um map estático de
 // 12 tickers; esta cobre qualquer ticker com proventos na base).
 //
@@ -121,16 +122,23 @@ if (data.value) {
 
 <template>
   <div v-if="data">
-    <!-- ============ Hero: nome + DY 12M + preço + próximo pagamento ============ -->
-    <NuPageHero :eyebrow="div.hero.companyLine" :subtitle="div.hero.sub">
-      <template #title>Dividendos de {{ ticker }}.</template>
-      <p v-if="renamedFrom" class="dvt__renamed">{{ renamedFrom }} agora negocia como {{ ticker }}.</p>
-      <DividendosStats v-if="div.hero.stats.length" :items="div.hero.stats" />
-      <!-- Seguir: estrela + retorno curto (client-only; SSR sempre "Seguir") -->
-      <div class="dvt__follow">
-        <SeguirAtivo :ticker="ticker" :path="`/dividendos/${ticker}`" />
+    <!-- ============ Topo em duas colunas: o papel e a resposta direta à esquerda;
+         DY 12M, proventos, cotação e próximo pagamento no cartão carvão à direita ============ -->
+    <section class="dvt__topo" :class="{ 'dvt__topo--so': !div.hero.stats.length }">
+      <div class="dvt__topo-grade">
+        <div class="dvt__topo-texto">
+          <NuEyebrow como="p">{{ div.hero.companyLine }}</NuEyebrow>
+          <h1 class="dvt__h1">Dividendos de {{ ticker }}.</h1>
+          <p class="dvt__lead">{{ div.hero.sub }}</p>
+          <p v-if="renamedFrom" class="dvt__renamed">{{ renamedFrom }} agora negocia como {{ ticker }}.</p>
+          <!-- Seguir: estrela + retorno curto (client-only; SSR sempre "Seguir") -->
+          <div class="dvt__follow">
+            <SeguirAtivo :ticker="ticker" :path="`/dividendos/${ticker}`" />
+          </div>
+        </div>
+        <DividendosStats v-if="div.hero.stats.length" :items="div.hero.stats" />
       </div>
-    </NuPageHero>
+    </section>
 
     <!-- ============ Resumo 12M: stats + barras anuais (NuDividendBars) ============ -->
     <DividendosResumo
@@ -220,18 +228,22 @@ if (data.value) {
         <NuxtLink v-if="div.quantoRendeHref" :to="div.quantoRendeHref" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
           <h3 class="dvt__card-link-title">Quanto rende um valor em {{ ticker }}</h3>
           <p class="dvt__card-p">Os proventos dos últimos 12 meses aplicados a um valor, no preço de hoje</p>
+          <span class="dvt__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
         <NuxtLink v-if="div.simuladorHref" :to="div.simuladorHref" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
           <h3 class="dvt__card-link-title">Simulador de dividendos</h3>
           <p class="dvt__card-p">Quanto {{ ticker }} teria rendido com os {{ div.isFii ? 'rendimentos' : 'proventos' }} reinvestidos, no histórico real da B3</p>
+          <span class="dvt__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
         <NuxtLink :to="`/calculadora/dividend-yield?ticker=${ticker}`" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
           <h3 class="dvt__card-link-title">Calculadora de dividend yield</h3>
           <p class="dvt__card-p">Simule o DY de {{ ticker }} com preço e proventos reais, já preenchidos</p>
+          <span class="dvt__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
         <NuxtLink to="/ranking/maiores-dividend-yield" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
           <h3 class="dvt__card-link-title">Maiores dividend yields da B3</h3>
           <p class="dvt__card-p">Ranking diário das ações e FIIs que mais pagam proventos</p>
+          <span class="dvt__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
       </div>
       <div class="dvt__cta">
@@ -246,6 +258,20 @@ if (data.value) {
 </template>
 
 <style scoped>
+/* ——— o topo em duas colunas (2ª rodada da Aportou): como o topo do /asset ——— */
+.dvt__topo {
+  background: var(--nu-page); color: var(--nu-ink);
+  padding: clamp(36px, 4.6vw, 68px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 4.6vw, 64px);
+}
+.dvt__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(28px, 3.4vw, 40px); }
+.dvt__topo-texto { min-width: 0; animation: nu-fade .5s ease both; }
+.dvt__h1 { margin: 20px 0 0; font-size: clamp(40px, 4.8vw, 68px); font-weight: 800; letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
+.dvt__lead { margin: 20px 0 0; max-width: 46ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
+@media (min-width: 1080px) {
+  .dvt__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(36px, 4.4vw, 72px); align-items: center; }
+  .dvt__topo--so .dvt__topo-grade { grid-template-columns: minmax(0, 1fr); }
+}
+
 .dvt__band-body { margin-top: clamp(30px, 4vw, 48px); }
 
 .dvt__next { max-width: 1080px; margin: clamp(28px, 4vw, 40px) auto 0; }
@@ -283,11 +309,11 @@ if (data.value) {
 /* hero: faixa do código trocado + fileira do "Seguir" (a linha de retorno do
    SeguirAtivo quebra pra baixo do botão via flex-basis 100%) */
 .dvt__renamed {
-  display: flex; width: fit-content; max-width: 100%; margin: 0 0 18px; padding: 7px 14px;
+  display: flex; width: fit-content; max-width: 100%; margin: 20px 0 0; padding: 7px 14px;
   border-radius: var(--nu-r-tag); background: var(--nu-cream-2); color: var(--nu-gray-3);
   font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums;
 }
-.dvt__follow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 22px; }
+.dvt__follow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 26px; }
 
 /* aviso honesto no lugar da tabela (histórico vazio ou indisponível) */
 .dvt__notice {
@@ -331,6 +357,9 @@ if (data.value) {
 .dvt__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; transition: color .2s ease; }
 .dvt__card-link:hover .dvt__card-link-title { color: var(--nu-blue-text); }
 .dvt__card-p { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
+.dvt__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.dvt__card-link-ir svg { transition: transform .2s ease; }
+.dvt__card-link:hover .dvt__card-link-ir svg { transform: translateX(3px); }
 
 .dvt__cta { max-width: 1080px; margin: clamp(24px, 3vw, 36px) auto 0; }
 
@@ -338,7 +367,8 @@ if (data.value) {
   .dvt__card-link { padding: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .dvt__card-link { transition: none; }
-  .dvt__card-link:hover { transform: none; }
+  .dvt__card-link, .dvt__card-link-ir svg { transition: none; }
+  .dvt__card-link:hover, .dvt__card-link:hover .dvt__card-link-ir svg { transform: none; }
+  .dvt__topo-texto { animation: none; }
 }
 </style>
