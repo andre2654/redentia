@@ -34,7 +34,8 @@ const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
   padding: clamp(36px, 6vw, 88px) clamp(24px, 5vw, 64px);
   border-radius: var(--nu-r-secao); background: var(--nu-grad-cobalto); color: var(--nu-white);
 }
-.hfe__corte { position: absolute; z-index: -1; right: -110px; bottom: -70px; opacity: .08; pointer-events: none; }
+/* posição e tamanho são da classe global .nu-corte-fundo (sempre no canto de cima à esquerda) */
+.hfe__corte { z-index: -1; opacity: .08; }
 .hfe__titulo { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
 .hfe__dek { margin: 20px 0 0; max-width: 46ch; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
 .hfe__chamada { margin-top: clamp(26px, 3vw, 36px); }
@@ -45,6 +46,5 @@ const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
 @media (max-width: 760px) {
   .hfe { padding-inline: 20px; }
   .hfe__painel { border-radius: var(--nu-r-card); }
-  .hfe__corte { right: -260px; }
 }
 </style>

@@ -12,6 +12,12 @@
 // Degrada até o Backend enriquecer o GET /watchlist: item sem nome/cotação
 // mostra o ticker e busca o resto no perfil público (useWatchlist.enrich);
 // campo que não veio some, nunca vira zero.
+//
+// Aportou, segunda rodada (11/11/2026): a faixa é a faixa quente da marca
+// (--nu-band), no contêiner de 1.240 px das outras seções da home (era o recuo
+// próprio de 80 px), com os cartões brancos por cima (raio 22, a sombra de
+// cartão branco em painel). Assim ela separa o topo creme de quem tem conta do
+// que vem abaixo, sem faixa branca de ponta a ponta.
 import type { WatchlistEntry } from '~/types/watchlist'
 
 const wl = useWatchlist()
@@ -115,17 +121,19 @@ async function deixar(t: string) {
     </template>
 
     <div class="sgf__gancho" :class="{ 'sgf__gancho--solo': !cards.length }">
-      <SeguirGancho surface="white" @visivel="ganchoVisivel = $event" />
+      <!-- sobre a faixa quente o cartão do gancho é o branco (surface "cream" = pousa num painel creme) -->
+      <SeguirGancho surface="cream" @visivel="ganchoVisivel = $event" />
     </div>
   </section>
 </template>
 
 <style scoped>
 .sgf {
-  background: var(--nu-page);
-  padding: clamp(56px, 7vw, 96px) clamp(20px, 5.5vw, 80px);
+  background: var(--nu-band);
+  padding: clamp(56px, 6vw, 88px) max(32px, calc((100% - 1176px) / 2));
   animation: nu-fade .5s ease both;
 }
+@media (max-width: 760px) { .sgf { padding-inline: 20px; } }
 /* só o gancho (ninguém seguido ainda): banda mais baixa, o card é o conteúdo */
 .sgf--so-gancho { padding-top: clamp(36px, 4.5vw, 56px); padding-bottom: clamp(36px, 4.5vw, 56px); }
 
@@ -136,7 +144,7 @@ async function deixar(t: string) {
 }
 .sgf__card {
   position: relative; flex: 0 0 auto; width: min(236px, 72vw);
-  background: var(--nu-card); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-quente);
+  background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-quente);
   scroll-snap-align: start; transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
   animation: nu-fade .5s ease backwards;
 }
@@ -181,4 +189,6 @@ async function deixar(t: string) {
 
 .sgf__gancho { margin-top: clamp(24px, 3vw, 36px); }
 .sgf__gancho:empty, .sgf__gancho--solo { margin-top: 0; }
+/* a margem de cima do gancho é a desta faixa (a do /asset é dele) */
+.sgf__gancho :deep(.sgg) { margin-top: 0; }
 </style>

@@ -49,15 +49,16 @@ const BANCOS = [
 <template>
   <div class="hch" :class="[`hch--${tom}`, `hch--${porte}`, { 'hch--centro': centro }]">
     <NuBotaoSeta to="/assinar?quiz=1&de=home" :variante="tom === 'escuro' ? 'creme' : 'azul'" :tamanho="porte === 'calmo' ? 'm' : 'g'" class="hch__botao">
-      <span class="hch__dentro">
+      <!-- os logos entram pelo slot `antes` do NuBotaoSeta: ficam dentro da pílula, antes do rótulo -->
+      <template #antes>
         <span class="hch__bancos" aria-hidden="true">
           <img
             v-for="(b, i) in BANCOS" :key="b.nome" :src="b.logo" alt="" width="36" height="36"
             class="hch__banco" :class="{ 'hch__banco--extra': i >= 3 }" :style="{ zIndex: BANCOS.length - i }"
           >
         </span>
-        <span class="hch__rotulo">{{ rotulo }}</span>
-      </span>
+      </template>
+      {{ rotulo }}
     </NuBotaoSeta>
 
     <p class="hch__letra">
@@ -81,12 +82,14 @@ const BANCOS = [
 .hch { display: flex; flex-direction: column; align-items: flex-start; }
 .hch--centro { align-items: center; text-align: center; }
 
-/* o botão: a pílula da marca (NuBotaoSeta), com os bancos empilhados à
-   esquerda do rótulo e a seta no círculo à direita */
-.hch .hch__botao { max-width: 100%; padding-left: 10px; gap: 18px; box-shadow: var(--nu-home-sombra-botao); }
+/* o botão: a pílula da marca (NuBotaoSeta), com os bancos empilhados antes do
+   rótulo (o slot `antes`) e a seta no círculo à direita. Com os logos, o recuo
+   da esquerda é o do círculo da direita, para a pílula ficar simétrica */
+.hch .hch__botao { max-width: 100%; padding-left: 10px; gap: 14px; box-shadow: var(--nu-home-sombra-botao); }
+/* o rótulo encosta nos logos; a folga vai toda para antes do círculo */
+.hch .hch__botao :deep(.nbs__txt) { margin-right: auto; padding-right: 4px; }
 .hch--escuro .hch__botao { box-shadow: var(--nu-home-sombra-botao-escuro); }
 .hch--escuro .hch__botao:focus-visible { outline-color: var(--nu-white); }
-.hch__dentro { display: inline-flex; align-items: center; gap: 14px; min-width: 0; }
 .hch__bancos { display: inline-flex; flex: none; }
 .hch__banco {
   position: relative; width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
@@ -94,7 +97,6 @@ const BANCOS = [
   box-shadow: 0 0 0 2.5px var(--nbs-bg, var(--nu-blue)); background: var(--nu-white);
 }
 .hch__banco + .hch__banco { margin-left: -10px; }
-.hch__rotulo { white-space: nowrap; }
 
 /* a letra miúda: de onde vem a carteira (sem preço desde 01/11/2026) */
 .hch__letra {
@@ -113,8 +115,7 @@ const BANCOS = [
 .hch--escuro .hch__letra strong, .hch--escuro .hch__glifos { color: var(--nu-white); }
 
 /* porte calmo (o herói do visitante): a pílula de 52 px, os bancos de 30 px */
-.hch--calmo .hch__botao { padding-left: 8px; gap: 14px; }
-.hch--calmo .hch__dentro { gap: 12px; }
+.hch--calmo .hch__botao { padding-left: 8px; gap: 12px; }
 .hch--calmo .hch__banco { width: 30px; height: 30px; box-shadow: 0 0 0 2px var(--nbs-bg, var(--nu-blue)); }
 .hch--calmo .hch__banco + .hch__banco { margin-left: -8px; }
 .hch--calmo .hch__letra { margin-top: 16px; }

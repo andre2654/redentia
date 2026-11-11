@@ -30,7 +30,7 @@ const NAO_E = [
   <section ref="secao" class="hne" :class="revealClass" aria-labelledby="hne-titulo">
     <MarcaCorte class="hne__corte nu-corte-fundo" :largura="760" cor="var(--nu-ink)" />
     <div class="hne__texto">
-      <p class="nu-eyebrow hne__eyebrow"><MarcaCorte cor="var(--nu-ink)" /><span>Sem letra miúda</span></p>
+      <NuEyebrow como="p" sobre="salvia" class="hne__eyebrow">Sem letra miúda</NuEyebrow>
       <h2 id="hne-titulo" class="hne__titulo">O que a Aportou não é.</h2>
       <ul class="hne__lista">
         <li v-for="x in NAO_E" :key="x.t" class="hne__item">
@@ -65,7 +65,8 @@ const NAO_E = [
   background: var(--nu-sage); color: var(--nu-ink);
 }
 /* o corte do "t", gigante e quase apagado, no canto de cima */
-.hne__corte { position: absolute; z-index: -1; right: -280px; top: -150px; opacity: .07; pointer-events: none; }
+/* posição e tamanho são da classe global .nu-corte-fundo (sempre no canto de cima à esquerda) */
+.hne__corte { z-index: -1; opacity: .07; }
 .hne__texto { flex: 1.2 1 460px; min-width: 0; }
 .hne__eyebrow { color: var(--nu-ink); }
 .hne__titulo { margin: 18px 0 0; font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }

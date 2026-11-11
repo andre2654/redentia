@@ -28,6 +28,25 @@
 // chat); o estado ao lado do nome é um selo de raio 8; "Abrir minha carteira"
 // é a pílula com a seta no círculo e a segunda ação, um link em negrito; os
 // três números vão em 800 sobre fios de 1,5 px. Dados, frases e estados: iguais.
+//
+// Segunda rodada (11/11/2026, o dono: "dê uma atenção especial à tela inicial e
+// à carteira"): a home de quem tem conta passa a falar a mesma língua do topo da
+// /carteira (CarteiraHeroi).
+//  - o ritmo: saiu a altura mínima de tela cheia, que abria um vazio entre a
+//    saudação e a frase e outro antes dos números; em 1440×900 a primeira dobra
+//    mostra a saudação, a frase, os botões, o gráfico e o começo dos fatos;
+//  - o gráfico de 12 meses mora no cartão carvão com a faixa da marca
+//    (NuFaixaMarca, "VOCÊ EM 12 MESES"), como no /asset e na /carteira: o número
+//    de quem lê em verde claro (ou vermelho claro), o CDI ao lado, a linha de
+//    luz do AtivoGrafico (tom "luz") e a tracejada do CDI. Mesma série, mesma
+//    conta, mesma legenda;
+//  - os três fatos viram cartões creme (raio 28, sombra quente, número em 800,
+//    a seta que anda); o do dia fica âmbar quando o dia tem alerta (um papel que
+//    caiu 5% ou mais: `dia.alerta`, o único aviso que o resumo da home traz).
+// O selo ao lado do nome ("Tudo normal" / "Pede atenção") continua saindo do
+// resumo do dia. O selo da /carteira soma a isso o aviso urgente do motor de
+// avisos (GET /me/carteira/visao: conexão parada, por exemplo), que a home não
+// carrega; por isso os dois podem divergir. Não é regra desta tela mudar isso.
 import type { CarteiraResumoVM } from '~/types/carteira'
 import { frasesDoDia } from '~/utils/diaDaCarteira'
 import { estadoDoPregao } from '~/utils/pregao'
@@ -106,7 +125,7 @@ const ESCONDIDO = 'R$ ••••••'
 const fatos = computed(() => {
   const r = props.resumo
   if (!r || r.state !== 'patrimonio') return []
-  const lista: { k: string; rotulo: string; valor: string; to: string; tom?: 'up' | 'down' }[] = []
+  const lista: { k: string; rotulo: string; valor: string; to: string; tom?: 'up' | 'down'; atencao?: boolean }[] = []
   if (r.patrimonio) lista.push({ k: 'patrimonio', rotulo: 'Quanto eu tenho?', valor: visiveis.value ? r.patrimonio : ESCONDIDO, to: '/carteira' })
   const v = dia.value?.diaValor
   if (v != null && frases.value) {
@@ -114,6 +133,8 @@ const fatos = computed(() => {
       k: 'dia', rotulo: frases.value.diaRotulo, to: '/carteira',
       valor: visiveis.value ? `${v > 0 ? '+' : v < 0 ? '−' : ''}R$ ${nf2.format(Math.abs(v))}` : ESCONDIDO,
       tom: visiveis.value && Math.abs(v) >= 0.005 ? (v < 0 ? 'down' : 'up') : undefined,
+      // o dia com alerta (um papel que caiu 5% ou mais) é o cartão de atenção
+      atencao: !!dia.value?.alerta,
     })
   }
   if (r.proventos12m) lista.push({ k: 'proventos', rotulo: 'Proventos em 12 meses', valor: visiveis.value ? r.proventos12m : ESCONDIDO, to: '/carteira#renda' })
@@ -140,6 +161,8 @@ const twr = computed(() => variacaoDoIndice(linhaDiaria.value))
 const bem = computed(() => (series.value ? contraOCdi(series.value, desde.value, 'em 12 meses') : null))
 const graficoCarregando = computed(() => rel.estado.value === 'fechado' || rel.estado.value === 'carregando')
 const pct = (n: number) => `${n > 0 ? '+' : n < 0 ? '−' : ''}${nf2.format(Math.abs(n))}%`
+/** a direção do número grande do cartão: verde claro se rendeu, vermelho claro se perdeu */
+const twrDir = computed(() => (twr.value == null || Math.abs(twr.value) < 0.005 ? null : twr.value < 0 ? 'down' : 'up'))
 const contextoGrafico = computed(() => (bem.value ? {
   id: 'home:grafico', tipo: 'grafico', rotulo: 'Sua carteira em 12 meses',
   texto: `${bem.value.frase} ${bem.value.detalhe}`.trim(),
@@ -168,7 +191,7 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
       </button>
     </header>
 
-    <!-- com carteira: a frase do dia, o losango e a fileira -->
+    <!-- com carteira: a frase do dia, o cartão do gráfico e os três fatos -->
     <template v-if="comCarteira">
       <div class="haf__corpo">
         <div v-contexto-chat="podeVerNumeros && frases ? { id: 'home:dia', tipo: 'carteira', rotulo: 'Seu dia', texto: [frases.sobrelinha, fraseDoDia, apoioDoDia].filter(Boolean).join('\n') } : null" class="haf__texto">
@@ -194,43 +217,46 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
             <NuxtLink v-else-if="podeVerNumeros" to="/carteira#futuro" class="haf__segunda">Ver a carteira em 5 anos</NuxtLink>
           </div>
         </div>
-        <!-- o desenho: a carteira contra o CDI em 12 meses, suave (sem eixos nem mira) -->
+        <!-- o desenho: a carteira contra o CDI em 12 meses, no cartão carvão com a faixa da marca (como no /asset e na /carteira) -->
         <NuxtLink v-if="linha.length >= 2" v-contexto-chat="contextoGrafico" to="/carteira" class="haf__graf" aria-label="Ver a rentabilidade na carteira">
-          <span class="haf__graf-leg">
-            <span class="haf__graf-t">Sua carteira em 12 meses</span>
-            <span class="haf__graf-v">
-              <span><i class="haf__traco" aria-hidden="true" />Você <b>{{ twr != null ? pct(twr) : '' }}</b></span>
-              <span v-if="bem"><i class="haf__traco haf__traco--cdi" aria-hidden="true" />CDI <b>{{ pct(bem.cdi) }}</b></span>
+          <NuFaixaMarca rotulo="Você em 12 meses" como="span" :altura="52" class="haf__cartao">
+            <span class="haf__legenda">
+              <span class="haf__leg haf__leg--1">
+                <b :class="twrDir && `haf__leg--${twrDir}`">{{ twr != null ? pct(twr) : '' }}</b>
+                <span class="haf__leg-r"><i class="haf__traco" aria-hidden="true" />Você</span>
+              </span>
+              <span v-if="bem" class="haf__leg">
+                <b>{{ pct(bem.cdi) }}</b>
+                <span class="haf__leg-r"><i class="haf__traco haf__traco--cdi" aria-hidden="true" />CDI</span>
+              </span>
             </span>
-          </span>
-          <span class="haf__graf-area">
-            <AtivoGrafico
-              :ativo="linha" :ibov="linhaCdi" ticker="Você" rotulo-hoje="Você em 12 meses" :atual="twr != null ? pct(twr) : ''"
-              unidade="%" comparacao="CDI" tom="claro" sem-marcas rotulo="A rentabilidade da carteira contra o CDI em 12 meses" :rotulo-abaixo-ate="45"
-            />
-          </span>
+            <span class="haf__graf-area">
+              <AtivoGrafico
+                :ativo="linha" :ibov="linhaCdi" ticker="Você" rotulo-hoje="Você em 12 meses" :atual="twr != null ? pct(twr) : ''"
+                unidade="%" comparacao="CDI" tom="luz" sem-marcas rotulo="A rentabilidade da carteira contra o CDI em 12 meses" :rotulo-abaixo-ate="45"
+              />
+            </span>
+          </NuFaixaMarca>
         </NuxtLink>
-        <div v-else-if="!podeVerNumeros || graficoCarregando" class="haf__graf haf__graf--esq" aria-hidden="true">
-          <NuSkeleton width="180px" height="14px" radius="chip" />
-          <NuSkeleton height="clamp(180px, 20vw, 260px)" radius="card" class="haf__esq" />
-        </div>
+        <NuSkeleton v-else-if="!podeVerNumeros || graficoCarregando" height="clamp(290px, 27vw, 360px)" radius="card" class="haf__graf haf__graf--esq" aria-hidden="true" />
       </div>
 
       <dl v-if="podeVerNumeros" class="haf__fatos">
-        <div v-for="f in fatos" :key="f.k" class="haf__fato">
+        <div v-for="f in fatos" :key="f.k" class="haf__fato" :class="{ 'haf__fato--atencao': f.atencao }">
           <dt>{{ f.rotulo }}</dt>
           <dd>
+            <!-- o link cobre o cartão inteiro (o ::after) -->
             <NuxtLink v-contexto-chat="{ id: `home:fato:${f.k}`, tipo: 'carteira', rotulo: f.rotulo, texto: `${f.rotulo}: ${f.valor}` }" :to="f.to" class="haf__link" :class="f.tom && `haf__link--${f.tom}`">
               {{ f.valor }}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
             </NuxtLink>
           </dd>
         </div>
       </dl>
       <div v-else class="haf__fatos" aria-hidden="true">
         <div v-for="i in 3" :key="i" class="haf__fato">
-          <NuSkeleton width="96px" height="14px" radius="chip" />
-          <NuSkeleton width="160px" height="26px" radius="chip" class="haf__esq--fato" />
+          <NuSkeleton width="120px" height="15px" radius="chip" />
+          <NuSkeleton width="170px" height="30px" radius="chip" class="haf__esq--fato" />
         </div>
       </div>
     </template>
@@ -274,47 +300,47 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
 
 <style scoped>
 /* A mesma moldura do topo da /carteira (CarteiraHeroi), na marca nova: o creme
-   da página, a tinta em três forças, o fio de 1,5 px e o cobalto só no
-   destaque. A primeira tela inteira segue sendo deste topo (a faixa "Seus
-   ativos" chega pelo cliente e nasce abaixo da dobra: sem salto de layout),
-   com o conteúdo distribuído na altura. */
+   da página, a tinta em três forças e o cobalto só no destaque. O ritmo é o do
+   contrato (a saudação, 28 a 36 px, a frase e o cartão, 28 a 36 px, os fatos):
+   nada de altura mínima de tela cheia, que abria vazios entre os blocos. */
 .haf {
   --g: max(32px, calc((100% - 1176px) / 2));
-  --tinta: var(--nu-ink); --sub: var(--nu-gray); --fio: var(--nu-line);
-  display: flex; flex-direction: column; min-height: max(560px, calc(100svh - 128px)); box-sizing: border-box;
-  padding: clamp(24px, 3vw, 40px) var(--g) clamp(28px, 3.4vw, 44px); background: var(--nu-page); color: var(--tinta); font-variant-numeric: tabular-nums;
+  --tinta: var(--nu-ink); --sub: var(--nu-gray);
+  padding: clamp(22px, 2.6vw, 36px) var(--g) clamp(32px, 3.6vw, 48px); background: var(--nu-page); color: var(--tinta); font-variant-numeric: tabular-nums;
 }
 .haf__cab { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; }
 .haf__id { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; min-width: 0; }
 .haf__ola { margin: 0; font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
 /* o estado do dia: selo de raio 8 (verde no dia comum, âmbar quando pede atenção) */
-.haf__selo { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: 700; line-height: 1.4; }
+.haf__selo { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-sm); font-weight: 700; }
 .haf__selo i { width: 8px; height: 8px; border-radius: 50%; }
 .haf__selo--verde { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .haf__selo--verde i { background: var(--nu-green); }
 .haf__selo--ambar { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .haf__selo--ambar i { background: var(--nu-amber); }
 .haf__quando { color: var(--sub); font-size: 14.5px; font-weight: 600; }
+/* o olho: o botão de ícone do contrato (círculo de 44 px, contorno carvão), o mesmo da /carteira */
 .haf__olho {
   display: inline-grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 50%;
-  background: var(--nu-white); color: var(--tinta); box-shadow: var(--nu-shadow-quente); cursor: pointer;
+  background: var(--nu-white); color: var(--tinta); box-shadow: inset 0 0 0 1.5px var(--nu-ink); cursor: pointer;
   transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.haf__olho:hover { background: var(--nu-cream-2); }
+.haf__olho:hover { background: var(--nu-row-hover); }
 .haf__olho:active { transform: scale(.96); }
 
-.haf__corpo { flex: 1; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); align-items: center; gap: 28px clamp(28px, 5vw, 72px); padding: clamp(24px, 4vw, 52px) 0; }
-.haf__corpo--so { grid-template-columns: minmax(0, 1fr); }
+/* a frase à esquerda e o cartão do gráfico à direita, alinhados pelo meio */
+.haf__corpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr); align-items: center; gap: 28px clamp(28px, 4vw, 56px); margin-top: clamp(24px, 2.8vw, 36px); }
+.haf__corpo--so { grid-template-columns: minmax(0, 1fr); padding: clamp(16px, 3vw, 40px) 0 0; }
 .haf__texto { min-width: 0; }
 .haf__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .haf__eyebrow { margin-bottom: 18px; }
 /* a frase do dia: 800, com o número em cobalto */
 .haf__frase { margin: 0; max-width: 17ch; font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
 .haf__frase :deep(b), .haf__frase b { color: var(--nu-blue); font-weight: 800; }
-.haf__dek { margin: 20px 0 0; max-width: 52ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
+.haf__dek { margin: 18px 0 0; max-width: 46ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
 .haf__esq { margin-top: 12px; }
 .haf__esq--dek { margin-top: 22px; max-width: 520px; }
-.haf__acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 26px; margin-top: clamp(24px, 3vw, 36px); }
+.haf__acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 26px; margin-top: clamp(22px, 2.6vw, 30px); }
 /* a segunda ação: link em negrito sublinhado, com 44 px de toque */
 .haf__segunda {
   display: inline-flex; align-items: center; min-height: 44px; color: var(--tinta); font-size: 16.5px; font-weight: 700;
@@ -322,42 +348,61 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
 }
 .haf__segunda:hover { color: var(--nu-blue-text); }
 .haf__chamada { margin-top: clamp(24px, 3vw, 36px); }
-/* o gráfico suave: sem cartão, só a linha sobre o creme, com a legenda em cima */
-.haf__graf { display: flex; flex-direction: column; gap: 14px; justify-self: end; width: min(100%, 600px); color: inherit; text-decoration: none; }
-.haf__graf-leg { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 6px 18px; }
-.haf__graf-t { color: var(--sub); font-size: 14.5px; font-weight: 600; }
-.haf__graf-v { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--sub); font-size: 14.5px; font-weight: 600; }
-.haf__graf-v span { display: inline-flex; align-items: center; gap: 8px; }
-.haf__graf-v b { color: var(--tinta); font-weight: 800; }
-.haf__traco { width: 16px; height: 3px; border-radius: 2px; background: var(--nu-blue); }
-.haf__traco--cdi { height: 0; background: none; border-top: 2px dashed var(--nu-gray); }
-.haf__graf-area { position: relative; display: block; height: clamp(190px, 21vw, 280px); --agr-esq: 0px; --agr-dir: 10px; }
-.haf__graf:focus-visible { outline-offset: 6px; border-radius: var(--nu-r-chip); }
 
-.haf__fatos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 clamp(20px, 3vw, 44px); margin: 0; }
-.haf__fato { padding: 18px 0 4px; border-top: 1.5px solid var(--fio); }
-.haf__fato dt { color: var(--sub); font-size: 14.5px; font-weight: 600; }
+/* o cartão carvão com a faixa da marca; ele inteiro leva à /carteira e sobe 2 px no hover */
+.haf__graf { display: block; min-width: 0; color: inherit; text-decoration: none; border-radius: var(--nu-r-card); transition: transform .25s cubic-bezier(.2, .8, .2, 1); animation: nu-fade .5s ease backwards; }
+a.haf__graf:hover { transform: translateY(-2px); }
+.haf__graf:focus-visible { outline-offset: 4px; }
+.haf__cartao { --pad: clamp(18px, 2vw, 28px); display: flex; flex-direction: column; padding-bottom: clamp(14px, 1.6vw, 20px); }
+.haf__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(16px, 1.8vw, 22px) var(--pad) 0; }
+.haf__leg { display: inline-flex; align-items: baseline; gap: 10px; }
+.haf__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: 800; letter-spacing: -0.03em; }
+.haf__leg--1 b { font-size: clamp(36px, 4vw, 52px); letter-spacing: -0.04em; line-height: 1; }
+.haf__leg b.haf__leg--up { color: var(--nu-green-soft); }
+.haf__leg b.haf__leg--down { color: var(--nu-red-soft); }
+.haf__leg-r { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 600; }
+.haf__traco { width: 14px; height: 2px; border-radius: 1px; background: var(--nu-blue-on-dark); }
+.haf__traco--cdi { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
+/* o gráfico vai de beira a beira do cartão; o ponto de hoje e o rótulo recuam
+   (as variáveis que o AtivoGrafico aceita, as mesmas do /asset) */
+.haf__graf-area {
+  position: relative; display: block; height: clamp(170px, 15vw, 210px); margin-top: 12px;
+  --agr-esq: var(--pad); --agr-dir: max(var(--pad), 44px); --agr-rotulo-esq: var(--pad);
+  --agr-hoje-bg: var(--nu-creme); --agr-hoje-fg: var(--nu-ink); --agr-hoje-sub: var(--nu-gray);
+}
+
+/* os três fatos: cartões creme do contrato; o de atenção, em âmbar */
+.haf__fatos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: clamp(12px, 1.4vw, 16px); margin: clamp(26px, 3vw, 36px) 0 0; }
+.haf__fato {
+  position: relative; display: flex; flex-direction: column; justify-content: center; padding: clamp(18px, 2vw, 24px) clamp(20px, 2.2vw, 26px);
+  border-radius: var(--nu-r-card); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  animation: nu-fade .5s ease .06s backwards;
+}
+.haf__fato:nth-child(2) { animation-delay: .12s; }
+.haf__fato:nth-child(3) { animation-delay: .18s; }
+dl.haf__fatos .haf__fato:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.haf__fato--atencao { background: var(--nu-amber-bg); }
+.haf__fato--atencao dt { color: var(--nu-amber-text); }
+.haf__fato dt { color: var(--sub); font-size: 15px; font-weight: 600; }
 .haf__fato dd { margin: 6px 0 0; }
-.haf__esq--fato { margin-top: 8px; }
-.haf__link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--tinta); font-size: clamp(24px, 2.2vw, 28px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; text-decoration: none; }
+.haf__esq--fato { margin-top: 10px; }
+.haf__link { display: inline-flex; align-items: center; gap: 6px; color: var(--tinta); font-size: clamp(26px, 2.5vw, 34px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-decoration: none; }
+/* o alvo do clique é o cartão inteiro */
+.haf__link::after { content: ''; position: absolute; inset: 0; border-radius: var(--nu-r-card); }
 .haf__link--up { color: var(--nu-green-text); }
 .haf__link--down { color: var(--nu-red-text); }
-.haf__link svg { color: var(--nu-blue-text); transition: transform .2s; }
-.haf__link:hover svg { transform: translateX(3px); }
+.haf__link svg { flex: none; color: var(--nu-blue-text); transition: transform .2s; }
+.haf__fato--atencao .haf__link svg { color: var(--nu-amber-text); }
+.haf__fato:hover .haf__link svg { transform: translateX(3px); }
+.haf__link:focus-visible { outline: none; }
+.haf__link:focus-visible::after { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 /* sobre o creme, o esqueleto padrão quase some: um tom acima, com o mesmo brilho */
 .haf :deep(.nusk) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-page)); background-image: linear-gradient(100deg, var(--esq) 25%, var(--nu-white) 50%, var(--esq) 75%); }
 
-/* entrada da primeira tela: a frase fica parada (é o maior texto da dobra, o
-   LCP); o gráfico e os números, que chegam pelo cliente, sobem em cascata */
-.haf__graf { animation: nu-fade .5s ease backwards; }
-.haf__fato { animation: nu-fade .5s ease backwards; }
-.haf__fato:nth-child(1) { animation-delay: .12s; }
-.haf__fato:nth-child(2) { animation-delay: .18s; }
-.haf__fato:nth-child(3) { animation-delay: .24s; }
-
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .haf__corpo { grid-template-columns: minmax(0, 1fr); align-items: start; }
-  .haf__graf { justify-self: stretch; width: 100%; }
+  .haf__graf-area { height: clamp(180px, 34vw, 240px); }
 }
 @media (max-width: 760px) {
   .haf { --g: 20px; }
@@ -366,6 +411,6 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
   .haf__quando { flex-basis: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .haf__link svg, .haf__olho { transition: none; }
+  .haf__link svg, .haf__olho, .haf__graf, .haf__fato { transition: none; }
 }
 </style>

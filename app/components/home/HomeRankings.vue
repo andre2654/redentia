@@ -208,7 +208,8 @@ const selo = computed(() => {
 }
 .hrk__todos:hover { color: var(--nu-white); transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .hrk__todos:active { transform: scale(.99); }
-.hrk__todos-corte { position: absolute; z-index: -1; right: -70px; bottom: -40px; opacity: .08; pointer-events: none; }
+/* posição e tamanho são da classe global .nu-corte-fundo (sempre no canto de cima à esquerda) */
+.hrk__todos-corte { z-index: -1; opacity: .08; }
 .hrk__todos-num { font-size: clamp(46px, 5.2vw, 68px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; }
 .hrk__todos-txt { max-width: 28ch; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.4; }
 .hrk__ver--cheio, .hrk__todos:hover .hrk__ver--cheio { color: var(--nu-white); }
