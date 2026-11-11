@@ -106,33 +106,34 @@ const idDe = (nome: string) => `cps-${nome.toLowerCase().normalize('NFD').replac
 </template>
 
 <style scoped>
+/* a tela antiga (sem a visão) na Aportou: faixa quente no lugar do branco */
 .cps {
-  background: var(--nu-white);
+  background: var(--nu-band);
   padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px);
   scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
 }
 .cps__cols { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr); gap: clamp(28px, 5vw, 80px); align-items: start; }
 .cps__lado { position: sticky; top: calc(var(--nuh-h, 76px) + 76px); }
-.cps__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.035em; line-height: 1.05; }
+.cps__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; }
 .cps__total-linha { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
 .cps__total { color: var(--nu-ink); font-size: clamp(34px, 4.2vw, 54px); font-weight: 800; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cps__olho { width: 44px; height: 44px; }
-.cps__barra { display: flex; gap: 3px; height: 12px; border-radius: var(--nu-r-pill); overflow: hidden; margin-top: 22px; max-width: 460px; }
-.cps__seg { height: 100%; min-width: 4px; }
+.cps__barra { display: flex; gap: 4px; height: 26px; border-radius: 15px; overflow: hidden; margin-top: 22px; max-width: 460px; }
+.cps__seg { height: 100%; min-width: 6px; border-radius: 6px; }
 .cps__acoes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
 .cps__acao {
   display: inline-flex; align-items: center; border: none; cursor: pointer; font-family: inherit;
   background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 13px 22px; font-size: var(--nu-fs-sm); font-weight: 700;
+  border-radius: var(--nu-r-pill); min-height: 48px; padding: 0 24px; font-size: 15px; font-weight: 700;
   transition: background .2s, transform .15s;
 }
-.cps__acao:hover { background: var(--nu-blue-hover); color: var(--nu-white); transform: translateY(-2px); }
-.cps__acao--quieta { background: var(--nu-cream); color: var(--nu-ink); }
-.cps__acao--quieta:hover { background: var(--nu-cream-hover); color: var(--nu-ink); }
-.cps__acao:focus-visible, .cps__linha:focus-visible, .cps__papel--link:focus-visible, .cps__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.cps__acao:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.cps__acao:active { transform: scale(.98); }
+.cps__acao--quieta { background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink); }
+.cps__acao--quieta:hover { background: var(--nu-row-hover); color: var(--nu-ink); }
 
 .cps__grupos { list-style: none; margin: 0; padding: 0; }
-.cps__grupo { border-top: 1px solid var(--nu-cream-2); }
+.cps__grupo { border-top: 1.5px solid var(--nu-line); }
 .cps__grupo:last-child { border-bottom: 1px solid var(--nu-cream-2); }
 .cps__linha {
   width: 100%; display: flex; align-items: center; gap: 14px; text-align: left;
@@ -158,7 +159,7 @@ const idDe = (nome: string) => `cps-${nome.toLowerCase().normalize('NFD').replac
 .cps__seta { color: var(--nu-sand); flex-shrink: 0; transition: transform .2s; }
 .cps__grupo--aberto .cps__seta { transform: rotate(90deg); color: var(--nu-gray); }
 
-.cps__papeis { background: var(--nu-cream); border-radius: var(--nu-r-pos-panel); padding: 6px 16px 14px; margin: 0 0 18px; animation: nu-fade .3s ease both; }
+.cps__papeis { background: var(--nu-page); border-radius: var(--nu-r-pos-panel); padding: 6px 16px 14px; margin: 0 0 18px; animation: nu-fade .3s ease both; }
 .cps__papel { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--nu-cream-line-2); }
 .cps__papel--link { transition: opacity .18s; }
 .cps__papel--link:hover { opacity: .78; }

@@ -46,7 +46,7 @@ const partes = computed(() => {
 const r = computed(() => relatorio.value)
 const grupos = computed(() => (r.value ? indicadoresPorPilar(r.value) : []))
 const periodo = computed(() => (r.value ? periodoTxt(r.value.periodo) : null))
-const COR: Record<string, string> = { CDI: 'var(--nu-alloc-fixed)', IBOV: 'var(--nu-alloc-stock)', IFIX: 'var(--nu-alloc-fii)', IVVB11: 'var(--nu-serie-6)' }
+const COR: Record<string, string> = { CDI: 'var(--nu-alloc-fixed)', IBOV: 'var(--nu-alloc-stock)', IFIX: 'var(--nu-alloc-fii)', IVVB11: 'var(--nu-sage)' }
 const composicao = computed(() => (r.value?.benchmark.composicao ?? []).map((c) => ({ ...c, cor: COR[c.indice] ?? 'var(--nu-alloc-cash)' })))
 const comoAberto = ref<string | null>(null)
 const alternarComo = (chave: string) => { comoAberto.value = comoAberto.value === chave ? null : chave }
@@ -86,7 +86,7 @@ watch(() => route.hash, abrirNaAncora)
 
     <div v-if="aberta" id="vrl-conteudo" class="vrl__conteudo">
       <section class="vrl" aria-labelledby="vrl-titulo" :aria-busy="estado === 'carregando'" data-clarity-mask="true">
-        <span class="vrl__eyebrow">Relatório da carteira</span>
+        <NuEyebrow>Relatório da carteira</NuEyebrow>
 
         <!-- carregando: o esqueleto na forma do relatório -->
         <div v-if="estado === 'carregando' || estado === 'fechado'" class="vrl__esq" aria-hidden="true">
@@ -124,7 +124,7 @@ watch(() => route.hash, abrirNaAncora)
           </ul>
 
           <div v-for="g in grupos" :key="g.pilar.chave" class="vrl__grupo">
-            <h3 class="vrl__h3">{{ g.pilar.nome }}<span v-if="g.pilar.nota != null">{{ g.pilar.nota }}</span></h3>
+            <h3 class="vrl__h3">{{ g.pilar.nome }}<span v-if="g.pilar.nota != null">nota {{ g.pilar.nota }}</span></h3>
             <ul class="vrl__inds">
               <li v-for="i in g.indicadores" :key="i.chave" class="vrl__ind">
                 <span class="vrl__ind-n">{{ i.nome }}</span>
@@ -172,50 +172,56 @@ watch(() => route.hash, abrirNaAncora)
 <style scoped>
 /* fechado: o mesmo botão-cartão da análise completa (CarteiraAnalise) */
 .vrl__raiz { scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
-.can { background: var(--nu-white); padding: clamp(28px, 4vw, 48px) clamp(22px, 5.5vw, 80px); border-top: 1px solid var(--nu-cream-2); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
+.can { background: var(--nu-page); padding: 0 clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
 .can__botao {
   width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-  background: var(--nu-cream); border: none; cursor: pointer; font-family: inherit; text-align: left;
-  border-radius: var(--nu-r-card); padding: clamp(20px, 2.6vw, 28px) clamp(22px, 3vw, 32px);
-  transition: background .2s, transform .15s;
+  background: var(--nu-band); border: none; cursor: pointer; font-family: inherit; text-align: left;
+  border-radius: var(--nu-r-card); padding: clamp(20px, 2.6vw, 28px) clamp(22px, 3vw, 32px); box-shadow: var(--nu-shadow-quente);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s;
 }
-.can__botao:hover { background: var(--nu-cream-4); }
-.can__botao:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+/* cartão clicável: sobe 2px e ganha a sombra de cartão flutuando */
+.can__botao:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.can__botao:active { transform: scale(.995); }
 .can__textos { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.can__titulo { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -0.01em; }
-.can__sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.can__seta { color: var(--nu-gray); flex-shrink: 0; transition: transform .25s; }
+.can__titulo { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.025em; }
+.can__sub { color: var(--nu-gray); font-size: 15px; font-weight: 500; }
+/* a seta no círculo carvão de 44px, que gira ao abrir */
+.can__seta { box-sizing: content-box; padding: 11px; border-radius: 50%; background: var(--nu-ink); color: var(--nu-white); flex-shrink: 0; transition: transform .25s; }
 .can--aberta .can__seta { transform: rotate(180deg); }
 .vrl__conteudo { animation: nu-fade .4s ease both; }
 .vrl__sec { scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
 
 /* aberto: no idioma de "Quanto ele te paga" */
-.vrl { background: var(--nu-cream); padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
-.vrl__eyebrow { color: var(--nu-gray-2); font-size: var(--nu-fs-eyebrow); font-weight: 600; }
-.vrl__frase { margin: 12px 0 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
-.vrl__sub { margin: 14px 0 0; max-width: 760px; color: var(--nu-ink-75); font-size: var(--nu-fs-lg); font-weight: 600; line-height: 1.45; font-variant-numeric: tabular-nums; }
-.vrl__curto { display: inline-flex; align-items: center; height: 26px; margin-left: 6px; padding: 0 10px; border-radius: var(--nu-r-pill); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-xs); font-weight: 700; vertical-align: 2px; }
+.vrl { background: var(--nu-band); padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
+.vrl__frase { margin: 18px 0 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.vrl__sub { margin: 16px 0 0; max-width: 760px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.vrl__curto { display: inline-flex; align-items: center; height: 26px; margin-left: 6px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-xs); font-weight: 700; vertical-align: 2px; }
 .vrl__curto-x { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.vrl__tentar { margin-top: 18px; height: 40px; padding: 0 18px; border: 1px solid var(--nu-cream-line); border-radius: var(--nu-r-pill); background: var(--nu-white); color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; }
-.vrl__tentar:hover { background: var(--nu-cream-2); }
-.vrl__tentar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.vrl__tentar { margin-top: 18px; height: 48px; padding: 0 22px; border: 0; border-radius: var(--nu-r-pill); background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: background .2s, transform .15s; }
+.vrl__tentar:hover { background: var(--nu-row-hover); }
+.vrl__tentar:active { transform: scale(.98); }
 
-.vrl__pilares { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px clamp(20px, 3vw, 40px); list-style: none; margin: clamp(26px, 3.4vw, 40px) 0 0; padding: 0; max-width: 1100px; }
-.vrl__pilar { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.vrl__p-n { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 600; }
-.vrl__p-v { color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
-.vrl__p-v--sem { color: var(--nu-gray); }
-.vrl__barra { display: block; height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-cream-line); overflow: hidden; }
+/* os 4 pilares no cartão carvão: a nota é o momento de destaque do relatório */
+.vrl__pilares { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px clamp(20px, 3vw, 40px); list-style: none; margin: clamp(26px, 3.4vw, 40px) 0 0; padding: clamp(22px, 2.8vw, 32px); max-width: 1100px; box-sizing: border-box; border-radius: var(--nu-r-card); background: var(--nu-ink); box-shadow: var(--nu-shadow-escuro); }
+.vrl__pilar { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.vrl__p-n { color: var(--nu-on-dark); font-size: 15px; font-weight: 600; }
+.vrl__p-v { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.vrl__p-v--sem { color: var(--nu-on-dark-2); }
+.vrl__barra { display: block; height: 8px; border-radius: var(--nu-r-pill); background: var(--nu-line-2); overflow: hidden; }
+.vrl__pilar .vrl__barra { background: var(--nu-dark-chip-line); }
+.vrl__pilar .vrl__barra i { background: var(--nu-blue-on-dark); }
+.vrl__esq .vrl__pilares { background: transparent; box-shadow: none; padding: 0; }
 .vrl__barra i { display: block; height: 100%; border-radius: inherit; background: var(--nu-blue); transform-origin: left; animation: vrl-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
 @keyframes vrl-cresce { from { transform: scaleX(0); } }
 
-.vrl__grupo { margin-top: clamp(36px, 4.4vw, 52px); max-width: 1100px; }
-.vrl__h3 { display: flex; align-items: baseline; gap: 12px; margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
-.vrl__h3 span { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 700; font-variant-numeric: tabular-nums; }
+/* cada pilar num cartão creme, com a nota num selo carvão */
+.vrl__grupo { margin-top: clamp(14px, 1.6vw, 20px); max-width: 1100px; box-sizing: border-box; padding: clamp(20px, 2.6vw, 30px) clamp(20px, 2.6vw, 30px) clamp(10px, 1.4vw, 16px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
+.vrl__h3 { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.025em; }
+.vrl__h3 span { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: 0; font-variant-numeric: tabular-nums; }
 .vrl__inds { list-style: none; margin: 10px 0 0; padding: 0; }
 .vrl__ind {
   display: grid; grid-template-columns: minmax(0, 1.6fr) 96px minmax(0, 1fr) 150px auto; grid-template-areas: 'n v b nota como' 'prova prova prova prova prova';
-  align-items: center; gap: 0 16px; padding: 12px 0; border-top: 1px solid var(--nu-cream-line); font-variant-numeric: tabular-nums;
+  align-items: center; gap: 0 16px; padding: 13px 0; border-top: 1.5px solid var(--nu-line); font-variant-numeric: tabular-nums;
 }
 .vrl__ind:first-child { border-top: 0; }
 .vrl__ind-n { grid-area: n; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
@@ -227,18 +233,18 @@ watch(() => route.hash, abrirNaAncora)
 .vrl__como { grid-area: como; display: inline-flex; align-items: center; gap: 4px; justify-self: end; padding: 4px 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; }
 .vrl__como[aria-expanded='true'] svg { transform: rotate(180deg); }
 .vrl__como svg { transition: transform .2s; }
-.vrl__como:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
-.vrl__prova { grid-area: prova; margin-top: 10px; padding: 12px 14px; border-radius: 12px; background: var(--nu-white); animation: nu-fade .2s ease both; }
+.vrl__como:focus-visible { border-radius: 4px; }
+.vrl__prova { grid-area: prova; margin-top: 10px; padding: 12px 14px; border-radius: var(--nu-r-chip); background: var(--nu-band); animation: nu-fade .2s ease both; }
 .vrl__prova p { margin: 0; max-width: 80ch; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.55; }
 .vrl__prova .vrl__prova-c { margin-top: 6px; color: var(--nu-gray-3); font-weight: 500; }
 
-.vrl__bench { margin-top: clamp(36px, 4.4vw, 52px); max-width: 1100px; }
+.vrl__bench { margin-top: clamp(14px, 1.6vw, 20px); max-width: 1100px; box-sizing: border-box; padding: clamp(20px, 2.6vw, 30px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
 .vrl__bench-x { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 600; line-height: 1.5; font-variant-numeric: tabular-nums; }
-.vrl__comp { display: flex; gap: 2px; height: 12px; margin-top: 12px; border-radius: 6px; overflow: hidden; }
-.vrl__comp span { display: block; height: 100%; }
+.vrl__comp { display: flex; gap: 4px; height: 26px; margin-top: 14px; border-radius: 15px; overflow: hidden; }
+.vrl__comp span { display: block; height: 100%; border-radius: 6px; }
 .vrl__comp-l { display: flex; flex-wrap: wrap; gap: 6px 20px; list-style: none; margin: 10px 0 0; padding: 0; }
 .vrl__comp-l li { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
-.vrl__comp-l i { width: 10px; height: 10px; border-radius: 3px; }
+.vrl__comp-l i { width: 12px; height: 12px; border-radius: 50%; }
 .vrl__comp-l b { color: var(--nu-ink); font-weight: 800; }
 .vrl__notas { margin: 14px 0 0; padding: 0 0 0 18px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.6; }
 

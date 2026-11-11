@@ -84,7 +84,7 @@ function relativeTimePt(iso: string): string {
 </script>
 
 <template>
-  <ContaSection title="Perfil" subtitle="Seus dados de identificação na Redentia.">
+  <ContaSection title="Perfil" subtitle="Seus dados de identificação na Aportou.">
     <form class="pf" @submit.prevent="save">
       <div class="pf__grid">
         <ContaField v-model="form.name" label="Nome completo" autocomplete="name" placeholder="Seu nome" />
@@ -100,9 +100,11 @@ function relativeTimePt(iso: string): string {
       <p v-if="errorMsg" class="pf__err">{{ errorMsg }}</p>
 
       <div class="pf__actions">
-        <button type="submit" class="pf__save" :disabled="!dirty || saving">
-          {{ saving ? 'Salvando...' : saved ? 'Salvo' : 'Salvar alterações' }}
-        </button>
+        <span class="pf__save">
+          <NuPillButton type="submit" :disabled="!dirty && !saving" :loading="saving">
+            {{ saving ? 'Salvando' : saved ? 'Salvo' : 'Salvar alterações' }}
+          </NuPillButton>
+        </span>
         <span v-if="updatedLabel" class="pf__meta">Última atualização {{ updatedLabel }}</span>
       </div>
     </form>
@@ -111,19 +113,14 @@ function relativeTimePt(iso: string): string {
 
 <style scoped>
 .pf__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(18px, 2.5vw, 26px); }
-.pf__err { margin: 18px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; }
-.pf__actions { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: clamp(24px, 3vw, 34px); }
-.pf__save {
-  background: var(--nu-blue); color: var(--nu-white); border: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); padding: 15px 30px;
-  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.1px;
-  transition: background .18s, opacity .18s;
-}
-.pf__save:hover:not(:disabled) { background: var(--nu-blue-hover); }
-.pf__save:disabled { opacity: .5; cursor: default; }
+.pf__err { margin: 18px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 600; }
+.pf__actions { display: flex; align-items: center; gap: 14px 18px; flex-wrap: wrap; margin-top: clamp(24px, 3vw, 34px); }
+/* a pílula da marca (NuPillButton) é de largura cheia: aqui ela tem a largura do rótulo */
+.pf__save { display: inline-block; min-width: 230px; }
 .pf__meta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 @media (max-width: 620px) {
   .pf__grid { grid-template-columns: 1fr; }
+  .pf__save { display: block; width: 100%; }
 }
 </style>

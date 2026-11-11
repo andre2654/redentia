@@ -71,34 +71,31 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
       </div>
       <div v-if="!rows.length" class="cmv__empty">Nenhuma operação nesse filtro em {{ periodLabel.toLowerCase() }}.</div>
     </div>
-    <button v-if="hasMore && !expanded" type="button" class="cmv__more" @click="expanded = true">
-      <span class="cmv__more-circle">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--nu-white)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-      </span>
-      <span class="cmv__more-label">Ver extrato completo</span>
-    </button>
+    <NuBotaoSeta v-if="hasMore && !expanded" variante="carvao" tamanho="m" class="cmv__more" @click="expanded = true">Ver extrato completo</NuBotaoSeta>
   </section>
 </template>
 
 <style scoped>
 .cmv {
-  background: var(--nu-white);
+  background: var(--nu-page);
   padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
 .cmv__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .cmv__title {
-  margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
 .cmv__sub { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; margin-top: 14px; }
-.cmv__saldo--up { color: var(--nu-green-2); font-weight: 800; }
+.cmv__saldo--up { color: var(--nu-green-text); font-weight: 800; }
 .cmv__saldo--down { color: var(--nu-ink); font-weight: 800; }
-.cmv__list { margin-top: 26px; }
-.cmv__row { display: flex; align-items: center; gap: 16px; padding: 15px 0; border-top: 1.5px solid var(--nu-cream-2); }
+/* as operações num cartão quente, com fios de 1,5px */
+.cmv__list { margin-top: 26px; padding: clamp(6px, 1vw, 12px) clamp(18px, 2.4vw, 28px); border-radius: var(--nu-r-card); background: var(--nu-band); box-shadow: var(--nu-shadow-quente); }
+.cmv__row { display: flex; align-items: center; gap: 16px; padding: 15px 0; border-top: 1.5px solid var(--nu-line); }
+.cmv__row:first-child { border-top-color: transparent; }
 .cmv__date-tile {
-  width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--nu-r-input);
-  background: var(--nu-cream); display: flex; flex-direction: column;
+  width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--nu-r-chip);
+  background: var(--nu-cream-2); display: flex; flex-direction: column;
   align-items: center; justify-content: center;
 }
 .cmv__date-d { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1; }
@@ -108,14 +105,14 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
 .cmv__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; white-space: nowrap; }
 .cmv__badge {
   display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: 700;
-  padding: 3px 10px; border-radius: var(--nu-r-pill); white-space: nowrap; flex-shrink: 0;
+  padding: 3px 9px; border-radius: var(--nu-r-tag); white-space: nowrap; flex-shrink: 0;
 }
-.cmv__badge--provento { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.cmv__badge--compra { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
+.cmv__badge--provento { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.cmv__badge--compra { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .cmv__badge--venda { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 /* o selo do imposto da venda: contorno, para não brigar com o tipo */
-.cmv__selo { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap; box-shadow: inset 0 0 0 1px currentColor; }
-.cmv__selo--isento { color: var(--nu-green-2); }
+.cmv__selo { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap; box-shadow: inset 0 0 0 1px currentColor; }
+.cmv__selo--isento { color: var(--nu-green-text); }
 .cmv__selo--pago { color: var(--nu-blue-text); }
 .cmv__selo--a_conferir, .cmv__selo--custo_desconhecido { color: var(--nu-amber-text); }
 .cmv__desc {
@@ -123,18 +120,9 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cmv__val { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
-.cmv__val--pos { color: var(--nu-green-2); }
-.cmv__empty { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; padding: 22px 0; border-top: 1.5px solid var(--nu-cream-2); }
-.cmv__more {
-  display: inline-flex; align-items: center; gap: 14px; margin-top: 34px;
-  background: transparent; border: none; padding: 0; cursor: pointer; transition: gap .2s;
-}
-.cmv__more:hover { gap: 19px; }
-.cmv__more-circle {
-  width: 52px; height: 52px; border-radius: 50%; background: var(--nu-blue);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.cmv__more-label { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
+.cmv__val--pos { color: var(--nu-green-text); }
+.cmv__empty { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; padding: 22px 0; }
+.cmv__more { margin-top: 24px; }
 /* no celular (07/11/2026): com a data, a logo e o valor na mesma linha, sobravam
    59 px para o ticker em 375 (o GOLD11 saía cortado). O ticker e os selos ganham
    a largura toda; a descrição e o valor descem para a segunda linha. */

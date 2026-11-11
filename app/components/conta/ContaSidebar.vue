@@ -3,13 +3,14 @@
 // 2026-07-14). Uma página só com todas as seções empilhadas à direita; clicar
 // rola até a seção e o item ativo acende conforme o scroll — mesma mecânica do
 // NuTocSidebar (useNuScrollFrame + getBoundingClientRect < 40% do viewport).
-// Visual do design: ícone + label; ativo = card branco com sombra.
+// Visual (Aportou, 11/11/2026): ícone + label; o item ativo é a pílula carvão
+// (o mesmo gesto das abas da marca), com o ícone no cobalto que lê sobre escuro.
 const items = [
   { id: 'perfil', label: 'Perfil', icon: 'user' },
   { id: 'assinatura', label: 'Assinatura', icon: 'card' },
   { id: 'notificacoes', label: 'Notificações', icon: 'bell' },
   { id: 'open-finance', label: 'Open Finance', icon: 'link' },
-  { id: 'mcp', label: 'Redentia MCP', icon: 'mcp' },
+  { id: 'mcp', label: 'Aportou MCP', icon: 'mcp' },
   { id: 'seguranca', label: 'Segurança', icon: 'shield' },
 ] as const
 
@@ -66,22 +67,26 @@ function go(e: MouseEvent, id: string) {
 <style scoped>
 .csb { display: flex; flex-direction: column; gap: 4px; }
 .csb__item {
-  display: flex; align-items: center; gap: 13px;
-  padding: 13px 16px; border-radius: var(--nu-r-input);
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700;
-  transition: background .18s, color .18s, box-shadow .18s;
+  display: flex; align-items: center; gap: 13px; min-height: 48px;
+  padding: 0 18px; border-radius: var(--nu-r-pill);
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 700;
+  transition: background .2s, color .2s;
 }
-.csb__item:hover { color: var(--nu-ink); background: var(--nu-cream-hover); }
+.csb__item:hover { color: var(--nu-ink); background: var(--nu-cream-2); }
 .csb__item--active,
-.csb__item--active:hover {
-  background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-card);
-}
-.csb__icon { flex-shrink: 0; color: var(--nu-gray); transition: color .18s; }
-.csb__item:hover .csb__icon,
-.csb__item--active .csb__icon { color: var(--nu-blue); }
+.csb__item--active:hover { background: var(--nu-ink); color: var(--nu-white); }
+.csb__icon { flex-shrink: 0; color: var(--nu-gray); transition: color .2s, transform .2s; }
+.csb__item:hover .csb__icon { color: var(--nu-blue); transform: translateX(2px); }
+.csb__item--active .csb__icon,
+.csb__item--active:hover .csb__icon { color: var(--nu-blue-on-dark); transform: none; }
 
 @media (max-width: 860px) {
-  .csb { flex-direction: row; overflow-x: auto; gap: 8px; padding-bottom: 4px; }
-  .csb__item { flex-shrink: 0; padding: 11px 16px; }
+  .csb { flex-direction: row; overflow-x: auto; gap: 8px; padding-bottom: 4px; scrollbar-width: none; }
+  .csb::-webkit-scrollbar { display: none; }
+  .csb__item { flex-shrink: 0; min-height: 44px; padding: 0 16px; background: var(--nu-cream-2); }
+  .csb__item--active, .csb__item--active:hover { background: var(--nu-ink); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .csb__icon { transition: none; }
 }
 </style>

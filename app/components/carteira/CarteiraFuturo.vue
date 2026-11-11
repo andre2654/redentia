@@ -28,6 +28,12 @@
 // abaixo de hoje" (o risco com o mesmo peso do lado bom, cada um com a cor que
 // tem no leque), o contador dos futuros testados mora no próprio leque, o apoio
 // encurtou e o "Como proteger" foi para o fim, depois dos números.
+// Na Aportou (11/11/2026): o momento de destaque veste a FAIXA DA MARCA. A banda
+// navy de ponta a ponta virou o cartão carvão com a aba cobalto (NuFaixaMarca),
+// e a pergunta mora na aba. O leque segue o mesmo: o canvas lê os tokens
+// (--nu-cream-text, --nu-green-soft, --nu-red-soft, --nu-navy = carvão). O
+// número da frase vai no cobalto que lê sobre carvão; a chamada é a pílula com
+// a seta ("Perguntar à IA…").
 import { mascaraDoGrupo, resultadoDoTeste, type GrupoDoTeste } from '~/utils/futuro'
 
 const { estado, dados, vm, caminhos, fora, carregar } = useCarteiraFuturo()
@@ -97,10 +103,11 @@ const apoio = computed(() => {
 
 <template>
   <section v-if="estado !== 'vazio' && estado !== 'bloqueado'" ref="raiz" class="cfu" aria-labelledby="cfu-titulo" data-clarity-mask="true">
+    <NuFaixaMarca :rotulo="`E daqui a ${vm?.horizonte ?? 5} anos?`" como="p" :raio="32" class="cfu__cartao">
+    <div class="cfu__miolo">
     <template v-if="estado === 'pronto' && vm && dados">
       <div class="cfu__head">
         <div class="cfu__texto">
-          <span class="cfu__eyebrow">E daqui a {{ vm.horizonte }} anos?</span>
           <h2 v-if="fraseDoMeio" id="cfu-titulo" class="cfu__frase">{{ fraseDoMeio.antes }}<b>{{ fraseDoMeio.valor }}</b>{{ fraseDoMeio.depois }}</h2>
           <p class="cfu__sub">{{ apoio }}</p>
         </div>
@@ -142,10 +149,9 @@ const apoio = computed(() => {
           </li>
         </ul>
       </div>
-        <NuxtLink :to="pergunta" class="cfu__perguntar cfu__perguntar--fim" @click.prevent="painel.abrir(PERGUNTA)">
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /><path d="M12 8.2 15.8 12 12 15.8 8.2 12Z" class="cfu__losango-miolo" /></svg>
-          Perguntar à Redentia como proteger o lado ruim
-        </NuxtLink>
+      <NuBotaoSeta :to="pergunta" variante="creme" tamanho="m" class="cfu__perguntar" @click.prevent="painel.abrir(PERGUNTA)">
+        Perguntar à IA como proteger o lado ruim
+      </NuBotaoSeta>
 
 
       <p class="cfu__nota">
@@ -163,7 +169,6 @@ const apoio = computed(() => {
     </div>
 
     <div v-else class="cfu__erro" role="status">
-      <span class="cfu__eyebrow">E daqui a 5 anos?</span>
       <template v-if="estado === 'fora'">
         <p class="cfu__erro-frase">O que você tem hoje fica fora do motor de cenários.</p>
         <p class="cfu__erro-sub">
@@ -181,74 +186,70 @@ const apoio = computed(() => {
         <button type="button" class="cfu__tentar" @click="carregar">Tentar de novo</button>
       </template>
     </div>
+    </div>
+    </NuFaixaMarca>
   </section>
 </template>
 
 <style scoped>
+/* a seção é a página; o destaque é o cartão carvão com a faixa da marca */
 .cfu {
-  background: var(--nu-navy);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px) clamp(44px, 5.5vw, 72px);
+  background: var(--nu-page);
+  padding: clamp(8px, 2vw, 24px) clamp(10px, 5.5vw, 80px) clamp(56px, 7.5vw, 96px);
   animation: nu-fade .5s ease both;
   scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
 }
+.cfu__miolo { padding: clamp(24px, 3.4vw, 44px) clamp(18px, 4vw, 56px) clamp(28px, 4vw, 52px); }
 .cfu__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
-.cfu__texto { min-width: 0; max-width: 820px; }
-.cfu__eyebrow { color: var(--nu-cream-text-70); font-size: var(--nu-fs-eyebrow); font-weight: 600; }
+.cfu__texto { min-width: 0; max-width: 860px; }
 .cfu__frase {
-  margin: 12px 0 0; color: var(--nu-cream-text);
-  font-size: var(--nu-fs-h2); font-weight: 500; letter-spacing: -0.035em; line-height: 1.06;
+  margin: 0; color: var(--nu-white);
+  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
   font-variant-numeric: tabular-nums; text-wrap: balance;
 }
-.cfu__frase b { color: var(--nu-blue-soft); font-weight: 700; white-space: nowrap; }
-.cfu__sub { margin: 16px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; }
-.cfu__perguntar {
-  display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0;
-  color: var(--nu-cream-text); background: var(--nu-navy-2);
-  border-radius: var(--nu-r-pill); padding: 12px 20px;
-  font-size: var(--nu-fs-sm); font-weight: 700; transition: background .2s, transform .15s;
-}
-.cfu__perguntar:hover { background: var(--nu-navy-3); color: var(--nu-cream-text); transform: translateY(-2px); }
-.cfu__perguntar:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
-.cfu__losango-miolo { fill: var(--nu-navy-2); }
+.cfu__frase b { color: var(--nu-blue-on-dark); font-weight: inherit; white-space: nowrap; }
+.cfu__sub { margin: 18px 0 0; color: var(--nu-on-dark); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
+/* a chamada: a pílula creme com a seta (NuBotaoSeta); no celular o texto quebra em vez de vazar */
+.cfu__perguntar { margin-top: clamp(22px, 3vw, 32px); max-width: 100%; white-space: normal; text-align: left; }
 .cfu__grafico { margin-top: clamp(32px, 4vw, 52px); }
 .cfu__teste { margin-top: clamp(28px, 3.4vw, 44px); }
-.cfu__teste-t { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 600; }
-.cfu__teste-dica { color: var(--nu-cream-text-55); font-weight: 500; }
+.cfu__teste-t { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.5; }
+.cfu__teste-dica { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 500; letter-spacing: 0; text-transform: none; }
 .cfu__fatos { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 clamp(20px, 3vw, 44px); margin: 10px 0 0; padding: 0; }
 .cfu__fato {
-  display: flex; flex-direction: column; gap: 6px; width: 100%; height: 100%; padding: 16px 0 6px; border: 0; border-top: 1px solid rgba(245, 241, 234, .14);
+  display: flex; flex-direction: column; gap: 6px; width: 100%; height: 100%; padding: 16px 0 6px; border: 0; border-top: 1.5px solid var(--nu-dark-chip-line);
   background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: opacity .25s, border-color .25s;
 }
-.cfu__fato-n { color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; }
-.cfu__fato-n b { color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 600; letter-spacing: -0.03em; }
+.cfu__fato-n { color: var(--nu-on-dark-2); font-size: var(--nu-fs-md); font-weight: 600; font-variant-numeric: tabular-nums; }
+.cfu__fato-n b { color: var(--nu-white); font-size: clamp(34px, 3.6vw, 48px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; }
 .cfu__fato--verde .cfu__fato-n b { color: var(--nu-green-soft); }
 .cfu__fato--vermelho .cfu__fato-n b { color: var(--nu-red-soft); }
-.cfu__fato-t { color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
-.cfu__fato--on { border-top-color: var(--nu-cream-text); }
+.cfu__fato-t { color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
+.cfu__fato--on { border-top-color: var(--nu-white); }
 .cfu__fato--verde.cfu__fato--on { border-top-color: var(--nu-green-soft); }
 .cfu__fato--vermelho.cfu__fato--on { border-top-color: var(--nu-red-soft); }
 .cfu__fato--apagado { opacity: .45; }
-.cfu__fato:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 4px; border-radius: 4px; }
-.cfu__perguntar--fim { margin-top: clamp(22px, 3vw, 32px); }
+.cfu__fato:focus-visible { outline-color: var(--nu-blue-on-dark); outline-offset: 4px; border-radius: 4px; }
 .cfu__nota {
   margin: clamp(22px, 3vw, 32px) 0 0; max-width: 760px;
   display: flex; flex-direction: column; gap: 4px;
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
+  color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 500; line-height: 1.55;
 }
-.cfu__cobertura { color: var(--nu-cream-text-78); }
+.cfu__cobertura { color: var(--nu-on-dark); }
 
 .cfu__esq { display: flex; flex-direction: column; gap: 14px; }
 .cfu__esq-frase { margin-top: 4px; }
 .cfu__esq-leque { margin-top: clamp(20px, 3vw, 36px); }
 
 .cfu__erro { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
-.cfu__erro-frase { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 500; letter-spacing: -0.02em; line-height: 1.15; max-width: 640px; }
-.cfu__erro-sub { margin: 0; max-width: 620px; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
+.cfu__erro-frase { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.08; max-width: 640px; }
+.cfu__erro-sub { margin: 0; max-width: 620px; color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 .cfu__tentar {
-  border: none; cursor: pointer; background: var(--nu-cream); color: var(--nu-navy);
-  border-radius: var(--nu-r-pill); padding: 13px 24px; font-size: var(--nu-fs-sm); font-weight: 700;
-  transition: background .2s;
+  border: none; cursor: pointer; background: var(--nu-creme); color: var(--nu-ink);
+  border-radius: var(--nu-r-pill); min-height: 48px; padding: 0 24px; font: inherit; font-size: 15px; font-weight: 700;
+  transition: background .2s, transform .15s;
 }
 .cfu__tentar:hover { background: var(--nu-white); }
-.cfu__tentar:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
+.cfu__tentar:active { transform: scale(.98); }
+.cfu__tentar:focus-visible { outline-color: var(--nu-blue-on-dark); }
 </style>

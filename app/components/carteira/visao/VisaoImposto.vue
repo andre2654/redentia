@@ -85,7 +85,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 
 <template>
   <section class="vim" aria-labelledby="vim-titulo" data-clarity-mask="true">
-    <span class="vim__eyebrow">Devo imposto?</span>
+    <NuEyebrow>Devo imposto?</NuEyebrow>
     <h2 id="vim-titulo" class="vim__frase"><FraseDestaque :texto="frase" /></h2>
     <p v-if="sub" class="vim__sub">{{ sub }}</p>
 
@@ -168,23 +168,22 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 </template>
 
 <style scoped>
-.vim { background: var(--nu-white); padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
-.vim__eyebrow { color: var(--nu-gray-2); font-size: var(--nu-fs-eyebrow); font-weight: 600; }
-.vim__frase { margin: 12px 0 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
-.vim__sub { margin: 14px 0 0; max-width: 760px; color: var(--nu-ink-75); font-size: var(--nu-fs-lg); font-weight: 600; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.vim { background: var(--nu-page); padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
+.vim__frase { margin: 18px 0 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.vim__sub { margin: 16px 0 0; max-width: 760px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 
 /* ——— o mês atual, por grupo ——— */
 .vim__grupos { list-style: none; margin: clamp(26px, 3.4vw, 40px) 0 0; padding: 0; max-width: 1100px; }
-.vim__grupo { padding: 16px 0; border-top: 1px solid var(--nu-cream-line); }
+.vim__grupo { padding: 16px 0; border-top: 1.5px solid var(--nu-line); }
 .vim__grupo:first-child { border-top: 0; padding-top: 0; }
 .vim__g-cab { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; }
 .vim__g-n { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em; }
-.vim__g-v { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.vim__tag { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: var(--nu-r-pill); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0; }
-.vim__trilho { display: flex; gap: 2px; height: 12px; margin-top: 10px; border-radius: 6px; background: var(--nu-cream); box-shadow: inset 0 0 0 1px var(--nu-cream-line); overflow: hidden; }
-.vim__vendido { background: var(--nu-blue); border-radius: 6px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
+.vim__g-v { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vim__tag { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0; }
+.vim__trilho { display: flex; gap: 4px; height: 16px; margin-top: 10px; border-radius: 8px; background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-line); overflow: hidden; }
+.vim__vendido { background: var(--nu-blue); border-radius: 8px 4px 4px 8px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
 .vim__vendido--passou { background: var(--nu-amber-fill); }
-.vim__cabe { flex: 1; min-width: 0; background: var(--nu-green-bg); border-radius: 6px; }
+.vim__cabe { flex: 1; min-width: 0; background: var(--nu-green-bg); border-radius: 4px 8px 8px 4px; }
 /* os grupos sem venda: blocos pequenos, lado a lado */
 .vim__resto { max-width: 1100px; margin: 18px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 /* o prejuízo para abater: um número por balde */
@@ -192,21 +191,21 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__prej-t { margin-right: 8px; color: var(--nu-ink); font-weight: 700; }
 .vim__prej b { color: var(--nu-ink); font-weight: 700; }
 .vim__prej-s { margin: 0 8px; color: var(--nu-gray); }
-.vim__imposto { background: var(--nu-amber-fill); border-radius: 6px 3px 3px 6px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
-.vim__fica { flex: 1; background: color-mix(in srgb, var(--nu-blue) 35%, transparent); border-radius: 3px 6px 6px 3px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .3s both; }
+.vim__imposto { background: var(--nu-amber-fill); border-radius: 8px 4px 4px 8px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
+.vim__fica { flex: 1; background: color-mix(in srgb, var(--nu-blue) 35%, transparent); border-radius: 4px 8px 8px 4px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .3s both; }
 @keyframes vim-cresce { from { transform: scaleX(0); } }
 .vim__g-x { margin: 8px 0 0; max-width: 76ch; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
 
 .vim__darf {
   display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; max-width: 1100px; box-sizing: border-box; margin: 8px 0 0; padding: 14px 18px;
-  border-radius: var(--nu-r-input); background: var(--nu-cream); font-variant-numeric: tabular-nums;
+  border-radius: var(--nu-r-tile); background: var(--nu-band); box-shadow: var(--nu-shadow-quente); font-variant-numeric: tabular-nums;
 }
 .vim__darf-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
 .vim__darf-v { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
 .vim__darf-d { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 600; }
 
 /* ——— os últimos 12 meses: a fileira do "mês a mês" de Quanto ele te paga ——— */
-.vim__h3 { margin: clamp(36px, 4.4vw, 52px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -0.02em; }
+.vim__h3 { margin: clamp(36px, 4.4vw, 52px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.025em; }
 .vim__h3-s { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); line-height: 1.45; }
 .vim__meses { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; list-style: none; margin: 14px 0 0; padding: 0; max-width: 1100px; }
 .vim__mes {
@@ -214,38 +213,37 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
   background: transparent; font: inherit; text-align: center; cursor: pointer; transition: background .2s;
 }
 .vim__mes:disabled { cursor: default; }
-.vim__mes:not(:disabled):hover { background: var(--nu-cream-hover); }
-.vim__mes--on, .vim__mes--on:not(:disabled):hover { background: var(--nu-cream); }
-.vim__mes:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.vim__mes:not(:disabled):hover { background: var(--nu-cream-2); }
+.vim__mes--on, .vim__mes--on:not(:disabled):hover { background: var(--nu-band); }
 .vim__mes-v { color: var(--nu-gray-3); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .vim__mes-b { display: flex; align-items: flex-end; justify-content: center; }
-.vim__mes-b i { display: block; width: min(30px, 64%); border-radius: 4px 4px 0 0; }
-.vim__mes-n { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; border-top: 1px solid var(--nu-cream-line); padding: 6px 0 8px; }
+.vim__mes-b i { display: block; width: min(40px, 70%); border-radius: 8px 8px 3px 3px; }
+.vim__mes-n { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; border-top: 1.5px solid var(--nu-line); padding: 6px 0 8px; }
 .vim__mes--on .vim__mes-n, .vim__mes--on .vim__mes-v { color: var(--nu-ink); }
 .vim__mes--isento .vim__mes-b i, .vim__k--isento { background: var(--nu-green); }
 .vim__mes--pago .vim__mes-b i, .vim__k--pago { background: var(--nu-blue); }
 .vim__mes--a_conferir .vim__mes-b i, .vim__k--a_conferir { background: var(--nu-amber-fill); }
 /* custo desconhecido: listrado, para a cor não ser a única pista */
 .vim__mes--custo_desconhecido .vim__mes-b i, .vim__k--custo_desconhecido { background: repeating-linear-gradient(135deg, var(--nu-amber-fill) 0 3px, color-mix(in srgb, var(--nu-amber-fill) 30%, transparent) 3px 6px); }
-.vim__k--sem_venda { background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-cream-line); }
+.vim__k--sem_venda { background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-line); }
 .vim__legenda { display: flex; flex-wrap: wrap; gap: 6px 20px; list-style: none; margin: 12px 0 0; padding: 0; }
 .vim__legenda li { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 600; }
-.vim__k { width: 10px; height: 10px; border-radius: 3px; }
+.vim__k { width: 12px; height: 12px; border-radius: 4px; }
 
-.vim__ops { max-width: 1100px; margin-top: 18px; padding: 16px 20px 6px; border-radius: var(--nu-r-tile); background: var(--nu-cream); animation: vim-fade .25s ease both; }
+.vim__ops { max-width: 1100px; margin-top: 18px; padding: 18px 22px 6px; border-radius: var(--nu-r-panel); background: var(--nu-band); box-shadow: var(--nu-shadow-quente); animation: vim-fade .25s ease both; }
 @keyframes vim-fade { from { opacity: 0; transform: translateY(4px); } }
 .vim__ops-t { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
 .vim__ops-t span { color: var(--nu-gray-3); font-weight: 600; }
 .vim__ops-l { list-style: none; margin: 8px 0 0; padding: 0; }
-.vim__ops-l li { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding: 10px 0; border-top: 1px solid var(--nu-cream-line); font-size: var(--nu-fs-md); }
+.vim__ops-l li { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding: 10px 0; border-top: 1.5px solid var(--nu-line); font-size: var(--nu-fs-md); }
 .vim__op-d { color: var(--nu-gray); font-weight: 700; font-variant-numeric: tabular-nums; }
 .vim__op-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .vim__op-tk { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: 800; }
 .vim__op-q { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .vim__op-v { color: var(--nu-ink); font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
-.vim__lado { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-xs); font-weight: 700; }
+.vim__lado { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-xs); font-weight: 700; }
 .vim__lado--venda { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
-.vim__lado--compra { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
+.vim__lado--compra { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 
 
 @media (max-width: 640px) {

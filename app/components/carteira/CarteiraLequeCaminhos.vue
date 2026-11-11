@@ -1013,19 +1013,19 @@ onBeforeUnmount(() => {
   touch-action: pan-y; -webkit-tap-highlight-color: transparent; user-select: none;
 }
 .clc__palco:focus { outline: none; }
-.clc__palco:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 8px; border-radius: var(--nu-r-tile); }
+.clc__palco:focus-visible { outline-color: var(--nu-blue-on-dark); outline-offset: 8px; border-radius: var(--nu-r-tile); }
 .clc__cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
 /* a leitura do mês: a data no alto da guia e o valor de cada caminho aceso */
 .clc__quando {
   position: absolute; top: 0; transform: translateX(-50%); pointer-events: none; white-space: nowrap;
-  padding: 3px 10px; border-radius: var(--nu-r-pill); background: var(--nu-navy-2);
+  padding: 3px 10px; border-radius: var(--nu-r-tag); background: var(--nu-dark-chip);
   color: var(--nu-cream-text); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 .clc__marca {
   position: absolute; transform: translate(12px, -50%); pointer-events: none; white-space: nowrap;
   display: inline-flex; align-items: baseline; gap: 5px;
-  padding: 3px 8px; border-radius: var(--nu-r-pill); background: var(--nu-navy-2);
+  padding: 3px 8px; border-radius: var(--nu-r-tag); background: var(--nu-dark-chip);
   color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 .clc__marca--esq { transform: translate(calc(-100% - 12px), -50%); }
@@ -1057,7 +1057,7 @@ onBeforeUnmount(() => {
 .clc__contador b { color: var(--nu-cream-text); font-weight: 700; }
 .clc__hoje {
   position: absolute; transform: translate(-100%, 6px); padding: 2px 8px; border-radius: var(--nu-r-pill); pointer-events: none; white-space: nowrap;
-  background: rgba(12, 21, 36, .78); color: var(--nu-cream-text-85); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .01em;
+  background: color-mix(in srgb, var(--nu-ink) 78%, transparent); color: var(--nu-cream-text-85); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .01em;
 }
 .clc__valor--hover { font-size: var(--nu-fs-lg); }
 /* no hover, os finais parados dão lugar aos dos três caminhos acesos (o

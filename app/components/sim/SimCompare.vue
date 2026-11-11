@@ -51,41 +51,42 @@ const anchorDiff = computed(() => Math.abs(props.a.assumptions.anchor - props.b.
 .scp {
   margin-top: 18px;
   display: grid; grid-template-columns: 1fr 1fr;
-  background: var(--nu-navy-2); border-radius: var(--nu-r-panel);
+  background: var(--nu-dark-chip); border-radius: var(--nu-r-panel);
   animation: nu-fade 0.4s ease both;
 }
-.scp__col { padding: 20px 26px 18px; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-.scp__col--b { border-left: 1px solid var(--nu-cream-text-12); }
+.scp__col { padding: 22px 26px 20px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.scp__col--b { border-left: 1.5px solid var(--nu-dark-chip-line); }
 
 .scp__head { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
 .scp__dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.scp__dot--a { background: var(--nu-blue-soft); }
+.scp__dot--a { background: var(--nu-blue-on-dark); }
 .scp__dot--b { background: var(--nu-amber); }
-.scp__name { color: var(--nu-cream-text-70); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.scp__name { color: var(--nu-on-dark); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
 
 .scp__big {
-  color: var(--nu-cream-text); font-size: clamp(24px, 2.6vw, 32px); font-weight: 800;
-  letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1.1;
+  color: var(--nu-white); font-size: clamp(26px, 2.8vw, 38px); font-weight: 800;
+  letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1.05;
   display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
 }
 .scp__big--b { color: var(--nu-amber); }
-.scp__delta { font-size: var(--nu-fs-sm); font-weight: 700; font-style: normal; letter-spacing: 0; }
-.scp__delta--down { color: var(--nu-red-soft); }
-.scp__delta--up { color: var(--nu-green-soft); }
-.scp__sub { color: var(--nu-cream-text-55); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
+/* o selo da variação sobre carvão: raio 8 */
+.scp__delta { padding: 4px 9px; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: 700; font-style: normal; letter-spacing: 0; align-self: center; }
+.scp__delta--down { background: var(--nu-red-soft-16); color: var(--nu-red-soft); }
+.scp__delta--up { background: var(--nu-green-soft-16); color: var(--nu-green-soft); }
+.scp__sub { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
 
 .scp__acts { margin-left: auto; display: inline-flex; gap: 12px; }
 .scp__act {
   border: none; background: transparent; padding: 0;
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-on-dark); font-size: 13.5px; font-weight: 700;
   cursor: pointer; font-family: inherit;
-  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-cream-text-22);
-  transition: color 0.15s;
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-dark-chip-line);
+  transition: color 0.2s;
 }
-.scp__act:hover { color: var(--nu-cream-text); }
+.scp__act:hover { color: var(--nu-white); }
 
 @media (max-width: 700px) {
   .scp { grid-template-columns: 1fr; }
-  .scp__col--b { border-left: none; border-top: 1px solid var(--nu-cream-text-12); }
+  .scp__col--b { border-left: none; border-top: 1.5px solid var(--nu-dark-chip-line); }
 }
 </style>

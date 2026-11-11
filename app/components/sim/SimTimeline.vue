@@ -63,24 +63,24 @@ const cursorLabel = computed(() => (cursor.value === null ? null : props.dates[c
 <style scoped>
 .stl { margin-top: 34px; }
 .stl__track { position: relative; height: 58px; cursor: ew-resize; touch-action: none; }
-.stl__rail { position: absolute; left: 0; right: 0; top: 18px; height: 3px; border-radius: 999px; background: var(--nu-cream-text-12); }
-.stl__year { position: absolute; top: 26px; transform: translateX(-50%); color: var(--nu-cream-text-45); font-size: var(--nu-fs-xs); font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 5px; font-variant-numeric: tabular-nums; }
-.stl__tick { width: 1.5px; height: 8px; background: var(--nu-cream-text-45); display: block; margin-top: -12px; }
+.stl__rail { position: absolute; left: 0; right: 0; top: 18px; height: 3px; border-radius: 999px; background: var(--nu-dark-line); }
+.stl__year { position: absolute; top: 26px; transform: translateX(-50%); color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 5px; font-variant-numeric: tabular-nums; }
+.stl__tick { width: 1.5px; height: 8px; background: var(--nu-dark-chip-line); display: block; margin-top: -12px; }
 .stl__event {
   position: absolute; top: 13px; transform: translateX(-50%);
   width: 12px; height: 12px; border-radius: 50%;
-  background: var(--nu-cream-text-55); border: 2.5px solid var(--nu-navy);
+  background: var(--nu-on-dark-2); border: 2.5px solid var(--nu-ink);
 }
 .stl__event--choque { background: var(--nu-amber); width: 15px; height: 15px; top: 11.5px; }
 .stl__cursor { position: absolute; top: 0; bottom: 0; transform: translateX(-50%); }
 .stl__knob {
   position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
   width: 17px; height: 17px; border-radius: 50%;
-  background: var(--nu-blue-soft); box-shadow: 0 0 0 5px var(--nu-blue-soft-35);
+  background: var(--nu-blue-on-dark); box-shadow: 0 0 0 5px color-mix(in srgb, var(--nu-blue-on-dark) 30%, transparent);
 }
 .stl__cursor-label {
   position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
-  color: var(--nu-cream-text); font-size: var(--nu-fs-xs); font-weight: 700; font-style: normal;
+  color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 700; font-style: normal;
   white-space: nowrap; font-variant-numeric: tabular-nums;
 }
 </style>

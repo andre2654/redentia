@@ -99,7 +99,10 @@ const iPetroleo = computed(() => Math.abs(model.value.petroleo) / 60)
         v-for="r in chips" :key="r.label" type="button" class="ssp__replay"
         :title="r.sub" @click="applyReplay(r.dials)"
       >{{ r.label }}<em>{{ r.sub }}</em></button>
-      <button v-if="!isToday" type="button" class="ssp__replay ssp__replay--reset" @click="resetToday">↺ hoje</button>
+      <button v-if="!isToday" type="button" class="ssp__replay ssp__replay--reset" @click="resetToday">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg>
+        Voltar para hoje
+      </button>
     </div>
 
     <div class="ssp__cards">
@@ -137,22 +140,26 @@ const iPetroleo = computed(() => Math.abs(model.value.petroleo) / 60)
 </template>
 
 <style scoped>
-.ssp__replays { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-/* mesma anatomia do "Voltar"/"Gerar resumo" (dono 25/08): pill sólida
-   branca sem borda, texto ink, hover creme + lift */
+.ssp__replays { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+/* chip de sugestão da marca: branco com a sombra quente (lê sobre a sálvia e
+   sobre o creme), 44px de alvo; ao passar o ponteiro sobe 2px */
 .ssp__replay {
-  display: inline-flex; align-items: baseline; gap: 7px;
+  display: inline-flex; align-items: baseline; gap: 7px; min-height: 44px;
   border: none; border-radius: var(--nu-r-pill);
-  background: var(--nu-white); color: var(--nu-ink);
-  padding: 14px 24px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: background 0.15s, transform 0.15s;
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-quente);
+  padding: 11px 20px; font-size: 14.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: transform 0.25s cubic-bezier(.2, .8, .2, 1), box-shadow 0.25s cubic-bezier(.2, .8, .2, 1);
 }
-.ssp__replay:hover { background: var(--nu-cream); transform: translateY(-1px); }
-.ssp__replay em { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; font-style: normal; }
+.ssp__replay:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.ssp__replay:active { transform: scale(.98); }
+.ssp__replay em { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; font-style: normal; }
+/* "voltar para hoje": o mesmo chip, no carvão */
+.ssp__replay--reset { align-items: center; background: var(--nu-ink); color: var(--nu-white); box-shadow: none; }
+.ssp__replay--reset:hover { box-shadow: none; background: var(--nu-ink-hover); }
 
 .ssp__cards {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 @media (max-width: 700px) { .ssp__cards { grid-template-columns: 1fr; } }
 </style>

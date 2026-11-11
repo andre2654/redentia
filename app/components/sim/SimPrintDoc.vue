@@ -55,9 +55,9 @@ const bandPath = computed(() => {
 <template>
   <div class="spd" aria-hidden="true">
     <div class="spd__head">
-      <img src="/logo-azul.svg" alt="" class="spd__logo">
+      <MarcaAportou :altura="26" class="spd__logo" />
       <div class="spd__head-txt">
-        <b>Redentia Simulação</b>
+        <b>Simulação</b>
         <span>protótipo · {{ hoje }}</span>
       </div>
     </div>
@@ -117,8 +117,8 @@ const bandPath = computed(() => {
     font-family: var(--nu-font);
     padding: 8mm 4mm;
   }
-  .spd__head { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-  .spd__logo { width: 30px; height: 30px; }
+  .spd__head { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .spd__head-txt { padding-left: 14px; border-left: 1.5px solid var(--nu-line); }
   .spd__head-txt { display: flex; flex-direction: column; line-height: 1.25; }
   .spd__head-txt b { font-size: var(--nu-fs-sm); font-weight: 700; }
   .spd__head-txt span { font-size: var(--nu-fs-xs); color: var(--nu-gray); font-weight: 500; }
@@ -129,7 +129,7 @@ const bandPath = computed(() => {
   .spd__stale {
   margin: 0 0 10px; padding: 8px 12px;
   background: var(--nu-amber-bg); color: var(--nu-amber-text);
-  border-radius: 6px; font-size: var(--nu-fs-xs); font-weight: 700;
+  border-radius: var(--nu-r-tag); font-size: var(--nu-fs-xs); font-weight: 700;
 }
 .spd__fxnote { margin: 0 0 10px; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 500; }
 .spd__chart-legend { margin: 4px 0 16px; font-size: 10px; color: var(--nu-gray); font-weight: 500; }
@@ -138,11 +138,11 @@ const bandPath = computed(() => {
     text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--nu-ink);
     font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
   }
-  .spd__table td { padding: 6px 8px; border-bottom: 1px solid var(--nu-sand-2); }
+  .spd__table td { padding: 6px 8px; border-bottom: 1px solid var(--nu-line); }
   .spd__table td b { font-weight: 800; margin-right: 6px; }
   .spd__down { color: var(--nu-red-text); font-weight: 800; }
   .spd__up { color: var(--nu-green-text); font-weight: 800; }
-  .spd__rules { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--nu-cream-3); }
+  .spd__rules { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--nu-line); }
   .spd__rules-title { display: block; font-size: 9px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--nu-gray); margin-bottom: 4px; }
   .spd__rule { margin: 0 0 3px; font-size: 9px; color: var(--nu-gray-2); line-height: 1.45; }
   .spd__disclaimer { margin-top: 16px; font-size: 9.5px; color: var(--nu-gray); line-height: 1.5; }

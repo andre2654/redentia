@@ -115,19 +115,25 @@ function weightPct(p: SimPortfolioInput): string {
   return total.value > 0 ? `${Math.round((p.value / total.value) * 100)}%` : '—'
 }
 
+// Aportou (11/11/2026): a família de cor por classe da marca, do carvão ao
+// azul claro (renda fixa carvão, ações cobalto, FIIs azul claro); ETF vai na
+// sálvia e BDR no âmbar, as duas cores de apoio.
 const CLASS_COLOR: Record<string, string> = {
   'Ação': 'var(--nu-alloc-stock)',
   'FII': 'var(--nu-alloc-fii)',
-  'ETF': 'var(--nu-class-etf)',
-  'BDR': 'var(--nu-class-bdr)',
+  'ETF': 'var(--nu-sage)',
+  'BDR': 'var(--nu-amber)',
   'Renda fixa': 'var(--nu-alloc-fixed)',
 }
+/** a letra do selo sobre a cor da classe: carvão nas cores claras, branco nas escuras */
+const CLASS_FG: Record<string, string> = { 'FII': 'var(--nu-ink)', 'ETF': 'var(--nu-ink)', 'BDR': 'var(--nu-ink)' }
+const fgDe = (k: string) => CLASS_FG[k] ?? 'var(--nu-white)'
 
 /** IR por ativo (v2 do gap tributário, dono 25/08: menos informação na
  * tela) — bolsinha "IR" só nos TRIBUTADOS, detalhe no tooltip; isento fica
  * limpo. O equivalente-BRUTO dos pós isentos segue no sub (anti-Gorila). */
 function taxTip(a: SimAsset): string | null {
-  if (a.rf) return a.rf.isento ? null : 'IR de 15% sobre o ganho — tabela regressiva, acima de 2 anos'
+  if (a.rf) return a.rf.isento ? null : 'IR de 15% sobre o ganho (tabela regressiva, acima de 2 anos)'
   if (a.klass === 'FII') return null
   return 'IR estimado de 15% sobre o ganho'
 }
@@ -224,7 +230,7 @@ function onSearchEnter() {
       </div>
 
       <div class="spb__alloc" aria-hidden="true">
-        <i v-for="a in allocation" :key="a.klass" :style="{ width: `${a.pct}%`, background: a.color }" :title="`${a.klass} ${Math.round(a.pct)}%`" />
+        <i v-for="a in allocation" :key="a.klass" :style="{ flexGrow: a.pct, background: a.color }" :title="`${a.klass} ${Math.round(a.pct)}%`" />
       </div>
 
       <!-- containers lado a lado, um por classe, fundo tingido na cor do
@@ -235,15 +241,18 @@ function onSearchEnter() {
           :style="{ background: `color-mix(in srgb, ${g.color} 10%, var(--nu-white))` }"
         >
           <div class="spb__group-head">
-            <span class="spb__group-name" :style="{ color: g.color }">{{ g.label }}</span>
+            <span class="spb__group-name"><i class="spb__group-dot" :style="{ background: g.color }" aria-hidden="true" />{{ g.label }}</span>
             <span class="spb__group-pct">{{ Math.round((g.value / total) * 100) }}%</span>
           </div>
           <div v-for="p in g.items" :key="p.ticker" class="spb__prow">
-            <NuAssetLogo :ticker="p.ticker" :letter="p.ticker[0]!" :tile-bg="g.color" tile-fg="var(--nu-white)" :size="24" :radius="8" />
+            <NuAssetLogo :ticker="p.ticker" :letter="p.ticker[0]!" :tile-bg="g.color" :tile-fg="fgDe(g.klass)" :size="26" :radius="8" />
+            <!-- o ticker em cima; o peso e a bolsinha do IR embaixo (na mesma linha eles atropelavam o valor) -->
             <span class="spb__prow-main">
               <b class="spb__prow-ticker">{{ p.ticker }}</b>
-              <em class="spb__prow-weight">{{ weightPct(p) }}</em>
-              <SimTaxMark v-if="meta(p.ticker) && taxTip(meta(p.ticker)!)" :text="taxTip(meta(p.ticker)!)!" />
+              <span class="spb__prow-sub">
+                <em class="spb__prow-weight">{{ weightPct(p) }}</em>
+                <SimTaxMark v-if="meta(p.ticker) && taxTip(meta(p.ticker)!)" :text="taxTip(meta(p.ticker)!)!" />
+              </span>
             </span>
             <label class="spb__prow-val" :title="`Editar o valor em ${p.ticker}`">
               <span class="spb__prow-rs">R$</span>
@@ -296,7 +305,7 @@ function onSearchEnter() {
               class="spbm__asset" :class="{ 'spbm__asset--held': held.has(a.ticker) }"
               @click="toggle(a.ticker)"
             >
-              <NuAssetLogo :ticker="a.ticker" :letter="a.ticker[0]!" :tile-bg="CLASS_COLOR[a.klass] ?? 'var(--nu-sand)'" tile-fg="var(--nu-white)" :size="34" :radius="10" />
+              <NuAssetLogo :ticker="a.ticker" :letter="a.ticker[0]!" :tile-bg="CLASS_COLOR[a.klass] ?? 'var(--nu-sand)'" :tile-fg="fgDe(a.klass)" :size="36" :radius="8" />
               <span class="spbm__asset-main">
                 <span class="spbm__asset-row1">
                   <b class="spbm__asset-ticker">{{ a.ticker }}</b>
@@ -314,7 +323,7 @@ function onSearchEnter() {
 
           <div class="spbm__foot">
             <span class="spbm__count">{{ model.length }} na carteira</span>
-            <button type="button" class="spbm__done" @click="open = false">Pronto</button>
+            <NuBotaoSeta tamanho="m" @click="open = false">Pronto</NuBotaoSeta>
           </div>
         </div>
       </div>
@@ -328,153 +337,160 @@ function onSearchEnter() {
 .spb { max-width: 880px; display: flex; flex-direction: column; gap: 14px; }
 .spb__trigger { max-width: 640px; }
 
-/* input-gatilho: cara de campo de busca, abre o modal */
+/* input-gatilho: o campo da marca (58px, borda 1,5px, raio 16), abre o modal */
 .spb__trigger {
-  display: flex; align-items: center; gap: 11px; width: 100%;
-  background: var(--nu-white); border: 1.5px solid transparent; border-radius: var(--nu-r-pill);
-  padding: 15px 20px; cursor: pointer; font-family: inherit;
-  color: var(--nu-gray); box-shadow: var(--nu-shadow-card);
-  transition: border-color 0.15s, transform 0.15s;
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 58px;
+  background: var(--nu-white); border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input);
+  padding: 0 10px 0 18px; cursor: pointer; font-family: inherit;
+  color: var(--nu-gray);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.spb__trigger:hover { border-color: var(--nu-blue); transform: translateY(-1px); }
-.spb__trigger-txt { flex: 1; text-align: left; font-size: var(--nu-fs-md); font-weight: 500; color: var(--nu-sand); }
+.spb__trigger:hover { border-color: var(--nu-blue); box-shadow: 0 0 0 3px var(--nu-blue-tint); }
+.spb__trigger-txt { flex: 1; text-align: left; font-size: 17px; font-weight: 500; color: var(--nu-placeholder); }
 .spb__trigger-add {
-  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--nu-blue); color: var(--nu-white);
+  transition: transform 0.25s cubic-bezier(.2, .8, .2, 1);
 }
+.spb__trigger:hover .spb__trigger-add { transform: rotate(90deg); }
 
-/* carteira */
-.spb__cart { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 18px 18px 12px; box-shadow: var(--nu-shadow-card); }
-.spb__cart-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 0 4px; }
-.spb__cart-title { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.spb__cart-total { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
-.spb__alloc {
-  margin: 12px 4px 8px; height: 7px; border-radius: 999px; overflow: hidden;
-  display: flex; background: var(--nu-cream-3);
-}
-.spb__alloc i { display: block; height: 100%; transition: width 0.35s cubic-bezier(0.22, 0.61, 0.36, 1); }
-/* containers horizontais por classe, fundo na cor do tipo */
-.spb__groups { margin-top: 12px; display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
+/* carteira: cartão branco dentro do painel */
+.spb__cart { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: clamp(16px, 2.4vw, 24px); box-shadow: var(--nu-shadow-branco); animation: nu-fade 0.4s ease both; }
+.spb__cart-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.spb__cart-title { color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.spb__cart-total { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+/* a barra empilhada da marca: 26px, vão de 4px, pontas redondas só nos extremos */
+.spb__alloc { margin: 14px 0 0; height: 26px; display: flex; gap: 4px; }
+.spb__alloc i { display: block; height: 100%; flex-basis: 0; min-width: 6px; border-radius: 5px; }
+.spb__alloc i:first-child { border-top-left-radius: 13px; border-bottom-left-radius: 13px; }
+.spb__alloc i:last-child { border-top-right-radius: 13px; border-bottom-right-radius: 13px; }
+/* containers horizontais por classe, fundo tingido na cor do tipo */
+.spb__groups { margin-top: 16px; display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
 .spb__group {
-  flex: 1 1 0; min-width: 232px;
+  flex: 1 1 0; min-width: 244px;
   border-radius: var(--nu-r-tile); padding: 12px;
 }
-.spb__group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 7px; padding: 2px 4px 10px; }
-.spb__group-name { font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
-.spb__group-pct { color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
+.spb__group-head { display: flex; align-items: center; justify-content: space-between; gap: 7px; padding: 2px 4px 10px; }
+.spb__group-name { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.spb__group-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+.spb__group-pct { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums; }
 .spb__prow {
   display: flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: 12px;
-  padding: 7px 8px; margin-top: 6px;
+  background: var(--nu-white); border-radius: var(--nu-r-chip);
+  padding: 7px 2px 7px 8px; margin-top: 6px;
 }
 .spb__prow:first-of-type { margin-top: 0; }
-.spb__prow-main { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 6px; }
-.spb__prow-ticker { color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; }
+.spb__prow-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.spb__prow-ticker { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 800; letter-spacing: 0.02em; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spb__prow-sub { display: flex; align-items: center; gap: 5px; }
 .spb__prow-weight { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; font-style: normal; font-variant-numeric: tabular-nums; }
-/* valor editável SUAVE (v2 do feedback, 25/08: a caixa com borda tampava o
-   peso e pesou) — sublinhado pontilhado + lápis discreto, acende no hover */
+/* valor editável SUAVE: sublinhado pontilhado + lápis discreto, acende no hover */
 .spb__prow-val {
   display: inline-flex; align-items: baseline; gap: 4px;
-  border-bottom: 1.5px dashed var(--nu-sand);
+  border-bottom: 1.5px dashed var(--nu-borda-campo);
   padding: 0 1px 2px;
-  cursor: text; transition: border-color 0.15s;
+  cursor: text; transition: border-color 0.2s;
 }
 .spb__prow-val:hover, .spb__prow-val:focus-within { border-color: var(--nu-blue); }
 .spb__prow-val:hover .spb__prow-pen, .spb__prow-val:focus-within .spb__prow-pen { color: var(--nu-blue); }
 .spb__prow-rs { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
 .spb__prow-input {
   width: 58px; border: none; background: transparent; outline: none; text-align: right;
-  color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; font-family: inherit; font-variant-numeric: tabular-nums;
+  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-family: inherit; font-variant-numeric: tabular-nums;
 }
-.spb__prow-pen { color: var(--nu-sand); flex-shrink: 0; align-self: center; transition: color 0.15s; }
+.spb__prow-pen { color: var(--nu-borda-campo); flex-shrink: 0; align-self: center; transition: color 0.2s; }
+/* o X: alvo de 44px num desenho pequeno */
 .spb__prow-del {
-  width: 20px; height: 20px; flex-shrink: 0; border: none; border-radius: 50%;
-  background: transparent; color: var(--nu-sand); cursor: pointer;
+  width: 30px; height: 44px; margin: -7px 0; flex-shrink: 0; border: none; border-radius: var(--nu-r-chip);
+  background: transparent; color: var(--nu-gray); cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.2s, color 0.2s;
 }
-.spb__prow-del:hover { background: var(--nu-cream); color: var(--nu-red-text); }
+.spb__prow-del:hover { background: var(--nu-red-bg); color: var(--nu-red-text); }
 
 .spb__cart-actions { display: flex; }
+/* chip de sugestão */
 .spb__ghost {
-  border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
-  background: transparent; color: var(--nu-gray-2);
-  padding: 10px 18px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: border-color 0.15s, color 0.15s;
+  min-height: 44px; border: none; border-radius: var(--nu-r-pill);
+  background: var(--nu-cream-2); color: var(--nu-ink);
+  padding: 0 18px; font-size: 14.5px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: background 0.2s, transform 0.15s cubic-bezier(.2, .8, .2, 1);
 }
-.spb__ghost:hover { border-color: var(--nu-blue); color: var(--nu-blue-text); }
+.spb__ghost:hover { background: var(--nu-line-2); }
+.spb__ghost:active { transform: scale(.98); }
 
-/* ——— modal (anatomia da casa: scrim + card dia) ——— */
+/* ——— modal de busca: o fundo surge, a folha sobe ——— */
 .spbm {
   position: fixed; inset: 0; z-index: 120;
   display: flex; align-items: flex-start; justify-content: center; padding: clamp(18px, 8vh, 88px) 18px 18px;
   background: var(--nu-day-backdrop);
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  animation: nu-fade 0.22s ease both;
+  animation: nu-surgir 0.2s ease both;
 }
 .spbm__card {
-  width: min(560px, 100%); max-height: min(640px, calc(100dvh - 36px));
+  width: min(560px, 100%); max-height: min(660px, calc(100dvh - 36px));
   display: flex; flex-direction: column;
-  background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
-  padding: 18px 18px 14px; box-shadow: var(--nu-shadow-day-modal);
-  outline: none; animation: nu-fade 0.28s ease both;
+  background: var(--nu-page); border-radius: var(--nu-r-card-lg);
+  padding: 18px 18px 16px; box-shadow: var(--nu-shadow-day-modal);
+  outline: none; animation: nu-subir 0.32s cubic-bezier(.2, .8, .2, 1) both;
 }
+/* o campo da marca */
 .spbm__search {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--nu-cream); border-radius: var(--nu-r-pill);
-  padding: 11px 15px; color: var(--nu-gray);
+  display: flex; align-items: center; gap: 10px; min-height: 56px;
+  background: var(--nu-white); border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input);
+  padding: 0 6px 0 16px; color: var(--nu-gray);
+  transition: border-color 0.2s;
 }
+.spbm__search:focus-within { border-color: var(--nu-blue); outline: 3px solid var(--nu-blue); outline-offset: 1px; }
 .spbm__search-input {
   flex: 1; min-width: 0; border: none; background: transparent; outline: none;
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; font-family: inherit;
+  color: var(--nu-ink); font-size: 17px; font-weight: 500; font-family: inherit;
 }
-.spbm__search-input::placeholder { color: var(--nu-sand); }
+.spbm__search-input::placeholder { color: var(--nu-placeholder); }
 .spbm__close {
-  width: 30px; height: 30px; flex-shrink: 0; border: none; border-radius: 50%;
-  background: var(--nu-white); color: var(--nu-ink); cursor: pointer;
+  width: 44px; height: 44px; flex-shrink: 0; border: none; border-radius: 50%;
+  background: transparent; color: var(--nu-ink); cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
+  transition: background 0.2s;
 }
-.spbm__close:hover { background: var(--nu-cream-hover); }
+.spbm__close:hover { background: var(--nu-cream-2); }
 
-.spbm__filters { margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap; }
+.spbm__filters { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
 .spbm__filter {
-  border: none; border-radius: var(--nu-r-pill); background: transparent;
-  color: var(--nu-gray-2); padding: 8px 13px; font-size: var(--nu-fs-dense); font-weight: 700;
-  cursor: pointer; font-family: inherit; transition: background 0.15s, color 0.15s;
+  min-height: 40px; border: none; border-radius: var(--nu-r-pill); background: var(--nu-cream-2);
+  color: var(--nu-ink); padding: 0 15px; font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: background 0.2s, color 0.2s;
 }
-.spbm__filter:hover { background: var(--nu-cream-hover); }
-.spbm__filter--on { background: var(--nu-ink); color: var(--nu-white); }
+.spbm__filter:hover { background: var(--nu-line-2); }
+.spbm__filter--on, .spbm__filter--on:hover { background: var(--nu-ink); color: var(--nu-white); }
 
-.spbm__list { margin-top: 10px; flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 2px; }
+.spbm__list { margin-top: 12px; flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 2px; }
 .spbm__asset {
-  display: flex; align-items: center; gap: 11px; text-align: left;
-  background: var(--nu-cream); border: 1.5px solid transparent; border-radius: 14px;
-  padding: 10px 12px; cursor: pointer; font-family: inherit;
-  transition: border-color 0.15s, background 0.15s;
+  display: flex; align-items: center; gap: 12px; text-align: left; min-height: 56px;
+  background: var(--nu-card); border: 1.5px solid transparent; border-radius: var(--nu-r-tile);
+  padding: 9px 12px; cursor: pointer; font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
 }
-.spbm__asset:hover { border-color: var(--nu-blue); }
-.spbm__asset--held { background: var(--nu-blue-tint); border-color: var(--nu-blue); }
+.spbm__asset:hover { border-color: var(--nu-borda-campo); background: var(--nu-white); }
+.spbm__asset--held, .spbm__asset--held:hover { background: var(--nu-blue-bg); border-color: var(--nu-blue); }
 .spbm__asset-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .spbm__asset-row1 { display: flex; align-items: baseline; gap: 8px; }
-.spbm__asset-ticker { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
-.spbm__asset-name { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spbm__asset-ticker { color: var(--nu-ink); font-size: 15px; font-weight: 800; letter-spacing: 0.02em; }
+.spbm__asset-name { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .spbm__asset-act {
-  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--nu-white); color: var(--nu-gray-2);
-  transition: background 0.15s, color 0.15s;
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-line);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
-.spbm__asset-act--held { background: var(--nu-blue); color: var(--nu-white); }
-.spbm__empty { margin: 14px 4px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.spbm__asset-act--held { background: var(--nu-blue); color: var(--nu-white); box-shadow: none; }
+.spbm__empty { margin: 14px 4px; color: var(--nu-gray); font-size: 15px; font-weight: 500; }
 
-.spbm__foot { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.spbm__count { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }
-.spbm__done {
-  border: none; border-radius: var(--nu-r-pill); background: var(--nu-ink); color: var(--nu-white);
-  padding: 11px 24px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: transform 0.15s;
+.spbm__foot { margin-top: 14px; padding-top: 14px; border-top: 1.5px solid var(--nu-line); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.spbm__count { color: var(--nu-gray); font-size: 14.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 480px) {
+  .spb__group { min-width: 100%; }
 }
-.spbm__done:hover { transform: translateY(-1px); }
 </style>

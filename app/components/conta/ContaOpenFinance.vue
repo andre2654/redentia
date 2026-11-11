@@ -198,24 +198,34 @@ function timeSince(iso: string | null): string {
 </script>
 
 <template>
-  <ContaSection title="Open Finance" subtitle="Conecte corretoras e bancos pra sincronizar sua carteira automaticamente. Suas credenciais nunca passam pela Redentia, tudo regulado pelo Banco Central.">
+  <ContaSection title="Open Finance" subtitle="Conecte corretoras e bancos pra sincronizar sua carteira automaticamente. Suas credenciais nunca passam pela Aportou, tudo regulado pelo Banco Central.">
     <div class="of">
       <!-- toolbar -->
       <div class="of__bar">
         <span class="of__count">{{ connections.length }} {{ connections.length === 1 ? 'conexão' : 'conexões' }}</span>
-        <button type="button" class="of__connect" :disabled="widgetLoading" @click="openConnectFlow">
-          <svg v-if="!widgetLoading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
-          <span v-else class="of__spin" aria-hidden="true" />
-          {{ widgetLoading ? 'Abrindo...' : 'Conectar nova conta' }}
-        </button>
+        <NuBotaoSeta tamanho="m" :loading="widgetLoading" @click="openConnectFlow">
+          {{ widgetLoading ? 'Abrindo' : 'Conectar nova conta' }}
+        </NuBotaoSeta>
       </div>
 
       <!-- notice inline -->
       <p v-if="notice" class="of__notice" :class="`of__notice--${notice.tone}`" role="status">{{ notice.text }}</p>
 
-      <!-- loading -->
-      <div v-if="loading" class="of__state">
-        <span class="of__spin of__spin--lg" aria-hidden="true" />
+      <!-- loading: o esqueleto na forma do cartão de conexão -->
+      <div v-if="loading" class="of__esq" aria-busy="true" aria-label="Lendo as suas conexões">
+        <div class="of__esq-topo">
+          <NuSkeleton width="44px" height="44px" radius="chip" />
+          <div class="of__esq-txt">
+            <NuSkeleton width="min(180px, 60%)" height="18px" radius="chip" />
+            <NuSkeleton width="min(120px, 40%)" height="13px" radius="chip" />
+          </div>
+          <NuSkeleton width="110px" height="30px" radius="8px" />
+        </div>
+        <NuSkeleton width="min(380px, 90%)" height="14px" radius="chip" />
+        <div class="of__esq-acoes">
+          <NuSkeleton width="120px" height="44px" radius="pill" />
+          <NuSkeleton width="130px" height="44px" radius="pill" />
+        </div>
       </div>
 
       <!-- error -->
@@ -231,10 +241,7 @@ function timeSince(iso: string | null): string {
         </span>
         <h3 class="of__empty-title">Nenhuma conta conectada</h3>
         <p class="of__empty-sub">Conecte sua primeira corretora ou banco pra começar a sincronizar sua carteira automaticamente.</p>
-        <button type="button" class="of__connect of__connect--empty" :disabled="widgetLoading" @click="openConnectFlow">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
-          Conectar conta
-        </button>
+        <NuBotaoSeta tamanho="m" :loading="widgetLoading" @click="openConnectFlow">Conectar conta</NuBotaoSeta>
       </div>
 
       <!-- lista -->
@@ -252,7 +259,7 @@ function timeSince(iso: string | null): string {
               </span>
             </div>
             <span class="of__status" :class="`of__status--${statusVisual(conn.status).tone}`">
-              <span v-if="conn.status === 'UPDATING' || conn.status === 'CREATING'" class="of__spin" aria-hidden="true" />
+              <span v-if="conn.status === 'UPDATING' || conn.status === 'CREATING'" class="of__pontos" aria-hidden="true"><i /><i /><i /></span>
               {{ statusVisual(conn.status).label }}
             </span>
           </div>
@@ -280,14 +287,14 @@ function timeSince(iso: string | null): string {
               :disabled="syncingIds.has(conn.id) || conn.status === 'UPDATING' || conn.status === 'CREATING'"
               @click="syncOne(conn)"
             >
-              <span v-if="syncingIds.has(conn.id) || conn.status === 'UPDATING'" class="of__spin" aria-hidden="true" />
+              <span v-if="syncingIds.has(conn.id) || conn.status === 'UPDATING'" class="of__pontos" aria-hidden="true"><i /><i /><i /></span>
               <svg v-else width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5" /></svg>
-              {{ syncingIds.has(conn.id) ? 'Sincronizando...' : 'Atualizar' }}
+              {{ syncingIds.has(conn.id) ? 'Sincronizando' : 'Atualizar' }}
             </button>
             <button type="button" class="of__act of__act--danger" :disabled="deletingIds.has(conn.id)" @click="disconnectOne(conn)">
-              <span v-if="deletingIds.has(conn.id)" class="of__spin" aria-hidden="true" />
+              <span v-if="deletingIds.has(conn.id)" class="of__pontos" aria-hidden="true"><i /><i /><i /></span>
               <svg v-else width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 5.5 7.5M15 7h2a5 5 0 0 1 1.5 9.8M8 12h5M2 2l20 20" /></svg>
-              {{ deletingIds.has(conn.id) ? 'Removendo...' : 'Desconectar' }}
+              {{ deletingIds.has(conn.id) ? 'Removendo' : 'Desconectar' }}
             </button>
           </div>
         </li>
@@ -297,78 +304,87 @@ function timeSince(iso: string | null): string {
 </template>
 
 <style scoped>
+/* Aportou (11/11/2026): a chamada é a pílula com a seta (NuBotaoSeta); cada
+   conexão é um cartão branco dentro do painel creme (raio 22); o estado é um
+   selo de raio 8; quem espera vê os três pontos da marca, nunca um giro. */
 .of__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.of__count { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.of__connect {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-blue); color: var(--nu-white); border: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); padding: 12px 20px;
-  font-family: var(--nu-font); font-size: var(--nu-fs-sm); font-weight: 700; transition: background .18s, opacity .18s;
-}
-.of__connect:hover:not(:disabled) { background: var(--nu-blue-hover); }
-.of__connect:disabled { opacity: .55; cursor: default; }
+.of__count { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
 
-.of__notice { margin: 16px 0 0; padding: 12px 16px; border-radius: var(--nu-r-input); font-size: var(--nu-fs-sm); font-weight: 500; }
+.of__notice { margin: 16px 0 0; padding: 12px 16px; border-radius: var(--nu-r-chip); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.45; animation: nu-fade .25s ease both; }
 .of__notice--success { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .of__notice--error { background: var(--nu-red-bg); color: var(--nu-red-text); }
 
 .of__state { display: flex; align-items: center; justify-content: center; padding: 40px 0; }
-.of__error { gap: 14px; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; }
-.of__retry { background: none; border: none; color: var(--nu-blue-text); font-weight: 700; font-size: var(--nu-fs-sm); cursor: pointer; font-family: var(--nu-font); text-decoration: underline; }
+.of__error { gap: 14px; flex-wrap: wrap; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 600; }
+.of__retry { min-height: 44px; background: none; border: none; color: var(--nu-blue-text); font-weight: 700; font-size: var(--nu-fs-sm); cursor: pointer; font-family: var(--nu-font); text-decoration: underline; text-underline-offset: 3px; }
+
+/* o esqueleto tem a forma (e a altura) do cartão que chega */
+.of__esq { display: flex; flex-direction: column; gap: 16px; margin-top: 18px; background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-branco); padding: 20px 22px; }
+.of__esq-topo { display: flex; align-items: center; gap: 13px; }
+.of__esq-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.of__esq-acoes { display: flex; gap: 10px; }
 
 .of__empty { text-align: center; padding: 44px 20px 24px; display: flex; flex-direction: column; align-items: center; }
 .of__empty-ic {
-  width: 60px; height: 60px; border-radius: 18px; background: var(--nu-cream); color: var(--nu-blue-text);
+  width: 60px; height: 60px; border-radius: var(--nu-r-tile); background: var(--nu-blue-bg); color: var(--nu-blue-text);
   display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;
 }
-.of__empty-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.2px; }
-.of__empty-sub { margin: 8px 0 22px; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; max-width: 42ch; }
-.of__connect--empty { padding: 13px 24px; }
+.of__empty-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.025em; }
+.of__empty-sub { margin: 8px 0 22px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; max-width: 42ch; }
 
 .of__list { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
-.of__card { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 20px 22px; }
+.of__card { background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-branco); padding: 20px 22px; animation: nu-fade .25s ease both; }
 .of__card-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
 .of__inst { display: flex; align-items: center; gap: 13px; min-width: 0; }
 .of__logo {
-  flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px; background: var(--nu-white); color: var(--nu-gray);
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: var(--nu-r-chip); background: var(--nu-page); color: var(--nu-gray);
   display: inline-flex; align-items: center; justify-content: center; overflow: hidden;
 }
 .of__logo-img { width: 100%; height: 100%; object-fit: contain; }
 .of__inst-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.of__inst-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.of__inst-name { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.01em; }
 .of__inst-kind { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
+/* o selo da marca: raio 8, 13,5px, 700 */
 .of__status {
   display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
-  padding: 6px 12px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-dense); font-weight: 700;
+  padding: 6px 11px; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: 700; line-height: 1.3;
 }
 .of__status--positive { background: var(--nu-green-bg); color: var(--nu-green-text); }
-.of__status--neutral { background: var(--nu-amber-bg); color: var(--nu-amber); }
+.of__status--neutral { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .of__status--negative { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .of__status--info { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 
-.of__meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
+.of__meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1.5px solid var(--nu-line-2); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; }
 .of__dot { color: var(--nu-gray); }
 .of__meta-strong { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
 
-.of__actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.of__actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .of__act {
-  display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-family: var(--nu-font);
-  border-radius: var(--nu-r-pill); padding: 10px 18px; font-size: var(--nu-fs-sm); font-weight: 700;
-  border: 1.5px solid transparent; transition: background .18s, border-color .18s, color .18s, opacity .18s;
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; font-family: var(--nu-font);
+  border-radius: var(--nu-r-pill); padding: 0 18px; font-size: var(--nu-fs-sm); font-weight: 700;
+  border: 0; transition: background .2s, color .2s, opacity .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
+.of__act:active:not(:disabled) { transform: scale(.98); }
 .of__act:disabled { opacity: .55; cursor: default; }
 .of__act--primary { background: var(--nu-blue); color: var(--nu-white); }
 .of__act--primary:hover:not(:disabled) { background: var(--nu-blue-hover); }
-.of__act--ghost { background: var(--nu-white); color: var(--nu-ink); }
-.of__act--ghost:hover:not(:disabled) { border-color: var(--nu-sand-border); }
+.of__act--ghost { background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink); }
+.of__act--ghost:hover:not(:disabled) { background: var(--nu-row-hover); }
 .of__act--danger { background: none; color: var(--nu-red-text); }
 .of__act--danger:hover:not(:disabled) { background: var(--nu-red-bg); }
 
-.of__spin {
-  width: 15px; height: 15px; flex-shrink: 0; border-radius: 50%;
-  border: 2px solid currentColor; border-top-color: transparent; animation: of-spin .7s linear infinite;
+/* quem espera: os três pontos da marca (nu-ponto), no lugar do giro */
+.of__pontos { display: inline-flex; gap: 3px; flex-shrink: 0; }
+.of__pontos i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: nu-ponto 1.2s infinite; }
+.of__pontos i:nth-child(2) { animation-delay: .2s; }
+.of__pontos i:nth-child(3) { animation-delay: .4s; }
+
+@media (max-width: 520px) {
+  .of__bar :deep(.nbs) { width: 100%; }
+  .of__act { flex: 1 1 auto; justify-content: center; }
 }
-.of__spin--lg { width: 26px; height: 26px; border-width: 3px; color: var(--nu-blue-text); }
-@keyframes of-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .of__notice, .of__card { animation: none; }
+}
 </style>

@@ -1,8 +1,10 @@
 <script setup lang="ts">
-// Seção Redentia MCP de /conta. Card do design do dono (Claude Design
-// "Redentia Configuracoes Nu.dc.html", #sec-mcp): gradiente azul + glow
-// verde, toggle mint, chips dos apps, chave mascarada e permissões. Cores
-// exatas do design (não os tokens --nu-*, pra bater pixel a pixel). LIGADO
+// Seção Aportou MCP de /conta. Nasceu do design do dono (Claude Design
+// "Redentia Configuracoes Nu.dc.html", #sec-mcp); em 11/11/2026 vestiu a
+// Aportou: o painel azul da marca (o gradiente cobalto, o corte gigante branco
+// no canto, o eyebrow com o corte), o verde claro como acento (interruptor,
+// chave) e tudo em tokens --nu-*. A estrutura é a mesma: interruptor, chips
+// dos apps, chave mascarada e permissões. LIGADO
 // no backend real (/api/me/mcp via useMcp): gera/rotaciona chave (mostrada
 // 1x) e permissões por escopo. A chave em claro só existe UMA vez, no
 // retorno do rotate — depois disso, só o mascarado; por isso Copiar só
@@ -115,15 +117,15 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 
 <template>
   <section class="mcp" :class="{ 'mcp--off': !mcpOn }">
-    <div class="mcp__glow" aria-hidden="true" />
+    <span class="mcp__corte" aria-hidden="true"><MarcaCorte :largura="420" cor="var(--nu-white)" /></span>
 
     <div class="mcp__head">
       <div class="mcp__head-txt">
-        <span class="mcp__badge">Novo</span>
-        <h2 class="mcp__title">Redentia MCP</h2>
-        <p class="mcp__desc">Conecte sua carteira, o mercado e as teses ao seu assistente de IA. Pergunte sobre seus investimentos direto no Claude, ChatGPT ou Cursor — a Redentia responde com os seus dados.</p>
+        <NuEyebrow sobre="azul">Novo</NuEyebrow>
+        <h2 class="mcp__title">Aportou MCP</h2>
+        <p class="mcp__desc">Conecte sua carteira, o mercado e as teses ao seu assistente de IA. Pergunte sobre seus investimentos direto no Claude, ChatGPT ou Cursor: a Aportou responde com os seus dados.</p>
       </div>
-      <button type="button" class="msw" :class="{ 'msw--on': mcpOn }" role="switch" :aria-checked="mcpOn" aria-label="Ativar Redentia MCP" @click="onToggleMain"><span class="msw__knob" /></button>
+      <button type="button" class="msw" :class="{ 'msw--on': mcpOn }" role="switch" :aria-checked="mcpOn" aria-label="Ativar Aportou MCP" @click="onToggleMain"><span class="msw__knob" /></button>
     </div>
 
     <div class="mcp__apps">
@@ -150,7 +152,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
           <!-- sem a chave em claro (depois do reload), copiar copiaria o mascarado — some -->
           <button v-if="plainKey" type="button" class="mcp__copy" :class="{ 'mcp__copy--done': copiedToken }" @click="copyToken">{{ copiedToken ? 'Copiado' : 'Copiar' }}</button>
         </div>
-        <p v-if="plainKey" class="mcp__key-warn">Copie agora — por segurança, não mostramos a chave de novo.</p>
+        <p v-if="plainKey" class="mcp__key-warn">Copie agora. Por segurança, a chave não aparece de novo.</p>
         <div class="mcp__key-foot">
           <button type="button" class="mcp__regen" :disabled="pending" @click="onRotate">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5" /></svg>
@@ -161,11 +163,8 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
       </template>
 
       <template v-else>
-        <p class="mcp__key-empty">Você ainda não tem uma chave. Gere a sua pra conectar a Redentia ao seu assistente de IA.</p>
-        <button type="button" class="mcp__gen" :disabled="pending" @click="onRotate">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
-          Gerar minha chave
-        </button>
+        <p class="mcp__key-empty">Você ainda não tem uma chave. Gere a sua para conectar a Aportou ao seu assistente de IA.</p>
+        <NuBotaoSeta class="mcp__gerar" variante="creme" tamanho="m" :disabled="pending" @click="onRotate">Gerar minha chave</NuBotaoSeta>
       </template>
     </div>
 
@@ -174,7 +173,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
       <div class="mcp__perm">
         <div class="mcp__perm-txt">
           <div class="mcp__perm-name">Carteira</div>
-          <div class="mcp__perm-desc">Posições, saldo e proventos — somente leitura.</div>
+          <div class="mcp__perm-desc">Posições, saldo e proventos, somente leitura.</div>
         </div>
         <button type="button" class="msw" :class="{ 'msw--on': perms.carteira }" role="switch" :aria-checked="perms.carteira" aria-label="Permissão carteira" @click="onTogglePerm('carteira')"><span class="msw__knob" /></button>
       </div>
@@ -195,14 +194,14 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
       <div class="mcp__perm">
         <div class="mcp__perm-txt">
           <div class="mcp__perm-name">Notícias &amp; pesquisa</div>
-          <div class="mcp__perm-desc">Notícias analisadas e relatórios da Redentia.</div>
+          <div class="mcp__perm-desc">Notícias analisadas e relatórios da Aportou.</div>
         </div>
         <button type="button" class="msw" :class="{ 'msw--on': perms.news }" role="switch" :aria-checked="perms.news" aria-label="Permissão notícias e pesquisa" @click="onTogglePerm('news')"><span class="msw__knob" /></button>
       </div>
       <div v-if="hasCenarios" class="mcp__perm">
         <div class="mcp__perm-txt">
           <div class="mcp__perm-name">Cenários e projeções</div>
-          <div class="mcp__perm-desc">O motor de projeções da Redentia roda dentro da sua IA: dólar, Selic, bolsa, petróleo e inflação sobre a carteira que você descrever na conversa. Vem desligado; ligue se quiser usar.</div>
+          <div class="mcp__perm-desc">O motor de projeções da Aportou roda dentro da sua IA: dólar, Selic, bolsa, petróleo e inflação sobre a carteira que você descrever na conversa. Vem desligado; ligue se quiser usar.</div>
         </div>
         <button type="button" class="msw" :class="{ 'msw--on': perms.cenarios }" role="switch" :aria-checked="!!perms.cenarios" aria-label="Permissão cenários e projeções" @click="onTogglePerm('cenarios')"><span class="msw__knob" /></button>
       </div>
@@ -210,7 +209,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 
     <NuxtLink to="/mcp" class="mcp__docs">
       Ver documentação do MCP
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9" /></svg>
+      <svg class="mcp__docs-seta" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9" /></svg>
     </NuxtLink>
 
     <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" origem="mcp" @close="conexaoAberta = false" />
@@ -218,115 +217,135 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 </template>
 
 <style scoped>
+/* o painel azul da marca: gradiente cobalto, raio 32, o corte gigante branco a 8% no canto */
 .mcp {
   position: relative; overflow: hidden;
-  border-radius: 26px; padding: clamp(26px, 3vw, 40px);
-  background: linear-gradient(150deg, #123A8F 0%, #1E4FC2 46%, #2F6BFF 100%);
-  transition: background .3s ease;
+  border-radius: var(--nu-r-card-lg); padding: clamp(26px, 3vw, 40px);
+  background: var(--nu-grad-cobalto); color: var(--nu-white);
+  box-shadow: var(--nu-shadow-card);
 }
-.mcp__glow {
-  position: absolute; top: -90px; right: -70px; width: 280px; height: 280px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(143, 240, 181, .28) 0%, rgba(143, 240, 181, 0) 70%); pointer-events: none;
+.mcp__corte {
+  position: absolute; top: -34px; right: -96px; opacity: .08; pointer-events: none;
   transition: opacity .3s ease;
 }
 
 /* DESLIGADO (dono 2026-07-14): card cinza, como se o MCP estivesse mesmo fora.
-   Fundo vira cinza + conteúdo dessatura/esmaece/trava; SÓ o toggle principal
-   continua colorido e clicável (é como se religa). */
+   Fundo vira o carvão apagado + conteúdo dessatura/esmaece/trava; SÓ o
+   interruptor principal continua clicável (é como se religa). */
 .mcp__head-txt,
 .mcp__apps,
 .mcp__panel,
 .mcp__perms-label,
 .mcp__perms,
 .mcp__docs { transition: filter .3s ease, opacity .3s ease; }
-.mcp--off { background: linear-gradient(150deg, #363B44 0%, #474D57 46%, #59606B 100%); }
-.mcp--off .mcp__glow { opacity: 0; }
+.mcp--off { background: color-mix(in srgb, var(--nu-ink) 78%, var(--nu-sand)); box-shadow: none; }
+.mcp--off .mcp__corte { opacity: .04; }
 .mcp--off .mcp__head-txt,
 .mcp--off .mcp__apps,
 .mcp--off .mcp__panel,
 .mcp--off .mcp__perms-label,
 .mcp--off .mcp__perms,
-.mcp--off .mcp__docs { filter: grayscale(1); opacity: .55; pointer-events: none; }
+.mcp--off .mcp__docs { filter: grayscale(1); opacity: .62; pointer-events: none; }
 
 .mcp__head { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.mcp__head-txt { max-width: 560px; }
-.mcp__badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(255, 255, 255, .16); backdrop-filter: blur(6px); color: #fff;
-  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
-  padding: 6px 13px; border-radius: 999px;
-}
-.mcp__title { margin: 16px 0 0; color: #fff; font-size: clamp(24px, 2.5vw, 32px); font-weight: 800; letter-spacing: -0.025em; }
-.mcp__desc { margin: 12px 0 0; color: rgba(245, 241, 234, .82); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
+.mcp__head-txt { flex: 1 1 280px; max-width: 580px; min-width: 0; }
+.mcp__title { margin: 16px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.mcp__desc { margin: 12px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 
 .mcp__apps { position: relative; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
 .mcp__app {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(255, 255, 255, .12); color: #fff; font-size: var(--nu-fs-sm); font-weight: 700;
-  padding: 9px 15px; border-radius: 12px;
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+  background: var(--nu-white-14); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700;
+  padding: 0 15px 0 11px; border-radius: var(--nu-r-chip);
 }
 .mcp__app-ic {
-  width: 22px; height: 22px; border-radius: 6px; background: #fff; overflow: hidden;
+  width: 24px; height: 24px; border-radius: 7px; background: var(--nu-white); overflow: hidden;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .mcp__app-img { width: 100%; height: 100%; object-fit: contain; padding: 3px; display: block; }
 
-.mcp__panel { position: relative; background: rgba(9, 20, 44, .5); border: 1px solid rgba(255, 255, 255, .14); border-radius: 18px; padding: 20px; margin-top: 22px; }
-.mcp__panel-label { color: rgba(245, 241, 234, .7); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
+.mcp__panel { position: relative; background: color-mix(in srgb, var(--nu-ink) 46%, transparent); border: 1.5px solid var(--nu-white-18); border-radius: var(--nu-r-panel); padding: clamp(18px, 2.2vw, 24px); margin-top: 22px; }
+.mcp__panel-label, .mcp__perms-label { color: var(--nu-blue-on-blue); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 .mcp__key-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
 .mcp__key {
-  flex: 1; min-width: 200px; background: rgba(0, 0, 0, .28); color: #8FF0B5;
+  flex: 1; min-width: 200px; min-height: 44px; display: flex; align-items: center;
+  background: color-mix(in srgb, var(--nu-ink) 62%, transparent); color: var(--nu-green-soft);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--nu-fs-sm); font-weight: 500;
-  padding: 13px 16px; border-radius: 12px; letter-spacing: .3px; overflow-x: auto; white-space: nowrap;
+  padding: 0 16px; border-radius: var(--nu-r-chip); letter-spacing: .3px; overflow-x: auto; white-space: nowrap;
 }
-.mcp__reveal {
-  background: rgba(255, 255, 255, .14); border: none; color: #fff; font-size: var(--nu-fs-sm); font-weight: 700;
-  cursor: pointer; padding: 12px 15px; border-radius: 12px; transition: background .2s;
+.mcp__reveal, .mcp__copy {
+  min-height: 44px; border: none; font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
+  cursor: pointer; padding: 0 16px; border-radius: var(--nu-r-chip); white-space: nowrap;
+  transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.mcp__reveal:hover { background: rgba(255, 255, 255, .24); }
-.mcp__copy {
-  background: #fff; border: none; color: #123A8F; font-size: var(--nu-fs-sm); font-weight: 700;
-  cursor: pointer; padding: 12px 16px; border-radius: 12px; white-space: nowrap; transition: background .2s, color .2s;
-}
-.mcp__copy--done { background: #8FF0B5; color: #0C1524; }
-.mcp__key-foot { display: flex; align-items: center; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
+.mcp__reveal:active, .mcp__copy:active { transform: scale(.98); }
+.mcp__reveal { background: var(--nu-white-14); color: var(--nu-white); }
+.mcp__reveal:hover { background: var(--nu-white-30); }
+.mcp__copy { background: var(--nu-white); color: var(--nu-blue-text); }
+.mcp__copy:hover { background: var(--nu-blue-on-blue); }
+.mcp__copy--done, .mcp__copy--done:hover { background: var(--nu-green-soft); color: var(--nu-ink); }
+.mcp__key-foot { display: flex; align-items: center; gap: 6px 16px; margin-top: 10px; flex-wrap: wrap; }
 .mcp__regen {
-  display: inline-flex; align-items: center; gap: 7px; background: transparent; border: none;
-  color: rgba(245, 241, 234, .78); font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer; padding: 0;
-  font-family: inherit; transition: color .2s;
+  display: inline-flex; align-items: center; gap: 7px; min-height: 44px; background: transparent; border: none;
+  color: var(--nu-blue-on-blue); font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; padding: 0;
+  font-family: inherit; text-decoration: underline; text-underline-offset: 3px; transition: color .2s;
 }
-.mcp__regen:hover { color: #fff; }
-.mcp__key-meta { color: rgba(245, 241, 234, .5); font-size: var(--nu-fs-dense); font-weight: 500; }
-.mcp__key-warn { margin: 10px 0 0; color: #8FF0B5; font-size: var(--nu-fs-dense); font-weight: 700; }
-.mcp__key-empty { margin: 12px 0 0; color: rgba(245, 241, 234, .72); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.mcp__gen {
-  display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
-  background: #8FF0B5; color: #0A2050; border: 0; border-radius: 999px;
-  padding: 11px 20px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
-  transition: opacity .15s ease;
-}
-.mcp__gen:disabled { opacity: .55; cursor: default; }
+.mcp__regen svg { transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+.mcp__regen:hover:not(:disabled) { color: var(--nu-white); }
+.mcp__regen:hover:not(:disabled) svg { transform: rotate(90deg); }
 .mcp__regen:disabled { opacity: .5; cursor: default; }
+.mcp__key-meta { color: var(--nu-blue-on-blue-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
+.mcp__key-warn { margin: 10px 0 0; color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700; }
+.mcp__key-empty { margin: 12px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.mcp__gerar { margin-top: 16px; }
+/* "Tentar de novo", quando a chave não carregou: a pílula creme simples */
+.mcp__gen {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; min-height: 44px;
+  background: var(--nu-creme); color: var(--nu-ink); border: 0; border-radius: var(--nu-r-pill);
+  padding: 0 20px; font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
+  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+}
+.mcp__gen:hover:not(:disabled) { background: var(--nu-white); }
+.mcp__gen:active { transform: scale(.98); }
+.mcp__gen:disabled { opacity: .55; cursor: default; }
 
-.mcp__perms-label { position: relative; color: rgba(245, 241, 234, .7); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; margin-top: 24px; }
-.mcp__perms { position: relative; margin-top: 8px; }
-.mcp__perm { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-top: 1px solid rgba(255, 255, 255, .14); }
+.mcp__perms-label { position: relative; margin-top: 26px; }
+.mcp__perms { position: relative; margin-top: 10px; }
+.mcp__perm { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-top: 1.5px solid var(--nu-white-18); }
 .mcp__perm-txt { flex: 1; min-width: 0; }
-.mcp__perm-name { color: #fff; font-size: var(--nu-fs-md); font-weight: 800; }
-.mcp__perm-desc { color: rgba(245, 241, 234, .65); font-size: var(--nu-fs-dense); font-weight: 500; margin-top: 2px; }
+.mcp__perm-name { color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 800; }
+.mcp__perm-desc { color: var(--nu-blue-on-blue); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.45; margin-top: 2px; }
 
-.mcp__docs { position: relative; display: inline-flex; align-items: center; gap: 8px; color: #fff; font-size: var(--nu-fs-sm); font-weight: 700; margin-top: 20px; transition: opacity .2s; }
-.mcp__docs:hover { opacity: .75; color: #fff; }
+.mcp__docs { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; margin-top: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.mcp__docs:hover { color: var(--nu-white); }
+.mcp__docs-seta { transition: transform .2s; }
+.mcp__docs:hover .mcp__docs-seta { transform: translate(2px, -2px); }
 
-/* toggle do design: track 50x30, mint on / branco translúcido off, knob 24 */
+/* o interruptor: trilho 50x30, o verde claro da marca ligado / branco translúcido desligado, botão 24 */
 .msw {
   position: relative; flex-shrink: 0; width: 50px; height: 30px; border: none; cursor: pointer;
-  border-radius: 999px; padding: 0; background: rgba(255, 255, 255, .25); transition: background .2s;
+  border-radius: var(--nu-r-pill); padding: 0; background: var(--nu-white-30); transition: background .2s;
 }
-.msw--on { background: #8FF0B5; }
+/* o alvo de toque chega a 44px sem mexer no desenho */
+.msw::after { content: ''; position: absolute; inset: -7px 0; }
+.msw--on { background: var(--nu-green-soft); }
 .msw__knob {
-  position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .25); transition: transform .22s cubic-bezier(.4, 0, .2, 1);
+  position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--nu-white);
+  box-shadow: 0 1px 3px var(--nu-ink-30); transition: transform .22s cubic-bezier(.4, 0, .2, 1);
 }
 .msw--on .msw__knob { transform: translateX(20px); }
+.msw:focus-visible { outline: 3px solid var(--nu-white); outline-offset: 2px; }
+
+@media (max-width: 520px) {
+  .mcp__corte { right: -40px; top: -20px; transform: scale(.62); transform-origin: top right; }
+  /* o interruptor fica na linha do eyebrow, e o texto usa a largura toda */
+  .mcp__head { display: block; }
+  .mcp__head > .msw { position: absolute; top: -4px; right: 0; }
+  .mcp__key { flex-basis: 100%; }
+  .mcp__reveal, .mcp__copy { flex: 1; }
+  .mcp__gerar { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mcp__regen svg, .mcp__docs-seta { transition: none; }
+}
 </style>

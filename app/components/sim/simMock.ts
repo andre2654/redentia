@@ -579,7 +579,7 @@ export function buildClientSummary(r: SimResult): SimClientSummary {
       + `${choqueTxt} O carrego líquido estimado da carteira nesse cenário é de ${r.assumptions.carryPct.toLocaleString('pt-BR')}% ao ano, com beta ${r.assumptions.beta.toLocaleString('pt-BR')} contra o IBOV. `
       + `Posso abrir a conta posição a posição na nossa próxima conversa.`
 
-  const footer = `Simulação de ${hoje} · protótipo Redentia · faixa estatística com premissas explícitas — não é previsão nem recomendação de investimento · valores líquidos de IR estimado (isentos sem desconto).`
+  const footer = `Simulação de ${hoje} · protótipo Aportou · faixa estatística com premissas explícitas — não é previsão nem recomendação de investimento · valores líquidos de IR estimado (isentos sem desconto).`
 
   return { whatsapp, emailSubject, emailBody, footer }
 }

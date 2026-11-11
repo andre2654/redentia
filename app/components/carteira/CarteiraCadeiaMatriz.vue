@@ -170,7 +170,8 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
 </template>
 
 <style scoped>
-.ccm { --cel: 52px; --rot: 168px; --sep: 10px; --ease: cubic-bezier(.2, .8, .2, 1); --mola: cubic-bezier(.34, 1.56, .64, 1); max-width: 1080px; margin: 0 auto; position: relative; }
+/* a matriz mora num cartão creme (a seção é a faixa quente); o cobalto marca o que é da carteira */
+.ccm { --ccm-az: var(--nu-blue); padding: clamp(14px, 2vw, 28px) clamp(10px, 2vw, 28px) clamp(16px, 2vw, 24px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); --cel: 52px; --rot: 168px; --sep: 10px; --ease: cubic-bezier(.2, .8, .2, 1); --mola: cubic-bezier(.34, 1.56, .64, 1); max-width: 1080px; margin: 0 auto; position: relative; }
 .ccm__rolo { display: flex; justify-content: center; }
 .ccm__grade {
   display: grid;
@@ -202,11 +203,11 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
 .ccm__cel--acesa::after, .ccm__cel--diag::after { display: none; }
 .ccm__cel--diag { background: repeating-linear-gradient(135deg, transparent 0 5px, var(--nu-cream-2) 5px 6px); }
 /* o quadrante das suas: a luz da carteira */
-.ccm__cel--dentro:not(.ccm__cel--diag) { background: color-mix(in srgb, #2F6AFF 6%, transparent); }
-.ccm__cel--cruz { background: var(--nu-row-hover); }
-.ccm__cel--dentro.ccm__cel--cruz:not(.ccm__cel--diag) { background: color-mix(in srgb, #2F6AFF 11%, transparent); }
+.ccm__cel--dentro:not(.ccm__cel--diag) { background: color-mix(in srgb, var(--ccm-az) 6%, transparent); }
+.ccm__cel--cruz { background: var(--nu-cream-2); }
+.ccm__cel--dentro.ccm__cel--cruz:not(.ccm__cel--diag) { background: color-mix(in srgb, var(--ccm-az) 11%, transparent); }
 .ccm__cel--acesa { cursor: pointer; }
-.ccm__cel--acesa:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: -2px; }
+.ccm__cel--acesa:focus-visible { outline-offset: -3px; }
 
 .ccm__ponto {
   width: var(--s); height: var(--s); border-radius: 50%;
@@ -214,30 +215,30 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--nu-navy) 8%, transparent);
   transition: transform .45s var(--mola), box-shadow .25s ease;
 }
-.ccm__ponto--int { background: #2F6AFF; box-shadow: 0 0 0 5px color-mix(in srgb, #2F6AFF 16%, transparent), 0 0 18px color-mix(in srgb, #2F6AFF 55%, transparent); }
+.ccm__ponto--int { background: var(--ccm-az); box-shadow: 0 0 0 5px color-mix(in srgb, var(--ccm-az) 16%, transparent), 0 0 18px color-mix(in srgb, var(--ccm-az) 55%, transparent); }
 .ccm__ponto--sem { background: var(--nu-white); border: 2px solid color-mix(in srgb, var(--nu-navy) 55%, transparent); }
-.ccm__ponto--int.ccm__ponto--sem { border-color: #2F6AFF; background: color-mix(in srgb, #2F6AFF 14%, var(--nu-white)); }
+.ccm__ponto--int.ccm__ponto--sem { border-color: var(--ccm-az); background: color-mix(in srgb, var(--ccm-az) 14%, var(--nu-white)); }
 .ccm__cel--acesa:hover .ccm__ponto, .ccm__cel--on .ccm__ponto { transform: scale(1.25); }
 
 .ccm__legenda { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; }
 .ccm__leg { display: inline-flex; align-items: center; gap: 7px; }
 .ccm__leg-p { width: 10px; height: 10px; border-radius: 50%; background: color-mix(in srgb, var(--nu-navy) 55%, transparent); }
-.ccm__leg-p--int { background: #2F6AFF; box-shadow: 0 0 8px color-mix(in srgb, #2F6AFF 60%, transparent); }
+.ccm__leg-p--int { background: var(--ccm-az); box-shadow: 0 0 8px color-mix(in srgb, var(--ccm-az) 60%, transparent); }
 .ccm__leg-p--sem { background: var(--nu-white); border: 2px solid color-mix(in srgb, var(--nu-navy) 55%, transparent); }
-.ccm__leg-q { width: 14px; height: 14px; border-radius: 4px; background: color-mix(in srgb, #2F6AFF 10%, transparent); }
+.ccm__leg-q { width: 14px; height: 14px; border-radius: 4px; background: color-mix(in srgb, var(--ccm-az) 10%, transparent); }
 
 /* ——— a dica: navy, a sombra da casa ——— */
 .ccm__dica {
   position: absolute; z-index: 5; transform: translate(-50%, -100%);
   width: max-content; max-width: min(300px, calc(100% - 16px)); padding: 12px 14px;
-  border-radius: 14px; background: var(--nu-navy); color: var(--nu-cream-text);
-  box-shadow: 0 18px 40px -16px rgba(12, 21, 36, 0.45);
+  border-radius: var(--nu-r-chip); background: var(--nu-ink); color: var(--nu-white);
+  box-shadow: 0 18px 40px -16px color-mix(in srgb, var(--nu-ink) 45%, transparent);
   pointer-events: none; animation: ccm-dica .18s var(--ease) both;
 }
 .ccm__dica--embaixo { transform: translate(-50%, 0); }
 .ccm__dica-frase { margin: 0; font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.4; }
 .ccm__dica-valor { margin: 4px 0 0; font-size: var(--nu-fs-xs); font-weight: 500; opacity: .72; font-variant-numeric: tabular-nums; }
-.ccm__dica-acao { margin: 6px 0 0; font-size: var(--nu-fs-xs); font-weight: 700; color: #9DB8FF; }
+.ccm__dica-acao { margin: 6px 0 0; font-size: var(--nu-fs-xs); font-weight: 700; color: var(--nu-blue-soft); }
 @keyframes ccm-dica { from { opacity: 0; } }
 
 /* ——— a entrada: as células acendem em diagonal ——— */
@@ -249,7 +250,7 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
 @keyframes ccm-ponto { from { transform: scale(0); } }
 
 @media (max-width: 760px) {
-  .ccm { --rot: 60px; --cel: min(40px, calc((100vw - 44px - 60px - 8px) / var(--n))); }
+  .ccm { --rot: 60px; --cel: min(40px, calc((100vw - 44px - 24px - 60px - 8px) / var(--n))); }
   .ccm__col-tk { display: none; }
   .ccm__col { padding-bottom: 6px; }
   .ccm__col :deep(*) { max-width: calc(var(--cel) - 4px); }

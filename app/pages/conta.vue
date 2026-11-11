@@ -51,7 +51,7 @@ watch(() => route.hash, () => nextTick(scrollToHash))
 
 usePageSeo({
   title: 'Configurações',
-  description: 'Gerencie seu perfil, notificações, conexões de Open Finance e a segurança da sua conta Redentia.',
+  description: `Gerencie seu perfil, notificações, conexões de Open Finance e a segurança da sua conta ${MARCA.nome}.`,
   robots: 'noindex, nofollow',
 })
 </script>
@@ -62,6 +62,7 @@ usePageSeo({
       <div class="conta__id">
         <span class="conta__avatar" aria-hidden="true">{{ initial }}</span>
         <div class="conta__idtext">
+          <NuEyebrow class="conta__eyebrow">Sua conta</NuEyebrow>
           <h1 class="conta__name">{{ name }}</h1>
           <span v-if="email" class="conta__email">{{ email }}</span>
         </div>
@@ -100,10 +101,12 @@ usePageSeo({
 </template>
 
 <style scoped>
+/* Aportou (11/11/2026): a página no creme da marca, o eyebrow com o corte, o
+   nome em 800 e o "Sair" na pílula de contorno. A estrutura é a de sempre. */
 .conta {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   min-height: 100vh;
-  padding: clamp(28px, 5vw, 64px) clamp(18px, 5.5vw, 80px) clamp(60px, 8vw, 110px);
+  padding: clamp(28px, 5vw, 64px) clamp(20px, 5.5vw, 80px) clamp(60px, 8vw, 110px);
   animation: nu-fade .5s ease both;
 }
 .conta__top { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
@@ -115,30 +118,43 @@ usePageSeo({
   font-size: clamp(24px, 3vw, 32px); font-weight: 800;
 }
 .conta__idtext { min-width: 0; }
+.conta__eyebrow { margin-bottom: 10px; }
 .conta__name {
   margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 4vw, 46px); font-weight: 800; letter-spacing: -.03em; line-height: 1.05;
+  font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -.035em; line-height: 1.02;
+  overflow-wrap: anywhere;
 }
-.conta__email { color: var(--nu-gray-2); font-size: clamp(14px, 1.5vw, 17px); font-weight: 500; }
+.conta__email { display: block; margin-top: 6px; color: var(--nu-gray); font-size: clamp(14px, 1.5vw, 17px); font-weight: 500; overflow-wrap: anywhere; }
 .conta__logout {
-  flex-shrink: 0; display: inline-flex; align-items: center; gap: 9px;
+  flex-shrink: 0; display: inline-flex; align-items: center; gap: 9px; min-height: 48px;
   background: var(--nu-white); color: var(--nu-ink); border: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); padding: 12px 22px;
-  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 800; transition: background .18s;
+  box-shadow: inset 0 0 0 1.5px var(--nu-ink);
+  border-radius: var(--nu-r-pill); padding: 0 22px;
+  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 700;
+  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.conta__logout:hover { background: var(--nu-cream-hover); }
+.conta__logout:hover { background: var(--nu-row-hover); }
+.conta__logout:active { transform: scale(.98); }
+.conta__logout svg { transition: transform .2s; }
+.conta__logout:hover svg { transform: translateX(3px); }
 
 .conta__cols { display: flex; gap: clamp(20px, 3vw, 40px); align-items: flex-start; margin-top: clamp(28px, 4vw, 48px); }
 .conta__nav { flex: 0 0 clamp(210px, 22vw, 264px); position: sticky; top: 96px; }
 .conta__panel { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: clamp(18px, 2.6vw, 28px); }
 /* âncora do scrollspy: compensa o header + faixa "Mercado agora" sticky */
-.conta__sec { scroll-margin-top: 112px; }
+.conta__sec { scroll-margin-top: 112px; animation: nu-fade .5s ease both; }
+.conta__sec:nth-child(2) { animation-delay: 60ms; }
+.conta__sec:nth-child(3) { animation-delay: 120ms; }
+.conta__sec:nth-child(n+4) { animation-delay: 180ms; }
 
 @media (max-width: 860px) {
   .conta__cols { flex-direction: column; }
-  .conta__nav { position: sticky; top: 84px; z-index: 2; flex-basis: auto; width: 100%; background: var(--nu-cream); padding: 8px 0; }
+  .conta__nav { position: sticky; top: 84px; z-index: 2; flex-basis: auto; width: 100%; background: var(--nu-page); padding: 8px 0; }
   /* em coluna, o align-items: flex-start deixava o painel na largura do conteúdo: um e-mail comprido
      (o "Na sua caixa · …" do resumo diário, que é nowrap) o esticava para fora da tela e cortava os interruptores */
   .conta__panel { align-self: stretch; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .conta__logout svg { transition: none; }
 }
 </style>

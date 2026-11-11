@@ -20,10 +20,14 @@ import { brl0, ehRendaFixa, nomeCurto, pctTxt } from '~/utils/carteiraVisao'
 const props = defineProps<{ visao: CarteiraVisao }>()
 const { mask } = useHiddenValues()
 
+// a cor de cada fator na família da marca (11/11): do carvão ao azul claro, com
+// a sálvia e o âmbar de apoio. Selic é a renda fixa (carvão), a bolsa do Brasil
+// é o cobalto; nenhum hex aqui, só token.
 const COR: Record<string, string> = {
-  juros: '#7C5FD6', selic: '#1E8A94', brasil: '#2F6AFF', petroleo: '#E07A3F', dolar: '#0E9E63', ouro: '#C9A227',
+  selic: 'var(--nu-alloc-fixed)', juros: 'color-mix(in srgb, var(--nu-ink) 55%, var(--nu-blue-soft))', brasil: 'var(--nu-blue)',
+  petroleo: 'var(--nu-amber)', dolar: 'var(--nu-sage)', ouro: 'var(--nu-amber-soft)',
 }
-const fatores = computed(() => props.visao.fatores.map((f) => ({ ...f, cor: COR[f.chave] ?? '#8F86B8' })))
+const fatores = computed(() => props.visao.fatores.map((f) => ({ ...f, cor: COR[f.chave] ?? 'var(--nu-blue-soft)' })))
 const nomeDe = (t: string) => props.visao.posicoes.find((p) => p.ticker === t)
 // 07/11, revisão do dono: dois títulos do Tesouro IPCA+ andarem juntos é a
 // escada de vencimentos dele, e não diz nada. O par só entra com renda
@@ -51,7 +55,7 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
     </template>
     <template v-else>
     <h3 class="vlr__frase"><FraseDestaque :texto="frase" /></h3>
-    <p class="vlr__nota">Cada ativo conta no fator que mais o move. O efeito de cada cenário sai do motor de simulação da Redentia.</p>
+    <p class="vlr__nota">Cada ativo conta no fator que mais o move. O efeito de cada cenário sai do motor de simulação da Aportou.</p>
 
     <div class="vlr__barra" role="img" :aria-label="fatores.map((f) => `${f.nome} ${pctTxt(f.pct)}`).join(', ')">
       <span
@@ -119,19 +123,23 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
 </template>
 
 <style scoped>
-.vlr__frase { margin: 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.035em; line-height: 1.08; text-wrap: balance; }
+.vlr__frase { margin: 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
 .vlr__nota { margin: 16px 0 0; max-width: 620px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
-.vlr__barra { display: flex; gap: 2px; height: 14px; margin-top: clamp(26px, 3.4vw, 40px); }
-.vlr__seg { flex-basis: 0; min-width: 4px; border-radius: 4px; transition: opacity .25s; }
+/* a barra empilhada da marca: 28px, vão de 4px, pontas redondas só nos extremos */
+.vlr__barra { display: flex; gap: 4px; height: 28px; margin-top: clamp(26px, 3.4vw, 40px); transform-origin: left; animation: vlr-cresce .6s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes vlr-cresce { from { transform: scaleX(0); opacity: 0; } }
+.vlr__seg { flex-basis: 0; min-width: 8px; border-radius: 6px; transition: opacity .25s; }
+.vlr__seg:first-child { border-top-left-radius: 15px; border-bottom-left-radius: 15px; }
+.vlr__seg:last-child { border-top-right-radius: 15px; border-bottom-right-radius: 15px; }
 .vlr__seg--apagado { opacity: .3; }
-.vlr__lista { list-style: none; margin: clamp(14px, 2vw, 22px) 0 0; padding: 0; }
+/* os fatores num cartão creme sobre a faixa */
+.vlr__lista { list-style: none; margin: clamp(20px, 2.6vw, 28px) 0 0; padding: clamp(8px, 1.2vw, 14px) clamp(18px, 2.4vw, 28px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
 .vlr__linha {
   display: grid; grid-template-columns: 12px minmax(0, 1.1fr) minmax(0, 1fr) auto; align-items: center; gap: 16px;
-  padding: 16px 10px; margin: 0 -10px; border-radius: var(--nu-r-chip); border-top: 1px solid var(--nu-cream-2); transition: background .18s, opacity .25s; outline: none;
+  padding: 16px 10px; margin: 0 -10px; border-radius: var(--nu-r-chip); border-top: 1.5px solid var(--nu-line-2); transition: background .18s, opacity .25s;
 }
-.vlr__linha:first-child { border-top: none; }
-.vlr__linha:hover { background: var(--nu-row-hover); }
-.vlr__linha:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.vlr__linha:first-child { border-top-color: transparent; }
+.vlr__linha:hover { background: var(--nu-cream-2); }
 .vlr__linha--apagada { opacity: .5; }
 .vlr__ponto { width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 16%, transparent); }
 .vlr__nome { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -146,16 +154,16 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
 .vlr__como { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; margin-top: 2px; padding: 2px 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; }
 .vlr__como svg { transition: transform .2s; }
 .vlr__como[aria-expanded='true'] svg { transform: rotate(180deg); }
-.vlr__como:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
-.vlr__prova { grid-column: 2 / -1; margin: 4px 0 0; padding: 12px 14px; max-width: 80ch; border-radius: 12px; background: var(--nu-cream); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; animation: nu-fade .2s ease both; }
-.vlr__pct { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
+.vlr__como:focus-visible { border-radius: 4px; }
+.vlr__prova { grid-column: 2 / -1; margin: 4px 0 0; padding: 12px 14px; max-width: 80ch; border-radius: var(--nu-r-chip); background: var(--nu-band); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; animation: nu-fade .2s ease both; }
+.vlr__pct { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .vlr__valor { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
 
-.vlr__duas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px clamp(28px, 4vw, 64px); margin-top: clamp(32px, 4vw, 52px); padding-top: clamp(24px, 3vw, 36px); border-top: 1px solid var(--nu-cream-line); }
+.vlr__duas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px clamp(28px, 4vw, 64px); margin-top: clamp(32px, 4vw, 52px); padding-top: clamp(24px, 3vw, 36px); border-top: 1.5px solid var(--nu-line); }
 .vlr__h4 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
 .vlr__h4-s { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .vlr__mini { list-style: none; margin: 12px 0 0; padding: 0; }
-.vlr__mini li { display: grid; grid-template-columns: minmax(84px, auto) minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding: 11px 0; border-top: 1px solid var(--nu-cream-2); }
+.vlr__mini li { display: grid; grid-template-columns: minmax(84px, auto) minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding: 11px 0; border-top: 1.5px solid var(--nu-line); }
 /* os pares têm nome comprido (dois títulos do Tesouro): o nome na linha de cima, a frase e o número embaixo */
 .vlr__mini--pares li { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 't c' 'x x'; row-gap: 2px; }
 .vlr__mini--pares .vlr__mini-t { grid-area: t; }
@@ -182,7 +190,7 @@ a.vlr__mini-t:hover { color: var(--nu-blue-text); }
   .vlr__mini-c { grid-area: c; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .vlr__prova { animation: none; }
+  .vlr__prova, .vlr__barra { animation: none; }
   .vlr__como svg { transition: none; }
 }
 </style>

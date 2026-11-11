@@ -60,19 +60,18 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.can { background: var(--nu-white); padding: clamp(28px, 4vw, 48px) clamp(22px, 5.5vw, 80px); border-top: 1px solid var(--nu-cream-2); }
+.can { background: var(--nu-page); padding: clamp(28px, 4vw, 48px) clamp(22px, 5.5vw, 80px); }
 .can__botao {
   width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-  background: var(--nu-cream); border: none; cursor: pointer; font-family: inherit; text-align: left;
-  border-radius: var(--nu-r-card); padding: clamp(20px, 2.6vw, 28px) clamp(22px, 3vw, 32px);
-  transition: background .2s, transform .15s;
+  background: var(--nu-band); border: none; cursor: pointer; font-family: inherit; text-align: left;
+  border-radius: var(--nu-r-card); padding: clamp(20px, 2.6vw, 28px) clamp(22px, 3vw, 32px); box-shadow: var(--nu-shadow-quente);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s;
 }
-.can__botao:hover { background: var(--nu-cream-4); }
-.can__botao:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.can__botao:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .can__textos { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.can__titulo { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.01em; }
+.can__titulo { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.025em; }
 .can__sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.can__seta { color: var(--nu-gray); flex-shrink: 0; transition: transform .25s; }
+.can__seta { box-sizing: content-box; padding: 11px; border-radius: 50%; background: var(--nu-ink); color: var(--nu-white); flex-shrink: 0; transition: transform .25s; }
 .can--aberta .can__seta { transform: rotate(180deg); }
 .can__conteudo { animation: nu-fade .4s ease both; }
 .can__sec { scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }

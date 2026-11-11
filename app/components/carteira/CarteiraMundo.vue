@@ -27,18 +27,21 @@ const props = defineProps<{ posicoes: CarteiraPosicaoMundo[] }>()
 const { vm } = useExposicaoNoMundo(() => props.posicoes)
 const { mask } = useHiddenValues()
 
-/* ————— cores: Brasil no azul da marca, o resto na paleta do brilho do chat ————— */
+/* ————— cores (11/11, Aportou): Brasil no cobalto; o resto na família da marca
+   (âmbar, sálvia, carvão, verde, azul claro), só por token. O globo lê o token
+   no cliente (CarteiraMundoGlobo), porque o canvas não entende var() ————— */
 
-const COR_BRASIL = '#2F6AFF'
-const PALETA = ['#FF6B8A', '#9B7BFF', '#1FB5D6', '#E8A33D', '#4CB782', '#C45BD9', '#7A8699']
-const COR_FORA: Record<string, string> = { outros: '#8F86B8', sede: '#9FB3DA', cripto: '#F2994A', ouro: '#D4A017', 'sem-dado': '#B9AE9C' }
+const COR_BRASIL = 'var(--nu-blue)'
+const PALETA = ['var(--nu-amber)', 'var(--nu-sage)', 'var(--nu-ink)', 'var(--nu-green)', 'var(--nu-blue-soft)', 'var(--nu-amber-soft)', 'var(--nu-gray)']
+const COR_SEM = 'var(--nu-sand)'
+const COR_FORA: Record<string, string> = { outros: 'var(--nu-gray)', sede: 'var(--nu-blue-soft)', cripto: 'var(--nu-alloc-crypto)', ouro: 'var(--nu-class-gold)', 'sem-dado': COR_SEM }
 
 type FatiaCor = FatiaMundo & { cor: string }
 const noMapa = computed<FatiaCor[]>(() => {
   let i = 0
   return vm.value.noMapa.map((f) => ({ ...f, cor: f.chave === 'BR' ? COR_BRASIL : PALETA[i++ % PALETA.length]! }))
 })
-const fora = computed<FatiaCor[]>(() => vm.value.fora.map((f) => ({ ...f, cor: COR_FORA[f.tipo] ?? '#B9AE9C' })))
+const fora = computed<FatiaCor[]>(() => vm.value.fora.map((f) => ({ ...f, cor: COR_FORA[f.tipo] ?? COR_SEM })))
 const lista = computed(() => [...noMapa.value, ...fora.value])
 
 /**
@@ -59,7 +62,7 @@ const lugares = computed<LinhaMundo[]>(() => {
   const pct = resto.reduce((s, f) => s + f.pct, 0)
   const outros: LinhaMundo = {
     ...resto[0]!,
-    chave: 'outros-lugares', tipo: 'regiao', nome: `Mais ${resto.length} lugares`, cor: '#B9AE9C',
+    chave: 'outros-lugares', tipo: 'regiao', nome: `Mais ${resto.length} lugares`, cor: COR_SEM,
     valor: resto.reduce((s, f) => s + f.valor, 0), pct, pctInt,
     pctTxt: pctInt === 0 && pct > 0 ? 'menos de 1%' : `${pctInt}%`,
     tickers: [...new Set(resto.flatMap((f) => f.tickers))], paises: [], ancora: null, todos: false,
@@ -200,16 +203,16 @@ const contexto = computed(() => ({
 
 <style scoped>
 .cmu {
-  background: var(--nu-white);
+  background: var(--nu-band);
   padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px);
   scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
   overflow: hidden;
 }
 .cmu__cabeca { max-width: 860px; }
-.cmu__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
+.cmu__eyebrow { display: block; color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
 .cmu__frase {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08;
+  margin: 18px 0 0; color: var(--nu-ink);
+  font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04;
   font-variant-numeric: tabular-nums; text-wrap: balance;
 }
 .cmu__palavra { display: inline-block; }
@@ -233,16 +236,17 @@ const contexto = computed(() => ({
 .cmu__globo { width: 100%; max-width: 560px; justify-self: center; position: relative; aspect-ratio: 1 / 1; display: grid; place-items: center; }
 .cmu__esq-globo { aspect-ratio: 1 / 1; }
 
+/* a lista num cartão creme sobre a faixa */
+.cmu__lado { padding: clamp(8px, 1.2vw, 14px) clamp(18px, 2.4vw, 28px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
 .cmu__lista { list-style: none; margin: 0; padding: 0; }
 .cmu__linha {
   display: flex; align-items: center; gap: 14px; padding: 16px 10px; margin: 0 -10px;
-  border-radius: var(--nu-r-chip); border-top: 1px solid var(--nu-cream-2);
-  transition: background .18s, opacity .25s; cursor: default; outline: none;
+  border-radius: var(--nu-r-chip); border-top: 1.5px solid var(--nu-line-2);
+  transition: background .18s, opacity .25s; cursor: default;
 }
-.cmu__linha:first-child { border-top: none; }
-.cmu__linha--fora { margin-top: 14px; border-top: 1px dashed var(--nu-cream-line); }
-.cmu__linha:hover, .cmu__linha--ativa { background: var(--nu-row-hover); }
-.cmu__linha:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.cmu__linha:first-child { border-top-color: transparent; }
+.cmu__linha--fora { margin-top: 14px; border-top: 1.5px dashed var(--nu-line); }
+.cmu__linha:hover, .cmu__linha--ativa { background: var(--nu-cream-2); }
 .cmu__linha--apagada { opacity: .5; }
 .cmu__ponto {
   width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: var(--c);
@@ -255,11 +259,11 @@ const contexto = computed(() => ({
 .cmu__nome-txt { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em; }
 .cmu__sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cmu__valores { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; text-align: right; }
-.cmu__pct { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cmu__pct { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cmu__valor { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .cmu__esq-lista { display: flex; flex-direction: column; }
-.cmu__esq-linha { display: flex; align-items: center; gap: 14px; padding: 20px 0; border-top: 1px solid var(--nu-cream-2); }
+.cmu__esq-linha { display: flex; align-items: center; gap: 14px; padding: 20px 0; border-top: 1.5px solid var(--nu-line-2); }
 .cmu__esq-linha:first-child { border-top: none; }
 .cmu__esq-pct { margin-left: auto; }
 

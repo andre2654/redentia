@@ -537,8 +537,8 @@ const olhouLinha = computed(() => {
         <!-- o sino: recolhido, os avisos abrem pelo "+N" e ele só guarda o lugar; aberto, é a entrada dos avisos -->
         <CarteiraAvisos v-if="visao" ref="avisosRef" :avisos="visao.avisos" :ativos="visao.ativos" :dados-de="visao.dadosDe" :mock="visao.mock" :botao-oculto="recolhido" />
         <CarteiraIdeias v-else-if="achados" v-bind="achados" />
-        <TopoBotao v-else rotulo="Perguntar" title="Perguntar à Redentia sobre a sua carteira" @click="perguntar()">
-          <img src="/logo-azul.svg" alt="" width="16" height="16" class="cto__logo">
+        <TopoBotao v-else rotulo="Perguntar" title="Perguntar à IA sobre a sua carteira" @click="perguntar()">
+          <MarcaCorte :largura="18" cor="currentColor" />
         </TopoBotao>
       </div>
     </div>
@@ -548,7 +548,7 @@ const olhouLinha = computed(() => {
     <span class="cto__clarao" :style="{ left: `${abrindoLogo.x}px`, top: `${abrindoLogo.y}px` }" aria-hidden="true" />
     <svg ref="ondaRef" class="cto__onda" :viewBox="`0 0 ${abrindoLogo.w} ${abrindoLogo.h}`" :width="abrindoLogo.w" :height="abrindoLogo.h" aria-hidden="true">
       <defs>
-        <linearGradient id="cto-onda-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#58AFF5" /><stop offset=".5" stop-color="#9FC6FF" /><stop offset="1" stop-color="#2F6AFF" /></linearGradient>
+        <linearGradient id="cto-onda-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color: var(--nu-blue-on-dark)" /><stop offset=".5" style="stop-color: var(--nu-blue-soft)" /><stop offset="1" style="stop-color: var(--nu-blue)" /></linearGradient>
       </defs>
       <polygon class="cto__onda-1" points="0,0" />
       <polygon class="cto__onda-2" points="0,0" />
@@ -558,9 +558,9 @@ const olhouLinha = computed(() => {
       viewBox="0 0 206 206" width="120" height="120" aria-hidden="true"
     >
       <defs>
-        <linearGradient id="cto-g-h1" x1="206" y1="103" x2="147" y2="103" gradientUnits="userSpaceOnUse"><stop stop-color="#58AFF5" /><stop offset=".73" stop-color="#1838C9" /><stop offset="1" stop-color="#041255" /></linearGradient>
-        <linearGradient id="cto-g-h2" x1="0" y1="103" x2="59" y2="103" gradientUnits="userSpaceOnUse"><stop stop-color="#58AFF5" /><stop offset=".73" stop-color="#1838C9" /><stop offset="1" stop-color="#041255" /></linearGradient>
-        <linearGradient id="cto-g-v" x1="103" y1="0" x2="103" y2="206" gradientUnits="userSpaceOnUse"><stop stop-color="#58AFF5" /><stop offset=".2" stop-color="#1838C9" /><stop offset=".8" stop-color="#1838C9" /><stop offset="1" stop-color="#58AFF5" /></linearGradient>
+        <linearGradient id="cto-g-h1" x1="206" y1="103" x2="147" y2="103" gradientUnits="userSpaceOnUse"><stop style="stop-color: var(--nu-blue-on-dark)" /><stop offset=".73" style="stop-color: var(--nu-blue-deep)" /><stop offset="1" style="stop-color: var(--nu-ink)" /></linearGradient>
+        <linearGradient id="cto-g-h2" x1="0" y1="103" x2="59" y2="103" gradientUnits="userSpaceOnUse"><stop style="stop-color: var(--nu-blue-on-dark)" /><stop offset=".73" style="stop-color: var(--nu-blue-deep)" /><stop offset="1" style="stop-color: var(--nu-ink)" /></linearGradient>
+        <linearGradient id="cto-g-v" x1="103" y1="0" x2="103" y2="206" gradientUnits="userSpaceOnUse"><stop style="stop-color: var(--nu-blue-on-dark)" /><stop offset=".2" style="stop-color: var(--nu-blue-deep)" /><stop offset=".8" style="stop-color: var(--nu-blue-deep)" /><stop offset="1" style="stop-color: var(--nu-blue-on-dark)" /></linearGradient>
       </defs>
       <g class="cto__p-d"><path d="M203.597 97.1954C206.802 100.401 206.802 105.598 203.597 108.803L134.492 177.907C131.038 181.361 126.354 183.302 121.469 183.302C111.297 183.302 103.051 175.056 103.051 164.884V163.719C103.051 158.525 105.114 153.544 108.787 149.872L141.517 117.141C149.328 109.331 149.328 96.6675 141.517 88.857L108.765 56.1042C105.106 52.4453 103.051 47.4828 103.051 42.3084V41.287C103.051 31.0758 111.329 22.7979 121.54 22.7979C126.444 22.7979 131.146 24.7459 134.614 28.2132L203.597 97.1954Z" fill="url(#cto-g-h1)" /></g>
       <g class="cto__p-e"><path d="M2.40387 97.1954C-0.801339 100.401 -0.801239 105.598 2.40387 108.803L71.5084 177.907C74.9624 181.361 79.6471 183.302 84.5318 183.302C94.7038 183.302 102.95 175.056 102.95 164.884V163.719C102.95 158.525 100.887 153.544 97.2141 149.872L64.4834 117.141C56.6729 109.331 56.6729 96.6675 64.4832 88.857L97.2354 56.1042C100.894 52.4453 102.95 47.4828 102.95 42.3084V41.287C102.95 31.0758 94.6719 22.7979 84.4607 22.7979C79.5571 22.7979 74.8544 24.7459 71.387 28.2132L2.40387 97.1954Z" fill="url(#cto-g-h2)" /></g>
@@ -745,7 +745,6 @@ const olhouLinha = computed(() => {
 .cto__acoes :deep(.tac__b) { width: 72px; }
 /* os números da carteira são mais longos que os do papel ('+R$ 5.000 (+8,1%)') */
 @media (min-width: 641px) { .cto .tbo__nums { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); } }
-.cto__logo { filter: brightness(0) invert(1); }
 
 /* o estado e a frase: o pontinho, o pregão e a frase em peso */
 .cto__estado { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin: clamp(18px, 2.4vw, 28px) 0 0; }
@@ -793,10 +792,10 @@ const olhouLinha = computed(() => {
 .cto__status-linha { margin: 10px 0 0; max-width: 62ch; color: var(--nu-agora-sub); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .cto__itens { list-style: none; margin: clamp(18px, 2.4vw, 26px) 0 0; padding: 0; max-width: 720px; }
 .cto__item {
-  display: flex; align-items: baseline; gap: 12px; width: 100%; padding: 14px 0; border: 0; border-top: 1px solid var(--nu-white-12, rgba(255,255,255,.12));
+  display: flex; align-items: baseline; gap: 12px; width: 100%; padding: 14px 0; border: 0; border-top: 1px solid var(--nu-agora-linha);
   background: none; color: var(--nu-agora-texto); font: inherit; font-size: var(--nu-fs-lg); font-weight: 700; text-align: left; text-decoration: none; cursor: pointer;
 }
-.cto__itens li:last-child .cto__item { border-bottom: 1px solid var(--nu-white-12, rgba(255,255,255,.12)); }
+.cto__itens li:last-child .cto__item { border-bottom: 1px solid var(--nu-agora-linha); }
 .cto__item-p { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--nu-amber-fill); transform: translateY(-2px); }
 .cto__item-p--alta { background: var(--nu-red-soft); }
 .cto__item-t { flex: 1; min-width: 0; }
@@ -807,15 +806,15 @@ const olhouLinha = computed(() => {
 .cto__resumo--saindo { position: absolute; inset: 0 0 auto; pointer-events: none; animation: none; }
 .cto__onda { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; overflow: visible; opacity: 0; }
 .cto__onda polygon { fill: none; stroke-linejoin: round; }
-.cto__onda-1 { stroke: url(#cto-onda-g); stroke-width: 2; filter: drop-shadow(0 0 6px rgba(88, 175, 245, .9)) drop-shadow(0 0 22px rgba(47, 106, 255, .55)); }
-.cto__onda-2 { stroke: rgba(159, 198, 255, .35); stroke-width: 1; }
+.cto__onda-1 { stroke: url(#cto-onda-g); stroke-width: 2; filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nu-blue-on-dark) 90%, transparent)) drop-shadow(0 0 22px color-mix(in srgb, var(--nu-blue) 55%, transparent)); }
+.cto__onda-2 { stroke: var(--nu-blue-soft-35); stroke-width: 1; }
 .cto__clarao {
   position: absolute; z-index: 1; width: 560px; height: 560px; border-radius: 50%; pointer-events: none; opacity: 0;
-  background: radial-gradient(closest-side, rgba(88, 175, 245, .32), rgba(47, 106, 255, .12) 55%, transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--nu-blue-on-dark) 32%, transparent), color-mix(in srgb, var(--nu-blue) 12%, transparent) 55%, transparent);
 }
 .cto__logo-abre {
   position: absolute; z-index: 3; margin: -60px 0 0 -60px; pointer-events: none; overflow: visible; transform-origin: 50% 50%; opacity: 0; will-change: transform, opacity;
-  filter: drop-shadow(0 0 18px rgba(88, 175, 245, .75)) drop-shadow(0 0 42px rgba(24, 56, 201, .6));
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--nu-blue-on-dark) 75%, transparent)) drop-shadow(0 0 42px color-mix(in srgb, var(--nu-blue-deep) 60%, transparent));
 }
 .cto__logo-abre g { transform-box: fill-box; transform-origin: 50% 50%; }
 .cto__mais { display: flex; width: fit-content; align-items: center; gap: 8px; margin-top: 14px; padding: 0; border: 0; background: none; color: var(--nu-agora-sub); font: inherit; font-size: var(--nu-fs-md); font-weight: 600; cursor: pointer; transition: color .2s; }
@@ -828,7 +827,7 @@ const olhouLinha = computed(() => {
   display: flex; width: fit-content; align-items: center; gap: 8px; height: 42px; margin-top: clamp(22px, 3vw, 32px); padding: 0 20px; border: 0; border-radius: var(--nu-r-pill);
   background: var(--nu-agora-pilula); color: var(--nu-agora-texto); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s;
 }
-.cto__detalhes:hover { background: var(--nu-white-12, rgba(255,255,255,.16)); }
+.cto__detalhes:hover { background: var(--nu-white-18); }
 .cto__detalhes:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
 .cto__detalhes--menos { margin-top: 18px; background: transparent; padding: 0; height: auto; color: var(--nu-agora-sub); }
 .cto__detalhes--menos:hover { background: transparent; color: var(--nu-agora-texto); }

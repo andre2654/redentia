@@ -60,8 +60,8 @@ const html = computed(() => (vm.value.vazio ? '' : achadosHtml(vm.value, { olhou
 /* ————— o botão: o selo conta os pontos de atenção de hoje ————— */
 const pontos = computed(() => vm.value.pontos)
 const rotuloDoBotao = computed(() => (pontos.value
-  ? `Ideias da Redentia para a carteira: ${pontos.value} ${pontos.value === 1 ? 'ponto pede' : 'pontos pedem'} atenção`
-  : 'Ideias da Redentia para a carteira'))
+  ? `Ideias da Aportou para a carteira: ${pontos.value} ${pontos.value === 1 ? 'ponto pede' : 'pontos pedem'} atenção`
+  : 'Ideias da Aportou para a carteira'))
 
 /* ————— o modal ————— */
 const aberto = ref(false)
@@ -91,15 +91,15 @@ onBeforeUnmount(() => {
 
 /* ————— as ações: o chip de pergunta do /asset ————— */
 const painel = useChatPainel()
-const acoes = ['Perguntar à Redentia']
+const acoes = ['Perguntar à IA']
 const contexto = computed(() => ({
   id: 'carteira:achados',
   tipo: 'carteira',
-  rotulo: 'O que a Redentia encontrou',
+  rotulo: 'O que a Aportou encontrou',
   texto: [
     vm.value.vazio
-      ? `A Redentia olhou ${oQueOlhou(vm.value) ?? 'a carteira'} (${vm.value.olhouEm ?? 'hoje'}) e não encontrou nada que peça atenção.`
-      : `A Redentia olhou ${oQueOlhou(vm.value) ?? 'a carteira'} (${vm.value.olhouEm ?? 'hoje'}) e encontrou ${resumoDosAchados(vm.value)}.`,
+      ? `A Aportou olhou ${oQueOlhou(vm.value) ?? 'a carteira'} (${vm.value.olhouEm ?? 'hoje'}) e não encontrou nada que peça atenção.`
+      : `A Aportou olhou ${oQueOlhou(vm.value) ?? 'a carteira'} (${vm.value.olhouEm ?? 'hoje'}) e encontrou ${resumoDosAchados(vm.value)}.`,
     ...vm.value.itens.map((a) => `${a.selo}: ${a.titulo}${a.texto ? ` — ${semValor(a.texto)}` : ''}`),
   ].join('\n'),
 }))
@@ -123,7 +123,7 @@ function aoClicarNoMiolo(e: MouseEvent) {
     rotulo="Ideias" :aria-label="rotuloDoBotao" :title="rotuloDoBotao" aria-haspopup="dialog" :aria-expanded="aberto"
     class="cid__b" @click="abrirModal"
   >
-    <img src="/logo-azul.svg" alt="" width="16" height="16" class="cid__logo">
+    <MarcaCorte :largura="18" cor="currentColor" />
     <span v-if="pontos" class="cid__selo">{{ pontos }}</span>
   </TopoBotao>
 
@@ -136,7 +136,7 @@ function aoClicarNoMiolo(e: MouseEvent) {
         <span class="cid__alca" aria-hidden="true" />
         <div class="cid__cab">
           <p class="cid__assinatura">
-            <span class="cid__marca"><img src="/logo-azul.svg" alt="" width="14" height="14">Redentia AI</span>
+            <span class="cid__marca"><MarcaCorte :largura="18" />IA da Aportou</span>
             <span class="cid__olhou">{{ assinatura }}</span>
           </p>
           <button type="button" class="cid__fechar" aria-label="Fechar" @click="fechar">
@@ -164,14 +164,13 @@ function aoClicarNoMiolo(e: MouseEvent) {
 </template>
 
 <style scoped>
-/* ——— o botão do topo: o losango da marca e o selo da contagem ——— */
+/* ——— o botão do topo: o corte da marca (o sinal da IA da Aportou) e o selo da contagem ——— */
 .cid__b :deep(.tac__c) { position: relative; }
-.cid__logo { filter: brightness(0) invert(1); }
 .cid__selo {
   position: absolute; top: -3px; right: -5px; display: grid; place-items: center; min-width: 19px; height: 19px; padding: 0 5px;
-  border-radius: var(--nu-r-pill); background: var(--nu-amber-fill); color: var(--nu-navy);
+  border-radius: var(--nu-r-pill); background: var(--nu-amber-fill); color: var(--nu-ink);
   font-size: var(--nu-fs-xs); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1;
-  box-shadow: 0 0 0 2px var(--nu-navy);
+  box-shadow: 0 0 0 2px var(--nu-ink);
 }
 
 /* ——— o modal: o painel de provas do /asset (AcaoCadeiaDetalhe) ——— */
@@ -181,38 +180,37 @@ function aoClicarNoMiolo(e: MouseEvent) {
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
   padding: 32px;
-  animation: cidfade .18s ease;
+  animation: nu-surgir .2s ease both;
 }
 .cid__card {
   position: relative; isolation: isolate;
   width: min(720px, 92vw); max-height: 86vh; overflow: auto; box-sizing: border-box; overscroll-behavior: contain;
-  background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
+  background: var(--nu-page); border-radius: var(--nu-r-card-lg);
   padding: 32px 40px 28px; box-shadow: var(--nu-shadow-day-modal);
-  animation: cidrise .24s cubic-bezier(.2, .8, .2, 1);
+  animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both;
 }
 .cid__card:focus { outline: none; }
 .cid__alca { display: none; }
 .cid__cab { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .cid__assinatura { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin: 0; min-width: 0; }
 .cid__marca {
-  display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px 0 9px; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 10px;
+  color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap;
 }
-.cid__olhou { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
+.cid__olhou { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
 .cid__fechar {
-  flex: 0 0 auto; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: none;
-  background: var(--nu-day-close); color: var(--nu-ink); cursor: pointer; transition: background .2s;
+  flex: 0 0 auto; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: none;
+  background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer; transition: background .2s, transform .2s;
 }
-.cid__fechar:hover { background: var(--nu-day-close-hover); }
-.cid__fechar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.cid__h2 { margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; text-wrap: pretty; }
+.cid__fechar:hover { background: var(--nu-line-2); transform: rotate(90deg); }
+.cid__h2 { margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.08; text-wrap: pretty; }
 .cid__corpo { margin-top: 8px; }
-.cid__pe { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--nu-day-divider); }
+.cid__pe { margin-top: 22px; padding-top: 18px; border-top: 1.5px solid var(--nu-line); }
 
 /* a contagem do título: os números em destaque, no tom do que contam */
 .cah__n {
   display: inline-grid; place-items: center; min-width: 1.4em; height: 1.4em; padding: 0 .36em; margin: 0 .06em 0 0;
-  border-radius: var(--nu-r-pill); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; vertical-align: .06em;
+  border-radius: var(--nu-r-tag); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; vertical-align: .06em;
 }
 .cah__cola { white-space: nowrap; }
 .cah__n--atencao { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
@@ -224,7 +222,7 @@ function aoClicarNoMiolo(e: MouseEvent) {
 .cah :deep(.cah__lista) { list-style: none; margin: 0; padding: 0; }
 .cah :deep(.cah__item) {
   position: relative; margin: 0 0 -1px; padding: 14px 0 8px;
-  border-top: 1px solid var(--nu-cream-line); border-bottom: 1px solid var(--nu-cream-line);
+  border-top: 1.5px solid var(--nu-line); border-bottom: 1.5px solid var(--nu-line);
 }
 .cah :deep(.cah__item::before) {
   content: ''; position: absolute; inset: 0 -12px; z-index: -1; border-radius: 12px;
@@ -241,10 +239,10 @@ function aoClicarNoMiolo(e: MouseEvent) {
 .cah :deep(.cah__item--alta .cah__t::before) { background: var(--nu-red-text); }
 .cah :deep(.cah__item--media .cah__t::before) { background: var(--nu-amber); }
 .cah :deep(.cah__item--forca .cah__t::before) { background: var(--nu-green); }
-.cah :deep(.cah__v) { flex-shrink: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.cah :deep(.cah__v) { flex-shrink: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
 .cah :deep(.cah__x) { margin: 4px 0 0 18px; max-width: 72ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
 .cah :deep(.cah__pe) { display: flex; align-items: center; justify-content: space-between; gap: 4px 16px; flex-wrap: wrap; min-height: 30px; margin: 2px 0 0 18px; }
-/* o "Perguntar à Redentia" da linha: surge no hover e no foco */
+/* o "Perguntar à IA" da linha: surge no hover e no foco */
 .cah :deep(.cah__perg) {
   display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 4px 0; border: 0; background: none; cursor: pointer;
   color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
@@ -255,15 +253,13 @@ function aoClicarNoMiolo(e: MouseEvent) {
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h13M12 5l7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 .cah :deep(.cah__item:hover .cah__perg), .cah :deep(.cah__item:focus-within .cah__perg) { opacity: 1; transform: none; }
-.cah :deep(.cah__perg:hover) { gap: 10px; color: var(--nu-blue-hover); }
-.cah :deep(.cah__perg:focus-visible) { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
+.cah :deep(.cah__perg:hover) { gap: 9px; color: var(--nu-blue); }
+.cah :deep(.cah__perg:focus-visible) { border-radius: 4px; }
 /* sem hover (toque) ou na tela estreita: o "Perguntar" fica à vista */
 @media (hover: none), (max-width: 640px) {
   .cah :deep(.cah__perg) { opacity: 1; transform: none; }
 }
 
-@keyframes cidfade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes cidrise { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes cidsobe { from { transform: translateY(100%); } to { transform: none; } }
 
 /* ——— no celular: a folha que sobe do pé ——— */
@@ -274,7 +270,7 @@ function aoClicarNoMiolo(e: MouseEvent) {
     padding: 12px 20px calc(20px + env(safe-area-inset-bottom));
     animation: cidsobe .32s cubic-bezier(.2, .8, .2, 1);
   }
-  .cid__alca { display: block; width: 40px; height: 4px; margin: 0 auto 14px; border-radius: 2px; background: var(--nu-cream-line); }
+  .cid__alca { display: block; width: 40px; height: 4px; margin: 0 auto 14px; border-radius: 2px; background: var(--nu-line); }
   .cid__h2 { margin-top: 16px; font-size: var(--nu-fs-2xl); }
   .cah :deep(.cah__pe) { min-height: 26px; }
   .cah :deep(.cah__perg) { font-size: var(--nu-fs-dense); font-weight: 600; }

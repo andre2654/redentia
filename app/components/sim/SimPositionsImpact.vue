@@ -74,7 +74,7 @@ function betaMeta(p: SimPositionImpact): string | null {
         <span class="spi__hero-value" :class="total < 0 ? 'spi__val--down' : 'spi__val--up'">{{ fmtPct(total) }}</span>
       </template>
       <template v-else>
-        <span class="spi__hero-label">Cenário base — sem mudanças</span>
+        <span class="spi__hero-label">Cenário base, sem mudanças</span>
         <span class="spi__hero-value spi__val--flat">as posições seguem o mercado</span>
       </template>
     </div>
@@ -83,22 +83,22 @@ function betaMeta(p: SimPositionImpact): string | null {
       <div
         v-for="(p, i) in sorted" :key="p.ticker"
         class="spi__card" :class="{ 'spi__card--in': active, 'spi__card--open': openTicker === p.ticker }"
-        :style="{ transitionDelay: active && openTicker === null ? `${i * 60}ms` : '0ms' }"
+        :style="{ '--d': `${i * 60}ms` }"
       >
         <button
           type="button" class="spi__row"
           :aria-expanded="openTicker === p.ticker" :aria-controls="`spi-detail-${p.ticker}`"
           @click="toggle(p.ticker)"
         >
-          <span class="spi__pill" :class="`spi__pill--${dir(p.shockPct)}`">{{ p.ticker }}</span>
+          <span class="spi__pill">{{ p.ticker }}</span>
           <span class="spi__who">
             <b class="spi__name">{{ p.name }}</b>
             <em class="spi__weight">{{ Math.round(p.weight * 100) }}% da carteira</em>
           </span>
           <span class="spi__track">
             <i
-              class="spi__fill" :class="`spi__fill--${dir(p.shockPct)}`"
-              :style="{ width: active ? `${(Math.abs(p.shockPct) / maxAbs) * 100}%` : '0%', transitionDelay: `${120 + i * 60}ms` }"
+              class="spi__fill" :class="[`spi__fill--${dir(p.shockPct)}`, { 'spi__fill--on': active }]"
+              :style="{ width: `${(Math.abs(p.shockPct) / maxAbs) * 100}%`, transitionDelay: `${120 + i * 60}ms` }"
             />
           </span>
           <span class="spi__pct" :class="`spi__val--${dir(p.shockPct)}`">{{ p.shockPct === 0 ? '—' : fmtPct(p.shockPct) }}</span>
@@ -114,16 +114,16 @@ function betaMeta(p: SimPositionImpact): string | null {
             <span v-else>beta <b>{{ fmtNum(p.beta) }}</b> · {{ betaMeta(p) ?? 'ilustrativo (mock)' }}</span>
             <span v-if="p.carryComponents">
               carrego base <b>{{ fmtNum(p.carryPct, 1) }}% a.a.</b>
-              = CDI médio {{ fmtNum(p.carryComponents.cdiMeanPct, 1) }}% + β·ERP {{ fmtNum(p.carryComponents.betaErpPp, 1) }} p.p., bruto — o que o motor compõe
+              = CDI médio {{ fmtNum(p.carryComponents.cdiMeanPct, 1) }}% + β·ERP {{ fmtNum(p.carryComponents.betaErpPp, 1) }} p.p., bruto: é o que o motor compõe
             </span>
             <span v-else>carrego líquido <b>{{ fmtNum(p.carryPct, 1) }}% a.a.</b> neste cenário</span>
             <span :class="{ 'spi__meta--free': p.tax === 'isento' }">{{ p.taxLabel }}</span>
           </div>
           <p v-if="timelineNote(p)" class="spi__timeline">{{ timelineNote(p) }}</p>
           <p v-if="typeof p.betaStress === 'number'" class="spi__stress">
-            Nos 10% piores dias do índice desde 2001, este papel se moveu com β ≈ <b>{{ fmtNum(p.betaStress) }}</b> — em estresse o acoplamento muda; a conta acima usa o β da janela cheia.
+            Nos 10% piores dias do índice desde 2001, este papel se moveu com β ≈ <b>{{ fmtNum(p.betaStress) }}</b>. Em estresse o acoplamento muda; a conta acima usa o β da janela cheia.
           </p>
-          <p v-if="p.betaSuspect" class="spi__suspect">β fora da faixa típica desta classe — confira a liquidez do papel antes de apresentar.</p>
+          <p v-if="p.betaSuspect" class="spi__suspect">β fora da faixa típica desta classe. Confira a liquidez do papel antes de apresentar.</p>
           <template v-if="p.factors.length">
             <div v-for="l in p.factors" :key="l.name" class="spi__line">
               <span class="spi__line-name">{{ FACTOR_LABEL[l.name] ?? l.name }}</span>
@@ -136,7 +136,7 @@ function betaMeta(p: SimPositionImpact): string | null {
               <span class="spi__line-val" :class="`spi__val--${dir(p.shockPct)}`">{{ fmtPct(p.shockPct) }}</span>
             </div>
           </template>
-          <p v-else class="spi__none">Sem exposição aos fatores deste cenário — o efeito desta posição está no carrego.</p>
+          <p v-else class="spi__none">Sem exposição aos fatores deste cenário: o efeito desta posição está no carrego.</p>
           <p v-if="p.rfNote" class="spi__rfnote">{{ p.rfNote }}</p>
         </div>
       </div>
@@ -145,68 +145,79 @@ function betaMeta(p: SimPositionImpact): string | null {
 </template>
 
 <style scoped>
-/* stat de abertura */
+/* stat de abertura: o rótulo em caixa alta e o número-herói em 800 */
 .spi__hero {
-  display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
-  margin-bottom: 26px;
+  display: flex; align-items: baseline; gap: 10px 18px; flex-wrap: wrap;
+  margin-bottom: 28px;
   opacity: 0; transform: translateY(10px);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
 .spi__hero--in { opacity: 1; transform: none; }
-.spi__hero-label { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
-.spi__hero-value { font-size: clamp(30px, 3.6vw, 46px); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.spi__hero-label { color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.spi__hero-value { font-size: clamp(46px, 5.2vw, 68px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums; }
 .spi__val--down { color: var(--nu-red-text); }
 .spi__val--up { color: var(--nu-green-text); }
-.spi__val--flat { color: var(--nu-gray-2); font-size: clamp(20px, 2.4vw, 28px); }
+.spi__val--flat { color: var(--nu-gray-3); }
+.spi__hero-value.spi__val--flat { font-size: var(--nu-fs-h3); letter-spacing: -0.025em; line-height: 1.05; }
 
-/* lista em cards creme, largura inteira — agora accordion */
+/* a lista "em claro": linha creme da página sobre a faixa, raio 16; abre em
+   acordeão. A entrada é em cascata (60ms); ao passar o ponteiro, sobe 2px. */
 .spi__list { display: flex; flex-direction: column; gap: 10px; }
 .spi__card {
-  background: var(--nu-cream); border-radius: var(--nu-r-tile);
-  opacity: 0; transform: translateY(12px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  background: var(--nu-page); border-radius: var(--nu-r-tile); box-shadow: var(--nu-shadow-quente);
+  opacity: 0;
+  transition: transform 0.25s cubic-bezier(.2, .8, .2, 1), box-shadow 0.25s cubic-bezier(.2, .8, .2, 1);
 }
-.spi__card--in { opacity: 1; transform: none; }
+.spi__card--in { opacity: 1; animation: nu-fade 0.5s ease backwards; animation-delay: var(--d, 0ms); }
+.spi__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.spi__card--open, .spi__card--open:hover { transform: none; box-shadow: var(--nu-shadow-quente); }
 .spi__row {
-  width: 100%; border: none; background: transparent; font-family: inherit;
-  display: grid; grid-template-columns: 108px minmax(180px, 0.9fr) 2fr 92px 20px;
+  width: 100%; min-height: 64px; border: none; background: transparent; font-family: inherit; color: inherit;
+  display: grid; grid-template-columns: 96px minmax(180px, 0.9fr) 2fr 92px 36px;
   gap: 18px; align-items: center; text-align: left;
-  padding: 15px 22px; cursor: pointer;
+  padding: 12px 14px 12px 20px; cursor: pointer; border-radius: var(--nu-r-tile);
 }
-.spi__chev { color: var(--nu-sand); display: inline-flex; transition: transform 0.25s ease, color 0.2s; }
-.spi__row:hover .spi__chev { color: var(--nu-gray-2); }
-.spi__card--open .spi__chev { transform: rotate(180deg); color: var(--nu-ink); }
+/* o "+" do acordeão da marca: círculo carvão que gira ao abrir */
+.spi__chev {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--nu-cream-2); color: var(--nu-ink);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: transform 0.25s cubic-bezier(.2, .8, .2, 1), background 0.2s, color 0.2s;
+}
+.spi__row:hover .spi__chev { background: var(--nu-line-2); }
+.spi__card--open .spi__chev { transform: rotate(180deg); background: var(--nu-ink); color: var(--nu-white); }
 
+/* o selo do ticker: carvão, letra branca 800, raio 8 */
 .spi__pill {
   display: inline-flex; align-items: center; justify-content: center;
-  padding: 8px 0; border-radius: var(--nu-r-chip);
-  font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: 0.01em;
+  padding: 7px 0; border-radius: var(--nu-r-tag);
+  background: var(--nu-ink); color: var(--nu-white);
+  font-size: 13.5px; font-weight: 800; letter-spacing: 0.04em;
 }
-.spi__pill--down { background: var(--nu-red-tint); color: var(--nu-red-2); }
-.spi__pill--up { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.spi__pill--flat { background: var(--nu-sand-2); color: var(--nu-gray-2); }
 
 .spi__who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .spi__name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.spi__weight { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-style: normal; font-variant-numeric: tabular-nums; }
+.spi__weight { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; font-style: normal; font-variant-numeric: tabular-nums; }
 
-.spi__track { position: relative; height: 12px; border-radius: 999px; background: var(--nu-cream-3); overflow: hidden; }
+/* a barra cresce da esquerda em 0,6s (só transform) */
+.spi__track { position: relative; height: 12px; border-radius: 999px; background: var(--nu-line-2); overflow: hidden; }
 .spi__fill {
   position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px;
-  transition: width 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
+.spi__fill--on { transform: scaleX(1); }
 .spi__fill--down { background: var(--nu-red); }
 .spi__fill--up { background: var(--nu-green); }
 .spi__fill--flat { background: var(--nu-sand); }
 
-.spi__pct { text-align: right; font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.spi__pct { text-align: right; font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* a ficha */
-.spi__detail { padding: 0 22px 18px; animation: nu-fade 0.3s ease both; }
+.spi__detail { padding: 0 20px 18px; animation: nu-fade 0.3s ease both; }
 .spi__meta {
   display: flex; gap: 8px 22px; flex-wrap: wrap;
-  padding: 12px 0 10px; border-top: 1px solid var(--nu-cream-3);
-  color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500;
+  padding: 14px 0 10px; border-top: 1.5px solid var(--nu-line);
+  color: var(--nu-gray-3); font-size: 13.5px; font-weight: 500;
 }
 .spi__meta b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
 .spi__meta--free { color: var(--nu-green-text); font-weight: 800; }
@@ -215,21 +226,22 @@ function betaMeta(p: SimPositionImpact): string | null {
   gap: 14px; align-items: baseline; padding: 6px 0;
 }
 .spi__line-name { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
-.spi__line-math { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
+.spi__line-math { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
 .spi__line-val { text-align: right; font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
-.spi__line--sum { border-top: 1px dashed var(--nu-cream-3); margin-top: 4px; padding-top: 10px; }
-.spi__none { margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
-.spi__timeline { margin: 8px 0 0; color: var(--nu-blue-text); font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }
-.spi__stress { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.45; }
+.spi__line--sum { border-top: 1.5px dashed var(--nu-line); margin-top: 4px; padding-top: 10px; }
+.spi__none { margin: 4px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
+.spi__timeline { margin: 8px 0 0; color: var(--nu-blue-text); font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.spi__stress { margin: 8px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.45; }
 .spi__stress b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
-.spi__suspect { margin: 6px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-dense); font-weight: 700; }
-.spi__rfnote { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700; }
+/* o selo "atenção" */
+.spi__suspect { display: inline-block; margin: 8px 0 0; padding: 5px 10px; border-radius: var(--nu-r-tag); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: 13.5px; font-weight: 700; }
+.spi__rfnote { margin: 8px 0 0; color: var(--nu-gray-3); font-size: 13.5px; font-weight: 700; }
 
 @media (max-width: 760px) {
-  .spi__row { grid-template-columns: 84px 1fr 74px 16px; padding: 13px 15px; gap: 12px; }
+  .spi__row { grid-template-columns: 84px 1fr auto 36px; padding: 12px 12px 12px 14px; gap: 10px 12px; }
   .spi__track { grid-column: 1 / -1; order: 5; }
-  .spi__pct { font-size: var(--nu-fs-md); }
-  .spi__detail { padding: 0 15px 15px; }
+  .spi__pct { font-size: var(--nu-fs-lg); }
+  .spi__detail { padding: 0 14px 15px; }
   .spi__line { grid-template-columns: 1fr 78px; }
   .spi__line-math { grid-column: 1 / -1; order: 3; }
 }

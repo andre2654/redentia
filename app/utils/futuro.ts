@@ -629,7 +629,7 @@ export function marcasDoEixo(
   return out
 }
 
-/** '#8FF0B5' ou 'rgb(143, 240, 181)' (o que o getComputedStyle devolve de um token) → [r, g, b]. */
+/** '#rrggbb', '#rgb' ou 'rgb(r, g, b)' (o que o getComputedStyle devolve de um token, como o --nu-green-soft) → [r, g, b]. */
 export function rgbDaCor(cor: string | null | undefined): [number, number, number] | null {
   const v = String(cor ?? '').trim()
   const hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(v)

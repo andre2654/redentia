@@ -153,7 +153,7 @@ onBeforeUnmount(() => {
 .cmo {
   --cmo-texto: var(--nu-ink); --cmo-sub: var(--nu-gray); --cmo-linha: var(--nu-cream-2); --cmo-trilho: var(--nu-cream);
   position: relative; padding: 26px 28px 20px; border-radius: 28px; background: var(--nu-white); color: var(--cmo-texto);
-  box-shadow: 0 40px 90px -40px rgba(8, 16, 48, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.6);
+  box-shadow: 0 40px 90px -40px color-mix(in srgb, var(--nu-ink) 55%, transparent), 0 0 0 1px var(--nu-white-60);
 }
 .cmo__topo { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .cmo__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
@@ -190,7 +190,7 @@ onBeforeUnmount(() => {
   transition: opacity .45s ease, transform .55s cubic-bezier(.22, 1, .36, 1), filter .45s ease;
 }
 .cmo__conta--fora { opacity: 0; transform: translateX(-18px); filter: blur(4px); }
-.cmo__logo { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px rgba(10, 10, 12, 0.06); }
+.cmo__logo { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px var(--nu-navy-06); }
 .cmo__nome { display: flex; flex-direction: column; min-width: 0; font-size: var(--nu-fs-sm); font-weight: 700; }
 .cmo__nome small { color: var(--cmo-sub); font-size: var(--nu-fs-dense); font-weight: 500; }
 .cmo__quanto { font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -198,12 +198,12 @@ onBeforeUnmount(() => {
 
 /* ——— sobre o navy (o herói da folha): sem cartão, as contas em duas colunas ——— */
 .cmo--escuro {
-  --cmo-texto: var(--nu-cream-text); --cmo-sub: var(--nu-cream-text-60); --cmo-linha: rgba(245, 241, 234, 0.12); --cmo-trilho: rgba(245, 241, 234, 0.1);
+  --cmo-texto: var(--nu-cream-text); --cmo-sub: var(--nu-cream-text-60); --cmo-linha: var(--nu-cream-text-12); --cmo-trilho: var(--nu-cream-text-10);
   padding: 0; border-radius: 0; background: none; box-shadow: none;
 }
 .cmo--escuro .cmo__eyebrow { color: var(--nu-blue-soft); }
 .cmo--escuro .cmo__valor { font-size: var(--nu-fs-h3); letter-spacing: -0.04em; }
-.cmo--escuro .cmo__hoje { margin-top: 8px; background: rgba(143, 240, 181, 0.16); color: var(--nu-green-soft); }
+.cmo--escuro .cmo__hoje { margin-top: 8px; background: var(--nu-green-soft-16); color: var(--nu-green-soft); }
 .cmo--escuro .cmo__barra { margin-top: 16px; height: 10px; }
 .cmo--escuro .cmo__legenda { display: none; }
 .cmo--escuro .cmo__contas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; margin-top: 14px; border-top: 0; }

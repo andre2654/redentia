@@ -68,7 +68,7 @@ const POSICOES: PosicaoVisao[] = [
 
 const PATRIMONIO = Math.round(POSICOES.reduce((s, p) => s + p.valor, 0) * 100) / 100
 
-const MOTOR = 'Simulação da Redentia (motor de cenários): '
+const MOTOR = 'Simulação da Aportou (motor de cenários): '
 const FATORES_BASE: Omit<CarteiraVisao['fatores'][number], 'pct' | 'valor' | 'tickers'>[] = [
   { chave: 'juros', nome: 'Inflação e juros longos', seCenario: 'Se os juros longos subirem 1 ponto', efeito: '−R$ 21 mil', efeitoDir: 'down', metodo: `${MOTOR}juros 1 ponto acima de hoje (pelo dial da Selic), que remarca o Tesouro IPCA+ e o prefixado pela duração e reprecifica os FIIs.` },
   { chave: 'selic', nome: 'Selic', seCenario: 'Cada corte de 1 ponto na Selic', efeito: '−R$ 170 por mês de rendimento', efeitoDir: 'down', metodo: 'Conta simples: 1 ponto de Selic ao ano sobre R$ 203.544, ÷ 12.' },
@@ -137,7 +137,7 @@ const AVISOS: Aviso[] = [
     fonte: 'Transações da Pluggy, regra da Receita (Lei 11.033/2004, art. 3º)',
     acoes: [
       { tipo: 'ver', rotulo: 'Ver as vendas', alvo: '#movimentacoes' },
-      { tipo: 'perguntar', rotulo: 'Perguntar à Redentia', alvo: 'Como eu confiro se devo DARF das vendas de fevereiro?' },
+      { tipo: 'perguntar', rotulo: 'Perguntar à IA', alvo: 'Como eu confiro se devo DARF das vendas de fevereiro?' },
     ],
     pergunta: 'Devo imposto?', canais: ['tela', 'email', 'whatsapp'], estado: 'novo',
   },
@@ -187,7 +187,7 @@ const AVISOS: Aviso[] = [
       { rotulo: 'Imposto de FII sobre o lucro', valor: '20%' },
     ],
     fonte: 'Transações da Pluggy',
-    acoes: [{ tipo: 'perguntar', rotulo: 'Perguntar à Redentia', alvo: 'Como funciona abater prejuízo de FII no imposto?' }],
+    acoes: [{ tipo: 'perguntar', rotulo: 'Perguntar à IA', alvo: 'Como funciona abater prejuízo de FII no imposto?' }],
     pergunta: 'Devo imposto?', canais: ['tela', 'email'], estado: 'visto',
   },
   {
@@ -221,7 +221,7 @@ const AVISOS: Aviso[] = [
       { rotulo: 'Notas (antes → depois)', valor: 'Retorno 62 → 65 · Risco 81 → 82 · Eficiência 59 → 63 · Diversificação 86 → 86' },
       { rotulo: 'Cenários de 5 anos, os 10% piores', valor: 'R$ 702 mil → R$ 706 mil' },
     ],
-    fonte: 'O relatório da carteira (a curva real, o benchmark composto, o CDI e o IPCA) e o motor de cenários da Redentia',
+    fonte: 'O relatório da carteira (a curva real, o benchmark composto, o CDI e o IPCA) e o motor de cenários da Aportou',
     acoes: [
       { tipo: 'ver', rotulo: 'Ver o relatório', alvo: '#relatorio' },
       { tipo: 'simular', rotulo: 'Simular', alvo: 'Simule estes 3 ajustes na minha carteira: R$ 9,8 mil de ações de saúde por ações de energia elétrica, R$ 6 mil de Tesouro IPCA+ por outro título do Tesouro IPCA+ e aplicar R$ 1,1 mil dos proventos do mês em um ETF de ouro que você já tem. O que muda nas notas do relatório e nos cenários de 5 anos?' },
@@ -261,7 +261,7 @@ const AVISOS: Aviso[] = [
 const DESCARTADOS: CarteiraVisao['avisos']['descartados'] = [
   { id: 'vender:WEGE3', movimento: 'Trocar WEGE3 por uma ação que paga mais dividendo', veto: 'A WEG protege a carteira do dólar e paga pouco porque reinveste. Trocar por dividendo deixaria você mais exposto ao Brasil.' },
   { id: 'vender:GOLD11', movimento: 'Vender GOLD11 para comprar renda', veto: 'É o único ativo que tende a subir quando o resto cai (correlação de −0,18 com a carteira).' },
-  { id: 'vender:PRIO3', movimento: 'Vender PRIO3 para reduzir o petróleo', veto: 'Está no quartil de cima da nota da Redentia e acima da média de 200 dias. Com sinal de alta, ele fica fora das trocas.' },
+  { id: 'vender:PRIO3', movimento: 'Vender PRIO3 para reduzir o petróleo', veto: 'Está no quartil de cima da nota da Aportou e acima da média de 200 dias. Com sinal de alta, ele fica fora das trocas.' },
   { id: 'comprar:FII-papel', movimento: 'Comprar mais FII de papel para a renda', veto: 'Os juros longos já são 37% da carteira, e FII de papel reforça esse mesmo risco.' },
 ]
 

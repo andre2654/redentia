@@ -102,35 +102,34 @@ const contexto = computed(() => ({
 <style scoped>
 /* o mesmo bloco navy do desempenho de antes (NuPortfolioChart), com o gráfico do /asset por dentro */
 .vds {
-  background: var(--nu-navy);
+  background: var(--nu-ink);
   padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
   animation: nu-fade .5s ease both;
 }
 .vds__cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px 22px; flex-wrap: wrap; }
 .vds__textos { min-width: 0; max-width: 760px; }
 .vds__titulo {
-  margin: 0; color: var(--nu-cream-text); font-size: clamp(36px, 5vw, 64px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; text-wrap: balance;
+  margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance;
 }
-.vds__sub { margin: 14px 0 0; color: var(--nu-cream-text-78); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; }
-.vds__periodos { display: flex; gap: 6px; flex-shrink: 0; }
+.vds__sub { margin: 16px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; }
+.vds__periodos { display: flex; gap: 4px; flex-shrink: 0; padding: 4px; border-radius: var(--nu-r-pill); background: var(--nu-dark-chip); }
 .vds__periodo {
-  padding: 11px 20px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-cream-text-50); font: inherit; font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
+  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); border: none; background: transparent;
+  color: var(--nu-on-dark); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
   transition: color .2s, background .2s;
 }
-.vds__periodo:hover { color: var(--nu-cream-text-85); }
-.vds__periodo:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
-.vds__periodo--on { background: var(--nu-cream); color: var(--nu-navy); font-weight: 800; }
-.vds__periodo--on:hover { color: var(--nu-navy); }
+.vds__periodo:hover { color: var(--nu-white); }
+.vds__periodo:focus-visible { outline-color: var(--nu-blue-on-dark); }
+.vds__periodo--on, .vds__periodo--on:hover { background: var(--nu-creme); color: var(--nu-ink); }
 
 .vds__legenda { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px 26px; margin: 24px 0 0; }
 .vds__leg { display: inline-flex; align-items: center; gap: 9px; }
-.vds__traco { align-self: center; width: 16px; height: 3px; border-radius: 2px; background: var(--nu-blue-soft); }
-.vds__traco--bench { height: 2px; background: repeating-linear-gradient(90deg, var(--nu-cream-text-50) 0 3px, transparent 3px 7px); }
-.vds__leg-r { color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 700; }
-.vds__leg-v { color: var(--nu-cream-text-85); font-size: var(--nu-fs-2xl); font-weight: 800; font-variant-numeric: tabular-nums; }
-.vds__leg-v--voce { color: var(--nu-blue-legend); }
+.vds__traco { align-self: center; width: 16px; height: 3px; border-radius: 2px; background: var(--nu-blue-on-dark); }
+.vds__traco--bench { height: 2px; background: repeating-linear-gradient(90deg, var(--nu-on-dark-2) 0 3px, transparent 3px 7px); }
+.vds__leg-r { color: var(--nu-on-dark-2); font-size: var(--nu-fs-md); font-weight: 700; }
+.vds__leg-v { color: var(--nu-white); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.vds__leg-v--voce { color: var(--nu-blue-on-dark); }
 
 /* a caixa do gráfico: as marcas ('+10%') moram na faixa da esquerda, fora da
    linha, e o ponto de hoje cabe inteiro (recuo à direita) */
@@ -145,7 +144,7 @@ const contexto = computed(() => ({
   .vds__grafico { --agr-esq: 40px; }
   .vds__legenda { gap: 8px 20px; }
   .vds__leg-v { font-size: var(--nu-fs-xl); }
-  .vds__periodo { padding: 10px 16px; }
+  .vds__periodo { padding: 0 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .vds { animation: none; }

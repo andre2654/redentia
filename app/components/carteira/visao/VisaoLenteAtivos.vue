@@ -79,7 +79,7 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
           </li>
         </ul>
         <button v-if="g.itens.length > NA_LISTA && !expandidos.has(g.classe)" type="button" class="vla__mais" @click="expandir(g.classe)">
-          {{ maisDe(g) }}<span class="vla__mais-v">{{ mask(brl0(g.itens.slice(NA_LISTA).reduce((s, p) => s + p.valor, 0))) }}</span>
+          <span class="vla__mais-t">{{ maisDe(g) }}</span><span class="vla__mais-v">{{ mask(brl0(g.itens.slice(NA_LISTA).reduce((s, p) => s + p.valor, 0))) }}</span>
         </button>
       </div>
     </div>
@@ -92,30 +92,39 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
 </template>
 
 <style scoped>
-.vla__frase { margin: 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
-.vla__barra { display: flex; gap: 2px; height: 14px; margin-top: clamp(26px, 3.4vw, 40px); }
-.vla__seg { flex-basis: 0; min-width: 4px; border-radius: 4px; transition: opacity .25s; }
+.vla__frase { margin: 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; font-variant-numeric: tabular-nums; text-wrap: balance; }
+/* a barra empilhada da marca: 28px, vão de 4px, pontas redondas só nos extremos; cresce da esquerda na entrada */
+.vla__barra { display: flex; gap: 4px; height: 28px; margin-top: clamp(26px, 3.4vw, 40px); transform-origin: left; animation: vla-cresce .6s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes vla-cresce { from { transform: scaleX(0); opacity: 0; } }
+.vla__seg { flex-basis: 0; min-width: 8px; border-radius: 6px; transition: opacity .25s; }
+.vla__seg:first-child { border-top-left-radius: 15px; border-bottom-left-radius: 15px; }
+.vla__seg:last-child { border-top-right-radius: 15px; border-bottom-right-radius: 15px; }
 .vla__seg--apagado { opacity: .3; }
-.vla__grupos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px clamp(28px, 4vw, 64px); margin-top: clamp(22px, 3vw, 34px); }
-.vla__grupo-cab { display: flex; align-items: baseline; gap: 10px; padding: 14px 0 8px; border-bottom: 1px solid var(--nu-cream-line); }
-.vla__ponto { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; transform: translateY(-1px); }
-.vla__grupo-n { flex: 1; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em; }
-.vla__grupo-pct { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
+/* cada classe num cartão creme, como a marca veste o dado */
+.vla__grupos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: clamp(14px, 1.6vw, 20px); margin-top: clamp(20px, 2.6vw, 28px); }
+.vla__grupo { padding: clamp(18px, 2.2vw, 26px) clamp(18px, 2.4vw, 28px) clamp(12px, 1.6vw, 18px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); animation: nu-fade .5s ease both; }
+.vla__grupo:nth-child(2) { animation-delay: 60ms; }
+.vla__grupo:nth-child(3) { animation-delay: 120ms; }
+.vla__grupo:nth-child(4) { animation-delay: 180ms; }
+.vla__grupo-cab { display: flex; align-items: baseline; gap: 10px; padding: 0 0 12px; border-bottom: 1.5px solid var(--nu-line); }
+.vla__ponto { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.vla__grupo-n { flex: 1; color: var(--nu-ink); font-size: clamp(20px, 1.8vw, 24px); font-weight: 800; letter-spacing: -0.02em; }
+.vla__grupo-pct { color: var(--nu-ink); font-size: clamp(24px, 2.2vw, 30px); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .vla__grupo-v { min-width: 92px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
 .vla__lista { list-style: none; margin: 0; padding: 0; }
 .vla__linha { display: grid; grid-template-columns: minmax(0, 1fr) 64px 56px 92px; align-items: center; gap: 12px; padding: 9px 8px; margin: 0 -8px; border-radius: var(--nu-r-chip); transition: background .18s; }
-.vla__linha:hover { background: var(--nu-row-hover); }
+.vla__linha:hover { background: var(--nu-cream-2); }
 .vla__nome { display: flex; flex-direction: column; min-width: 0; color: inherit; text-decoration: none; }
 .vla__nome-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 a.vla__nome:hover .vla__nome-t { color: var(--nu-blue-text); }
 .vla__nome-s { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vla__peso { height: 4px; border-radius: 2px; background: var(--nu-cream-2); overflow: hidden; }
-.vla__peso i { display: block; height: 100%; border-radius: 2px; opacity: .8; }
+.vla__peso { height: 6px; border-radius: 3px; background: var(--nu-line-2); overflow: hidden; }
+.vla__peso i { display: block; height: 100%; border-radius: 3px; }
 .vla__pct { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
 .vla__v { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
-.vla__mais { display: flex; justify-content: space-between; width: 100%; margin-top: 2px; padding: 9px 0; border: 0; border-top: 1px dashed var(--nu-cream-line); background: none; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; text-align: left; }
-.vla__mais:hover { color: var(--nu-blue-hover); }
-.vla__mais:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.vla__mais { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; margin-top: 4px; padding: 6px 0 0; border: 0; border-top: 1.5px solid var(--nu-line-2); background: none; color: var(--nu-blue-text); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; text-align: left; }
+.vla__mais-t { text-decoration: underline; text-underline-offset: 3px; }
+.vla__mais:hover { color: var(--nu-blue); }
 .vla__mais-v { color: var(--nu-gray); font-weight: 600; font-variant-numeric: tabular-nums; }
 .vla__confere { display: flex; align-items: center; gap: 8px; margin: clamp(22px, 3vw, 32px) 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
 .vla__check { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--nu-green-bg, var(--nu-cream)); color: var(--nu-green-text, var(--nu-green)); }
@@ -124,5 +133,9 @@ a.vla__nome:hover .vla__nome-t { color: var(--nu-blue-text); }
 @media (max-width: 480px) {
   .vla__linha { grid-template-columns: minmax(0, 1fr) 48px 84px; }
   .vla__peso { display: none; }
+  .vla__barra { height: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vla__barra, .vla__grupo { animation: none; }
 }
 </style>

@@ -107,6 +107,7 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
   <section class="cvz" aria-labelledby="cvz-titulo">
     <div class="cvz__miolo">
       <template v-if="lendo">
+        <NuEyebrow como="p">Sua carteira</NuEyebrow>
         <h1 id="cvz-titulo" class="cvz__titulo cvz__titulo--lendo">{{ tituloLendo }}</h1>
         <p v-if="situacao === 'lendo'" class="cvz__linha" aria-live="polite">
           A conexão está feita. Os investimentos levam de 1 a 3 minutos para chegar,
@@ -130,15 +131,16 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
         </div>
 
         <div class="cvz__acao">
-          <button v-if="situacao === 'demorando'" type="button" class="cvz__de-novo" @click="verDeNovo">Ver de novo</button>
+          <NuBotaoSeta v-if="situacao === 'demorando'" tamanho="m" @click="verDeNovo">Ver de novo</NuBotaoSeta>
           <CarteiraConnect v-else-if="situacao === 'erro'" @connected="conectou" />
         </div>
       </template>
 
       <template v-else>
+      <NuEyebrow como="p">Sua carteira</NuEyebrow>
       <h1 id="cvz-titulo" class="cvz__titulo">Conecte <br>seu banco.</h1>
       <p class="cvz__linha">
-        A Redentia lê os seus investimentos automaticamente, testa a carteira em
+        A Aportou lê os seus investimentos automaticamente, testa a carteira em
         2.000 cenários e alerta quando algo acontece.
       </p>
 
@@ -174,18 +176,18 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
 
 <style scoped>
 .cvz {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   padding: clamp(56px, 8vw, 112px) clamp(22px, 5.5vw, 80px) clamp(44px, 6vw, 80px);
   animation: nu-fade .5s ease both;
 }
-.cvz__titulo { margin: 0; color: var(--nu-ink); font-size: clamp(52px, 8.4vw, 120px); font-weight: 800; letter-spacing: -0.05em; line-height: 0.96; }
-.cvz__linha { margin: clamp(16px, 2vw, 24px) 0 0; max-width: 640px; color: var(--nu-gray-2); font-size: clamp(18px, 2vw, 22px); font-weight: 500; line-height: 1.5; }
+.cvz__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero-xl); font-weight: 800; letter-spacing: -0.04em; line-height: 0.96; }
+.cvz__linha { margin: clamp(18px, 2vw, 26px) 0 0; max-width: 640px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
 
 .cvz__bancos { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); }
 .cvz__logos { list-style: none; margin: 0; padding: 0 0 0 8px; display: flex; }
 .cvz__logo {
   display: grid; place-items: center; width: 44px; height: 44px; margin-left: -8px;
-  border-radius: 50%; overflow: hidden; background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-cream), var(--nu-shadow-pos-nav);
+  border-radius: 50%; overflow: hidden; background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-page), var(--nu-shadow-pos-nav);
   transition: transform .2s cubic-bezier(.22, 1, .36, 1);
 }
 .cvz__logo :deep(.cil) { border: 0; border-radius: 7px; }
@@ -194,46 +196,43 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
   .cvz__logo :deep(.cil) { width: 24px !important; height: 24px !important; }
 }
 .cvz__logo:hover { transform: translateY(-3px); }
-.cvz__bancos-txt { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
+.cvz__bancos-txt { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
 @media (prefers-reduced-motion: reduce) { .cvz__logo { transition: none; } }
 
 .cvz__acao { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; margin-top: clamp(28px, 4vw, 40px); }
 .cvz__seguro { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .cvz__seguro svg { color: var(--nu-green); flex-shrink: 0; }
 
-.cvz__titulo--lendo { font-size: clamp(44px, 6.4vw, 92px); }
+.cvz__titulo--lendo { font-size: var(--nu-fs-hero); letter-spacing: -0.035em; line-height: 0.98; }
 .cvz__esqueleto {
   display: flex; flex-direction: column; gap: 14px; max-width: 560px; margin-top: clamp(28px, 4vw, 44px);
-  padding: 26px; border-radius: var(--nu-r-card); background: var(--nu-white);
+  padding: 26px; border-radius: var(--nu-r-card); background: var(--nu-band); box-shadow: var(--nu-shadow-quente);
 }
 .cvz__osso {
+  --osso: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-band));
   display: block; height: 16px; border-radius: 10px;
-  background: linear-gradient(90deg, var(--nu-cream) 0%, var(--nu-cream-line) 50%, var(--nu-cream) 100%);
-  background-size: 200% 100%; animation: cvz-osso 1.4s ease-in-out infinite;
+  background: linear-gradient(100deg, var(--osso) 25%, var(--nu-white) 50%, var(--osso) 75%);
+  background-size: 200% 100%; animation: nu-shimmer 1.5s ease-in-out infinite;
 }
 .cvz__osso--eyebrow { width: 28%; height: 12px; }
 .cvz__osso--total { width: 56%; height: 40px; border-radius: 14px; }
 .cvz__osso--barra { width: 100%; height: 12px; margin: 6px 0 4px; }
 .cvz__osso--linha { width: 100%; height: 44px; border-radius: 14px; }
-@keyframes cvz-osso { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) { .cvz__osso { animation: none; } }
-.cvz__de-novo {
-  border: 0; border-radius: var(--nu-r-pill); padding: 16px 28px; background: var(--nu-blue); color: var(--nu-white);
-  font-family: inherit; font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
-}
-.cvz__de-novo:hover { background: var(--nu-blue-hover); }
 
+/* os passos numerados da marca: o número gigante em cobalto sobre um fio carvão de 3px */
 .cvz__passos {
-  list-style: none; margin: clamp(44px, 6vw, 72px) 0 0; padding: clamp(24px, 3vw, 32px) 0 0;
-  border-top: 1px solid var(--nu-cream-line);
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: clamp(18px, 3vw, 36px);
+  list-style: none; margin: clamp(48px, 6vw, 80px) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: clamp(24px, 3vw, 40px);
 }
-.cvz__passo { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; row-gap: 4px; align-items: start; }
+.cvz__passo { display: flex; flex-direction: column; gap: 6px; animation: nu-fade .5s ease both; }
+.cvz__passo:nth-child(2) { animation-delay: 60ms; }
+.cvz__passo:nth-child(3) { animation-delay: 120ms; }
 .cvz__num {
-  grid-row: span 2; width: 32px; height: 32px; border-radius: 50%;
-  background: var(--nu-white); color: var(--nu-blue-text);
-  display: inline-flex; align-items: center; justify-content: center; font-size: var(--nu-fs-sm); font-weight: 800;
+  padding-bottom: 10px; margin-bottom: 10px; border-bottom: 3px solid var(--nu-ink);
+  color: var(--nu-blue); font-size: clamp(64px, 7vw, 88px); font-weight: 800; letter-spacing: -0.04em; line-height: .9; font-variant-numeric: tabular-nums;
 }
-.cvz__passo-t { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
-.cvz__passo-d { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.cvz__passo-t { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.cvz__passo-d { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) { .cvz__passo { animation: none; } }
 </style>

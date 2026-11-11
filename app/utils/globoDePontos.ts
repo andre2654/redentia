@@ -11,6 +11,7 @@
  * Os arcos são grandes círculos (slerp) levantados do chão por sen(πt).
  */
 import { PAISES_ID, pontosDaTerra } from './mundoPontos'
+import { rgbDaCor } from './futuro'
 
 const RAD = Math.PI / 180
 
@@ -39,12 +40,31 @@ export interface VistaGlobo {
   lat0: number
 }
 
+/**
+ * As cores da esfera (11/11/2026, Aportou): o canvas não entende var(), então
+ * quem monta a cena lê os tokens com getComputedStyle e entrega aqui, já em
+ * '#rrggbb' ou 'rgb(r, g, b)'. Nenhuma cor mora neste arquivo.
+ */
+export interface TemaDoGlobo {
+  /** a esfera, do ponto de luz à sombra */
+  luz: string
+  meio: string
+  sombra: string
+  /** o contorno dos pontos de chegada e de partida */
+  contorno: string
+  /** os pontos da terra sem fatia nenhuma */
+  neutro: string
+  /** a atmosfera, quando não há fatia "mundo todo" */
+  halo: string
+}
+
 export interface CenaGlobo {
   camadas: CamadaGlobo[]
   arcos: ArcoGlobo[]
   /** o ponto de partida (Brasil) */
   origem: [lon: number, lat: number] | null
   origemCor: string
+  tema: TemaDoGlobo
   /** a fatia em destaque (hover); null = todas acesas */
   ativo: string | null
 }
@@ -58,13 +78,11 @@ export interface QuadroGlobo extends VistaGlobo {
 
 /* ————— cores ————— */
 
-function rgb(hex: string): [number, number, number] {
-  const h = hex.replace('#', '')
-  const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16)
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+/** '#rrggbb', '#rgb' ou 'rgb(r, g, b)' (o que sai de um token) → [r, g, b]; cor que não se lê vira transparente no desenho */
+function rgb(cor: string): [number, number, number] {
+  return rgbDaCor(cor) ?? [0, 0, 0]
 }
 const rgba = (c: [number, number, number], a: number) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, Math.min(1, a)).toFixed(3)})`
-const NAVY: [number, number, number] = [12, 21, 36]
 
 /* ————— a cena preparada (o que não muda a cada quadro) ————— */
 
@@ -79,6 +97,9 @@ export interface CenaPreparada {
   arcos: { chave: string; cor: [number, number, number]; lat: Float32Array; lon: Float32Array; h: Float32Array }[]
   cores: [number, number, number][]
   todos: number
+  /** do tema, já em números */
+  neutro: [number, number, number]
+  halo: [number, number, number]
 }
 
 let trig: { sinLat: Float32Array; cosLat: Float32Array; lonRad: Float32Array } | null = null
@@ -143,6 +164,8 @@ export function prepararCena(cena: CenaGlobo): CenaPreparada {
     arcos: cena.arcos.map((a) => ({ chave: a.chave, cor: rgb(a.cor), ...amostrarArco(a.de, a.para) })),
     cores: cena.camadas.map((c) => rgb(c.cor)),
     todos: cena.camadas.findIndex((c) => c.todos),
+    neutro: rgb(cena.tema.neutro),
+    halo: rgb(cena.tema.halo),
   }
 }
 
@@ -192,7 +215,7 @@ export function desenharGlobo(ctx: CanvasRenderingContext2D, s: number, p: CenaP
   ctx.clearRect(0, 0, s, s)
 
   // a atmosfera: um halo azul em volta (raio ≤ meio lado: o canvas não corta) (na cor da região "mundo todo", se houver)
-  const corHalo = p.todos >= 0 ? p.cores[p.todos]! : rgb('#2F6AFF')
+  const corHalo = p.todos >= 0 ? p.cores[p.todos]! : p.halo
   const haloForte = p.todos >= 0 && (!cena.ativo || cena.ativo === cena.camadas[p.todos]!.chave)
   const halo = ctx.createRadialGradient(cx, cy, R * 0.92, cx, cy, R * 1.24)
   halo.addColorStop(0, rgba(corHalo, haloForte ? 0.34 : 0.16))
@@ -205,9 +228,9 @@ export function desenharGlobo(ctx: CanvasRenderingContext2D, s: number, p: CenaP
 
   // a esfera, com a luz do alto à esquerda
   const esfera = ctx.createRadialGradient(cx - R * 0.4, cy - R * 0.45, R * 0.05, cx, cy, R * 1.05)
-  esfera.addColorStop(0, '#FFFFFF')
-  esfera.addColorStop(0.5, '#F5F8FE')
-  esfera.addColorStop(1, '#DCE5F5')
+  esfera.addColorStop(0, cena.tema.luz)
+  esfera.addColorStop(0.5, cena.tema.meio)
+  esfera.addColorStop(1, cena.tema.sombra)
   ctx.fillStyle = esfera
   ctx.beginPath()
   ctx.arc(cx, cy, R, 0, Math.PI * 2)
@@ -249,7 +272,7 @@ export function desenharGlobo(ctx: CanvasRenderingContext2D, s: number, p: CenaP
       if (neutro) a = 0.1 + 0.2 * k
       else if (cam!.forte) { a = (0.5 + 0.5 * k) * (apagado ? 0.32 : 1); r *= 1.28 }
       else a = (0.3 + 0.32 * k) * (apagado ? 0.4 : 1)
-      ctx.fillStyle = rgba(neutro ? NAVY : p.cores[c]!, a)
+      ctx.fillStyle = rgba(neutro ? p.neutro : p.cores[c]!, a)
       ctx.beginPath()
       for (let j = 0; j < g.length; j += 2) {
         ctx.moveTo(g[j]! + r, g[j + 1]!)
@@ -328,7 +351,7 @@ export function desenharGlobo(ctx: CanvasRenderingContext2D, s: number, p: CenaP
       const fim = tela(arco.lat[total]!, arco.lon[total]!, 0)
       if (fim.visivel) {
         ctx.fillStyle = rgba(arco.cor, apagado ? 0.35 : 1)
-        ctx.strokeStyle = '#FFFFFF'
+        ctx.strokeStyle = cena.tema.contorno
         ctx.lineWidth = 1.6
         ctx.beginPath()
         ctx.arc(fim.x, fim.y, apagado ? 2.6 : 3.6, 0, Math.PI * 2)
@@ -353,7 +376,7 @@ export function desenharGlobo(ctx: CanvasRenderingContext2D, s: number, p: CenaP
       ctx.arc(ox, oy, 16, 0, Math.PI * 2)
       ctx.fill()
       ctx.fillStyle = rgba(c, 1)
-      ctx.strokeStyle = '#FFFFFF'
+      ctx.strokeStyle = cena.tema.contorno
       ctx.lineWidth = 2
       ctx.beginPath()
       ctx.arc(ox, oy, 4.4, 0, Math.PI * 2)

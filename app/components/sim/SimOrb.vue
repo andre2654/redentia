@@ -65,8 +65,8 @@ const moodStyle = computed(() => {
     transform: rotate(270deg);
     box-shadow:
       0 var(--u) calc(var(--u) * 2) 0 var(--nu-white) inset,
-      0 calc(var(--u) * 2) var(--u) 0 var(--nu-green-soft) inset,
-      0 calc(var(--u) * 4) calc(var(--u) * 6) 0 var(--nu-navy-2) inset;
+      0 calc(var(--u) * 2) var(--u) 0 var(--nu-sage-soft) inset,
+      0 calc(var(--u) * 4) calc(var(--u) * 6) 0 var(--nu-blue-deep) inset;
   }
   100% {
     transform: rotate(450deg);

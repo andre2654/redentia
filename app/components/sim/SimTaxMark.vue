@@ -20,16 +20,16 @@ defineProps<{ text: string }>()
 <style scoped>
 .stm {
   position: relative; display: inline-flex; align-items: center; flex-shrink: 0;
-  color: var(--nu-sand); outline: none; cursor: help;
+  color: var(--nu-gray); outline: none; cursor: help;
   transition: color 0.15s;
 }
-.stm:hover, .stm:focus { color: var(--nu-gray-2); }
+.stm:hover, .stm:focus { color: var(--nu-ink); }
 .stm__bag { display: block; }
 .stm__tip {
   position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translate(-50%, 3px);
   background: var(--nu-ink); color: var(--nu-white);
   font-size: var(--nu-fs-xs); font-weight: 700; line-height: 1.4; white-space: nowrap;
-  padding: 7px 11px; border-radius: 9px;
+  padding: 7px 11px; border-radius: var(--nu-r-tag);
   box-shadow: var(--nu-shadow-card);
   opacity: 0; pointer-events: none;
   transition: opacity 0.15s ease, transform 0.15s ease;

@@ -110,9 +110,11 @@ function relativeTimePt(iso: string): string {
         <p v-if="errorMsg" class="sg-err">{{ errorMsg }}</p>
 
         <div class="sg-actions">
-          <button type="submit" class="sg-save" :disabled="!canSubmit">
-            {{ saving ? 'Alterando...' : done ? 'Senha alterada' : 'Alterar senha' }}
-          </button>
+          <span class="sg-save">
+            <NuPillButton type="submit" :disabled="!canSubmit && !saving" :loading="saving">
+              {{ saving ? 'Alterando' : done ? 'Senha alterada' : 'Alterar senha' }}
+            </NuPillButton>
+          </span>
         </div>
       </form>
     </div>
@@ -137,34 +139,31 @@ function relativeTimePt(iso: string): string {
 
 <style scoped>
 .sg-block__head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.sg-block__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.sg-block__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.02em; }
 .sg-block__meta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .sg-form { margin-top: 18px; display: flex; flex-direction: column; gap: clamp(16px, 2.2vw, 22px); }
 .sg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(16px, 2.2vw, 22px); }
-.sg-err { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; }
+.sg-err { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 600; }
 .sg-actions { display: flex; }
-.sg-save {
-  background: var(--nu-blue); color: var(--nu-white); border: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); padding: 14px 28px;
-  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.1px;
-  transition: background .18s, opacity .18s;
-}
-.sg-save:hover:not(:disabled) { background: var(--nu-blue-hover); }
-.sg-save:disabled { opacity: .5; cursor: default; }
+/* a pílula da marca (NuPillButton) é de largura cheia: aqui ela tem a largura do rótulo */
+.sg-save { display: inline-block; min-width: 210px; }
 
-.sg-div { height: 1px; background: var(--nu-cream-2); margin: clamp(26px, 3.4vw, 38px) 0; }
+.sg-div { height: 1.5px; background: var(--nu-line); margin: clamp(26px, 3.4vw, 38px) 0; }
 
-.sg-session { display: flex; align-items: center; gap: 14px; margin-top: 16px; background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 18px 20px; }
+/* o cartão branco dentro do painel creme */
+.sg-session { display: flex; align-items: center; gap: 14px; margin-top: 16px; background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-branco); padding: 18px 20px; }
 .sg-session__ic {
-  flex-shrink: 0; width: 42px; height: 42px; border-radius: 12px;
-  background: var(--nu-white); color: var(--nu-blue-text);
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: var(--nu-r-chip);
+  background: var(--nu-blue-bg); color: var(--nu-blue-text);
   display: inline-flex; align-items: center; justify-content: center;
 }
 .sg-session__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .sg-session__dev { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
-.sg-session__sub { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
+.sg-session__sub { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.sg-session__sub::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); box-shadow: 0 0 0 3px var(--nu-green-tint); }
 
 @media (max-width: 620px) {
   .sg-grid { grid-template-columns: 1fr; }
+  .sg-actions, .sg-save { display: block; width: 100%; }
 }
 </style>

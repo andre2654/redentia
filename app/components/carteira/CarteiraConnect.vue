@@ -28,9 +28,8 @@ function connect() {
 
 <template>
   <div class="cct">
-    <button type="button" class="cct__btn" :disabled="opening || registering || connected" @click="connect">
-      {{ label }}
-    </button>
+    <!-- a chamada principal da tela: a pílula azul com a seta (os três pontos enquanto abre) -->
+    <NuBotaoSeta :disabled="connected" :loading="opening || registering" @click="connect">{{ label }}</NuBotaoSeta>
     <p v-if="connected" class="cct__ok">
       Conexão criada. Estamos sincronizando suas posições, elas aparecem aqui
       em alguns minutos.
@@ -41,13 +40,6 @@ function connect() {
 
 <style scoped>
 .cct { display: inline-flex; flex-direction: column; gap: 12px; }
-.cct__btn {
-  display: inline-flex; align-items: center; gap: 10px; background: var(--nu-blue); color: var(--nu-white);
-  border: none; border-radius: var(--nu-r-pill); padding: 16px 28px; font-size: var(--nu-fs-md); font-weight: 700;
-  cursor: pointer; transition: background .2s, transform .15s;
-}
-.cct__btn:hover:not(:disabled) { background: var(--nu-blue-hover); transform: translateY(-2px); }
-.cct__btn:disabled { opacity: .7; cursor: default; }
-.cct__ok { margin: 0; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; max-width: 460px; }
-.cct__error { margin: 0; color: var(--nu-red-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; max-width: 460px; }
+.cct__ok { margin: 0; color: var(--nu-green-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; max-width: 460px; }
+.cct__error { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; max-width: 460px; }
 </style>

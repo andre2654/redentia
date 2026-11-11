@@ -111,11 +111,11 @@ test('cada item tem uma pergunta pronta para o chat', () => {
 test('o título conta os pontos de atenção de hoje, com o número à parte', () => {
   const vm = montarAchados(entrada())
   const t = tituloDosAchados(vm)
-  assert.equal(t.titulo, 'A Redentia olhou a sua carteira: 3 pontos de atenção')
+  assert.equal(t.titulo, 'A Aportou olhou a sua carteira: 3 pontos de atenção')
   assert.deepEqual(t.pedacos.filter((p) => p.numero), [{ texto: '3', numero: 'atencao' }])
   assert.equal(t.pedacos.map((p) => p.texto).join(''), t.titulo)
-  assert.equal(tituloDosAchados({ pontos: 1, vazio: false }).titulo, 'A Redentia olhou a sua carteira: 1 ponto de atenção')
-  assert.equal(tituloDosAchados({ pontos: 0, vazio: true }).titulo, 'A Redentia olhou a sua carteira: nada pede atenção')
+  assert.equal(tituloDosAchados({ pontos: 1, vazio: false }).titulo, 'A Aportou olhou a sua carteira: 1 ponto de atenção')
+  assert.equal(tituloDosAchados({ pontos: 0, vazio: true }).titulo, 'A Aportou olhou a sua carteira: nada pede atenção')
 })
 
 test('a barra aberta: tudo escapado, o R$ mascarado e nada da análise escrita', () => {
@@ -124,10 +124,10 @@ test('a barra aberta: tudo escapado, o R$ mascarado e nada da análise escrita',
   const grupos = [...html.matchAll(/<p class="cah__grupo">(.+?)<\/p>/g)].map((x) => x[1]!)
   assert.deepEqual(grupos, ['Pede atenção'])
   assert.equal((html.match(/<li /g) ?? []).length, vm.itens.length)
-  assert.match(html, /A Redentia olhou <b>4 ativos em 4 dimensões<\/b>/)
+  assert.match(html, /A Aportou olhou <b>4 ativos em 4 dimensões<\/b>/)
   assert.match(html, /R\$ ••••/)
   assert.doesNotMatch(html, /R\$ 1\.200/)
-  // o número de hoje à direita do título, e o "Perguntar à Redentia" da linha
+  // o número de hoje à direita do título, e o "Perguntar à IA" da linha
   assert.match(html, /<b class="cah__t">A qualidade pede atenção<\/b><span class="cah__v">40\/100<\/span>/)
   assert.equal((html.match(/class="cah__perg" data-achado="/g) ?? []).length, vm.itens.length)
   for (const a of vm.itens) assert.ok(html.includes(`data-achado="${a.id}"`), a.id)
@@ -167,7 +167,7 @@ test('a carteira do dono: a renda e a qualidade pedem atenção; a diversificaç
     'forca:Diversificação em nível excelente',
   ])
   assert.equal(vm.pontos, 2)
-  assert.equal(tituloDosAchados(vm).titulo, 'A Redentia olhou a sua carteira: 2 pontos de atenção')
+  assert.equal(tituloDosAchados(vm).titulo, 'A Aportou olhou a sua carteira: 2 pontos de atenção')
 })
 
 test('a barra aberta com o que vai bem: "Pede atenção" numa coluna e "Vai bem" na outra', () => {
@@ -190,7 +190,7 @@ test('o modal: a assinatura diz o que olhou e quando; sem a frase de abertura no
   assert.equal(assinaturaDosAchados({ ativos: 1, olhouEm: null }), 'olhou 1 ativo')
   assert.equal(assinaturaDosAchados({ ativos: 0, olhouEm: 'hoje às 08:01' }), 'olhou a sua carteira hoje às 08:01')
   const html = achadosHtml(vm, { olhou: false })
-  assert.doesNotMatch(html, /A Redentia olhou/)
+  assert.doesNotMatch(html, /A Aportou olhou/)
   assert.match(html, /^<div class="cah__cols/)
   assert.match(html, /<p class="cah__grupo">Pede atenção<\/p>/)
 })

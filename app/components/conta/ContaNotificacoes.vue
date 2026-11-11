@@ -51,7 +51,7 @@ const em = computed({
 </script>
 
 <template>
-  <ContaSection title="Notificações" subtitle="Escolha onde e o que você recebe da Redentia.">
+  <ContaSection title="Notificações" subtitle="Escolha onde e o que você recebe da Aportou.">
     <div class="nt">
       <div class="nt__topic">
         <div class="nt__topic-head">
@@ -88,7 +88,7 @@ const em = computed({
 
       <div class="nt__topic nt__carteira">
         <h3 class="nt__topic-title">Avisos da carteira</h3>
-        <p class="nt__topic-desc">O que a Redentia manda sobre a sua carteira, além da tela. Sem nada ligado, o aviso fica só na carteira.</p>
+        <p class="nt__topic-desc">O que a Aportou manda sobre a sua carteira, além da tela. Sem nada ligado, o aviso fica só na carteira.</p>
 
         <ul class="nt__avisos">
           <li v-for="t in TOPICOS_CARTEIRA" :key="t.id" class="nt__aviso">
@@ -113,7 +113,7 @@ const em = computed({
             <p v-if="carteira.erro.value?.topico === t.id" class="nt__erro nt__erro--linha" role="status">{{ carteira.erro.value.texto }}</p>
           </li>
         </ul>
-        <p v-if="carteiraPronta && !carteira.optIn.value" class="nt__dica">O WhatsApp fica desligado até você aceitar receber a Redentia por lá.</p>
+        <p v-if="carteiraPronta && !carteira.optIn.value" class="nt__dica">O WhatsApp fica desligado até você aceitar receber a Aportou por lá.</p>
         <p v-if="carteira.estado.value === 'erro'" class="nt__erro">Não consegui ler estes avisos agora. Recarregue a página para tentar de novo.</p>
       </div>
 
@@ -123,42 +123,50 @@ const em = computed({
 </template>
 
 <style scoped>
-.nt__topic { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 22px 24px; }
-.nt__topic-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
-.nt__topic-desc { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+/* Aportou (11/11/2026): cada assunto é um cartão branco dentro do painel creme
+   (raio 22, a sombra do branco); as linhas de canal e de aviso ficam no creme
+   da página, com raio 16. */
+.nt__topic { background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-branco); padding: clamp(18px, 2.4vw, 24px); }
+.nt__topic-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.02em; }
+.nt__topic-desc { margin: 6px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .nt__channels { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
 .nt__ch {
-  display: flex; align-items: center; gap: 14px;
-  background: var(--nu-white); border-radius: var(--nu-r-input); padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px; min-height: 68px;
+  background: var(--nu-page); border-radius: var(--nu-r-tile); padding: 12px 16px;
 }
-.nt__ch-ic { flex-shrink: 0; width: 40px; height: 40px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; }
-.nt__ch-ic--wa { background: var(--nu-green-bg); color: var(--nu-green); }
-.nt__ch-ic--mail { background: var(--nu-blue-bg); color: var(--nu-blue); }
+.nt__ch-ic { flex-shrink: 0; width: 44px; height: 44px; border-radius: var(--nu-r-chip); display: inline-flex; align-items: center; justify-content: center; }
+.nt__ch-ic--wa { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.nt__ch-ic--mail { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .nt__ch-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .nt__ch-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
 .nt__ch-meta { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.nt__note { margin: 16px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.nt__note { margin: 18px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
 
-/* avisos da carteira: o mesmo cartão, uma linha branca por tópico */
-.nt__carteira { margin-top: 14px; }
+/* avisos da carteira: o mesmo cartão, uma linha creme por tópico */
+.nt__carteira { margin-top: 16px; }
 .nt__avisos { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 20px 0 0; padding: 0; }
-.nt__aviso { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; background: var(--nu-white); border-radius: var(--nu-r-input); padding: 14px 16px; }
+.nt__aviso { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; background: var(--nu-page); border-radius: var(--nu-r-tile); padding: 14px 16px; }
 .nt__erro--linha { flex-basis: 100%; margin: 0; }
 .nt__aviso-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .nt__aviso-n { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
 .nt__aviso-q { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 600; }
-.nt__aviso-ex { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.nt__aviso-ex { color: var(--nu-gray-3); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .nt__aviso-ch { flex-shrink: 0; display: flex; align-items: center; gap: 16px; }
-.nt__aviso-c { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; cursor: pointer; }
+.nt__aviso-c { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; cursor: pointer; }
 .nt__aviso-c--off { color: var(--nu-gray); cursor: not-allowed; }
-.nt__dica { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
+/* sobre o creme da página o esqueleto padrão quase some: um tom acima, com o mesmo brilho */
+.nt__aviso-ch :deep(.nusk) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-page)); background-image: linear-gradient(100deg, var(--esq) 25%, var(--nu-white) 50%, var(--esq) 75%); }
+/* o interruptor desligado, sobre o creme: o trilho um tom acima para não sumir */
+.nt :deep(.ntg:not(.ntg--on)) { background: var(--nu-line); }
+.nt__dica { margin: 14px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 .nt__erro { margin: 12px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-dense); font-weight: 600; line-height: 1.5; }
 /* no celular, um canal por linha (o nome à esquerda, o interruptor à direita), como no resumo diário */
 @media (max-width: 640px) {
+  .nt__ch-meta { white-space: normal; overflow-wrap: anywhere; }
   .nt__aviso { flex-direction: column; align-items: stretch; }
-  .nt__aviso-ch { flex-direction: column; align-items: stretch; gap: 8px; }
+  .nt__aviso-ch { flex-direction: column; align-items: stretch; gap: 0; }
   .nt__aviso-c { justify-content: space-between; }
 }
 </style>

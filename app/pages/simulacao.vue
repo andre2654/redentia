@@ -82,14 +82,14 @@ const hasShocks = computed(() => Object.keys(shocks.value).length > 0)
 const filmSteps = computed(() => {
   const n = portfolio.value.length
   return [
-    `Lendo sua carteira — ${n} ${n === 1 ? 'posição' : 'posições'}, ${fmtBRL(portfolioTotal.value)}`,
+    `Lendo sua carteira: ${n} ${n === 1 ? 'posição' : 'posições'}, ${fmtBRL(portfolioTotal.value)}`,
     'Calibrando o beta contra 5 anos de IBOV',
     'Rodando 2.000 caminhos, mês a mês, por 10 anos',
     fullSchedule.value.length > 1
       ? `Aplicando ${fullSchedule.value.length} cenários pela década`
       : fullSchedule.value.length === 1
         ? `Aplicando o cenário de ${fullSchedule.value[0]!.year}: ${shocksTitle(fullSchedule.value[0]!.shocks).toLowerCase()}`
-        : 'Cenário base — compondo o caminho',
+        : 'Cenário base: compondo o caminho',
   ]
 })
 // CONSEQUÊNCIA AO VIVO no passo 2 (motor é puro e barato — roda por ajuste)
@@ -123,7 +123,7 @@ const lastSchedule = ref<SimScheduledScenario[]>([])
 
 // ——— TRAJETÓRIAS MACRO sobrepostas no fan chart (dono 25/08: "tem que
 // sobrepor no mesmo gráfico") — checks na legenda, pré-marcados nos
-// indicadores tocados na etapa 2. IBOV em teal (a mediana é azul).
+// indicadores tocados na etapa 2. IBOV em creme (a mediana é o cobalto que lê sobre carvão).
 //
 // AS LINHAS VÊM DO MOTOR (28/08), no MESMO run que aplica o choque nas
 // posições. Antes o `buildMacroPaths` do mock as projetava aqui, com dinâmica
@@ -141,7 +141,7 @@ const lastSchedule = ref<SimScheduledScenario[]>([])
 const MACRO_COLOR: Record<SimMacroKey, string> = {
   dolar: 'var(--nu-green-soft)',
   selic: 'var(--nu-alloc-fii)',
-  bolsa: 'color-mix(in srgb, var(--nu-class-etf) 55%, var(--nu-white))',
+  bolsa: 'var(--nu-creme)',
   petroleo: 'var(--nu-amber)',
 }
 const macroPaths = computed(() => (result.value ? (simExtra.value?.macroPaths ?? []) : []))
@@ -559,7 +559,7 @@ async function onFilmDone() {
   catch (e) {
     const err = e as { statusCode?: number; status?: number; data?: { message?: string } }
     if ((err?.statusCode ?? err?.status) === 422) {
-      runError.value = err?.data?.message ?? 'A carteira não pôde ser simulada — confira os ativos.'
+      runError.value = err?.data?.message ?? 'A carteira não pôde ser simulada. Confira os ativos.'
       phase.value = 'assets'
       return
     }
@@ -640,26 +640,32 @@ const readingHtml = computed(() => {
              colapsava a altura (o "glitch" do dono, 25/08) -->
         <Transition :name="stepDir === 'fwd' ? 'wstep' : 'wstepb'">
           <div v-if="phase === 'assets'" key="assets" class="sim__step">
-            <span class="sim__dots" aria-hidden="true"><i class="sim__dot sim__dot--on" /><i class="sim__dot" /></span>
+            <div class="sim__passo">
+              <NuEyebrow>Simulação</NuEyebrow>
+              <span class="sim__dots" role="img" aria-label="Passo 1 de 2"><i class="sim__dot sim__dot--on" /><i class="sim__dot" /></span>
+            </div>
             <h1 class="sim__title">{{ wizCopy.title }}</h1>
             <p v-if="runError" class="sim__run-error" role="alert">{{ runError }}</p>
             <div class="sim__builder">
               <SimPortfolioBuilder v-model="portfolio" />
             </div>
             <div class="sim__wiz-nav">
-              <button type="button" class="sim__run" :disabled="!canRun" @click="goShock">Continuar</button>
+              <NuBotaoSeta tamanho="m" :disabled="!canRun" @click="goShock">Continuar</NuBotaoSeta>
             </div>
           </div>
 
           <div v-else-if="phase === 'shock'" key="shock" class="sim__step">
-            <span class="sim__dots" aria-hidden="true"><i class="sim__dot sim__dot--on" /><i class="sim__dot sim__dot--on" /></span>
+            <div class="sim__passo">
+              <NuEyebrow>Simulação</NuEyebrow>
+              <span class="sim__dots" role="img" aria-label="Passo 2 de 2"><i class="sim__dot sim__dot--on" /><i class="sim__dot sim__dot--on" /></span>
+            </div>
             <h1 class="sim__title">{{ wizCopy.title }}</h1>
             <div class="sim__shockgrid">
               <SimShockPanel v-model="dials" v-model:years="dialYears" />
             </div>
             <div class="sim__wiz-nav">
               <button type="button" class="sim__back" @click="backToAssets">Voltar</button>
-              <button type="button" class="sim__run" @click="run">Simular · 10 anos</button>
+              <NuBotaoSeta tamanho="m" @click="run">Simular · 10 anos</NuBotaoSeta>
             </div>
           </div>
 
@@ -668,14 +674,15 @@ const readingHtml = computed(() => {
           </div>
         </Transition>
       </div>
-      <p v-if="phase !== 'film'" class="sim__honest">Projeção estatística com premissas explícitas — não é previsão nem promessa de retorno.</p>
+      <p v-if="phase !== 'film'" class="sim__honest">Projeção estatística com premissas explícitas. Não é previsão nem promessa de retorno.</p>
     </section>
 
-    <!-- ============ RESULTADO (navy) ============ -->
+    <!-- ============ RESULTADO (carvão) ============ -->
     <section v-if="phase === 'result'" id="sim-resultado" class="sim__navy">
       <template v-if="result">
         <div class="sim__result-head">
           <div>
+            <NuEyebrow sobre="escuro">Sua carteira em 10 anos</NuEyebrow>
             <h2 class="sim__navy-title">Daqui a 10 anos, a mediana diz<br><span class="sim__counter">{{ fmtFull(finalP50) }}</span></h2>
             <!-- O rótulo de unidade só vale pro número do MOTOR. O mock é
                  nominal; carimbar "poder de compra" nele seria mentir sobre o
@@ -685,15 +692,15 @@ const readingHtml = computed(() => {
             <!-- Proveniência: cenário da biblioteca foi estudado e tem fonte;
                  montado nos dials, não. E resultado de mock nunca pode passar
                  por número real numa tela que gera peça pra cliente. -->
-            <p v-if="usingMock" class="sim__flag sim__flag--mock">Dados ilustrativos — o motor não respondeu</p>
-            <p v-else-if="simExtra && !simExtra.calibrated" class="sim__flag">Cenário que você montou — sem precedente histórico calibrado</p>
+            <p v-if="usingMock" class="sim__flag sim__flag--mock">Dados ilustrativos: o motor não respondeu</p>
+            <p v-else-if="simExtra && !simExtra.calibrated" class="sim__flag">Cenário que você montou, sem precedente histórico calibrado</p>
             <!-- A curva DI é digitada à mão e ancora TODO o drift; vencida,
                  o PDF sai com âncora velha sem ninguém notar. O motor manda
                  a flag; a tela obedece. -->
-            <p v-if="!usingMock && driftStale" class="sim__flag">Curva de juros da projeção datada de {{ driftAsOf }} — premissa com mais de 90 dias, peça atualização</p>
+            <p v-if="!usingMock && driftStale" class="sim__flag">Curva de juros da projeção datada de {{ driftAsOf }}: premissa com mais de 90 dias, peça atualização</p>
           </div>
           <div class="sim__pills">
-            <button v-if="!resultB" type="button" class="sim__pill sim__pill--whatif" @click="openWhatif">Testar realocação</button>
+            <NuBotaoSeta v-if="!resultB" variante="creme" tamanho="m" @click="openWhatif">Testar realocação</NuBotaoSeta>
           </div>
         </div>
 
@@ -718,38 +725,41 @@ const readingHtml = computed(() => {
 
         <!-- Comparar carteiras de tamanhos diferentes e maca-laranja: parte do
              delta vem do aporte, nao da realocacao. O motor marca; a tela avisa. -->
-        <p v-if="anchorGap" class="sim__flag">As duas carteiras diferem {{ anchorGap }}% em tamanho — parte da diferença vem disso, não da realocação</p>
+        <p v-if="anchorGap" class="sim__flag">As duas carteiras diferem {{ anchorGap }}% em tamanho. Parte da diferença vem disso, não da realocação</p>
         <SimCompare v-if="resultB" :a="result" :b="resultB" @edit="openWhatif" @clear="clearWhatif" />
 
         <SimTimeline v-model:cursor="cursor" :months="HORIZON_MONTHS" :dates="display.dates" :events="result.events" />
       </template>
     </section>
 
-    <!-- ============ LEITURA DA REDENTIA (azul, anatomia do "O dia no
-         mercado" — pedido do dono, 25/08) ============ -->
+    <!-- ============ LEITURA DA APORTOU: o painel azul da marca (gradiente
+         cobalto, raio 40, o corte gigante a 8%); a anatomia segue a do "O dia
+         no mercado" (pedido do dono, 25/08) ============ -->
     <section v-if="phase === 'result' && result" class="sim__blue">
+      <div class="sim__blue-painel">
+      <MarcaCorte class="sim__blue-corte" :largura="520" cor="var(--nu-white)" />
       <div class="sim__blue-body">
+        <NuEyebrow sobre="azul" class="sim__blue-eyebrow">Leitura da Aportou</NuEyebrow>
         <p class="sim__blue-lead">{{ result.scenario.lead }}</p>
         <!-- eslint-disable-next-line vue/no-v-html — escapeHtml aplicado no computed -->
         <p class="sim__blue-text" v-html="readingHtml" />
       </div>
       <!-- entregável do assessor, no layout do "O dia no mercado" (dono 25/08) -->
       <div class="sim__blue-cta">
-        <button type="button" class="sim__blue-btn" @click="summaryOpen = true">
-          Gerar resumo<span class="sim__blue-btn-arrow" aria-hidden="true">→</span>
-        </button>
+        <NuBotaoSeta variante="creme" @click="summaryOpen = true">Gerar resumo</NuBotaoSeta>
         <button type="button" class="sim__blue-btn2" @click="printDoc">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v5h5" /><path d="M19 8v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7Z" /><path d="M9 13h6M9 17h6" /></svg>
           Gerar PDF
         </button>
       </div>
+      </div>
     </section>
 
-    <!-- ============ QUEM SANGRA, QUEM SEGURA (branco) ============ -->
-    <section v-if="phase === 'result' && result" class="sim__band sim__band--white">
+    <!-- ============ QUEM SANGRA, QUEM SEGURA (faixa quente) ============ -->
+    <section v-if="phase === 'result' && result" class="sim__band sim__band--faixa">
       <NuSectionHeading eyebrow="O cenário, posição a posição">
         Quem sangra,<br>quem segura.
-        <template #dek>Impacto estimado do cenário em cada posição, pelo mapa de fatores da carteira — peso × sensibilidade.</template>
+        <template #dek>Impacto estimado do cenário em cada posição, pelo mapa de fatores da carteira: peso × sensibilidade.</template>
       </NuSectionHeading>
       <div class="sim__block sim__block--full">
         <SimPositionsImpact :positions="result.positions" :active="blocksIn" />
@@ -768,11 +778,11 @@ const readingHtml = computed(() => {
         </div>
       </template>
       <p v-else-if="!usingMock" class="sim__corr-off">
-        Correlação indisponível para esta carteira — sem histórico em comum suficiente entre os ativos.
+        Correlação indisponível para esta carteira: falta histórico em comum suficiente entre os ativos.
       </p>
     </section>
 
-    <!-- ============ ANO A ANO (creme) ============ -->
+    <!-- ============ ANO A ANO (creme da página) ============ -->
     <section v-if="phase === 'result' && result" class="sim__band sim__band--cream">
       <NuSectionHeading eyebrow="A década, ano a ano">
         Cada ano é uma faixa,<br>não um número.
@@ -788,12 +798,12 @@ const readingHtml = computed(() => {
       <div v-if="!usingMock" class="sim__limits sim__block sim__block--full">
         <b class="sim__limits-title">O que este número não sabe</b>
         <ul class="sim__limits-list">
-          <li v-if="limitsData.fxVivo">"Historicamente o dólar sempre sobe" é falso: o drift nominal de +4,06% a.a. em 26 anos não é estatisticamente significativo, e 54,8% das janelas de 10 anos têm drift REAL negativo. O modelo usa paridade de inflação (+{{ limitsData.fxDrift }}% a.a. nominal — em poder de compra o dólar perde ~2,5% a.a.), e o funil da âncora (gate {{ limitsData.fxGate }}) é o que garante FAIXA no ano do alvo: sem ele o cenário viraria número único, e número único é proibido.</li>
-          <li v-else>O dólar é degrau (salta para o alvo no mês do cenário) — dinâmica própria chega nas próximas versões do motor.</li>
-          <li v-if="limitsData.selicViva">A Selic de cada caminho tem ciclo próprio sobre a curva DI (nível travado em 1,90%–30%), e cada caminho é deflacionado pela SUA inflação — mas a meia-vida do ciclo NÃO é identificada nos dados (30 a 77 meses conforme o modelo). O Brent reverte à média com κ=0,03/mês, escolha fixa dentro de uma faixa larga (meia-vida de 11 a 69 meses); livre, a faixa de 10 anos iria de US$ 8 a 767.</li>
-          <li v-else>O petróleo não desenha linha própria e a Selic segue a curva DI da casa — dinâmica própria dessas duas chega nas próximas versões do motor.</li>
-          <li v-if="limitsData.selicViva">Cada mês de cada caminho tem piso de −95% — o truncamento da cauda extrema é declarado, não silencioso — e a inflação implícita tem piso de −2% a.a. (deflação moderada existe; piso zero daria retorno real de graça aos caminhos de juro baixo).</li>
-          <li>O prêmio de risco de {{ limitsData.erp }} p.p. é premissa editorial, não estimativa: o intervalo de confiança do dado histórico vai de −15,2 a +8,2 p.p. — o dado não distingue −3 de +6.</li>
+          <li v-if="limitsData.fxVivo">"Historicamente o dólar sempre sobe" é falso: o drift nominal de +4,06% a.a. em 26 anos não é estatisticamente significativo, e 54,8% das janelas de 10 anos têm drift REAL negativo. O modelo usa paridade de inflação (+{{ limitsData.fxDrift }}% a.a. nominal; em poder de compra o dólar perde ~2,5% a.a.), e o funil da âncora (gate {{ limitsData.fxGate }}) é o que garante FAIXA no ano do alvo: sem ele o cenário viraria número único, e número único é proibido.</li>
+          <li v-else>O dólar é degrau (salta para o alvo no mês do cenário). A dinâmica própria chega nas próximas versões do motor.</li>
+          <li v-if="limitsData.selicViva">A Selic de cada caminho tem ciclo próprio sobre a curva DI (nível travado em 1,90%–30%), e cada caminho é deflacionado pela SUA inflação, mas a meia-vida do ciclo NÃO é identificada nos dados (30 a 77 meses conforme o modelo). O Brent reverte à média com κ=0,03/mês, escolha fixa dentro de uma faixa larga (meia-vida de 11 a 69 meses); livre, a faixa de 10 anos iria de US$ 8 a 767.</li>
+          <li v-else>O petróleo não desenha linha própria e a Selic segue a curva DI da casa. A dinâmica própria dessas duas chega nas próximas versões do motor.</li>
+          <li v-if="limitsData.selicViva">Cada mês de cada caminho tem piso de −95% (o truncamento da cauda extrema é declarado, não silencioso), e a inflação implícita tem piso de −2% a.a. (deflação moderada existe; piso zero daria retorno real de graça aos caminhos de juro baixo).</li>
+          <li>O prêmio de risco de {{ limitsData.erp }} p.p. é premissa editorial, não estimativa: o intervalo de confiança do dado histórico vai de −15,2 a +8,2 p.p.: o dado não distingue −3 de +6.</li>
           <li>A cauda da faixa se apoia em 4 grandes episódios de crise{{ limitsData.vol ? ` (vol do índice: ${limitsData.vol}% a.a. na série 2001→hoje)` : '' }}; 2008 sozinho responde por 133 dos 211 dias de maior volatilidade da série.</li>
           <li>Nenhum ajuste de reversão à média foi aplicado ao índice: o teste de variância (VR 252/21 = 0,664, p = 0,114) não sustenta nem exige o ajuste.</li>
           <li>O beta de cada papel usa todo o histórico disponível (até {{ limitsData.anos }} anos; a janela real de cada um está no bloco "Quem sangra", com pregões e o beta de estresse). A mediana fica ~{{ limitsData.gap }} p.p. a.a. abaixo do retorno médio esperado: é a matemática do caminho do meio, não pessimismo.</li>
@@ -801,15 +811,15 @@ const readingHtml = computed(() => {
       </div>
 
       <div class="sim__again">
-        <button type="button" class="sim__again-btn" @click="reset">Fazer outra pergunta</button>
+        <NuBotaoSeta variante="carvao" tamanho="m" @click="reset">Fazer outra pergunta</NuBotaoSeta>
       </div>
     </section>
 
     <!-- o documento do "Gerar PDF" — invisível na tela, único visível no print -->
     <SimPrintDoc
       v-if="result && clientSummary" :result="result" :summary="clientSummary"
-      :drift-warning="driftStale ? `Curva de juros da projeção datada de ${driftAsOf} — premissa da casa com mais de 90 dias.` : null"
-      :fx-note="limitsData.fxVivo ? `Dólar simulado por âncora + funil (gate ${limitsData.fxGate}) + desvio histórico — parâmetro de compliance carimbado.` : null"
+      :drift-warning="driftStale ? `Curva de juros da projeção datada de ${driftAsOf}: premissa da casa com mais de 90 dias.` : null"
+      :fx-note="limitsData.fxVivo ? `Dólar simulado por âncora + funil (gate ${limitsData.fxGate}) + desvio histórico: parâmetro de compliance carimbado.` : null"
       :engine-rules="pdfRules"
     />
 
@@ -827,7 +837,7 @@ const readingHtml = computed(() => {
           <div class="sims__block">
             <div class="sims__block-head">
               <span class="sims__block-label">WhatsApp</span>
-              <button type="button" class="sims__copy" @click="copyBlock('wa', clientSummary.whatsapp)">{{ copiedKey === 'wa' ? 'Copiado ✓' : 'Copiar' }}</button>
+              <button type="button" class="sims__copy" :class="{ 'sims__copy--ok': copiedKey === 'wa' }" @click="copyBlock('wa', clientSummary.whatsapp)">{{ copiedKey === 'wa' ? 'Copiado' : 'Copiar' }}</button>
             </div>
             <p class="sims__text">{{ clientSummary.whatsapp }}</p>
           </div>
@@ -835,7 +845,7 @@ const readingHtml = computed(() => {
           <div class="sims__block">
             <div class="sims__block-head">
               <span class="sims__block-label">E-mail</span>
-              <button type="button" class="sims__copy" @click="copyBlock('mail', `${clientSummary.emailSubject}\n\n${clientSummary.emailBody}`)">{{ copiedKey === 'mail' ? 'Copiado ✓' : 'Copiar' }}</button>
+              <button type="button" class="sims__copy" :class="{ 'sims__copy--ok': copiedKey === 'mail' }" @click="copyBlock('mail', `${clientSummary.emailSubject}\n\n${clientSummary.emailBody}`)">{{ copiedKey === 'mail' ? 'Copiado' : 'Copiar' }}</button>
             </div>
             <p class="sims__subject">{{ clientSummary.emailSubject }}</p>
             <p class="sims__text">{{ clientSummary.emailBody }}</p>
@@ -859,8 +869,8 @@ const readingHtml = computed(() => {
           <p class="simw__sub">O mesmo cenário roda nas duas carteiras.</p>
           <SimPortfolioBuilder v-model="whatifDraft" />
           <div class="simw__foot">
-            <button type="button" class="sim__back" @click="whatifOpen = false">Cancelar</button>
-            <button type="button" class="sim__run" :disabled="!whatifDraft.some((p) => p.value > 0)" @click="applyWhatif">Comparar</button>
+            <button type="button" class="sim__back sim__back--modal" @click="whatifOpen = false">Cancelar</button>
+            <NuBotaoSeta tamanho="m" :disabled="!whatifDraft.some((p) => p.value > 0)" @click="applyWhatif">Comparar</NuBotaoSeta>
           </div>
         </div>
       </div>
@@ -869,18 +879,22 @@ const readingHtml = computed(() => {
 </template>
 
 <style scoped>
-.sim { background: var(--nu-white); }
+/* Aportou (11/11/2026): a página veste a marca sem mudar o fluxo. Creme da
+   página no passo 1, sálvia no passo 2, carvão no filme e no resultado; a
+   leitura mora no painel azul da marca; as bandas claras alternam faixa e
+   página (não existe faixa branca de ponta a ponta). */
+.sim { background: var(--nu-page); }
 
 /* ——— wizard (fundo e orb coreografados por fase) ——— */
 .sim__wiz {
   position: relative; overflow: hidden;
-  background: var(--nu-cream);
+  background: var(--nu-page);
   padding: clamp(48px, 6.5vw, 84px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
   transition: background-color 0.9s ease;
   animation: nu-fade 0.5s ease both;
 }
 .sim__wiz--film {
-  background: var(--nu-navy);
+  background: var(--nu-ink);
   min-height: 82vh;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
 }
@@ -893,16 +907,14 @@ const readingHtml = computed(() => {
   transition: left 1s cubic-bezier(0.22, 0.61, 0.36, 1), top 1s cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 1s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.6s ease;
 }
-/* passo 2 (v3 do feedback, 25/08): orb maior, no corredor DIREITO, com o
-   centro vertical alinhado ao centro dos dial-cards (~450px do topo da
-   seção — px porque a altura da seção varia com o conteúdo abaixo) */
-/* fundo frio claro (não branco, pedido do dono 25/08): mistura de dois
-   tokens frios — os dial-cards navy saltam e a progressão de cor fica
-   creme quente → azul frio → navy do filme */
-.sim__wiz--shock { background: color-mix(in srgb, var(--nu-score-track) 76%, var(--nu-blue-soft) 24%); }
+/* passo 2: orb maior, no corredor DIREITO, com o centro vertical alinhado ao
+   centro dos dial-cards (~470px do topo da seção — px porque a altura da seção
+   varia com o conteúdo abaixo). O fundo é a sálvia da marca: os dial-cards
+   carvão saltam e a progressão fica creme → sálvia → carvão do filme. */
+.sim__wiz--shock { background: var(--nu-sage); }
 .sim__wiz--shock .sim__wiz-orb {
   left: 85%;
-  top: 450px;
+  top: 470px;
   transform: translate(-50%, -50%) scale(0.92);
   opacity: 0.9;
 }
@@ -918,7 +930,7 @@ const readingHtml = computed(() => {
 .sim__wiz-word { display: inline-flex; justify-content: center; }
 .sim__step--film { display: flex; flex-direction: column; align-items: center; }
 .sim__wiz-letter {
-  color: var(--nu-cream-text); font-size: var(--nu-fs-2xl); font-weight: 800; font-style: normal;
+  color: var(--nu-white); font-size: var(--nu-fs-2xl); font-weight: 800; font-style: normal;
   letter-spacing: 0.02em;
   animation: sim-letter 2s ease-in-out infinite;
   opacity: 0.4;
@@ -930,11 +942,11 @@ const readingHtml = computed(() => {
 }
 .sim__wiz-body { position: relative; z-index: 1; }
 .sim__orbfeed {
-  /* v2: sobre o CENTRO do orb do passo 2 (left/top espelham a coreografia
+  /* sobre o CENTRO do orb do passo 2 (left/top espelham a coreografia
      .sim__wiz--shock do orb, sem herdar o scale — texto em tamanho real) */
   position: absolute; z-index: 1; pointer-events: none;
   left: 85%;
-  top: 450px;
+  top: 470px;
   transform: translate(-50%, -50%);
   width: 224px;
 }
@@ -956,163 +968,177 @@ const readingHtml = computed(() => {
 .wstepb-enter-from { opacity: 0; transform: translateX(-56px); }
 .wstepb-leave-to { opacity: 0; transform: translateX(44px); }
 .sim__wiz--film .sim__wiz-body { padding-bottom: 6vh; }
-.sim__wiz-nav { margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-/* sólido branco (dono 25/08: "igual ao gerar resumo") — o outline sumia
-   no fundo azul-gelo do passo 2 */
+.sim__wiz-nav { margin-top: 28px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+/* a segunda ação: pílula branca de contorno carvão, da altura do botão da seta */
 .sim__back {
-  border: none; border-radius: var(--nu-r-pill);
+  display: inline-flex; align-items: center; justify-content: center; min-height: 52px;
+  border: none; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
   background: var(--nu-white); color: var(--nu-ink);
-  padding: 14px 24px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: background 0.15s, transform 0.15s;
+  padding: 0 26px; font-size: 16.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: background 0.2s, transform 0.15s cubic-bezier(.2, .8, .2, 1);
 }
-.sim__back:hover { background: var(--nu-cream); transform: translateY(-1px); }
+.sim__back:hover { background: var(--nu-row-hover); }
+.sim__back:active { transform: scale(.98); }
 .sim__shockgrid { max-width: 880px; }
 
 @media (max-width: 1080px) { .sim__wiz-orb { opacity: 0.3; } .sim__wiz--film .sim__wiz-orb { opacity: 1; } }
-.sim__dots { display: inline-flex; gap: 7px; }
+/* o eyebrow da marca abre o passo; os pontos dizem em que passo está */
+.sim__passo { display: flex; align-items: center; gap: 14px; }
+.sim__dots { display: inline-flex; gap: 6px; }
 .sim__dot {
-  width: 9px; height: 9px; border-radius: 999px;
-  background: var(--nu-cream-3); transition: background 0.3s ease;
+  width: 22px; height: 6px; border-radius: var(--nu-r-pill);
+  background: var(--nu-line); transition: background 0.3s ease;
 }
 .sim__dot--on { background: var(--nu-blue); }
+/* sobre a sálvia o corte e os pontos vão no carvão (o cobalto some ali) */
+.sim__wiz--shock .sim__passo :deep(.mkc path) { fill: var(--nu-ink); }
+.sim__wiz--shock .sim__dot { background: var(--nu-sage-line); }
+.sim__wiz--shock .sim__dot--on { background: var(--nu-ink); }
 .sim__title {
-  margin: 12px 0 22px; color: var(--nu-ink);
-  font-size: clamp(34px, 4.2vw, 54px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  margin: 18px 0 26px; color: var(--nu-ink);
+  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
-.sim__honest { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.sim__honest { margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.45; position: relative; z-index: 1; }
+.sim__wiz--shock .sim__honest { color: var(--nu-gray-3); }
 
 /* builder + passo dos choques */
 .sim__builder { position: relative; }
-.sim__run {
-  border: none; border-radius: var(--nu-r-pill);
-  background: var(--nu-ink); color: var(--nu-white);
-  padding: 15px 30px; font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer; font-family: inherit;
-  transition: transform 0.15s, background 0.2s;
-}
-.sim__run:hover { transform: translateY(-2px); }
-.sim__run:disabled { opacity: 0.45; cursor: default; transform: none; }
 
-/* ——— navy ——— */
+/* ——— resultado: carvão ——— */
 .sim__navy {
-  background: var(--nu-navy);
+  background: var(--nu-ink);
   padding: clamp(48px, 6.5vw, 84px) clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 90px);
 }
 .sim__result-head { display: flex; justify-content: space-between; gap: 26px; flex-wrap: wrap; align-items: flex-start; }
 .sim__navy-title {
-  margin: 10px 0 0; color: var(--nu-cream-text);
-  font-size: clamp(28px, 3.4vw, 42px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08;
+  margin: 18px 0 0; color: var(--nu-white);
+  font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
 }
-.sim__counter { color: var(--nu-blue-soft); font-variant-numeric: tabular-nums; }
-.sim__unit {
-  margin: 6px 0 0; font-size: var(--nu-fs-sm); font-weight: 500;
-  color: var(--nu-cream-text-70); letter-spacing: -0.01em;
+/* o número-herói: o cobalto que lê sobre carvão */
+.sim__counter {
+  display: inline-block; margin-top: 10px; color: var(--nu-blue-on-dark); font-variant-numeric: tabular-nums;
+  font-size: clamp(46px, 5.2vw, 68px); letter-spacing: -0.035em; line-height: 1;
 }
+.sim__unit { margin: 10px 0 0; font-size: 13.5px; font-weight: 600; color: var(--nu-on-dark-2); }
+/* o selo "atenção" sobre carvão */
 .sim__flag {
-  margin: 12px 0 0; display: inline-flex; align-items: center;
-  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.01em;
-  padding: 6px 13px; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue-soft-35); color: var(--nu-cream-text);
+  margin: 14px 0 0; display: inline-flex; align-items: center;
+  font-size: 13.5px; font-weight: 700; line-height: 1.35;
+  padding: 6px 12px; border-radius: var(--nu-r-tag);
+  background: var(--nu-warning-bg); color: var(--nu-amber-soft);
 }
-.sim__flag--mock { background: rgba(255, 179, 184, 0.28); }
+.sim__flag--mock { background: color-mix(in srgb, var(--nu-red-soft) 22%, transparent); color: var(--nu-red-soft); }
 
-.sim__range { margin: 14px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; max-width: 560px; }
-.sim__range b { font-variant-numeric: tabular-nums; }
+.sim__range { margin: 14px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-lg); font-weight: 500; max-width: 560px; }
+.sim__range b { font-weight: 800; font-variant-numeric: tabular-nums; }
 .sim__range-lo { color: var(--nu-red-soft); }
 .sim__range-hi { color: var(--nu-green-soft); }
 .sim__pills { display: flex; gap: 8px; flex-wrap: wrap; }
-.sim__pill {
-  border: 1.5px solid var(--nu-cream-text-12); border-radius: var(--nu-r-pill);
-  background: transparent; color: var(--nu-cream-text-70);
-  padding: 9px 16px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-}
-.sim__pill:hover { border-color: var(--nu-blue-soft); color: var(--nu-cream-text); }
-.sim__pill--on { background: var(--nu-blue-soft); border-color: var(--nu-blue-soft); color: var(--nu-navy); }
 .sim__chart { margin-top: 38px; height: clamp(300px, 42vw, 400px); }
-.sim__chart-legend { margin-top: 14px; display: flex; gap: 20px; flex-wrap: wrap; color: var(--nu-cream-text-55); font-size: var(--nu-fs-dense); font-weight: 500; }
+.sim__chart-legend { margin-top: 14px; display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 600; }
 .sim__chart-legend span { display: inline-flex; align-items: center; gap: 7px; }
 .sim__leg { width: 14px; height: 4px; border-radius: 999px; }
 .sim__leg--band { background: var(--nu-blue-soft-35); height: 10px; }
-.sim__leg--p50 { background: var(--nu-blue-soft); }
+.sim__leg--p50 { background: var(--nu-blue-on-dark); }
 .sim__leg--b { background: var(--nu-amber); }
 .sim__leg--ev { background: var(--nu-amber); width: 4px; height: 12px; }
 
-/* checks das trajetórias macro na legenda */
+/* checks das trajetórias macro na legenda: o chip sobre carvão */
 .sim__leg-check {
-  display: inline-flex; align-items: center; gap: 7px;
-  border: 1.5px solid var(--nu-cream-text-12); border-radius: var(--nu-r-pill);
-  background: transparent; color: var(--nu-cream-text-55);
-  padding: 6px 12px; font-size: var(--nu-fs-xs); font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: color 0.15s, border-color 0.15s;
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+  border: 1.5px solid var(--nu-dark-chip-line); border-radius: var(--nu-r-pill);
+  background: var(--nu-dark-chip); color: var(--nu-on-dark-2);
+  padding: 0 16px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
-.sim__leg-check--on { color: var(--nu-cream-text); border-color: var(--nu-cream-text-22); }
-.sim__leg-check:hover { border-color: var(--nu-cream-text-45); }
-.sim__leg-dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid; transition: background 0.15s; }
+.sim__leg-check--on { color: var(--nu-white); border-color: var(--nu-on-dark-2); }
+.sim__leg-check:hover { background: var(--nu-navy-3); color: var(--nu-white); }
+.sim__leg-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid; transition: background 0.2s; }
 
-/* pill de abrir o what-if — outline amber pra casar com a linha B */
-.sim__pill--whatif { border-color: var(--nu-amber); color: var(--nu-amber); }
-.sim__pill--whatif:hover { background: var(--nu-amber); color: var(--nu-navy); }
-
-/* modal do what-if (anatomia da casa: scrim + card dia, largura do builder) */
+/* modais (what-if e resumo): o fundo surge, a folha sobe */
 .simw {
   position: fixed; inset: 0; z-index: 120;
   display: flex; align-items: flex-start; justify-content: center;
   padding: clamp(18px, 6vh, 64px) 18px 18px;
   background: var(--nu-day-backdrop);
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  animation: nu-fade 0.22s ease both;
+  animation: nu-surgir 0.2s ease both;
 }
 .simw__card {
   width: min(940px, 100%); max-height: calc(100dvh - 36px); overflow-y: auto;
-  background: var(--nu-cream); border-radius: var(--nu-r-card-lg);
-  padding: 26px 28px 22px; box-shadow: var(--nu-shadow-day-modal);
-  outline: none; animation: nu-fade 0.28s ease both;
+  background: var(--nu-page); border-radius: var(--nu-r-card-lg);
+  padding: clamp(20px, 3vw, 30px) clamp(18px, 3vw, 30px) clamp(18px, 2.4vw, 24px); box-shadow: var(--nu-shadow-day-modal);
+  outline: none; animation: nu-subir 0.32s cubic-bezier(.2, .8, .2, 1) both;
 }
 .simw__head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-.simw__title { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.simw__title { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; }
 .simw__close {
-  width: 36px; height: 36px; flex-shrink: 0; border: none; border-radius: 50%;
-  background: var(--nu-white); color: var(--nu-ink); cursor: pointer;
+  width: 44px; height: 44px; flex-shrink: 0; border: none; border-radius: 50%;
+  background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
-  transition: background 0.15s;
+  transition: background 0.2s;
 }
-.simw__close:hover { background: var(--nu-cream-hover); }
-.simw__sub { margin: 4px 0 16px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.simw__foot { margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; }
+.simw__close:hover { background: var(--nu-line-2); }
+.simw__sub { margin: 6px 0 18px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
+.simw__foot { margin-top: 20px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap; }
 .simw__card--summary { width: min(640px, 100%); }
+/* "Cancelar": discreto, sem contorno */
+.sim__back--modal { box-shadow: none; background: transparent; }
+.sim__back--modal:hover { background: var(--nu-cream-2); }
 
-/* botões do entregável na banda azul — anatomia dos CTAs do "O dia no
-   mercado" (NuDaySection): pill creme sólida com seta + pill ghost com ícone */
-.sim__blue-cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: clamp(36px, 4vw, 44px); }
-.sim__blue-btn {
-  display: inline-flex; align-items: center; gap: 11px; background: var(--nu-cream); color: var(--nu-day-btn-ink);
-  border: none; border-radius: var(--nu-r-pill); padding: 18px 32px; font-size: var(--nu-fs-lg); font-weight: 800;
-  letter-spacing: -0.01em; cursor: pointer; font-family: inherit; transition: transform 0.15s ease, background 0.15s ease;
+/* ——— leitura da Aportou: o painel azul da marca, com o corte gigante ——— */
+.sim__blue {
+  background: var(--nu-page);
+  padding: clamp(28px, 4vw, 56px) clamp(16px, 5.5vw, 80px);
+  animation: nu-fade 0.5s ease both;
 }
-.sim__blue-btn:hover { background: var(--nu-white); transform: translateY(-1px); }
-.sim__blue-btn-arrow { font-size: var(--nu-fs-lg); line-height: 1; }
+.sim__blue-painel {
+  position: relative; overflow: hidden;
+  background: var(--nu-grad-cobalto); border-radius: var(--nu-r-secao);
+  padding: clamp(44px, 6vw, 84px) clamp(22px, 5vw, 72px);
+}
+.sim__blue-corte { position: absolute; right: -70px; bottom: -110px; opacity: 0.08; pointer-events: none; }
+.sim__blue-body { position: relative; max-width: 860px; margin: 0 auto; }
+.sim__blue-eyebrow { justify-content: center; margin-bottom: 20px; }
+.sim__blue-lead {
+  margin: 0; color: var(--nu-white); text-align: center;
+  font-size: var(--nu-fs-h3); font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.05; text-wrap: balance;
+}
+.sim__blue-text {
+  margin: 22px auto 0; color: var(--nu-blue-on-blue);
+  font-size: clamp(17px, 1.5vw, 19px); font-weight: 500; line-height: 1.6; max-width: 780px;
+}
+.sim__blue-text :deep(.sim__mark) {
+  background: var(--nu-white-18); color: var(--nu-white);
+  border-radius: 6px; padding: 1px 6px; font-weight: 700;
+}
+/* entregável: a pílula creme com a seta + a pílula de contorno com o ícone */
+.sim__blue-cta { position: relative; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: clamp(32px, 4vw, 44px); }
 .sim__blue-btn2 {
-  display: inline-flex; align-items: center; gap: 9px;
-  background: transparent; color: var(--nu-cream-text); border: 1.5px solid var(--nu-cream-text-22);
-  border-radius: var(--nu-r-pill); padding: 17px 26px; font-size: var(--nu-fs-md); font-weight: 800;
-  cursor: pointer; font-family: inherit; transition: background 0.15s, border-color 0.15s;
+  display: inline-flex; align-items: center; gap: 9px; min-height: 62px;
+  background: transparent; color: var(--nu-white); border: 1.5px solid var(--nu-white-35);
+  border-radius: var(--nu-r-pill); padding: 0 28px; font-size: 17px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: background 0.2s, border-color 0.2s, transform 0.15s cubic-bezier(.2, .8, .2, 1);
 }
-.sim__blue-btn2:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text-45); }
+.sim__blue-btn2:hover { background: var(--nu-white-14); border-color: var(--nu-white-60); }
+.sim__blue-btn2:active { transform: scale(.98); }
 
-/* blocos do resumo */
-.sims__block { margin-top: 18px; background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px; }
-.sims__block-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
-.sims__block-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+/* blocos do resumo: cartão branco dentro da folha */
+.sims__block { margin-top: 16px; background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 18px 20px; box-shadow: var(--nu-shadow-quente); }
+.sims__block-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.sims__block-label { color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
 .sims__copy {
-  border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
-  background: transparent; color: var(--nu-blue-text);
-  padding: 7px 14px; font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: border-color 0.15s, background 0.15s;
+  min-height: 44px; border: none; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
+  background: var(--nu-white); color: var(--nu-ink);
+  padding: 0 18px; font-size: 14.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
-.sims__copy:hover { border-color: var(--nu-blue); background: var(--nu-blue-tint-2); }
-.sims__subject { margin: 0 0 6px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
-.sims__text { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
-.sims__footer { margin: 16px 2px 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.55; }
+.sims__copy:hover { background: var(--nu-row-hover); }
+.sims__copy--ok { background: var(--nu-green-bg); color: var(--nu-green-text); box-shadow: none; }
+.sims__subject { margin: 0 0 6px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.sims__text { margin: 0; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.6; white-space: pre-line; }
+.sims__footer { margin: 16px 2px 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 
 /* ——— GERAR PDF: no print, só o documento existe ——— */
 @media print {
@@ -1121,31 +1147,11 @@ const readingHtml = computed(() => {
   :global(.spd) { position: absolute; left: 0; top: 0; width: 100%; }
 }
 
-/* ——— leitura da Redentia: banda AZUL, anatomia do "O dia no mercado" ——— */
-.sim__blue {
-  background: var(--nu-blue);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
-  animation: nu-fade 0.5s ease both;
-}
-.sim__blue-body { max-width: 860px; margin: 0 auto; }
-.sim__blue-lead {
-  margin: 0; color: var(--nu-cream-text); text-align: center;
-  font-size: clamp(22px, 2.6vw, 31px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.14;
-}
-.sim__blue-text {
-  margin: 20px auto 0; color: var(--nu-cream-text-78);
-  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7; max-width: 780px;
-}
-.sim__blue-text :deep(.sim__mark) {
-  background: var(--nu-cream-text-12); color: var(--nu-white);
-  border-radius: 6px; padding: 1px 6px; font-weight: 700;
-}
-/* ——— bandas claras ——— */
-.sim__band { padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); animation: nu-fade 0.5s ease both; }
+/* ——— bandas claras: faixa quente e página, alternadas ——— */
+.sim__band { padding: clamp(64px, 7vw, 100px) clamp(22px, 5.5vw, 80px); animation: nu-fade 0.5s ease both; }
 .sim__subsection { margin-top: clamp(64px, 8vw, 104px); }
-.sim__band--white { background: var(--nu-white); }
-.sim__band--cream { background: var(--nu-cream); }
+.sim__band--faixa { background: var(--nu-band); }
+.sim__band--cream { background: var(--nu-page); }
 .sim__block { margin-top: 38px; max-width: 900px; }
 .sim__block--full { max-width: none; }
 /* correlação sem dado: uma linha honesta no lugar da seção */
@@ -1153,30 +1159,22 @@ const readingHtml = computed(() => {
 
 /* 422 do motor: a mensagem acionável, no lugar onde se corrige */
 .sim__run-error {
-  margin: 0 0 18px; padding: 12px 18px;
-  background: var(--nu-red-tint); color: var(--nu-red-2); border-radius: var(--nu-r-tile);
-  font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.45;
+  margin: 0 0 18px; padding: 12px 18px; max-width: 640px;
+  background: var(--nu-red-bg); color: var(--nu-red-text); border-radius: var(--nu-r-tile);
+  font-size: 15px; font-weight: 700; line-height: 1.45;
 }
 
-/* painel de limites: discreto, tipografia de nota — não compete com os blocos */
-.sim__limits { margin-top: 34px; padding: 22px 26px; background: var(--nu-cream); border-radius: var(--nu-r-panel); }
-.sim__limits-title { display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.sim__limits-list { margin: 12px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
-.sim__limits-list li { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-/* respiro entre sub-seções da mesma banda (a legenda das faixas colava no
-   eyebrow "Como a conta é feita" — feedback do dono) */
-.sim__again { margin-top: 54px; }
-.sim__again-btn {
-  border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
-  background: transparent; color: var(--nu-blue-text);
-  padding: 14px 28px; font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer; font-family: inherit;
-  transition: background 0.2s;
-}
-.sim__again-btn:hover { background: var(--nu-blue-tint-2); }
+/* painel de limites: o cartão quente, tipografia de nota — não compete com os blocos */
+.sim__limits { margin-top: 40px; padding: clamp(22px, 3vw, 34px); background: var(--nu-band); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); }
+.sim__limits-title { display: block; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.sim__limits-list { margin: 16px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 10px; }
+.sim__limits-list li { color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
+.sim__again { margin-top: 48px; }
 
 @media (max-width: 760px) {
-  .sim__ask { flex-direction: column; border-radius: var(--nu-r-card); padding: 12px; }
-  .sim__input { padding: 8px 6px; }
   .sim__chart { height: 300px; }
+  .sim__blue-painel { border-radius: var(--nu-r-card-lg); }
+  .sim__blue-corte { right: -160px; bottom: -150px; }
+  .sim__wiz-nav > * { flex: 1 1 auto; }
 }
 </style>

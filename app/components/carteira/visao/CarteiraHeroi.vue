@@ -166,7 +166,7 @@ const contexto = computed(() => ({
   <section v-contexto-chat="contexto" class="chv" aria-labelledby="chv-h1" data-clarity-mask="true">
     <header class="chv__cab">
       <div class="chv__id">
-        <h1 id="chv-h1" class="chv__nome">Sua carteira</h1>
+        <NuEyebrow id="chv-h1" como="h1" class="chv__nome">Sua carteira</NuEyebrow>
         <span class="chv__chip">{{ ativos }} ativos</span>
         <span class="chv__estado" :class="{ 'chv__estado--atencao': atencao, [`chv__estado--${pregao.estado}`]: !atencao }">
           <i aria-hidden="true" />{{ atencao ? 'Pede atenção' : pregao.rotulo }}
@@ -238,74 +238,78 @@ const contexto = computed(() => ({
 /* ————— a moldura ————— */
 .chv {
   --g: clamp(22px, 5.5vw, 80px);
-  --tinta: var(--nu-ink); --sub: var(--nu-gray-2); --fio: rgba(10, 10, 12, .1); --pilula: var(--nu-cream-3); --sobe: var(--nu-green-text); --cai: var(--nu-red-text);
-  position: relative; padding: clamp(24px, 3vw, 40px) var(--g) clamp(28px, 3.4vw, 44px); background: var(--nu-cream); color: var(--tinta);
+  --tinta: var(--nu-ink); --sub: var(--nu-gray); --fio: var(--nu-line); --pilula: var(--nu-cream-2); --sobe: var(--nu-green-text); --cai: var(--nu-red-text);
+  position: relative; padding: clamp(24px, 3vw, 40px) var(--g) clamp(28px, 3.4vw, 44px); background: var(--nu-page); color: var(--tinta);
   font-variant-numeric: tabular-nums; scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
 }
 .chv__cab { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; }
 .chv__id { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; min-width: 0; }
-.chv__nome { margin: 0; font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -0.02em; }
-.chv__chip { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1px var(--fio); color: var(--sub); font-size: var(--nu-fs-xs); font-weight: 700; }
-.chv__estado { display: inline-flex; align-items: center; gap: 8px; color: var(--sub); font-size: var(--nu-fs-sm); font-weight: 600; }
+/* o nome da tela é o eyebrow da marca (o corte + caixa alta), e os dois selos de raio 8 ao lado */
+.chv__nome { margin-right: 4px; }
+.chv__chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; }
+.chv__estado { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-cream-2); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 700; }
 .chv__estado i { width: 8px; height: 8px; border-radius: 50%; background: var(--sub); opacity: .55; }
-.chv__estado--aberta i { background: var(--nu-green); opacity: 1; box-shadow: 0 0 0 3px var(--nu-green-tint); }
-.chv__estado--atencao { color: var(--nu-amber-text, var(--tinta)); }
+.chv__estado--aberta { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.chv__estado--aberta i { background: var(--nu-green); opacity: 1; }
+.chv__estado--atencao { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .chv__estado--atencao i { background: var(--nu-amber-fill); opacity: 1; }
 .chv__olho {
   display: inline-grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 50%;
-  background: var(--nu-white); color: var(--tinta); cursor: pointer; transition: background .2s;
+  background: var(--nu-white); color: var(--tinta); box-shadow: inset 0 0 0 1.5px var(--nu-ink); cursor: pointer; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.chv__olho:hover { background: var(--nu-cream-4); }
-.chv__olho:focus-visible, .chv__periodo:focus-visible, .chv__mais:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.chv__olho:hover { background: var(--nu-row-hover); }
+.chv__olho:active { transform: scale(.96); }
 .chv__dir--up { color: var(--sobe); }
 .chv__dir--down { color: var(--cai); }
 .chv__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.chv__periodos { display: inline-flex; flex-shrink: 0; padding: 3px; border-radius: var(--nu-r-pill); background: var(--pilula); }
+.chv__periodos { display: inline-flex; flex-shrink: 0; padding: 4px; border-radius: var(--nu-r-pill); background: var(--pilula); }
 .chv__periodo {
-  height: 32px; min-width: 48px; padding: 0 14px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--sub);
-  font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; cursor: pointer; transition: background .2s, color .2s, box-shadow .2s;
+  height: 44px; min-width: 52px; padding: 0 16px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-gray-3);
+  font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s, color .2s;
 }
 .chv__periodo:hover { color: var(--tinta); }
-.chv__periodo--on { background: var(--nu-white); color: var(--nu-ink); box-shadow: 0 1px 3px var(--nu-ink-14); }
+.chv__periodo--on, .chv__periodo--on:hover { background: var(--nu-ink); color: var(--nu-white); }
 .chv__grafico { position: relative; --agr-esq: 44px; --agr-dir: 10px; }
 .chv__pe { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; margin-top: clamp(24px, 3vw, 36px); color: var(--tinta); font-size: var(--nu-fs-sm); font-weight: 600; }
 .chv__conta { display: inline-flex; align-items: center; gap: 8px; }
-.chv__conta i { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); box-shadow: 0 0 0 3px var(--nu-green-tint); }
+.chv__conta i { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); box-shadow: 0 0 0 3px var(--nu-green-bg); }
 .chv__conta--velha i, .chv__conta--caida i { background: var(--nu-amber-fill); box-shadow: none; }
 .chv__quando { color: var(--sub); font-weight: 500; }
-.chv__reconectar { color: var(--nu-blue-text); font-weight: 700; }
-.chv__mais { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: var(--sub); font: inherit; font-weight: 600; cursor: pointer; transition: color .2s; }
+.chv__reconectar { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.chv__mais { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--nu-gray-3); font: inherit; font-weight: 700; cursor: pointer; transition: color .2s; }
 .chv__mais:hover { color: var(--tinta); }
 
 /* ————— a frase, o gráfico e os fatos ————— */
 .chv2__esq { display: grid; gap: 12px; margin-top: clamp(28px, 4vw, 52px); }
-.chv2__frase { margin: clamp(28px, 4vw, 52px) 0 0; max-width: 20ch; font-size: var(--nu-fs-h2); font-weight: 500; letter-spacing: -0.035em; line-height: 1.06; text-wrap: balance; }
-.chv2__frase b { color: var(--nu-blue-text); font-weight: 700; white-space: nowrap; }
-.chv2__dek { margin: 18px 0 0; max-width: 58ch; color: var(--sub); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; }
+/* a frase em 800, um degrau acima do h2 de seção: é o título da tela */
+.chv2__frase { margin: clamp(22px, 3vw, 36px) 0 0; max-width: min(100%, 1100px); font-size: clamp(40px, 5.6vw, 76px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; text-wrap: balance; animation: nu-fade .5s ease both; }
+.chv2__frase b { color: var(--nu-blue); font-weight: inherit; white-space: nowrap; }
+.chv2__dek { margin: 20px 0 0; max-width: 58ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; animation: nu-fade .5s ease .06s both; }
 .chv2__palco { position: relative; margin-top: clamp(22px, 3vw, 36px); }
 .chv2__periodos { position: absolute; right: 0; top: -6px; z-index: 1; }
 .chv2__grafico { height: clamp(190px, 22vw, 300px); padding-top: 34px; box-sizing: content-box; }
 .chv2__fatos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 clamp(20px, 3vw, 44px); margin: clamp(24px, 3vw, 36px) 0 0; }
-.chv2__fato { padding: 18px 0 4px; border-top: 1px solid var(--fio); }
-.chv2__fato dt { color: var(--sub); font-size: var(--nu-fs-sm); font-weight: 600; }
-.chv2__fato dd { margin: 6px 0 0; font-size: var(--nu-fs-2xl); font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; }
-.chv2__fato dd.chv2__fato-s { margin-top: 6px; color: var(--sub); font-size: var(--nu-fs-sm); font-weight: 500; letter-spacing: 0; line-height: 1.45; }
+.chv2__fato { padding: 18px 0 4px; border-top: 1.5px solid var(--fio); animation: nu-fade .5s ease both; }
+.chv2__fato:nth-child(2) { animation-delay: 60ms; }
+.chv2__fato:nth-child(3) { animation-delay: 120ms; }
+.chv2__fato dt { color: var(--sub); font-size: 15px; font-weight: 600; }
+.chv2__fato dd { margin: 6px 0 0; font-size: clamp(26px, 2.4vw, 32px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+.chv2__fato dd.chv2__fato-s { margin-top: 6px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; letter-spacing: 0; line-height: 1.45; }
 .chv2__fato-s b { font-weight: 700; }
 .chv2__espera { padding: 2px 0; }
-/* sobre o creme do topo, o esqueleto padrão (areia e creme) quase some: um tom acima, com o mesmo brilho */
-.chv :deep(.nusk) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-cream)); background-image: linear-gradient(100deg, var(--esq) 25%, var(--nu-white) 50%, var(--esq) 75%); }
+/* o esqueleto sobre o creme: o tom vem do CarteiraVisao (.cvi), um só para a página */
 .chv2__fato dd.chv2__caminho { display: flex; align-items: center; gap: 8px; }
 .chv2__link { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
 .chv2__link svg { color: var(--nu-blue-text); transition: transform .2s; }
 .chv2__link:hover svg { transform: translateX(3px); }
-.chv2__link:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; border-radius: 4px; }
+.chv2__link:focus-visible { outline-offset: 3px; border-radius: 4px; }
 
 @media (max-width: 760px) {
-  .chv__estado { flex-basis: 100%; order: 3; }
   .chv2__periodos { position: static; margin-bottom: 4px; }
   .chv2__grafico { padding-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .chv2__link svg { transition: none; }
+  .chv2__frase, .chv2__dek, .chv2__fato { animation: none; }
 }
 </style>

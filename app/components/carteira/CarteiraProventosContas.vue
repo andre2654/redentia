@@ -138,13 +138,13 @@ const rotuloConectar = computed(() => (opening.value || registering.value ? 'Abr
 
 <style scoped>
 .cpc {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px);
 }
 .cpc__grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: clamp(16px, 2vw, 24px); align-items: stretch; }
 /* os dois cartões com a mesma altura; o "Conectar outra conta" desce para o pé */
 .cpc__card {
-  background: var(--nu-white); border-radius: var(--nu-r-card); padding: clamp(22px, 3vw, 32px); box-shadow: var(--nu-shadow-card);
+  background: var(--nu-band); border-radius: var(--nu-r-card); padding: clamp(22px, 3vw, 32px); box-shadow: var(--nu-shadow-quente);
   display: flex; flex-direction: column; scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
 }
 .cpc__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
@@ -172,11 +172,11 @@ const rotuloConectar = computed(() => (opening.value || registering.value ? 'Abr
 .cpc__status { font-style: normal; color: var(--nu-amber-text); font-weight: 700; }
 .cpc__val { color: var(--nu-green-text); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cpc__val--ink { color: var(--nu-ink); }
-.cpc__pe { margin: auto 0 0; padding-top: 14px; border-top: 1px solid var(--nu-cream-2); color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
+.cpc__pe { margin: auto 0 0; padding-top: 14px; border-top: 1.5px solid var(--nu-line); color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
 
 .cpc__logo {
   width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; overflow: hidden;
-  background: var(--nu-cream); color: var(--nu-gray);
+  background: var(--nu-page); color: var(--nu-gray);
   display: inline-flex; align-items: center; justify-content: center;
 }
 .cpc__logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -186,7 +186,7 @@ const rotuloConectar = computed(() => (opening.value || registering.value ? 'Abr
 
 .cpc__saldo {
   display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-  margin: 6px 0 0; padding: 12px 14px; border-radius: var(--nu-r-chip); background: var(--nu-cream);
+  margin: 6px 0 0; padding: 12px 14px; border-radius: var(--nu-r-chip); background: var(--nu-page);
   color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500;
 }
 .cpc__saldo strong { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }

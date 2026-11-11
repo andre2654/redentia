@@ -1,8 +1,9 @@
 <script setup lang="ts">
-// Campo de formulário de /conta. Mesma linguagem do ContactForm (label 14/700 +
-// input boxed), mas INSET: fundo creme pra ler como campo dentro do card branco
-// do painel; foco vira branco + anel azul. readonly = campo travado (ex.: e-mail,
-// que muda pela verificação por PIN). Slot `trailing` = badge/ação à direita.
+// Campo de formulário de /conta, no padrão da Aportou (o campo do login):
+// rótulo 15/700 acima, caixa branca de 56px com borda de 1,5px e raio 16; o
+// foco é o anel cobalto de 3px. readonly = campo travado (ex.: e-mail, que muda
+// pela verificação por PIN): fica no creme, sem anel. Slot `trailing` =
+// badge/ação à direita.
 withDefaults(defineProps<{
   label: string
   modelValue?: string
@@ -41,19 +42,21 @@ const id = useId()
 
 <style scoped>
 .cfl { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
-.cfl__label { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.cfl__label { color: var(--nu-ink); font-size: 15px; font-weight: 700; }
 .cfl__box { position: relative; display: flex; align-items: center; }
 .cfl__input {
-  width: 100%; background: var(--nu-cream); color: var(--nu-ink);
-  border: 1.5px solid transparent; border-radius: var(--nu-r-input);
-  padding: 15px 18px; font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 500;
-  line-height: 1.4; outline: none;
-  transition: background .18s, border-color .18s, box-shadow .18s;
+  width: 100%; height: 56px; background: var(--nu-white); color: var(--nu-ink);
+  border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input);
+  padding: 0 18px; font-family: var(--nu-font); font-size: 17px; font-weight: 500;
+  outline: none;
+  transition: border-color .2s, background .2s;
 }
 .cfl__input::placeholder { color: var(--nu-placeholder); font-weight: 500; }
-.cfl__input:focus { background: var(--nu-white); border-color: var(--nu-blue); box-shadow: 0 0 0 3px var(--nu-blue-tint); }
-.cfl__box--ro .cfl__input { color: var(--nu-gray-2); cursor: default; }
-.cfl__box--ro .cfl__input:focus { background: var(--nu-cream); border-color: transparent; box-shadow: none; }
+.cfl__input:hover { border-color: var(--nu-gray); }
+.cfl__input:focus, .cfl__input:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
+.cfl__box--ro .cfl__input { background: var(--nu-page); border-color: var(--nu-line); color: var(--nu-gray); cursor: default; }
+.cfl__box--ro .cfl__input:hover { border-color: var(--nu-line); }
+.cfl__box--ro .cfl__input:focus, .cfl__box--ro .cfl__input:focus-visible { outline: 2px solid var(--nu-line); outline-offset: 1px; border-color: var(--nu-line); }
 .cfl__trailing { position: absolute; right: 16px; display: inline-flex; align-items: center; }
-.cfl__hint { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
+.cfl__hint { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 </style>

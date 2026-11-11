@@ -1,5 +1,7 @@
 <script setup lang="ts">
-// Painel de uma seção de /conta: card branco com título + subtítulo + conteúdo.
+// Painel de uma seção de /conta: o cartão creme da Aportou (raio 28, a sombra
+// quente) com título em 800 + subtítulo + conteúdo. Dentro dele, o branco fica
+// para os campos e para os cartões de dado.
 // Mesmo shape em todas as seções (Perfil, Notificações, Segurança, ...) → uma
 // implementação só. O título é h2 (o h1 da página é o nome da conta no topo).
 defineProps<{ title: string; subtitle?: string }>()
@@ -16,8 +18,8 @@ defineProps<{ title: string; subtitle?: string }>()
 </template>
 
 <style scoped>
-.cse { background: var(--nu-white); border-radius: var(--nu-r-card-lg); padding: clamp(24px, 3vw, 40px); }
-.cse__title { margin: 0; color: var(--nu-ink); font-size: clamp(26px, 3vw, 34px); font-weight: 800; letter-spacing: -.02em; }
-.cse__sub { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+.cse { background: var(--nu-card); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(24px, 3vw, 40px); }
+.cse__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -.025em; line-height: 1.05; }
+.cse__sub { margin: 10px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 .cse__body { margin-top: clamp(24px, 3vw, 34px); }
 </style>

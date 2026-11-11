@@ -61,7 +61,7 @@ const heroLine = computed(() =>
   heroTone.value === 'hi'
     ? 'Em queda, isso se move como um ativo só: o que derruba uma posição derruba as outras no mesmo dia.'
     : heroTone.value === 'mid'
-      ? 'Parte da carteira cai junta e parte segura o baque — o parentesco está concentrado nos pares abaixo.'
+      ? 'Parte da carteira cai junta e parte segura o baque. O parentesco está concentrado nos pares abaixo.'
       : 'Na média, as posições caem em momentos diferentes. O parentesco que sobra está nos pares abaixo.',
 )
 const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
@@ -77,7 +77,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
         <span class="sco__hero-tag" :class="`sco__tag--${heroTone}`">{{ heroTag }}</span>
       </div>
       <p class="sco__hero-line">{{ heroLine }}</p>
-      <p v-if="nProtect" class="sco__hero-sub">{{ nProtect }} {{ nProtect === 1 ? 'par anda' : 'pares andam' }} em direções opostas — proteção de verdade, listada abaixo.</p>
+      <p v-if="nProtect" class="sco__hero-sub">{{ nProtect }} {{ nProtect === 1 ? 'par anda' : 'pares andam' }} em direções opostas: proteção de verdade, listada abaixo.</p>
     </div>
 
     <div class="sco__grid">
@@ -98,8 +98,8 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
             </span>
             <span class="sco__track">
               <i
-                class="sco__fill" :class="`sco__fill--${toneOf(p.v)}`"
-                :style="{ width: active ? `${Math.abs(p.v)}%` : '0%', transitionDelay: `${120 + i * 60}ms` }"
+                class="sco__fill" :class="[`sco__fill--${toneOf(p.v)}`, { 'sco__fill--on': active }]"
+                :style="{ width: `${Math.abs(p.v)}%`, transitionDelay: `${120 + i * 60}ms` }"
               />
             </span>
             <span class="sco__val" :class="`sco__val--${toneOf(p.v)}`">{{ fmtSignedV(p.v) }}</span>
@@ -122,8 +122,8 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
             </span>
             <span class="sco__track">
               <i
-                class="sco__fill sco__fill--neg"
-                :style="{ width: active ? `${Math.abs(p.v)}%` : '0%', transitionDelay: `${120 + (TOP + i) * 60}ms` }"
+                class="sco__fill sco__fill--neg" :class="{ 'sco__fill--on': active }"
+                :style="{ width: `${Math.abs(p.v)}%`, transitionDelay: `${120 + (TOP + i) * 60}ms` }"
               />
             </span>
             <span class="sco__val sco__val--neg">{{ fmtSignedV(p.v) }}</span>
@@ -134,12 +134,12 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
             <b class="sco__tk">{{ guard.a }}</b>
             <i class="sco__x" aria-hidden="true">×</i>
             <b class="sco__tk">{{ guard.b }}</b>
-            <em class="sco__note">o par menos parecido — nenhum anda em direção oposta</em>
+            <em class="sco__note">o par menos parecido; nenhum anda em direção oposta</em>
           </span>
           <span class="sco__track">
             <i
-              class="sco__fill sco__fill--lo"
-              :style="{ width: active ? `${Math.abs(guard.v)}%` : '0%', transitionDelay: `${120 + TOP * 60}ms` }"
+              class="sco__fill sco__fill--lo" :class="{ 'sco__fill--on': active }"
+              :style="{ width: `${Math.abs(guard.v)}%`, transitionDelay: `${120 + TOP * 60}ms` }"
             />
           </span>
           <span class="sco__val sco__val--lo">{{ fmtSignedV(guard.v) }}</span>
@@ -152,7 +152,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
           <span><i class="sco__dot sco__dot--neg" />negativo · direções opostas (proteção)</span>
         </p>
         <p v-if="missing > 0" class="sco__coverage">
-          {{ missing }} de {{ corr.totalPairs }} pares sem histórico em comum suficiente — ficam fora da conta.
+          {{ missing }} de {{ corr.totalPairs }} pares sem histórico em comum suficiente ficam fora da conta.
         </p>
       </div>
 
@@ -181,103 +181,111 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 <style scoped>
 /* ——— número-herói: uma coisa embaixo da outra, sem três tamanhos na mesma linha ——— */
 .sco__hero {
-  margin-bottom: 26px;
+  margin-bottom: 28px;
   opacity: 0; transform: translateY(10px);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
 .sco__hero--in { opacity: 1; transform: none; }
-.sco__hero-label { display: block; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
-.sco__hero-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
+.sco__hero-label { display: block; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.sco__hero-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
 .sco__hero-value {
   color: var(--nu-ink);
-  font-size: clamp(46px, 6vw, 76px); font-weight: 800; letter-spacing: -0.045em; line-height: 1;
+  font-size: clamp(54px, 6.4vw, 88px); font-weight: 800; letter-spacing: -0.04em; line-height: 1;
   font-variant-numeric: tabular-nums;
 }
-.sco__hero-unit { color: var(--nu-sand); font-size: 0.36em; font-style: normal; font-weight: 800; letter-spacing: -0.02em; }
+.sco__hero-unit { color: var(--nu-gray); font-size: 0.36em; font-style: normal; font-weight: 800; letter-spacing: -0.02em; }
+/* o selo da marca: raio 8 */
 .sco__hero-tag {
-  padding: 7px 14px; border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.01em; white-space: nowrap;
+  padding: 6px 12px; border-radius: var(--nu-r-tag);
+  font-size: 14px; font-weight: 700; white-space: nowrap;
 }
-.sco__tag--hi { background: var(--nu-red-tint); color: var(--nu-red-2); }
+.sco__tag--hi { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .sco__tag--mid { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
-.sco__tag--lo { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
-.sco__coverage { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
-.sco__hero-line { max-width: 56ch; margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
-.sco__hero-sub { max-width: 56ch; margin: 6px 0 0; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: 700; }
-.sco__panel-label--protect { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--nu-sand-3); }
+.sco__tag--lo { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
+.sco__coverage { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.45; }
+.sco__hero-line { max-width: 56ch; margin: 14px 0 0; color: var(--nu-gray-3); font-size: clamp(17px, 1.4vw, 19px); font-weight: 500; line-height: 1.45; }
+.sco__hero-sub { max-width: 56ch; margin: 8px 0 0; color: var(--nu-green-text); font-size: 15px; font-weight: 700; }
+.sco__panel-label--protect { margin-top: 18px; padding-top: 18px; border-top: 1.5px solid var(--nu-line); }
 
-/* ——— dois painéis do MESMO material: creme sobre a banda branca ——— */
+/* ——— dois cartões do MESMO material: o creme da página sobre a faixa ——— */
 .sco__grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, 1fr); gap: 20px; align-items: start; }
 .sco__panel {
   display: flex; flex-direction: column;
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 20px 22px 18px;
+  background: var(--nu-page); border-radius: var(--nu-r-card); padding: clamp(22px, 2.6vw, 32px);
+  box-shadow: var(--nu-shadow-quente);
 }
-.sco__panel--through { gap: 16px; }
-.sco__panel-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
+.sco__panel--through { gap: 18px; }
+.sco__panel-label { color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; line-height: 1.4; text-transform: uppercase; }
 
 /* ——— a lista ordenada de pares ——— */
-.sco__list { display: flex; flex-direction: column; margin-top: 4px; }
+.sco__list { display: flex; flex-direction: column; margin-top: 6px; }
 .sco__row {
   display: grid; grid-template-columns: minmax(150px, 210px) minmax(0, 1fr) 44px;
   gap: 16px; align-items: center;
-  padding: 12px 0; border-bottom: 1px solid var(--nu-cream-line);
+  padding: 13px 0; border-bottom: 1.5px solid var(--nu-line-2);
   opacity: 0; transform: translateY(8px);
   transition: opacity 0.45s ease, transform 0.45s ease;
 }
 .sco__list .sco__row:last-child { border-bottom: none; }
 .sco__row--in { opacity: 1; transform: none; }
-.sco__row--guard { margin-top: 10px; padding-top: 14px; border-top: 1px dashed var(--nu-sand-3); border-bottom: none; }
+.sco__row--guard { margin-top: 10px; padding-top: 14px; border-top: 1.5px solid var(--nu-line); border-bottom: none; }
+.sco__panel-label--protect + .sco__row--guard { margin-top: 2px; border-top: none; }
 
 .sco__who { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; min-width: 0; }
-.sco__tk { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: 0.01em; }
-.sco__x { color: var(--nu-sand); font-size: var(--nu-fs-dense); font-style: normal; font-weight: 700; }
-.sco__note { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; font-style: normal; }
+.sco__tk { color: var(--nu-ink); font-size: 15px; font-weight: 800; letter-spacing: 0.02em; }
+.sco__x { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-style: normal; font-weight: 700; }
+.sco__note { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; font-style: normal; }
 
-.sco__track { position: relative; height: 10px; border-radius: 999px; background: var(--nu-cream-3); overflow: hidden; }
+/* a barra cresce da esquerda em 0,6s (só transform) */
+.sco__track { position: relative; height: 10px; border-radius: 999px; background: var(--nu-line-2); overflow: hidden; }
 .sco__fill {
   position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px;
-  transition: width 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
+.sco__fill--on { transform: scaleX(1); }
 .sco__fill--hi { background: var(--nu-red); }
 .sco__fill--mid { background: var(--nu-amber-fill); }
 .sco__fill--lo { background: var(--nu-blue-soft); }
 .sco__fill--neg { background: var(--nu-green); }
 
-.sco__val { text-align: right; font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.sco__val { text-align: right; font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .sco__val--hi { color: var(--nu-red-text); }
 .sco__val--mid { color: var(--nu-amber-text); }
-.sco__val--lo { color: var(--nu-gray-2); }
-.sco__val--neg { color: var(--nu-green-2); }
+.sco__val--lo { color: var(--nu-ink); }
+.sco__val--neg { color: var(--nu-green-text); }
 
 /* a escala, dita uma vez — o que a matriz nunca dizia */
 .sco__legend {
   display: flex; flex-wrap: wrap; gap: 6px 16px;
-  margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--nu-cream-line);
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
+  margin: 16px 0 0; padding-top: 14px; border-top: 1.5px solid var(--nu-line);
+  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums;
 }
-.sco__legend span { display: inline-flex; align-items: center; gap: 6px; }
-.sco__dot { width: 8px; height: 8px; border-radius: 999px; }
+.sco__legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sco__dot { width: 11px; height: 11px; border-radius: 999px; }
 .sco__dot--hi { background: var(--nu-red); }
 .sco__dot--mid { background: var(--nu-amber-fill); }
 .sco__dot--lo { background: var(--nu-blue-soft); }
 .sco__dot--neg { background: var(--nu-green); }
 
-/* ——— see-through (preservado) ——— */
-.sco__th-item { display: flex; flex-direction: column; gap: 5px; }
+/* ——— see-through: a barra empilhada da marca, em miniatura (vão de 3px,
+   pontas redondas só nos extremos) ——— */
+.sco__th-item { display: flex; flex-direction: column; gap: 6px; }
 .sco__th-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.sco__th-name { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
-.sco__th-total { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
-.sco__th-bar { display: flex; gap: 2px; height: 9px; border-radius: 999px; overflow: hidden; background: var(--nu-cream-3); }
-.sco__th-fill { display: block; height: 100%; }
+.sco__th-name { color: var(--nu-ink); font-size: 15px; font-weight: 700; }
+.sco__th-total { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
+.sco__th-bar { display: flex; gap: 3px; height: 10px; border-radius: 999px; overflow: hidden; background: var(--nu-line-2); }
+.sco__th-fill { display: block; height: 100%; border-radius: 3px; }
+.sco__th-fill:first-child { border-top-left-radius: 999px; border-bottom-left-radius: 999px; }
+.sco__th-fill:last-child { border-top-right-radius: 999px; border-bottom-right-radius: 999px; }
 .sco__th-fill--direct { background: var(--nu-blue); }
 .sco__th-fill--etf { background: var(--nu-blue-soft); }
-.sco__th-sub { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; }
+.sco__th-sub { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
 
 @media (max-width: 900px) { .sco__grid { grid-template-columns: 1fr; } }
 @media (max-width: 760px) {
-  .sco__panel { padding: 18px 16px 16px; }
   .sco__row { grid-template-columns: minmax(0, 1fr) 44px; gap: 8px 12px; }
   .sco__track { grid-column: 1 / -1; order: 3; }
-  .sco__val { font-size: var(--nu-fs-md); }
+  .sco__val { font-size: var(--nu-fs-lg); }
 }
 </style>

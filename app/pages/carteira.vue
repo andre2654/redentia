@@ -103,7 +103,7 @@ function tentarDeNovo() {
 // routeRules do nuxt.config.
 usePageSeo({
   title: 'Carteira',
-  description: 'Seu patrimônio consolidado pelo Open Finance, testado em 2.000 cenários: posições, proventos, contas e a Redentia AI.',
+  description: 'Seu patrimônio consolidado pelo Open Finance, testado em 2.000 cenários: posições, proventos, contas e a IA da Aportou.',
   robots: 'noindex, nofollow',
 })
 </script>

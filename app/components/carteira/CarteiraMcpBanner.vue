@@ -1,9 +1,10 @@
 <script setup lang="ts">
 // Banner "converse com a sua carteira" (dono 2026-07-16): faixa baixa entre
-// Posições e o Raio-X convidando pro Redentia MCP (perguntar sobre a própria
+// Posições e o Raio-X convidando pro Aportou MCP (perguntar sobre a própria
 // carteira direto do ChatGPT/Claude/Cursor). Mesma linguagem visual do card
-// MCP de /conta (ContaMcp: gradiente azul + glow mint + tiles dos apps, cores
-// exatas do design, não tokens --nu-*). Só apresentação: o CTA leva pra
+// MCP de /conta (ContaMcp): desde 11/11/2026 o painel azul da Aportou, com o
+// gradiente cobalto, o corte gigante branco no canto, o eyebrow com o corte e
+// os tiles dos apps, tudo em tokens --nu-*. Só apresentação: o CTA leva pra
 // /conta#mcp, onde a chave é gerada de verdade.
 // Logos reais (public/icons, mesma fonte do ContaMcp/MercadoCarteiraConectada).
 const apps = [
@@ -15,15 +16,12 @@ const apps = [
 </script>
 
 <template>
-  <section class="cmb" aria-label="Redentia MCP">
+  <section class="cmb" aria-label="Aportou MCP">
     <NuxtLink to="/conta#mcp" class="cmb__card">
-      <div class="cmb__glow" aria-hidden="true" />
+      <span class="cmb__corte" aria-hidden="true"><MarcaCorte :largura="360" cor="var(--nu-white)" /></span>
 
       <div class="cmb__txt">
-        <div class="cmb__eyebrow">
-          <span class="cmb__badge">Novo</span>
-          <span class="cmb__brand">Redentia MCP</span>
-        </div>
+        <NuEyebrow sobre="azul">Aportou MCP</NuEyebrow>
         <h2 class="cmb__title">Converse com a sua carteira.</h2>
         <p class="cmb__sub">Pergunte sobre seus investimentos direto no ChatGPT, Claude ou Cursor. Seus dados, no seu assistente de IA.</p>
       </div>
@@ -36,7 +34,7 @@ const apps = [
         </div>
         <span class="cmb__cta">
           Ativar o MCP
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
+          <span class="cmb__bola" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15" /><path d="M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </span>
       </div>
     </NuxtLink>
@@ -44,56 +42,53 @@ const apps = [
 </template>
 
 <style scoped>
-/* faixa baixa: o padding-top fica por conta da banda de Posições (cream) acima */
-.cmb { background: var(--nu-cream); padding: 0 clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 72px); }
+/* faixa baixa: o padding-top fica por conta da banda de Posições acima */
+.cmb { background: var(--nu-page); padding: 0 clamp(20px, 5.5vw, 80px) clamp(48px, 6vw, 72px); }
 
+/* o painel azul da marca: gradiente cobalto, raio 32, o corte gigante branco a 8% no canto */
 .cmb__card {
   position: relative; overflow: hidden; display: flex; align-items: center;
   justify-content: space-between; gap: clamp(20px, 3vw, 44px); flex-wrap: wrap;
-  border-radius: 26px; padding: clamp(24px, 3vw, 34px) clamp(24px, 3.4vw, 44px);
-  background: linear-gradient(150deg, #123A8F 0%, #1E4FC2 46%, #2F6BFF 100%);
-  transition: transform .18s ease, box-shadow .18s ease;
+  border-radius: var(--nu-r-card-lg); padding: clamp(24px, 3vw, 34px) clamp(24px, 3.4vw, 44px);
+  background: var(--nu-grad-cobalto); color: var(--nu-white);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-.cmb__card:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(18, 58, 143, .28); }
+.cmb__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); color: var(--nu-white); }
 .cmb__card:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
-.cmb__glow {
-  position: absolute; top: -110px; right: -60px; width: 300px; height: 300px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(143, 240, 181, .26) 0%, rgba(143, 240, 181, 0) 70%);
-  pointer-events: none;
-}
+.cmb__corte { position: absolute; top: -40px; right: -70px; opacity: .08; pointer-events: none; }
 
 .cmb__txt { position: relative; max-width: 640px; }
-.cmb__eyebrow { display: flex; align-items: center; gap: 10px; }
-.cmb__badge {
-  display: inline-flex; align-items: center;
-  background: rgba(255, 255, 255, .16); backdrop-filter: blur(6px); color: #fff;
-  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase;
-  padding: 4px 10px; border-radius: 999px;
-}
-.cmb__brand { color: rgba(245, 241, 234, .72); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
-.cmb__title { margin: 12px 0 0; color: #fff; font-size: clamp(22px, 2.4vw, 30px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
-.cmb__sub { margin: 8px 0 0; color: rgba(245, 241, 234, .8); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; text-wrap: pretty; }
+.cmb__title { margin: 14px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.cmb__sub { margin: 10px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
 
 .cmb__side { position: relative; display: flex; align-items: center; gap: clamp(16px, 2vw, 26px); flex-wrap: wrap; }
 /* chips dos apps (logo real + nome) — mesmos do card MCP de /conta */
 .cmb__apps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .cmb__app {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(255, 255, 255, .12); color: #fff; font-size: var(--nu-fs-sm); font-weight: 700;
-  padding: 9px 15px; border-radius: 12px;
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+  background: var(--nu-white-14); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700;
+  padding: 0 15px 0 11px; border-radius: var(--nu-r-chip);
 }
 .cmb__app-ic {
-  width: 22px; height: 22px; border-radius: 6px; background: #fff; overflow: hidden;
+  width: 24px; height: 24px; border-radius: 7px; background: var(--nu-white); overflow: hidden;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .cmb__app-img { width: 100%; height: 100%; object-fit: contain; padding: 3px; display: block; }
-.cmb__card:hover .cmb__app { transform: translateY(-1px); }
 
+/* a chamada: a pílula creme com a seta no círculo (o cartão inteiro é o link, por isso é um span) */
 .cmb__cta {
-  display: inline-flex; align-items: center; gap: 9px;
-  background: #fff; color: #123A8F;
-  border-radius: 999px; padding: 13px 24px; font-size: var(--nu-fs-md); font-weight: 800;
-  white-space: nowrap; transition: background .18s ease;
+  display: inline-flex; align-items: center; gap: 14px; min-height: 52px;
+  background: var(--nu-creme); color: var(--nu-ink);
+  border-radius: var(--nu-r-pill); padding: 0 7px 0 24px; font-size: 16.5px; font-weight: 700;
+  white-space: nowrap; transition: background .2s;
 }
-.cmb__card:hover .cmb__cta { background: #8FF0B5; color: #0A2050; }
+.cmb__bola { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; overflow: hidden; background: var(--nu-ink); color: var(--nu-creme); }
+.cmb__card:hover .cmb__cta { background: var(--nu-white); }
+.cmb__card:hover .cmb__bola svg { animation: nu-seta .45s cubic-bezier(.4, 0, .2, 1); }
+.cmb__card:active { transform: scale(.99); }
+
+@media (max-width: 520px) {
+  .cmb__corte { right: -160px; }
+  .cmb__cta { width: 100%; justify-content: space-between; }
+}
 </style>

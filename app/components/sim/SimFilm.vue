@@ -30,7 +30,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
     <div class="sfm__steps">
       <div v-for="(s, i) in steps" :key="s" class="sfm__step" :class="{ 'sfm__step--on': i < visible }">
         <svg v-if="i < visible - 1 || visible === steps.length" class="sfm__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l5 5L20 7" /></svg>
-        <span v-else class="sfm__spin" aria-hidden="true" />
+        <span v-else class="sfm__pontos" aria-hidden="true"><i /><i /><i /></span>
         {{ s }}
       </div>
     </div>
@@ -41,17 +41,16 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .sfm { display: flex; flex-direction: column; align-items: center; gap: 30px; }
 .sfm__steps { display: flex; flex-direction: column; gap: 13px; min-height: 132px; }
 .sfm__step {
-  display: inline-flex; align-items: center; gap: 10px;
-  color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500;
+  display: inline-flex; align-items: center; gap: 12px;
+  color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500;
   opacity: 0; transform: translateY(8px);
   transition: opacity 0.45s ease, transform 0.45s ease;
 }
 .sfm__step--on { opacity: 1; transform: none; }
-.sfm__check { color: var(--nu-green-soft); flex-shrink: 0; }
-.sfm__spin {
-  width: 13px; height: 13px; flex-shrink: 0; border-radius: 50%;
-  border: 2px solid var(--nu-cream-text-12); border-top-color: var(--nu-blue-soft);
-  animation: sfm-spin 0.8s linear infinite;
-}
-@keyframes sfm-spin { to { transform: rotate(360deg); } }
+.sfm__check { width: 20px; color: var(--nu-green-soft); flex-shrink: 0; }
+/* o passo em curso: os três pontos de "respondendo" da marca (nunca spinner) */
+.sfm__pontos { display: inline-flex; justify-content: center; gap: 3px; width: 20px; flex-shrink: 0; color: var(--nu-blue-on-dark); }
+.sfm__pontos i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; animation: nu-ponto 1.2s infinite; }
+.sfm__pontos i:nth-child(2) { animation-delay: .2s; }
+.sfm__pontos i:nth-child(3) { animation-delay: .4s; }
 </style>

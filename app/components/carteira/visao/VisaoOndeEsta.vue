@@ -53,7 +53,7 @@ function teclar(e: KeyboardEvent) {
 <template>
   <section class="voe" aria-labelledby="voe-titulo" data-clarity-mask="true">
     <div class="voe__cab">
-      <h2 id="voe-titulo" class="voe__eyebrow">Onde está o meu dinheiro?</h2>
+      <NuEyebrow id="voe-titulo" como="h2">Onde está o meu dinheiro?</NuEyebrow>
       <div class="voe__abas" role="tablist" aria-labelledby="voe-titulo" @keydown="teclar">
         <button
           v-for="l in LENTES" :id="`voe-aba-${l.id}`" :key="l.id" type="button" role="tab" class="voe__aba"
@@ -75,32 +75,31 @@ function teclar(e: KeyboardEvent) {
 </template>
 
 <style scoped>
+/* na Aportou a seção mora na faixa quente (não há faixa branca de ponta a ponta);
+   os cartões de dentro são do creme da página */
 .voe {
-  background: var(--nu-white);
+  background: var(--nu-band);
   padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px);
   scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
   overflow: hidden;
 }
 .voe__cab { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 24px; }
-.voe__eyebrow { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-eyebrow); font-weight: 600; }
-/* as abas: o segmentado claro do /asset (AtivoPeriodo) */
-.voe__abas { display: inline-flex; padding: 3px; border-radius: var(--nu-r-pill); background: var(--nu-cream); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+/* as abas: o segmentado da marca, a escolhida na pílula carvão */
+.voe__abas { display: inline-flex; padding: 4px; border-radius: var(--nu-r-pill); background: color-mix(in srgb, var(--nu-ink) 8%, var(--nu-band)); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
 .voe__abas::-webkit-scrollbar { display: none; }
 .voe__aba {
-  height: 36px; padding: 0 16px; border: 0; border-radius: var(--nu-r-pill); background: transparent; white-space: nowrap;
-  color: var(--nu-gray-2); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
-  transition: background .2s, color .2s, box-shadow .2s;
+  height: 44px; padding: 0 18px; border: 0; border-radius: var(--nu-r-pill); background: transparent; white-space: nowrap;
+  color: var(--nu-gray-3); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: background .2s, color .2s;
 }
 .voe__aba:hover { color: var(--nu-ink); }
-.voe__aba--on { background: var(--nu-white); color: var(--nu-ink); box-shadow: 0 1px 3px var(--nu-ink-14); }
-.voe__aba:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.voe__lente { margin-top: clamp(14px, 2vw, 22px); min-height: 420px; animation: voe-entra .35s cubic-bezier(.22, 1, .36, 1); }
-@keyframes voe-entra { from { opacity: 0; transform: translateY(6px); } }
+.voe__aba--on, .voe__aba--on:hover { background: var(--nu-ink); color: var(--nu-white); }
+.voe__lente { margin-top: clamp(18px, 2.4vw, 28px); min-height: 420px; animation: nu-fade .4s cubic-bezier(.22, 1, .36, 1) both; }
 
 /* Mundo e Cadeia sem a moldura deles: a seção é esta */
 .voe__lente :deep(.cmu), .voe__lente :deep(.cca) { padding: 0; background: transparent; overflow: visible; }
 .voe__lente :deep(.cmu__eyebrow), .voe__lente :deep(.cca__eyebrow) { display: none; }
-.voe__lente :deep(.cmu__frase), .voe__lente :deep(.cca__frase) { margin-top: 0; font-weight: 500; }
+.voe__lente :deep(.cmu__frase), .voe__lente :deep(.cca__frase) { margin-top: 0; }
 
 @media (max-width: 640px) {
   .voe__cab { flex-direction: column; align-items: flex-start; }

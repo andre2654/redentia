@@ -148,7 +148,7 @@ export function montarAchados(e: EntradaDosAchados): AchadosVM {
       texto: m.note || null,
       dimensao: m.label,
       valor: m.value,
-      pergunta: `A Redentia apontou ${m.label.toLowerCase()} como ponto de atenção na minha carteira (${m.value}). ${m.note} O que isso quer dizer para mim?`.replace(/\s+/g, ' ').trim(),
+      pergunta: `A Aportou apontou ${m.label.toLowerCase()} como ponto de atenção na minha carteira (${m.value}). ${m.note} O que isso quer dizer para mim?`.replace(/\s+/g, ' ').trim(),
     })
   }
   const pontos = itens.length
@@ -161,7 +161,7 @@ export function montarAchados(e: EntradaDosAchados): AchadosVM {
       tipo: 'forca', gravidade: null, selo: seloDe('forca'),
       titulo: `${exc.label} em nível excelente`, texto: exc.note || null,
       dimensao: exc.label, valor: exc.value,
-      pergunta: `A Redentia viu ${exc.label.toLowerCase()} como ponto forte da minha carteira (${exc.value}). O que sustenta isso?`,
+      pergunta: `A Aportou viu ${exc.label.toLowerCase()} como ponto forte da minha carteira (${exc.value}). O que sustenta isso?`,
     })
   }
 
@@ -213,13 +213,13 @@ export interface PedacoDoTitulo {
 }
 
 /**
- * O título dos achados: 'A Redentia olhou a sua carteira: 2 pontos de atenção'
+ * O título dos achados: 'A Aportou olhou a sua carteira: 2 pontos de atenção'
  * (o modal mostra os pedaços sem a abertura, que já vai na assinatura). Sem
  * achado, a linha calma. `pedacos` é o mesmo título com o número separado,
  * para o destaque.
  */
 export function tituloDosAchados(vm: Pick<AchadosVM, 'pontos' | 'vazio'>): { titulo: string; pedacos: PedacoDoTitulo[] } {
-  const abre = 'A Redentia olhou a sua carteira: '
+  const abre = 'A Aportou olhou a sua carteira: '
   const pedacos: PedacoDoTitulo[] = [{ texto: abre }]
   if (vm.vazio || !vm.pontos) pedacos.push({ texto: 'nada pede atenção' })
   else pedacos.push({ texto: String(vm.pontos), numero: 'atencao' }, { texto: ` ${vm.pontos === 1 ? 'ponto de atenção' : 'pontos de atenção'}` })
@@ -233,7 +233,7 @@ const COLUNAS: { rotulo: string; tipos: TipoDoAchado[] }[][] = [
 ]
 
 export interface OpcoesDoHtml {
-  /** a frase do que olhou no começo ('A Redentia olhou 18 ativos…'); o modal a
+  /** a frase do que olhou no começo ('A Aportou olhou 18 ativos…'); o modal a
    *  leva na assinatura e passa false */
   olhou?: boolean
   /** troca o R$ pela máscara quando o olho está fechado */
@@ -241,7 +241,7 @@ export interface OpcoesDoHtml {
 }
 
 /** O rótulo da pergunta de cada linha (aparece no hover e no foco). */
-export const PERGUNTAR_DO_ITEM = 'Perguntar à Redentia'
+export const PERGUNTAR_DO_ITEM = 'Perguntar à IA'
 
 /**
  * Uma linha: o título e, à direita, o número de hoje (alinhado e tabular, como
@@ -272,7 +272,7 @@ export function achadosHtml(vm: AchadosVM, o: OpcoesDoHtml = {}): string {
   const out: string[] = []
   const olhou = oQueOlhou(vm)
   if (o.olhou !== false && (olhou || vm.olhouEm)) {
-    out.push(`<p class="cah__frase">A Redentia olhou${olhou ? ` <b>${esc(olhou)}</b>` : ' a sua carteira'}${vm.olhouEm ? `, ${esc(vm.olhouEm)}` : ''}.</p>`)
+    out.push(`<p class="cah__frase">A Aportou olhou${olhou ? ` <b>${esc(olhou)}</b>` : ' a sua carteira'}${vm.olhouEm ? `, ${esc(vm.olhouEm)}` : ''}.</p>`)
   }
   if (vm.vazio) {
     out.push('<p class="cah__frase">Nada pede atenção agora.</p>')

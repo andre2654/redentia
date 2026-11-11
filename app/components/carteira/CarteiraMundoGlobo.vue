@@ -25,7 +25,14 @@ const props = defineProps<{ fatias: FatiaCor[]; ativo: string | null }>()
 const emit = defineEmits<{ (e: 'ativo', chave: string | null): void }>()
 
 const BRASIL: [number, number] = [-51, -12]
-const COR_BRASIL = '#2F6AFF'
+const COR_BRASIL = 'var(--nu-blue)'
+// o canvas não entende var(): as cores chegam como token ('var(--nu-blue)') e
+// são lidas aqui, no elemento (os tokens da marca e os da página, que o .cvi ajusta)
+function ler(cor: string): string {
+  const m = /^var\((--[\w-]+)\)$/.exec(cor.trim())
+  if (!m) return cor
+  return getComputedStyle(caixa.value ?? document.documentElement).getPropertyValue(m[1]!).trim()
+}
 
 const caixa = ref<HTMLDivElement | null>(null)
 const tela = ref<HTMLCanvasElement | null>(null)
@@ -46,10 +53,15 @@ function montarCena() {
   cena = prepararCena({
     camadas: props.fatias
       .filter((f) => f.paises.length || f.todos)
-      .map((f) => ({ chave: f.chave, cor: f.cor, paises: f.paises, todos: f.todos, forte: f.tipo === 'pais' })),
-    arcos: destinos.value.map((f) => ({ chave: f.chave, cor: f.cor, de: BRASIL, para: f.ancora! })),
+      .map((f) => ({ chave: f.chave, cor: ler(f.cor), paises: f.paises, todos: f.todos, forte: f.tipo === 'pais' })),
+    arcos: destinos.value.map((f) => ({ chave: f.chave, cor: ler(f.cor), de: BRASIL, para: f.ancora! })),
     origem: BRASIL,
-    origemCor: props.fatias.find((f) => f.chave === 'BR')?.cor ?? COR_BRASIL,
+    origemCor: ler(props.fatias.find((f) => f.chave === 'BR')?.cor ?? COR_BRASIL),
+    // a esfera clara com a sombra azulada da marca; os pontos sem fatia, no carvão
+    tema: {
+      luz: ler('var(--nu-white)'), meio: ler('var(--nu-blue-on-blue)'), sombra: ler('var(--nu-blue-on-blue-2)'),
+      contorno: ler('var(--nu-white)'), neutro: ler('var(--nu-ink)'), halo: ler('var(--nu-blue)'),
+    },
     ativo: props.ativo,
   })
 }
@@ -291,8 +303,8 @@ function aoSair() {
 /* a esfera em CSS: o que fica sem JS (e embaixo do canvas, antes do 1º quadro) */
 .cmg__esfera {
   position: absolute; inset: 10%; border-radius: 50%;
-  background: radial-gradient(circle at 30% 26%, #FFFFFF 0%, #F5F8FE 48%, #DCE5F5 100%);
-  box-shadow: 0 0 0 1px rgba(12, 21, 36, 0.05), 0 40px 80px -40px rgba(12, 21, 36, 0.35), 0 0 90px 10px rgba(47, 106, 255, 0.10);
+  background: radial-gradient(circle at 30% 26%, var(--nu-white) 0%, var(--nu-blue-on-blue) 48%, var(--nu-blue-on-blue-2) 100%);
+  box-shadow: 0 0 0 1px var(--nu-ink-04), 0 40px 80px -40px color-mix(in srgb, var(--nu-ink) 35%, transparent), 0 0 90px 10px var(--nu-blue-tint);
 }
 .cmg__tela { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; touch-action: pan-y; }
 .cmg__tela:active { cursor: grabbing; }
@@ -300,7 +312,7 @@ function aoSair() {
   position: absolute; transform: translate(-50%, calc(-100% - 14px)); pointer-events: none; white-space: nowrap;
   background: var(--nu-navy); color: var(--nu-cream-text); border-radius: var(--nu-r-pill);
   padding: 7px 12px; font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums;
-  box-shadow: 0 18px 40px -18px rgba(12, 21, 36, 0.5);
+  box-shadow: 0 18px 40px -18px color-mix(in srgb, var(--nu-ink) 50%, transparent);
   animation: cmg-dica .18s cubic-bezier(.2, .8, .2, 1) both;
 }
 .cmg__dica strong { font-weight: 800; margin-right: 4px; }

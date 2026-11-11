@@ -497,7 +497,7 @@ function buildRaioX(
       const ordem = [...matched].sort((a, b) => scoreMap.get(b.ticker.toUpperCase())! - scoreMap.get(a.ticker.toUpperCase())!)
       const quem = (baixa ? ordem.reverse() : ordem).slice(0, 2).map((t) => t.ticker)
       const note = matched.length === 2
-        ? `Score médio de ${quem.join(' e ')}, os dois dos seus ativos que a Redentia pontua.`
+        ? `Score médio de ${quem.join(' e ')}, os dois dos seus ativos que a Aportou pontua.`
         : `Score médio de ${matched.length} dos seus ativos: ${quem.join(' e ')} puxam para ${baixa ? 'baixo' : 'cima'}.`
       dims.push({ weight: 1.5, score: q, vm: { label: 'Qualidade', value: `${q}/100`, fillPct: q, note, ...tagFor(q) } })
     }

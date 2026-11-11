@@ -123,29 +123,33 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
 </template>
 
 <style scoped>
-/* A linha "A frase" (10/11): a página usa uma família de cor só. As classes
-   (renda fixa, ações, FIIs, ETFs) deixam o verde, o roxo e o petróleo e vão do
-   azul-marinho ao azul-claro, como no relatório em PDF; o azul forte fica para
-   o número em destaque de cada frase. Vale para tudo o que mora aqui dentro. */
+/* A linha "A frase" (10/11) na Aportou (11/11): a página usa uma família de
+   cor só, e ela agora vem dos tokens (--nu-alloc-*: renda fixa carvão, ações
+   cobalto, FIIs azul claro, cripto âmbar, caixa sálvia). Aqui fica só o que os
+   tokens ainda não trazem: ETF e BDR na sálvia, a cor de apoio da marca (no
+   token ainda são petróleo e rosa). O cobalto fica para o número de cada frase.
+   As seções alternam página e faixa quente; branco é só cartão e campo. */
 .cvi {
-  --nu-alloc-fixed: var(--nu-navy);
-  --nu-alloc-stock: var(--nu-blue);
-  --nu-alloc-fii: var(--nu-blue-soft);
-  --nu-class-etf: color-mix(in srgb, var(--nu-navy) 24%, var(--nu-white));
+  --nu-class-etf: var(--nu-sage);
+  --cvi-g: clamp(20px, 5.5vw, 80px);
+  background: var(--nu-page);
 }
+/* o esqueleto padrão (areia e creme) some sobre a página e a faixa: um tom acima, com o mesmo brilho */
+.cvi :deep(.nusk:not(.nusk--navy)) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-page)); background-image: linear-gradient(100deg, var(--esq) 25%, var(--nu-white) 50%, var(--esq) 75%); }
 .cvi__parcial {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin: 0; padding: 14px clamp(22px, 5.5vw, 80px);
-  background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5;
+  display: block; margin: 0 var(--cvi-g) clamp(28px, 3.4vw, 44px); padding: 14px 18px;
+  border-radius: var(--nu-r-tile); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5;
+  animation: nu-fade .5s ease both;
 }
-.cvi__parcial a { color: inherit; font-weight: 800; }
-.cvi__parcial-p { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-amber-fill); }
+.cvi__parcial a { margin-left: 6px; color: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.cvi__parcial-p { display: inline-block; width: 8px; height: 8px; margin-right: 10px; border-radius: 50%; background: var(--nu-amber-fill); vertical-align: 1px; }
 .cvi__dev {
   position: fixed; left: 16px; bottom: 16px; z-index: 50; display: flex; align-items: center; gap: 4px; padding: 4px;
-  border-radius: var(--nu-r-pill); background: var(--nu-navy); box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .5);
+  border-radius: var(--nu-r-pill); background: var(--nu-ink); box-shadow: var(--nu-shadow-escuro);
 }
 .cvi__dev-t { padding: 0 8px 0 10px; color: var(--nu-amber-soft); font-size: var(--nu-fs-xs); font-weight: 800; }
 .cvi__dev-b { height: 28px; padding: 0 12px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-agora-sub); font: inherit; font-size: var(--nu-fs-xs); font-weight: 700; cursor: pointer; }
 .cvi__dev-b:hover { color: var(--nu-white); }
-.cvi__dev-b--on { background: var(--nu-white); color: var(--nu-navy); }
+.cvi__dev-b--on { background: var(--nu-white); color: var(--nu-ink); }
 @media (max-width: 640px) { .cvi__dev { left: 8px; right: 8px; bottom: 8px; overflow-x: auto; } }
 </style>

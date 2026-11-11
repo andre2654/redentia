@@ -126,28 +126,28 @@ const fmt = fmtBRL
 <template>
   <div v-contexto-chat="{ id: 'sim:leque', tipo: 'grafico', rotulo: 'Cenários da simulação' }" class="sfc" @mousemove="onMove" @mouseleave="onLeave">
     <svg class="sfc__svg" :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none" aria-hidden="true">
-      <line v-for="g in grid" :key="g.y" x1="0" :y1="g.y" x2="1000" :y2="g.y" stroke="var(--nu-cream-text-12)" stroke-width="1" vector-effect="non-scaling-stroke" />
-      <path :d="bandPath" fill="var(--nu-blue-soft)" opacity="0.14" class="sfc__band" :class="{ 'sfc__band--in': !drawing }" />
+      <line v-for="g in grid" :key="g.y" x1="0" :y1="g.y" x2="1000" :y2="g.y" stroke="var(--nu-dark-line)" stroke-width="1" vector-effect="non-scaling-stroke" />
+      <path :d="bandPath" fill="var(--nu-blue-on-dark)" opacity="0.18" class="sfc__band" :class="{ 'sfc__band--in': !drawing }" />
       <!-- trajetórias macro (atrás da mediana, finas) -->
       <g v-for="m in macroLines" :key="'mac' + m.key" class="sfc__macro">
         <path :d="m.d" fill="none" :stroke="m.color" stroke-width="1.7" opacity="0.75" vector-effect="non-scaling-stroke" />
-        <circle v-for="(a, i) in m.anchors" :key="i" :cx="a.x" :cy="a.y" r="4.2" :fill="m.color" stroke="var(--nu-navy)" stroke-width="1.8" />
+        <circle v-for="(a, i) in m.anchors" :key="i" :cx="a.x" :cy="a.y" r="4.2" :fill="m.color" stroke="var(--nu-ink)" stroke-width="1.8" />
       </g>
       <!-- marcos de evento -->
       <line
         v-for="ev in events" :key="ev.label + ev.at"
         :x1="X(ev.at)" y1="10" :x2="X(ev.at)" :y2="H - 26"
-        :stroke="ev.kind === 'choque' ? 'var(--nu-amber)' : 'var(--nu-cream-text-45)'"
+        :stroke="ev.kind === 'choque' ? 'var(--nu-amber)' : 'var(--nu-on-dark-2)'"
         stroke-width="1.4" :stroke-dasharray="ev.kind === 'choque' ? 'none' : '2 5'"
         vector-effect="non-scaling-stroke" opacity="0.85"
       />
       <!-- mediana: glow + linha, com desenho de entrada (pathLength) -->
       <path :d="p50Path" fill="none" stroke="var(--nu-blue)" stroke-width="9" opacity="0.28" vector-effect="non-scaling-stroke" pathLength="1" class="sfc__line" :class="{ 'sfc__line--draw': drawing }" />
-      <path :d="p50Path" fill="none" stroke="var(--nu-blue-soft)" stroke-width="2.6" vector-effect="non-scaling-stroke" pathLength="1" class="sfc__line" :class="{ 'sfc__line--draw': drawing }" />
+      <path :d="p50Path" fill="none" stroke="var(--nu-blue-on-dark)" stroke-width="2.8" vector-effect="non-scaling-stroke" pathLength="1" class="sfc__line" :class="{ 'sfc__line--draw': drawing }" />
       <!-- mediana da carteira PROPOSTA (what-if) -->
       <path v-if="comparePath" :d="comparePath" fill="none" stroke="var(--nu-amber)" stroke-width="2.2" vector-effect="non-scaling-stroke" class="sfc__cmp" />
       <!-- cursor -->
-      <line v-if="cursorInfo" :x1="(cursorInfo.x / 100) * W" y1="10" :x2="(cursorInfo.x / 100) * W" :y2="H - 26" stroke="var(--nu-cream-text-60)" stroke-width="1.2" vector-effect="non-scaling-stroke" />
+      <line v-if="cursorInfo" :x1="(cursorInfo.x / 100) * W" y1="10" :x2="(cursorInfo.x / 100) * W" :y2="H - 26" stroke="var(--nu-on-dark-2)" stroke-width="1.2" vector-effect="non-scaling-stroke" />
     </svg>
 
     <!-- rótulo ancorado pra DENTRO perto das bordas + escalonado em 2 linhas
@@ -189,10 +189,10 @@ const fmt = fmtBRL
 .sfc { position: relative; width: 100%; height: 100%; }
 .sfc__svg { display: block; width: 100%; height: calc(100% - 26px); overflow: visible; }
 .sfc__band { opacity: 0; transition: opacity 1.1s ease 0.9s; }
-.sfc__band--in { opacity: 0.14; }
+.sfc__band--in { opacity: 0.18; }
 .sfc__cmp { animation: nu-fade 0.5s ease both; }
 .sfc__macro { animation: nu-fade 0.5s ease both; }
-.sfc__tip-row--macro { border-top: 1px solid var(--nu-cream-text-12); padding-top: 4px; margin-top: 2px; }
+.sfc__tip-row--macro { border-top: 1px solid var(--nu-dark-chip-line); padding-top: 4px; margin-top: 2px; }
 .sfc__tip-row--macro ~ .sfc__tip-row--macro { border-top: none; padding-top: 0; margin-top: 0; }
 /* dasharray SÓ durante o desenho: mantido permanente, o arredondamento do
    pathLength normalizado deixava o rabo da linha sem pintar (dono 25/08) */
@@ -200,8 +200,8 @@ const fmt = fmtBRL
 @keyframes sfc-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 .sfc__event {
   position: absolute; top: -4px; transform: translateX(-50%);
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;
 }
 .sfc__event--choque { color: var(--nu-amber); }
 /* título de biblioteca pode ser longo ("CONSOLIDAÇÃO FISCAL PÓS-2026") e
@@ -209,27 +209,27 @@ const fmt = fmtBRL
 .sfc__event-text { display: inline-block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 .sfc__ylabel {
   position: absolute; right: 0; transform: translateY(-120%);
-  color: var(--nu-cream-text-45); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .sfc__xrow { position: relative; height: 22px; }
 .sfc__xlabel {
   position: absolute; transform: translateX(-50%);
-  color: var(--nu-cream-text-45); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .sfc__tip {
   position: absolute; top: 12px; transform: translateX(-50%);
   display: flex; flex-direction: column; gap: 3px;
-  background: var(--nu-navy-2); border-radius: 12px; padding: 10px 13px;
-  box-shadow: 0 16px 40px -18px rgba(5, 10, 25, 0.8);
+  background: var(--nu-dark-chip); border: 1.5px solid var(--nu-dark-chip-line); border-radius: var(--nu-r-chip); padding: 10px 13px;
+  box-shadow: var(--nu-shadow-chart-tip);
   pointer-events: none;
 }
-.sfc__tip-date { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-.sfc__tip-row { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-cream-text-78); font-size: var(--nu-fs-dense); font-weight: 500; }
-.sfc__tip-row b { color: var(--nu-cream-text); font-variant-numeric: tabular-nums; }
+.sfc__tip-date { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+.sfc__tip-row { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-on-dark); font-size: var(--nu-fs-dense); font-weight: 500; }
+.sfc__tip-row b { color: var(--nu-white); font-variant-numeric: tabular-nums; }
 .sfc__dot { width: 8px; height: 8px; border-radius: 50%; }
 .sfc__dot--hi { background: var(--nu-green-soft); }
-.sfc__dot--mid { background: var(--nu-blue-soft); }
+.sfc__dot--mid { background: var(--nu-blue-on-dark); }
 .sfc__dot--lo { background: var(--nu-red-soft); }
 </style>
