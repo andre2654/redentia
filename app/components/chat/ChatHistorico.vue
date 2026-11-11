@@ -57,7 +57,7 @@ const vazio = computed(() => !props.carregando && props.sessions.length === 0)
 .chi__sk { display: flex; flex-direction: column; gap: 8px; padding: 14px 14px; }
 .chi__vazio { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; }
 /* as conversas entram em cascata */
-.chi__item-wrap { position: relative; animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; animation-delay: calc(var(--k, 0) * 60ms); }
+.chi__item-wrap { position: relative; animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; animation-delay: calc(var(--k, 0) * var(--nu-passo-cascata)); }
 .chi__item {
   display: block; width: 100%; text-align: left; padding: 12px 52px 12px 16px; border: 0; border-radius: var(--nu-r-tile);
   background: transparent; cursor: pointer; font: inherit;

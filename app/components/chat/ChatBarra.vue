@@ -254,7 +254,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
 }
 .cba__lado--aberto .cba__acao {
   opacity: 1; transform: none; pointer-events: auto;
-  transition-delay: calc(60ms + var(--i) * 60ms), calc(60ms + var(--i) * 60ms), 0s, 0s;
+  transition-delay: calc(60ms + var(--i) * var(--nu-passo-cascata)), calc(60ms + var(--i) * var(--nu-passo-cascata)), 0s, 0s;
 }
 .cba__acao:hover { background: var(--nu-ink); color: var(--nu-white); }
 .cba__acao:active { transform: scale(.92); transition-duration: var(--nu-dur-rapida); }
@@ -286,7 +286,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
   list-style: none; margin: 0; padding: 0;
   display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
 }
-.cba__sugs li { animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; animation-delay: calc(var(--k) * 60ms); }
+.cba__sugs li { animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; animation-delay: calc(var(--k) * var(--nu-passo-cascata)); }
 /* os chips flutuam sobre a página: o branco com a sombra de cartão (fio de 1px e camadas que somem) */
 .cba__sug {
   display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; padding: 8px 16px;

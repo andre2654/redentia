@@ -5,6 +5,8 @@
  *   <section v-revelar>…</section>
  *   <ul v-revelar="{ alvo: 'filhos', passo: 60 }">…</ul>
  *   <div v-revelar="{ y: 20 }">…</div>
+ *   <li v-revelar="{ atraso: 120 }">…</li>      (escalona uma fileira)
+ *   <div v-revelar="comEntrada ? {} : false">…</div>   (false: sem entrada)
  *
  * Universal: no servidor a diretiva só precisa existir (getSSRProps vazio),
  * e o HTML sai inteiro, visível (o print e o Google veem tudo). No cliente, ao
@@ -20,11 +22,11 @@
  * As contas puras (e o teste delas) estão em utils/revelar.ts.
  */
 import type { Directive } from 'vue'
-import { atrasoDoFilho, deveRevelar, REVELACAO, type ValorRevelar } from '~/utils/revelar'
+import { atrasoDe, deveRevelar, REVELACAO, type ValorRevelar } from '~/utils/revelar'
 
 declare module 'vue' {
   interface GlobalDirectives {
-    vRevelar: Directive<HTMLElement, ValorRevelar | undefined>
+    vRevelar: Directive<HTMLElement, ValorRevelar | false | undefined>
   }
 }
 
@@ -36,7 +38,6 @@ export default defineNuxtPlugin((nuxtApp) => {
   function revelar(el: HTMLElement, v: ValorRevelar) {
     const alvos = v.alvo === 'filhos' ? (Array.from(el.children) as HTMLElement[]) : [el]
     const y = Number.isFinite(v.y) ? v.y! : REVELACAO.y
-    const passo = v.passo ?? REVELACAO.passo
     alvos.forEach((a, i) => {
       const css = getComputedStyle(a)
       // termina na opacidade e no filtro que o CSS já dá ao elemento (sem salto no fim)
@@ -45,7 +46,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       const anim = a.animate([
         { opacity: 0, translate: `0 ${y}px`, ...(semFiltro ? { filter: `blur(${REVELACAO.desfoque}px)` } : {}) },
         { opacity: opacidade, translate: '0 0', ...(semFiltro ? { filter: 'none' } : {}) },
-      ], { duration: REVELACAO.duracao, easing: REVELACAO.curva, delay: atrasoDoFilho(i, passo), fill: 'backwards' })
+      ], { duration: REVELACAO.duracao, easing: REVELACAO.curva, delay: atrasoDe(i, v), fill: 'backwards' })
       rodando.add(anim)
       const solta = () => rodando.delete(anim)
       anim.addEventListener('finish', solta)
@@ -71,9 +72,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     window.addEventListener('beforeprint', () => { for (const a of rodando) a.finish() })
   }
 
-  nuxtApp.vueApp.directive<HTMLElement, ValorRevelar | undefined>('revelar', {
+  nuxtApp.vueApp.directive<HTMLElement, ValorRevelar | false | undefined>('revelar', {
     getSSRProps: () => ({}),
     mounted(el, b) {
+      if (b.value === false) return
       if (typeof IntersectionObserver === 'undefined' || typeof el.animate !== 'function') return
       const reduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       if (!deveRevelar(el.getBoundingClientRect().top, window.innerHeight, reduzido)) return

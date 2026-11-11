@@ -192,7 +192,7 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
   min-height: 44px; max-width: 100%; text-align: left; padding: 8px 16px; border: 0; border-radius: 22px;
   background: var(--nu-cream-2); cursor: pointer;
   color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.35;
-  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; animation-delay: calc(var(--k) * 60ms);
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; animation-delay: calc(var(--k) * var(--nu-passo-cascata));
   transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .cms__chip:hover { background: var(--nu-ink); color: var(--nu-white); }

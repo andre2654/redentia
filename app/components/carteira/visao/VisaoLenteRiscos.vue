@@ -91,11 +91,8 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
           <span class="vlr__pct">{{ pctTxt(f.pct) }}</span>
           <span class="vlr__valor">{{ mask(brl0(f.valor)) }}</span>
         </span>
-        <!-- a conta fica no HTML (fechada, com altura 0 e inert), como no NuAcordeao -->
-        <div
-          v-if="f.metodo" :id="`vlr-como-${f.chave}`" class="vlr__dobra" :class="{ 'vlr__dobra--aberta': comoAberto === f.chave }"
-          :inert="comoAberto !== f.chave || undefined"
-        ><div class="vlr__dobra-in"><p class="vlr__prova">{{ f.metodo }}</p></div></div>
+        <!-- a conta fica no HTML (fechada, com altura 0 e inert): a dobra da base -->
+        <NuDobra v-if="f.metodo" :id="`vlr-como-${f.chave}`" class="vlr__dobra" :aberta="comoAberto === f.chave"><p class="vlr__prova">{{ f.metodo }}</p></NuDobra>
       </li>
     </ul>
     </template>
@@ -165,13 +162,8 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
 }
 .vlr__como:hover { color: var(--nu-blue-text); }
 .vlr__como:hover .nmx { background: var(--nu-blue); }
-/* a conta: a altura anima de 0 ao conteúdo (o gesto do NuAcordeao), com a opacidade junto */
-.vlr__dobra {
-  grid-column: 2 / -1; display: grid; grid-template-rows: 0fr; opacity: 0;
-  transition: grid-template-rows var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-lenta) var(--nu-ease-troca);
-}
-.vlr__dobra--aberta { grid-template-rows: 1fr; opacity: 1; }
-.vlr__dobra-in { min-height: 0; overflow: hidden; }
+/* a conta (NuDobra): só o lugar na grade */
+.vlr__dobra { grid-column: 2 / -1; }
 .vlr__prova { margin: 12px 0 0; padding: 12px 16px; max-width: 80ch; border-radius: var(--nu-r-chip); background: var(--nu-band); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; }
 .vlr__pct { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums; }
 .vlr__valor { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
@@ -208,6 +200,5 @@ a.vlr__mini-t:hover { color: var(--nu-blue-text); }
 }
 @media (prefers-reduced-motion: reduce) {
   .vlr__barra { animation: none; }
-  .vlr__dobra { transition: none; }
 }
 </style>

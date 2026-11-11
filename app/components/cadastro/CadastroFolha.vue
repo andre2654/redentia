@@ -324,7 +324,7 @@ const eyebrow = computed(() => {
               <div class="ncf__links">
                 <span v-if="cad.reenviarEm.value > 0" class="ncf__espera">Reenviar em {{ cad.reenviarEm.value }} s</span>
                 <NuLinkSeta v-else @click="cad.reenviar(voltar)">Reenviar código</NuLinkSeta>
-                <NuLinkSeta tom="tinta" @click="cad.trocarContato()">{{ ehWhats ? 'Trocar o número' : 'Trocar o e-mail' }}</NuLinkSeta>
+                <NuLinkSeta tom="tinta" seta="voltar" @click="cad.trocarContato()">{{ ehWhats ? 'Trocar o número' : 'Trocar o e-mail' }}</NuLinkSeta>
               </div>
             </template>
 
@@ -409,7 +409,7 @@ const eyebrow = computed(() => {
   transition: border-color var(--nu-dur-media) var(--nu-ease-cor), outline-color var(--nu-dur-rapida) var(--nu-ease-cor), outline-offset var(--nu-dur-media) var(--nu-ease-saida);
 }
 .ncf__campo::placeholder { color: var(--nu-placeholder); }
-.ncf__campo:hover { border-color: color-mix(in srgb, var(--nu-borda-campo), var(--nu-ink) 30%); }
+.ncf__campo:hover { border-color: var(--nu-borda-campo-hover); }
 .ncf__campo:focus { outline-color: var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .ncf__campo--erro, .ncf__campo--erro:hover { border-color: var(--nu-red); }
 .ncf__campo--erro:focus { border-color: var(--nu-red); outline-color: var(--nu-red); }

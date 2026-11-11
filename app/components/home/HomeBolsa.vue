@@ -233,7 +233,7 @@ function irParaNewsletter(e: MouseEvent) {
           <div class="hbo__simples-acoes">
             <NuBotaoSeta v-if="cartoes.length" ref="gatilho" variante="creme" tamanho="m" aria-haspopup="dialog" :aria-expanded="aberto" @click="aberto = true">Ler o resumo do dia</NuBotaoSeta>
             <!-- as ações secundárias: o link com seta da base, claro sobre o carvão -->
-            <NuLinkSeta tom="claro" class="hbo__link" @click="fase = 'antes'">Ver o gráfico de novo</NuLinkSeta>
+            <NuLinkSeta tom="claro" seta="voltar" class="hbo__link" @click="fase = 'antes'">Ver o gráfico de novo</NuLinkSeta>
             <NuLinkSeta v-if="receber" href="#newsletter" tom="claro" class="hbo__link" @click="irParaNewsletter">Receber toda sexta por e-mail</NuLinkSeta>
           </div>
         </div>

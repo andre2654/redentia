@@ -43,7 +43,8 @@ const RADII: Record<string, string> = {
 const baseStyle = computed(() => {
   const s: Record<string, string> = {}
   if (props.width) s.width = props.width
-  if (props.height) s.height = props.height
+  // com altura passada, ela vale (o min-height do `block` inflava barras curtas)
+  if (props.height) { s.height = props.height; s.minHeight = '0' }
   if (props.radius) s.borderRadius = RADII[props.radius] ?? props.radius
   return s
 })

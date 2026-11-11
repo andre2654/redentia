@@ -17,6 +17,8 @@ export interface ValorRevelar {
   passo?: number
   /** de quantos px abaixo ele sobe (padrão 14) */
   y?: number
+  /** ms a mais antes de começar (escalona cartões de uma mesma fileira) */
+  atraso?: number
 }
 
 /** Os números da entrada. A curva vai escrita: var() não vale numa Web Animation (é a --nu-ease-saida). */
@@ -40,6 +42,12 @@ export const REVELACAO = {
 export function deveRevelar(topo: number, alturaDaJanela: number, reduzido: boolean): boolean {
   if (reduzido || !Number.isFinite(topo) || !(alturaDaJanela > 0)) return false
   return topo >= alturaDaJanela
+}
+
+/** O atraso total do alvo `i`: o `atraso` pedido mais o da cascata. */
+export function atrasoDe(i: number, v: ValorRevelar = {}): number {
+  const extra = Number.isFinite(v.atraso) && v.atraso! > 0 ? v.atraso! : 0
+  return extra + atrasoDoFilho(i, v.passo ?? REVELACAO.passo)
 }
 
 /** O atraso do filho `i` (a partir de 0): `passo` ms a cada um, parando no `teto`-ésimo. */

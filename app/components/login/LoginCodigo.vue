@@ -84,7 +84,7 @@ defineExpose({ focar: () => campo.value?.focus() })
   outline: 3px solid transparent; outline-offset: 4px;
   transition: border-color var(--nu-dur-media) var(--nu-ease-cor), outline-color var(--nu-dur-rapida) var(--nu-ease-cor), outline-offset var(--nu-dur-media) var(--nu-ease-saida);
 }
-.lco:hover .lco__casa:not(.lco__casa--cheia) { border-color: color-mix(in srgb, var(--nu-borda-campo), var(--nu-ink) 30%); }
+.lco:hover .lco__casa:not(.lco__casa--cheia) { border-color: var(--nu-borda-campo-hover); }
 .lco__casa--cheia, .lco:hover .lco__casa--cheia { border-color: var(--nu-ink); }
 .lco__casa--vez, .lco:hover .lco__casa--vez { border-color: var(--nu-blue); outline-color: var(--nu-blue); outline-offset: 1px; }
 /* o número pousa na casa */
@@ -92,7 +92,7 @@ defineExpose({ focar: () => campo.value?.focus() })
 /* o cursor da casa da vez (o do campo de verdade é transparente) */
 .lco__casa--vez::after {
   content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 30px; margin: -15px 0 0 -1px; border-radius: 1px;
-  background: var(--nu-blue); animation: lco-cursor calc(var(--nu-dur-entrada) * 1.5) steps(1) infinite;
+  background: var(--nu-blue); animation: lco-cursor var(--nu-dur-respiro) steps(1) infinite;
 }
 /* o erro: as casas no vermelho e a fila acena uma vez, sem mudar a altura */
 .lco--erro .lco__casa, .lco--erro:hover .lco__casa { border-color: var(--nu-red); }
@@ -108,7 +108,7 @@ defineExpose({ focar: () => campo.value?.focus() })
 /* o foco visível é a casa da vez (lco__casa--vez) */
 
 /* conferindo: as casas respiram devagar, uma depois da outra */
-.lco--conferindo .lco__casa { animation: lco-confere calc(var(--nu-dur-entrada) * 1.6) var(--nu-ease-cor) infinite; }
+.lco--conferindo .lco__casa { animation: lco-confere var(--nu-dur-respiro) var(--nu-ease-cor) infinite; }
 .lco--conferindo .lco__casa:nth-child(2) { animation-delay: 60ms; }
 .lco--conferindo .lco__casa:nth-child(3) { animation-delay: 120ms; }
 .lco--conferindo .lco__casa:nth-child(4) { animation-delay: 180ms; }

@@ -351,7 +351,7 @@ function simular() {
             </li>
           </ul>
           <p v-else-if="mesSel.porClasse" class="vrd__prox">FIIs {{ mask(brl0(mesSel.porClasse.fii)) }} · Ações {{ mask(brl0(mesSel.porClasse.acoes)) }}</p>
-          <NuLinkSeta tom="claro" class="vrd__ver--volta" @click="mesFixo = null">Voltar para {{ mesMarcado }}</NuLinkSeta>
+          <NuLinkSeta tom="claro" seta="voltar" class="vrd__ver--volta" @click="mesFixo = null">Voltar para {{ mesMarcado }}</NuLinkSeta>
         </template>
         <template v-else>
 

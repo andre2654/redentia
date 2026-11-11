@@ -80,7 +80,7 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
             :variante="following ? 'contorno' : 'azul'" tamanho="m" :aria-pressed="following" :aria-busy="pending || undefined"
             @click="emit('acompanhar')"
           >{{ following ? 'Acompanhando' : 'Acompanhar esta tese' }}</NuBotaoSeta>
-          <NuLinkSeta tom="tinta" class="tto__ia" @click="emit('perguntar')"><MarcaCorte :largura="18" class="tto__ia-corte" />Perguntar à IA</NuLinkSeta>
+          <NuLinkSeta tom="tinta" class="tto__ia" @click="emit('perguntar')"><template #antes><MarcaCorte :largura="18" /></template>Perguntar à IA</NuLinkSeta>
         </div>
       </div>
 
@@ -152,8 +152,6 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
 .tto__acoes { display: flex; align-items: center; gap: 12px 28px; flex-wrap: wrap; margin-top: 32px; }
 /* a ação da IA: o link da base, com o corte na frente (a letra do botão ao lado) */
 .tto__ia { font-size: 15.5px; white-space: nowrap; }
-/* o corte (um svg em bloco na base) entra na linha do texto */
-.tto__ia .tto__ia-corte { display: inline-block; margin-right: 8px; vertical-align: -1px; }
 
 /* o cartão do gráfico: carvão, com a faixa da marca */
 .tto__palco { min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) 120ms both; }

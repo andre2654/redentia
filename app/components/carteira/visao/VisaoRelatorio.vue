@@ -142,19 +142,17 @@ watch(() => route.hash, abrirNaAncora)
                   <span class="vrl__barra" aria-hidden="true"><i :style="{ width: largura(i.nota) }" /></span>
                   <span class="vrl__ind-nn">{{ i.nota == null ? 'sem nota' : `nota ${i.nota}` }}</span>
                 </span>
-                <!-- "Como calculei": o "+" da base (NuMais) que gira; a conta abre embaixo com a altura animada e fica no HTML -->
+                <!-- "Como calculei": o "+" quieto da base (são 12 numa lista: cheios pesariam); a conta abre na dobra da base e fica no HTML -->
                 <button type="button" class="vrl__como" :aria-expanded="comoAberto === i.chave" :aria-controls="`vrl-como-${i.chave}`" @click="alternarComo(i.chave)">
                   Como calculei
-                  <NuMais :tamanho="28" :aberto="comoAberto === i.chave" />
+                  <NuMais :tamanho="28" tom="quieto" :aberto="comoAberto === i.chave" />
                 </button>
-                <div :id="`vrl-como-${i.chave}`" class="vrl__dobra" :class="{ 'vrl__dobra--aberta': comoAberto === i.chave }" :inert="comoAberto !== i.chave || undefined">
-                  <div class="vrl__dobra-in">
-                    <div class="vrl__prova">
-                      <p>{{ i.descricao }}</p>
-                      <p class="vrl__prova-c">{{ i.comoCalculei }}</p>
-                    </div>
+                <NuDobra :id="`vrl-como-${i.chave}`" class="vrl__dobra" :aberta="comoAberto === i.chave">
+                  <div class="vrl__prova">
+                    <p>{{ i.descricao }}</p>
+                    <p class="vrl__prova-c">{{ i.comoCalculei }}</p>
                   </div>
-                </div>
+                </NuDobra>
               </li>
             </ul>
           </div>
@@ -250,14 +248,8 @@ watch(() => route.hash, abrirNaAncora)
   transition: color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .vrl__como:hover { color: var(--nu-blue-text); }
-.vrl__como:hover .nmx { background: var(--nu-blue); }
-/* a conta: a altura anima de 0 ao conteúdo (o gesto do NuAcordeao), e fechada fica no HTML com inert */
-.vrl__dobra {
-  grid-area: prova; display: grid; grid-template-rows: 0fr; opacity: 0;
-  transition: grid-template-rows var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-lenta) var(--nu-ease-troca);
-}
-.vrl__dobra--aberta { grid-template-rows: 1fr; opacity: 1; }
-.vrl__dobra-in { min-height: 0; overflow: hidden; }
+/* a conta (NuDobra): só o lugar na grade */
+.vrl__dobra { grid-area: prova; }
 .vrl__prova { margin-top: 8px; padding: 12px 16px; border-radius: var(--nu-r-chip); background: var(--nu-band); }
 .vrl__prova p { margin: 0; max-width: 80ch; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.55; }
 .vrl__prova .vrl__prova-c { margin-top: 6px; color: var(--nu-gray-3); font-weight: var(--nu-w-texto); }
@@ -286,6 +278,5 @@ watch(() => route.hash, abrirNaAncora)
 }
 @media (prefers-reduced-motion: reduce) {
   .vrl__barra i, .vrl__conteudo { animation: none; }
-  .vrl__dobra { transition: none; }
 }
 </style>

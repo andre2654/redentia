@@ -292,7 +292,7 @@ usePageSeo({
   background: var(--nu-band); color: var(--nu-ink); border-radius: var(--nu-r-card); padding: 28px;
   display: flex; flex-direction: column; gap: 10px; min-height: 250px;
   transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
-  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; animation-delay: calc(var(--i, 0) * 60ms);
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; animation-delay: calc(var(--i, 0) * var(--nu-passo-cascata));
 }
 .chb__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); color: var(--nu-ink); }
 .chb__card:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }

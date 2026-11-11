@@ -155,7 +155,6 @@
   --nu-cta-placeholder: linear-gradient(120deg, #2F6BFF 0%, #2456C9 58%, #16357F 100%);
   --nu-cta-scrim-h: linear-gradient(90deg, #2F6BFF 0%, rgba(47, 107, 255, 0.82) 24%, rgba(47, 107, 255, 0.44) 56%, rgba(47, 107, 255, 0.12) 100%);
   --nu-cta-scrim-v: linear-gradient(180deg, rgba(47, 107, 255, 0) 58%, rgba(24, 66, 175, 0.26) 100%);
-  --nu-home-sombra-botao: 0 18px 40px -16px rgba(47, 106, 255, 0.65);
   --nu-chat-luz-1: rgba(47, 106, 255, 0.42);
   --nu-chat-sombra-painel: 0 0 0 1px rgba(12, 21, 36, 0.07), 0 28px 70px -24px rgba(12, 21, 36, 0.34);
   --nu-chat-sombra-sug: 0 18px 50px -12px rgba(12, 21, 36, 0.28), 0 0 0 1px rgba(12, 21, 36, 0.07);
@@ -179,6 +178,7 @@
   --nu-line: #E7E0D2;
   --nu-line-2: #E9E4D8;
   --nu-borda-campo: #E4E0D6;
+  --nu-borda-campo-hover: var(--nu-borda-campo-hover);
   --nu-on-dark: rgba(245, 241, 234, 0.78);
   --nu-on-dark-2: rgba(245, 241, 234, 0.6);
   --nu-dark-line: rgba(245, 241, 234, 0.14);

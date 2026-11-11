@@ -21,6 +21,7 @@ Vale junto com `contrato.md` (a identidade), `decisoes.md` (nomes) e `tese.md`. 
 - **Tracking por token**: `--nu-ls-display` −0,035em, `--nu-ls-titulo` −0,02em, `--nu-ls-texto` −0,005em, `--nu-ls-caixa` 0,16em.
 - **`--nu-coluna`**: a margem da coluna de 1240 (`max(clamp(20px,5.5vw,80px), calc((100% - 1240px) / 2))`). Use em vez de copiar a expressão.
 - **`--nu-veu`**: o véu de modal e folha.
+- **`--nu-passo-cascata`** (60ms, entre um item e o próximo), **`--nu-dur-respiro`** (1150ms, o que respira devagar: "conferindo", o cursor do código) e **`--nu-borda-campo-hover`** (a borda do campo sob o ponteiro; a Redentia redefine junto).
 - **NuBotaoSeta** em três tamanhos: `g` 56px (herói, formulário), `m` 48px (seção, cartão), `p` 40px (dentro de cartão, linha de tabela). A bola cresce 4% e a seta atravessa no hover; apertar afunda 2%.
 - A Redentia (B2B) devolve pesos e curva antigos em `tema-redentia.css`.
 
@@ -42,10 +43,12 @@ Vale junto com `contrato.md` (a identidade), `decisoes.md` (nomes) e `tese.md`. 
 | Peça | Para quê | Regras |
 |---|---|---|
 | `NuBotaoSeta` | a ação principal | `g`/`m`/`p`; uma por dobra |
-| `NuLinkSeta` | a ação secundária, "Ver todos →", "Ler tudo" | seta que anda 3px; sublinhado que aparece no hover; alvo de 44px |
+| `NuLinkSeta` | a ação secundária, "Ver todos →", "Ler tudo" | seta que anda 3px; sublinhado que aparece no hover; alvo de 44px. `seta="voltar"` (a seta vem antes e aponta para trás: "Voltar para novembro", "Trocar o número"), `seta="nenhuma"` ("Tentar de novo", "Usar e-mail"); slot `antes` para um ícone (o corte do "Perguntar à IA") |
 | `NuTrilho` | escolher uma entre poucas (período, aba, tipo, filtro) | trilho creme, a escolhida em pílula carvão que DESLIZA até a nova (520ms, `--nu-ease-troca`); setas do teclado; `claro`/`escuro`; 44px (`m`) ou 36px (`p`) |
 | `NuSelo` | estado, variação, contagem, categoria | tons neutro/azul/verde/vermelho/ambar/carvao/contorno; `p`/`m`; ponto opcional; 600 tabular |
 | `NuAcordeao` + `NuMais` | o que é longo e secundário | o "+" no círculo carvão que gira 45°; a altura anima (520ms, `--nu-ease-troca`); o conteúdo fica no HTML do servidor |
+| `NuDobra` | o corpo que abre embaixo de uma linha quando o botão é outro ("Como calculei") | a dobra do NuAcordeao sem o cabeçalho; `:aberta`, `id` para o aria-controls; fechada fica `inert` e no HTML |
+| `NuMais tom="quieto"` | o "+" em lista densa (12 "Como calculei") | só o anel de 1px; sob o ponteiro, anel e "+" em cobalto |
 | `v-revelar` | a entrada ao rolar | ver seção 5 |
 | `.nu-cartao` / `.nu-cartao--vivo` | superfície creme (vivo: clicável, sobe no hover) | raio do contrato, `--nu-shadow-quente` |
 | `NuSkeleton` | carregando | sempre do tamanho final |
@@ -53,7 +56,7 @@ Vale junto com `contrato.md` (a identidade), `decisoes.md` (nomes) e `tese.md`. 
 
 ## 5. `v-revelar`: a entrada ao rolar sem esconder nada
 
-`<section v-revelar>` ou `<ul v-revelar="{ alvo: 'filhos', passo: 60 }">`. Nunca esconde conteúdo no HTML (o texto sai pronto do servidor, o print e o Google veem tudo). Só no cliente, só se o elemento nasceu abaixo da dobra: quando ele chega a 20% da borda de baixo da tela, roda uma vez uma Web Animation de `opacity 0 → 1`, `translateY(14px) → 0` e `blur(6px) → 0`, em 720ms `--nu-ease-saida`, com `fill: 'backwards'` (e, em `alvo: 'filhos'`, cada filho com `passo` ms a mais). Movimento reduzido: nada.
+`<section v-revelar>` ou `<ul v-revelar="{ alvo: 'filhos', passo: 60 }">`. Nunca esconde conteúdo no HTML (o texto sai pronto do servidor, o print e o Google veem tudo). Só no cliente, só se o elemento nasceu abaixo da dobra: quando ele chega a 20% da borda de baixo da tela, roda uma vez uma Web Animation de `opacity 0 → 1`, `translateY(14px) → 0` e `blur(6px) → 0`, em 720ms `--nu-ease-saida`, com `fill: 'backwards'` (e, em `alvo: 'filhos'`, cada filho com `passo` ms a mais). Movimento reduzido: nada. `{ atraso: 120 }` soma ao começo (escalona os cartões de uma fileira); `v-revelar="false"` desliga.
 
 ## 6. Como passar numa tela
 

@@ -55,3 +55,13 @@ test('a diretiva não esconde nada no servidor e anima com fill backwards', () =
   assert.match(plugin, /prefers-reduced-motion: reduce/)
   assert.match(plugin, /unobserve\(e\.target\)/)
 })
+
+test('o atraso pedido soma ao da cascata (escalona a fileira) e o inválido vira zero', async () => {
+  const { atrasoDe } = await import('../app/utils/revelar.ts')
+  assert.equal(atrasoDe(0), 0)
+  assert.equal(atrasoDe(2), 120)
+  assert.equal(atrasoDe(0, { atraso: 120 }), 120)
+  assert.equal(atrasoDe(1, { atraso: 120, passo: 40 }), 160)
+  assert.equal(atrasoDe(0, { atraso: -50 }), 0)
+  assert.equal(atrasoDe(0, { atraso: Number.NaN }), 0)
+})

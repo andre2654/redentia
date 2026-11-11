@@ -101,7 +101,7 @@ useCampoAVista(bloco)
               <div class="lmi__rotulos">
                 <label class="lmi__rotulo" for="lmi-campo">{{ p.isPhone ? 'Celular' : 'E-mail' }}</label>
                 <NuSelo v-if="p.whatsappDown && !p.isPhone" tom="ambar" tamanho="p" ponto>WhatsApp fora do ar</NuSelo>
-                <NuLinkSeta v-else class="lmi__troca" @click="trocarCanal">{{ p.isPhone ? 'Usar e-mail' : 'Usar celular' }}</NuLinkSeta>
+                <NuLinkSeta v-else seta="nenhuma" class="lmi__troca" @click="trocarCanal">{{ p.isPhone ? 'Usar e-mail' : 'Usar celular' }}</NuLinkSeta>
               </div>
               <input
                 id="lmi-campo" ref="campo" class="lmi__campo" :class="{ 'lmi__campo--erro': p.identifierError }" :value="p.isPhone ? p.phone : p.email"
@@ -155,7 +155,7 @@ useCampoAVista(bloco)
           <div class="lmi__acoes">
             <NuLinkSeta v-if="p.resendIn === 0" :disabled="p.verifying" @click="p.resendPin()">Reenviar código</NuLinkSeta>
             <span v-else class="lmi__espera">Reenviar em {{ p.resendIn }} s</span>
-            <NuLinkSeta tom="tinta" @click="p.backToIdentifier()">{{ p.isPhone ? 'Trocar o número' : 'Trocar o e-mail' }}</NuLinkSeta>
+            <NuLinkSeta tom="tinta" seta="voltar" @click="p.backToIdentifier()">{{ p.isPhone ? 'Trocar o número' : 'Trocar o e-mail' }}</NuLinkSeta>
           </div>
         </template>
       </div>
@@ -237,7 +237,7 @@ useCampoAVista(bloco)
   transition: border-color var(--nu-dur-media) var(--nu-ease-cor), outline-color var(--nu-dur-rapida) var(--nu-ease-cor), outline-offset var(--nu-dur-media) var(--nu-ease-saida);
 }
 .lmi__campo::placeholder { color: var(--nu-placeholder); }
-.lmi__campo:hover { border-color: color-mix(in srgb, var(--nu-borda-campo), var(--nu-ink) 30%); }
+.lmi__campo:hover { border-color: var(--nu-borda-campo-hover); }
 .lmi__campo:focus { outline-color: var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .lmi__campo--erro, .lmi__campo--erro:hover { border-color: var(--nu-red); }
 .lmi__campo--erro:focus { border-color: var(--nu-red); outline-color: var(--nu-red); }
@@ -287,7 +287,7 @@ useCampoAVista(bloco)
 .lmi__frase { margin: 0; max-width: 520px; font-size: clamp(48px, 5.6vw, 84px); font-weight: var(--nu-w-display); line-height: .98; letter-spacing: var(--nu-ls-display); animation: nu-fade-lg var(--nu-dur-entrada) var(--nu-ease-saida) 120ms both; }
 .lmi__apoio { margin: -8px 0 0; max-width: 420px; color: var(--nu-blue-on-blue); font-size: 19px; font-weight: var(--nu-w-texto); line-height: 1.5; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) 180ms both; }
 .lmi__leque { position: relative; flex: 1; min-height: 300px; }
-.lmi__leque img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; animation: nu-surgir calc(var(--nu-dur-entrada) * 1.5) var(--nu-ease-cor) 300ms both; }
+.lmi__leque img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; animation: nu-surgir var(--nu-dur-respiro) var(--nu-ease-cor) 300ms both; }
 .lmi__selo {
   position: absolute; left: clamp(40px, 4.4vw, 64px); bottom: clamp(32px, 3.4vw, 48px);
   display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: var(--nu-r-pill);

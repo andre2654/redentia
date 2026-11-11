@@ -355,13 +355,13 @@ function agir(a: Aviso, acao: AcaoAviso) {
                 Como calculei
                 <NuMais :tamanho="28" :aberto="comoAberto.has(a.id)" />
               </button>
-              <div :id="`cav-como-${a.id}`" class="cav__dobra-como" :class="{ 'cav__dobra-como--aberta': comoAberto.has(a.id) }" :inert="!comoAberto.has(a.id) || undefined">
+              <NuDobra :id="`cav-como-${a.id}`" :aberta="comoAberto.has(a.id)">
                 <div class="cav__notas-conta">
                   <p class="cav__conf" :class="`cav__conf--${a.confianca}`">{{ CONFIANCA[a.confianca] }}</p>
                   <p v-if="a.ressalva && a.confianca !== 'incompleto'">{{ a.ressalva }}</p>
                   <p>Fonte: {{ a.fonte }}</p>
                 </div>
-              </div>
+              </NuDobra>
 
               <!-- uma ação principal (o botão da base, NuBotaoSeta); as outras são links com seta; o "Já sei" é discreto -->
               <div class="cav__acoes">
@@ -563,9 +563,6 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__como:hover { color: var(--nu-blue-text); }
 .cav__como:hover .nmx { background: var(--nu-blue); }
 /* a confiança e a fonte: a altura anima de 0 ao conteúdo (o gesto do NuAcordeao) */
-.cav__dobra-como { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-lenta) var(--nu-ease-troca); }
-.cav__dobra-como--aberta { grid-template-rows: 1fr; opacity: 1; }
-.cav__dobra-como > .cav__notas-conta { min-height: 0; overflow: hidden; }
 .cav__notas-conta { display: grid; align-content: start; gap: 8px; max-width: 62ch; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
 .cav__notas-conta p { margin: 0; }
 .cav__notas-conta > :first-child { margin-top: 8px; }
@@ -668,7 +665,6 @@ function agir(a: Aviso, acao: AcaoAviso) {
 }
 @media (prefers-reduced-motion: reduce) {
   .cav, .cav__card, .cav__prova, .cav__det, .cav__nota-b .cav__nota-f { animation: none; }
-  .cav__dobra-como { transition: none; }
   .cav__dobra[open] > :not(summary) { animation: none; }
   .cav__op { transition: none; }
 }

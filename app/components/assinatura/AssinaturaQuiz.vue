@@ -636,7 +636,7 @@ const ICONES: Record<string, string> = {
   transition: border-color var(--nu-dur-media) var(--nu-ease-cor), outline-color var(--nu-dur-rapida) var(--nu-ease-cor), outline-offset var(--nu-dur-media) var(--nu-ease-saida);
 }
 .aqz__campo::placeholder { color: var(--nu-placeholder); }
-.aqz__campo:hover { border-color: color-mix(in srgb, var(--nu-borda-campo), var(--nu-ink) 30%); }
+.aqz__campo:hover { border-color: var(--nu-borda-campo-hover); }
 .aqz__campo:focus { outline-color: var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .aqz__campo--erro, .aqz__campo--erro:hover { border-color: var(--nu-red); }
 .aqz__campo--erro:focus { border-color: var(--nu-red); outline-color: var(--nu-red); }
@@ -688,7 +688,7 @@ const ICONES: Record<string, string> = {
 }
 .aqz__linha-marca svg { animation: lco-check var(--nu-dur-media) var(--nu-ease-saida) both; }
 .aqz__linha--acesa .aqz__linha-marca { background: var(--nu-green); box-shadow: none; }
-.aqz__linha--agora .aqz__linha-marca { box-shadow: inset 0 0 0 1.5px var(--nu-blue); animation: aqz-pulso calc(var(--nu-dur-entrada) * 1.6) var(--nu-ease-cor) infinite; }
+.aqz__linha--agora .aqz__linha-marca { box-shadow: inset 0 0 0 1.5px var(--nu-blue); animation: aqz-pulso var(--nu-dur-respiro) var(--nu-ease-cor) infinite; }
 @keyframes aqz-pulso { 50% { box-shadow: inset 0 0 0 1.5px var(--nu-blue), 0 0 0 4px var(--nu-blue-tint); } }
 @keyframes lco-check { from { opacity: 0; transform: scale(.6); } }
 

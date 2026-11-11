@@ -311,7 +311,7 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
           <NuFaixaMarca rotulo="Você em 12 meses" como="span" :altura="52" class="haf__cartao">
             <span class="haf__vazio" role="status">
               <span class="haf__vazio-txt">O gráfico de 12 meses não carregou agora.</span>
-              <NuLinkSeta tom="claro" class="haf__vazio-acao" @click="tentarDeNovo">Tentar de novo</NuLinkSeta>
+              <NuLinkSeta tom="claro" seta="nenhuma" class="haf__vazio-acao" @click="tentarDeNovo">Tentar de novo</NuLinkSeta>
             </span>
           </NuFaixaMarca>
         </div>
