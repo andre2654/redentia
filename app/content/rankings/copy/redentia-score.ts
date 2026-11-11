@@ -42,14 +42,14 @@ const copy: RankingCopy = {
     {
       h2: 'Limitações',
       paragraphs: [
-        'Score alto não garante retorno futuro. O Redentia Score é uma foto do passado e do presente, não uma previsão. Ele te diz quais empresas hoje têm o conjunto mais sólido de indicadores fundamentalistas, não quais vão subir nos próximos 12 meses. Mercado oscila por motivos que números fundamentalistas não capturam: macro, fluxo, narrativa, timing de ciclo.',
+        'Score alto não garante retorno futuro. O Aportou Score é uma foto do passado e do presente, não uma previsão. Ele te diz quais empresas hoje têm o conjunto mais sólido de indicadores fundamentalistas, não quais vão subir nos próximos 12 meses. Mercado oscila por motivos que números fundamentalistas não capturam: macro, fluxo, narrativa, timing de ciclo.',
         'Algumas dimensões ficam intencionalmente de fora. Notícias, momentum de preço e variação de curto prazo não entram no cálculo porque são ruidosas e podem distorcer o ranking. Uma ação que subiu 80% em um mês merece atenção, mas isso é movimento, não qualidade fundamentalista. O score foca no balanço, no resultado e na consistência histórica, deixando o curto prazo pra outras páginas dedicadas.',
       ],
     },
     {
       h2: 'Como usar o score',
       paragraphs: [
-        'Use o Redentia Score como filtro inicial pra estudo. Pegue as 10-20 ações com score mais alto e leia o demonstrativo, entenda o setor, veja o histórico de dividendos e a tese de longo prazo. Score alto é sinal pra investigar mais fundo, nunca pra comprar no automático sem entender o negócio. Combine sempre com sua análise pessoal e seu objetivo de carteira.',
+        'Use o Aportou Score como filtro inicial pra estudo. Pegue as 10-20 ações com score mais alto e leia o demonstrativo, entenda o setor, veja o histórico de dividendos e a tese de longo prazo. Score alto é sinal pra investigar mais fundo, nunca pra comprar no automático sem entender o negócio. Combine sempre com sua análise pessoal e seu objetivo de carteira.',
         'Revisite o ranking trimestralmente, alinhado com a divulgação de balanços. Empresas que estavam no top 10 podem cair para o top 30 quando margem comprime ou crescimento desacelera. O movimento entre faixas é informação relevante: queda persistente sugere deterioração estrutural, queda pontual após resultado fraco pode ser oportunidade. O ranking se atualiza diariamente conforme os dados de balanço e cotação.',
       ],
     },

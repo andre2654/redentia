@@ -170,7 +170,7 @@ const hov = computed(() => {
 <style scoped>
 .tch { position: relative; width: 100%; height: 100%; cursor: crosshair; }
 .tch__svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.tch__glow { stroke: var(--nu-blue); }
+.tch__glow { stroke: var(--nu-blue-on-dark); }
 .tch__gridline { position: absolute; left: 0; right: 0; height: 1px; background: var(--nu-cream-text-08); }
 .tch__gridlbl {
   position: absolute; right: 18px; transform: translateY(-120%);
@@ -178,20 +178,20 @@ const hov = computed(() => {
 }
 .tch__enddot {
   position: absolute; right: -1px; width: 13px; height: 13px; border-radius: 50%;
-  background: var(--nu-blue-soft); border: 3px solid var(--nu-navy);
+  background: var(--nu-blue-soft); border: 3px solid var(--nu-ink);
   box-shadow: 0 0 0 6px var(--nu-blue-soft-18); transform: translate(30%, -50%);
 }
 .tch__endpill {
   position: absolute; right: 16px; transform: translateY(calc(-100% - 14px));
-  background: var(--nu-cream); border-radius: 14px; padding: 9px 15px;
+  background: var(--nu-creme); border-radius: var(--nu-r-chip); padding: 9px 15px;
   white-space: nowrap; box-shadow: var(--nu-shadow-chart-pill);
 }
 .tch__endpill-label {
-  display: block; color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: .5px; text-transform: uppercase;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
 }
 .tch__endpill-val {
-  display: block; color: var(--nu-navy); font-size: var(--nu-fs-md); font-weight: 800;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
   font-variant-numeric: tabular-nums; margin-top: 2px;
 }
 .tch__cross {
@@ -206,17 +206,17 @@ const hov = computed(() => {
 }
 .tch__tip {
   position: absolute; top: 6px; transform: translateX(-50%);
-  background: var(--nu-cream); border-radius: var(--nu-r-tile); padding: 12px 17px;
+  background: var(--nu-creme); border-radius: var(--nu-r-tile); padding: 12px 17px;
   box-shadow: var(--nu-shadow-chart-tip); pointer-events: none; z-index: 4; white-space: nowrap;
 }
-.tch__tip-date { color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: 700; }
+.tch__tip-date { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
 .tch__tip-val {
-  color: var(--nu-navy); font-size: var(--nu-fs-xl); font-weight: 800; margin-top: 3px;
+  color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; margin-top: 3px;
   font-variant-numeric: tabular-nums;
 }
 .tch__tip-delta { font-size: var(--nu-fs-dense); font-weight: 700; margin-top: 2px; }
-.tch__tip-delta--up { color: var(--nu-green-2); }
-.tch__tip-delta--down { color: var(--nu-red-2); }
+.tch__tip-delta--up { color: var(--nu-green-text); }
+.tch__tip-delta--down { color: var(--nu-red-text); }
 
 /* mobile: sem o marcador de fim de linha (mesma UX do NuPriceChart) */
 @media (max-width: 760px) {

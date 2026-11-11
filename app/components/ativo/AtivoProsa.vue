@@ -24,7 +24,7 @@ defineProps<{ ticker: string; secoes: AcaoEditorialVM['sections'] }>()
 
 <style scoped>
 .aps__bloco + .aps__bloco { margin-top: clamp(36px, 4.4vw, 56px); }
-.aps__h2 { margin: 0; color: var(--nu-ink); font-size: var(--a-h2, var(--nu-fs-h3)); font-weight: var(--a-h2-peso, 600); letter-spacing: -0.03em; line-height: 1.12; text-wrap: balance; }
-.aps__p { margin: 16px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7; }
+.aps__h2 { margin: 0; color: var(--nu-ink); font-size: var(--a-h2, var(--nu-fs-h3)); font-weight: var(--a-h2-peso, 800); letter-spacing: -0.025em; line-height: 1.08; text-wrap: balance; }
+.aps__p { margin: 16px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; }
 @media (max-width: 560px) { .aps__p { font-size: var(--nu-fs-md); } }
 </style>

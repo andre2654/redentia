@@ -114,19 +114,19 @@ const aria = (r: Linha) => [
   --pista: var(--nu-cream);
   --tinta: var(--nu-ink);
   --apoio: var(--nu-gray);
-  --fio: var(--nu-cream-line);
-  --hover: var(--nu-cream);
+  --fio: var(--nu-line-2);
+  --hover: var(--nu-cream-2);
 }
 .bdl--escuro {
   --pista: var(--nu-cream-text-10);
-  --tinta: var(--nu-agora-texto);
-  --apoio: var(--nu-agora-sub);
-  --fio: var(--nu-agora-linha);
+  --tinta: var(--nu-white);
+  --apoio: var(--nu-on-dark-2);
+  --fio: var(--nu-dark-line);
   --hover: var(--nu-cream-text-08);
 }
 .bdl--sem-num { --cols: minmax(0, 240px) minmax(0, 1fr) minmax(64px, auto); }
 .bdl__lista { list-style: none; margin: 0; padding: 0; }
-.bdl__item + .bdl__item { border-top: 1px solid var(--fio); }
+.bdl__item + .bdl__item { border-top: 1.5px solid var(--fio); }
 .bdl__l {
   display: grid; grid-template-columns: var(--cols); align-items: center; gap: 14px;
   width: calc(100% + 24px); margin: 0 -12px; padding: 11px 12px; border: 0; border-radius: var(--nu-r-chip);
@@ -134,7 +134,7 @@ const aria = (r: Linha) => [
   transition: background .18s ease, opacity .18s ease;
 }
 .bdl__l:hover { background: var(--hover); }
-.bdl__l:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: -2px; }
+.bdl__l:focus-visible { outline-offset: -3px; }
 /* um modelo em foco: o resto recua */
 .bdl--foco .bdl__item:not(.bdl__item--on) .bdl__l { opacity: .45; }
 .bdl--foco .bdl__item:not(.bdl__item--on) .bdl__l:hover { opacity: .8; }
@@ -143,13 +143,13 @@ const aria = (r: Linha) => [
 .bdl__who { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .bdl__tile {
   width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center;
-  background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-cream-line);
+  background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line-2);
   color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700;
 }
 .bdl__tile img { width: 14px; height: 14px; display: block; object-fit: contain; }
-.bdl__name { min-width: 0; color: var(--tinta); font-size: var(--nu-fs-sm); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bdl__name { min-width: 0; color: var(--tinta); font-size: 14.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.bdl__track { position: relative; height: 8px; border-radius: var(--nu-r-pill); background: var(--pista); }
+.bdl__track { position: relative; height: 10px; border-radius: var(--nu-r-pill); background: var(--pista); }
 .bdl__fill { position: absolute; top: 0; bottom: 0; border-radius: var(--nu-r-pill); background: var(--nu-blue-soft); transition: background .18s ease; }
 .bdl__item--top .bdl__fill, .bdl__item--on .bdl__fill { background: var(--nu-blue); }
 .bdl__fill--neg, .bdl__item--on .bdl__fill--neg { background: var(--nu-red); }
@@ -163,14 +163,14 @@ const aria = (r: Linha) => [
 .bdl__faixa--meio { background: var(--nu-sand); }
 .bdl__faixa--ruim { background: var(--nu-red); }
 /* margem de erro: um traço fino com pontas, por cima da barra */
-.bdl__ic { position: absolute; top: 50%; height: 2px; transform: translateY(-50%); background: var(--nu-navy); }
-.bdl__ic::before, .bdl__ic::after { content: ''; position: absolute; top: -4px; width: 2px; height: 10px; border-radius: 1px; background: var(--nu-navy); }
+.bdl__ic { position: absolute; top: 50%; height: 2px; transform: translateY(-50%); background: var(--nu-ink); }
+.bdl__ic::before, .bdl__ic::after { content: ''; position: absolute; top: -4px; width: 2px; height: 10px; border-radius: 1px; background: var(--nu-ink); }
 .bdl__ic::before { left: 0; }
 .bdl__ic::after { right: 0; }
-.bdl--escuro .bdl__ic, .bdl--escuro .bdl__ic::before, .bdl--escuro .bdl__ic::after { background: var(--nu-agora-texto); }
+.bdl--escuro .bdl__ic, .bdl--escuro .bdl__ic::before, .bdl--escuro .bdl__ic::after { background: var(--nu-white); }
 
 .bdl__num { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
-.bdl__val { color: var(--tinta); font-size: var(--nu-fs-md); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bdl__val { color: var(--tinta); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bdl__item--on .bdl__val { color: var(--nu-blue-text); }
 .bdl--escuro .bdl__item--on .bdl__val { color: var(--nu-blue-soft); }
 .bdl__extra { color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; white-space: pre; text-align: right; }

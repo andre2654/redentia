@@ -48,6 +48,7 @@ defineExpose({ focus: () => input.value?.focus() })
 
 <template>
   <section class="bc">
+    <NuEyebrow como="p">Ativos, teses e guias</NuEyebrow>
     <h1 class="bc__titulo">Busca.</h1>
 
     <div ref="caixa" class="bc__campo">
@@ -94,57 +95,59 @@ defineExpose({ focus: () => input.value?.focus() })
 </template>
 
 <style scoped>
+/* Aportou (11/11/2026): o herói é creme, o título em 800, o campo é o da marca
+   (borda 1,5px, foco cobalto de 3px) e os tipos são chips de 44px. */
 .bc {
-  background: var(--nu-cream);
-  padding: clamp(32px, 5vw, 72px) clamp(22px, 5.5vw, 80px) clamp(24px, 3vw, 40px);
+  background: var(--nu-page);
+  padding: clamp(36px, 5vw, 76px) clamp(20px, 5.5vw, 80px) clamp(24px, 3vw, 40px);
   animation: nu-fade .5s ease both;
 }
 .bc__titulo {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.4vw, 56px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  margin: 18px 0 0; color: var(--nu-ink);
+  font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.035em; line-height: .98;
 }
 
 .bc__campo {
   display: flex; align-items: center; gap: 12px;
-  max-width: 880px; height: 64px; margin-top: clamp(20px, 2.6vw, 32px); padding: 0 12px 0 24px;
-  background: var(--nu-white); border: 2px solid transparent; border-radius: var(--nu-r-pill);
-  box-shadow: var(--nu-shadow-search); transition: border-color .2s;
+  max-width: 880px; height: 64px; margin-top: clamp(22px, 2.8vw, 34px); padding: 0 10px 0 24px;
+  background: var(--nu-white); border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-pill);
+  box-shadow: var(--nu-shadow-branco); transition: border-color .2s;
   /* header sticky (--nuh-h) + faixa "Mercado agora" + respiro */
   scroll-margin-top: calc(var(--nuh-h, 76px) + 64px);
 }
-.bc__campo:focus-within { border-color: var(--nu-blue); }
+.bc__campo:focus-within { border-color: var(--nu-blue); outline: 3px solid var(--nu-blue); outline-offset: 1px; }
 .bc__lupa { flex: none; color: var(--nu-ink); }
 .bc__input {
   flex: 1; min-width: 0; height: 100%; background: transparent; border: none; outline: none;
-  color: var(--nu-ink); font-size: clamp(17px, 1.5vw, 19px); font-weight: 500;
+  color: var(--nu-ink); font-size: clamp(17px, 1.5vw, 19px); font-weight: 600;
   -webkit-appearance: none; appearance: none;
 }
+.bc__input:focus-visible { outline: none; }
 .bc__input::-webkit-search-cancel-button { display: none; }
-.bc__input::placeholder { color: var(--nu-gray); }
+.bc__input::placeholder { color: var(--nu-gray); font-weight: 500; }
 .bc__limpar {
   flex: none; width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
-  background: transparent; color: var(--nu-gray); transition: background .2s, color .2s;
+  background: var(--nu-cream-2); color: var(--nu-ink); transition: background .2s;
 }
-.bc__limpar:hover { background: var(--nu-cream); color: var(--nu-ink); }
-.bc__limpar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.bc__limpar:hover { background: var(--nu-line-2); }
 .bc__kbd {
-  flex: none; margin-right: 10px; padding: 3px 9px;
-  border: 1.5px solid var(--nu-cream-3); border-radius: 8px;
+  flex: none; margin-right: 12px; padding: 3px 9px;
+  border: 1.5px solid var(--nu-line); border-radius: var(--nu-r-tag);
   color: var(--nu-gray); font: inherit; font-size: var(--nu-fs-dense); font-weight: 700;
 }
 
-/* tipos: mesmo pill do /rankings e /noticias (NuFilterPills) */
+/* tipos: a pílula carvão ligada, o chip creme desligado */
 .bc__tipos { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; max-width: 880px; }
 .bc__tipo {
-  min-height: 40px; padding: 8px 16px; border-radius: var(--nu-r-pill);
-  border: 2px solid var(--nu-sand-border); background: var(--nu-white); color: var(--nu-gray-2);
-  font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; cursor: pointer;
-  transition: border-color .2s, color .2s, background .2s;
+  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill);
+  border: 0; background: var(--nu-cream-2); color: var(--nu-ink);
+  font-size: 14.5px; font-weight: 600; white-space: nowrap; cursor: pointer;
+  transition: color .2s, background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.bc__tipo:hover { border-color: var(--nu-ink); color: var(--nu-ink); }
-.bc__tipo:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.bc__tipo--on, .bc__tipo--on:hover { border-color: var(--nu-ink); background: var(--nu-ink); color: var(--nu-white); font-weight: 800; }
+.bc__tipo:hover { background: var(--nu-line-2); }
+.bc__tipo:active { transform: scale(.98); }
+.bc__tipo--on, .bc__tipo--on:hover { background: var(--nu-ink); color: var(--nu-white); font-weight: 700; }
 
 @media (max-width: 760px) {
   .bc__campo { height: 56px; padding-left: 18px; }
@@ -152,8 +155,8 @@ defineExpose({ focus: () => input.value?.focus() })
      rola no X; o container rola), para os resultados subirem junto do campo */
   .bc__tipos {
     flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
-    margin: 14px calc(-1 * clamp(22px, 5.5vw, 80px)) 0; padding: 2px clamp(22px, 5.5vw, 80px);
-    scroll-padding-inline: clamp(22px, 5.5vw, 80px);
+    margin: 14px calc(-1 * clamp(20px, 5.5vw, 80px)) 0; padding: 2px clamp(20px, 5.5vw, 80px);
+    scroll-padding-inline: clamp(20px, 5.5vw, 80px);
   }
   .bc__tipos::-webkit-scrollbar { display: none; }
 }

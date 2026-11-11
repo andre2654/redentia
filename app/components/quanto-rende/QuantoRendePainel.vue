@@ -78,66 +78,56 @@ function aoSair() {
 </template>
 
 <style scoped>
+/* Aportou (11/11/2026): o campo é o da marca (56px, borda 1,5px, raio 16, foco
+   cobalto de 3px), os atalhos são chips de 44px e os três números moram em
+   cartões creme com o valor em 800. */
 .qr { max-width: 1080px; margin: clamp(28px, 4vw, 40px) auto 0; }
 .qr__campo { max-width: 520px; }
-.qr__rotulo {
-  display: block; margin: 0 0 8px; color: var(--nu-gray);
-  font-size: var(--nu-fs-sm); font-weight: 700;
-}
+.qr__rotulo { display: block; margin: 0 0 8px; color: var(--nu-ink); font-size: 15px; font-weight: 700; }
 .qr__linha {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--nu-cream); border-radius: var(--nu-r-tile);
-  padding: 6px 6px 6px 16px; min-width: 0;
+  display: flex; align-items: center; gap: 10px; min-height: 56px;
+  background: var(--nu-white); border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input);
+  padding: 0 6px 0 16px; min-width: 0; transition: border-color .2s ease;
 }
-.qr__prefixo {
-  flex: 0 0 auto; color: var(--nu-ink); font-size: 18px; font-weight: 800;
-}
+.qr__prefixo { flex: 0 0 auto; color: var(--nu-gray); font-size: 18px; font-weight: 700; }
 .qr__input {
   flex: 1 1 auto; min-width: 0; width: 100%;
   border: 0; background: transparent; color: var(--nu-ink);
   font: inherit; font-size: 20px; font-weight: 800; letter-spacing: -.02em;
   font-variant-numeric: tabular-nums; padding: 10px 12px 10px 0;
 }
-.qr__input:focus { outline: none; }
-.qr__linha:focus-within { box-shadow: 0 0 0 2px var(--nu-blue); }
+.qr__input:focus, .qr__input:focus-visible { outline: none; }
+.qr__linha:focus-within { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .qr__atalhos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .qr__atalho {
-  background: var(--nu-cream); color: var(--nu-ink); border: 0; cursor: pointer;
-  border-radius: var(--nu-r-pill); padding: 8px 14px;
-  font: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  min-height: 44px; background: var(--nu-cream-2); color: var(--nu-ink); border: 0; cursor: pointer;
+  border-radius: var(--nu-r-pill); padding: 0 16px;
+  font: inherit; font-size: 14.5px; font-weight: 600;
+  font-variant-numeric: tabular-nums; transition: background .2s ease, color .2s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.qr__atalho[aria-pressed="true"] { background: var(--nu-blue); color: var(--nu-white); }
+.qr__atalho:hover { background: var(--nu-line-2); }
+.qr__atalho:active { transform: scale(.98); }
+.qr__atalho[aria-pressed="true"] { background: var(--nu-ink); color: var(--nu-white); font-weight: 700; }
 
 .qr__cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 12px; margin-top: 22px;
+  gap: 12px; margin-top: 24px;
 }
 .qr__card {
-  background: var(--nu-cream); border-radius: var(--nu-r-tile);
-  padding: 16px 18px; min-width: 0;
-  display: flex; flex-direction: column; gap: 6px;
+  background: var(--nu-card); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-quente);
+  padding: 20px 22px; min-width: 0;
+  display: flex; flex-direction: column; gap: 8px;
 }
-.qr__card-rotulo {
-  margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.35;
-}
+.qr__card-rotulo { margin: 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 600; line-height: 1.35; }
 .qr__card-valor {
-  margin: 0; color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px); font-weight: 800;
-  letter-spacing: -.03em; line-height: 1.15; font-variant-numeric: tabular-nums;
+  margin: 0; color: var(--nu-ink); font-size: clamp(28px, 3vw, 40px); font-weight: 800;
+  letter-spacing: -.035em; line-height: 1.05; font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
-.qr__card-fonte {
-  margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
-  line-height: 1.45; overflow-wrap: anywhere;
-}
-.qr__aviso {
-  margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
-  line-height: 1.5; max-width: 72ch;
-}
-.qr__notas { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
-.qr__notas :deep(p) {
-  margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500;
-  line-height: 1.55; max-width: 72ch; overflow-wrap: anywhere;
-}
+.qr__card-fonte { margin: 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.45; overflow-wrap: anywhere; }
+.qr__aviso { margin: 18px 0 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; line-height: 1.5; max-width: 72ch; }
+.qr__notas { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.qr__notas :deep(p) { margin: 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; max-width: 72ch; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { .qr__atalho, .qr__linha { transition: none; } .qr__atalho:active { transform: none; } }
 </style>

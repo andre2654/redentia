@@ -100,10 +100,10 @@ export async function useTesesPage() {
 export const TESES_FAQS = [
   {
     q: 'O que é uma tese de investimento?',
-    a: 'É uma leitura de mundo transformada em carteira: a Redentia parte de uma tendência estrutural, reindustrialização, energia, longevidade, e reúne as ações mais expostas a ela, com o raciocínio por trás de cada escolha.',
+    a: 'É uma leitura de mundo transformada em carteira: a Aportou parte de uma tendência estrutural, reindustrialização, energia, longevidade, e reúne as ações mais expostas a ela, com o raciocínio por trás de cada escolha.',
   },
   {
-    q: 'Como a Redentia monta cada tese?',
+    q: 'Como a Aportou monta cada tese?',
     a: 'Cada tese nasce da leitura de centenas de fontes: balanços, relatórios setoriais, notícias e dados macro. A IA cruza esse material, identifica as empresas mais beneficiadas pelo tema e monta uma carteira com peso e justificativa para cada ativo.',
   },
   {
@@ -112,7 +112,7 @@ export const TESES_FAQS = [
   },
   {
     q: 'As teses garantem retorno?',
-    a: 'Não. Os retornos exibidos são históricos e não se repetem no futuro. Toda tese envolve risco, e o valor investido pode oscilar. A Redentia entrega a análise e o raciocínio, a decisão de investir é sempre sua.',
+    a: 'Não. Os retornos exibidos são históricos e não se repetem no futuro. Toda tese envolve risco, e o valor investido pode oscilar. A Aportou entrega a análise e o raciocínio, a decisão de investir é sempre sua.',
   },
   {
     q: 'Com que frequência as teses são revisadas?',

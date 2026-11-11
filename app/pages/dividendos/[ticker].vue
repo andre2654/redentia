@@ -205,7 +205,7 @@ if (data.value) {
     <CalcSplit :tone="faqTone" wide>
       <template #title>Dúvidas sobre os {{ div.isFii ? 'rendimentos' : 'dividendos' }} de {{ ticker }}.</template>
       <template #left>
-        <NuxtLink to="/busca" class="dvt__pill">Perguntar à Redentia AI</NuxtLink>
+        <NuBotaoSeta to="/busca" variante="azul" tamanho="m" class="dvt__pill">Perguntar à IA</NuBotaoSeta>
       </template>
       <NuFaqAccordion :items="div.faq" :surface="faqTone === 'cream' ? 'white' : undefined" />
     </CalcSplit>
@@ -237,7 +237,7 @@ if (data.value) {
       <div class="dvt__cta">
         <NuCtaBanner
           :title="`A análise completa de ${ticker}`"
-          subtitle="Cotação, gráfico de 12 meses, fundamentos, score e a leitura da Redentia AI"
+          subtitle="Cotação, gráfico de 12 meses, fundamentos, score e a leitura da IA da Aportou"
           :to="`/asset/${ticker}`"
         />
       </div>
@@ -251,7 +251,7 @@ if (data.value) {
 .dvt__next { max-width: 1080px; margin: clamp(28px, 4vw, 40px) auto 0; }
 .dvt__next-title {
   margin: 0 0 14px; color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px);
-  font-weight: 800; letter-spacing: -.02em; line-height: 1.2;
+  font-weight: 800; letter-spacing: -0.025em; line-height: 1.1;
 }
 .dvt__next-grid {
   display: grid;
@@ -259,7 +259,8 @@ if (data.value) {
   gap: 12px;
 }
 .dvt__next-card {
-  background: var(--nu-cream);
+  background: var(--nu-card);
+  box-shadow: var(--nu-shadow-quente);
   border-radius: var(--nu-r-tile);
   padding: 16px 18px;
   display: flex;
@@ -268,10 +269,10 @@ if (data.value) {
   min-width: 0;
 }
 .dvt__next-card--white { background: var(--nu-white); }
-.dvt__next-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.35; }
+.dvt__next-label { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; line-height: 1.35; }
 .dvt__next-value {
-  color: var(--nu-ink); font-size: clamp(16px, 2vw, 22px); font-weight: 800;
-  letter-spacing: -.2px; line-height: 1.25; overflow-wrap: anywhere;
+  color: var(--nu-ink); font-size: clamp(17px, 2vw, 22px); font-weight: 800;
+  letter-spacing: -0.02em; line-height: 1.25; overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
 }
 .dvt__fonte {
@@ -283,8 +284,8 @@ if (data.value) {
    SeguirAtivo quebra pra baixo do botão via flex-basis 100%) */
 .dvt__renamed {
   display: flex; width: fit-content; max-width: 100%; margin: 0 0 18px; padding: 7px 14px;
-  border-radius: var(--nu-r-pill); background: var(--nu-sand-2); color: var(--nu-gray-tag);
-  font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;
+  border-radius: var(--nu-r-tag); background: var(--nu-cream-2); color: var(--nu-gray-3);
+  font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums;
 }
 .dvt__follow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 22px; }
 
@@ -293,29 +294,25 @@ if (data.value) {
   background: var(--nu-white);
   border-radius: var(--nu-r-card-lg);
   padding: clamp(26px, 4vw, 44px);
+  box-shadow: var(--nu-shadow-quente);
   max-width: 1080px;
   margin: 0 auto;
-  color: var(--nu-gray-2);
+  color: var(--nu-gray-3);
   font-size: var(--nu-fs-md);
   font-weight: 500;
   line-height: 1.65;
   text-align: center;
 }
-.dvt__notice--cream { background: var(--nu-cream); }
+.dvt__notice--cream { background: var(--nu-card); }
 
 /* prosa das bandas educacionais (mesma escala da calculadora de DY) */
 .dvt__prose p {
   margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 .dvt__prose p:last-child { margin-bottom: 0; }
 
-.dvt__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.dvt__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.dvt__pill { margin-top: 28px; }
 
 /* cards-link de cross-link (anatomia da calculadora de DY) */
 .dvt__grid-cards {
@@ -325,18 +322,23 @@ if (data.value) {
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .dvt__card-link {
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-quente);
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .dvt__card-link--white { background: var(--nu-white); }
 .dvt__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.dvt__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
-.dvt__card-p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.dvt__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; transition: color .2s ease; }
+.dvt__card-link:hover .dvt__card-link-title { color: var(--nu-blue-text); }
+.dvt__card-p { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
 
 .dvt__cta { max-width: 1080px; margin: clamp(24px, 3vw, 36px) auto 0; }
 
 @media (max-width: 760px) {
   .dvt__card-link { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dvt__card-link { transition: none; }
+  .dvt__card-link:hover { transform: none; }
 }
 </style>

@@ -52,10 +52,7 @@ const renda = computed(() => {
         </div>
       </dl>
       <div class="apv__ctas">
-        <NuxtLink v-if="dividendosHref" :to="dividendosHref" class="apv__cta apv__cta--1">
-          Ver histórico de dividendos
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
-        </NuxtLink>
+        <NuBotaoSeta v-if="dividendosHref" :to="dividendosHref" variante="carvao" tamanho="m" class="apv__cta--1">Ver histórico de dividendos</NuBotaoSeta>
         <NuxtLink v-if="quantoRendeHref" :to="quantoRendeHref" class="apv__cta">Quanto rende um valor</NuxtLink>
         <NuxtLink v-if="simuladorHref" :to="simuladorHref" class="apv__cta">Simulador de dividendos</NuxtLink>
         <NuxtLink v-else :to="`/calculadora/dividend-yield?ticker=${ticker}`" class="apv__cta">Simular renda com {{ ticker }}</NuxtLink>
@@ -93,59 +90,59 @@ const renda = computed(() => {
 .apv { display: grid; gap: 28px clamp(28px, 4vw, 56px); }
 .apv--lado { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); align-items: start; }
 @media (max-width: 860px) { .apv--lado { grid-template-columns: minmax(0, 1fr); } }
-.apv__sub { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.apv__sub { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .apv__linhas { margin: 16px 0 0; }
-.apv__linha { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; min-height: 46px; padding: 12px 0; border-top: 1px solid var(--nu-cream-line); }
-.apv__linha:last-child { border-bottom: 1px solid var(--nu-cream-line); }
-.apv__linha dt { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
-.apv__linha dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
-.apv__ctas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.apv__linha { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; min-height: 50px; padding: 13px 0; border-top: 1.5px solid var(--nu-line-2); }
+.apv__linha:last-child { border-bottom: 1.5px solid var(--nu-line-2); }
+.apv__linha dt { color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; }
+.apv__linha dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
+.apv__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 24px; }
+/* a chamada da seção é a pílula com a seta (NuBotaoSeta); as outras, chips */
 .apv__cta {
-  display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 600;
-  transition: background .2s ease, box-shadow .2s ease, transform .45s cubic-bezier(.34, 1.56, .64, 1);
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill);
+  background: var(--nu-white); color: var(--nu-ink); font-size: 14.5px; font-weight: 600; box-shadow: var(--nu-shadow-quente);
+  transition: background .2s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.apv__cta:hover { transform: translateY(-1px); }
-.apv__cta:active { transform: scale(.97); }
-.apv__cta:hover { background: var(--nu-cream-hover); color: var(--nu-ink); box-shadow: inset 0 0 0 1px var(--nu-cream-line); }
-.apv__cta--1 { background: var(--nu-ink); color: var(--nu-white); }
-.apv__cta--1:hover { background: var(--nu-ink-hover); color: var(--nu-white); box-shadow: none; }
+.apv__cta:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
+.apv__cta:active { transform: scale(.98); }
 
 .apv__barras { margin: 0; }
 .apv__cols { list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; gap: clamp(6px, 1.4vw, 16px); height: 220px; }
 .apv__col { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; outline: none; cursor: default; transition: opacity .2s ease; }
 .apv__col--recua { opacity: .5; }
 .apv__col:focus-visible .apv__barra { box-shadow: 0 0 0 2px var(--nu-blue); }
-.apv__col--on .apv__barra { background: var(--nu-ink-30); transform: scaleY(1.02); }
+.apv__col--on .apv__barra { background: var(--nu-ink); transform: scaleY(1.02); }
 .apv__col--on.apv__col--atual .apv__barra { background: var(--nu-blue-hover); }
 .apv__dica {
   position: absolute; top: -8px; transform: translateY(-100%); z-index: 3; pointer-events: none;
   display: flex; flex-direction: column; gap: 2px; padding: 8px 11px; border-radius: var(--nu-r-chip); white-space: nowrap;
-  background: var(--nu-navy); color: var(--nu-cream-text); box-shadow: var(--nu-shadow-float); font-variant-numeric: tabular-nums;
+  background: var(--nu-ink); color: var(--nu-white); box-shadow: var(--nu-shadow-escuro); font-variant-numeric: tabular-nums;
   animation: apv-entra .18s ease both;
 }
 @keyframes apv-entra { from { opacity: 0; } }
 .apv__dica--meio { left: 50%; transform: translate(-50%, -100%); }
 .apv__dica--esq { left: 0; }
 .apv__dica--dir { right: 0; }
-.apv__dica-a { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 600; }
+.apv__dica-a { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 600; }
 .apv__dica-v { font-size: var(--nu-fs-sm); font-weight: 700; }
-.apv__val { color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.apv__val { color: var(--nu-gray-3); font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .apv__trilho { flex: 1; width: 100%; display: flex; align-items: flex-end; }
-.apv__barra { display: block; width: 100%; border-radius: 8px 8px 3px 3px; background: var(--nu-bar-inactive); transform-origin: 50% 100%; transition: background .2s ease, transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+.apv__barra { display: block; width: 100%; border-radius: 10px 10px 4px 4px; background: var(--nu-line); transform-origin: 50% 100%; transition: background .2s ease, transform .25s cubic-bezier(.2, .8, .2, 1); animation: apv-cresce .6s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes apv-cresce { from { transform: scaleY(0); } }
 .apv__col--atual .apv__barra { background: var(--nu-blue); }
-.apv__col--atual .apv__val { color: var(--nu-blue-text); font-weight: 700; }
-.apv__ano { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; font-variant-numeric: tabular-nums; }
-.apv__col--atual .apv__ano { color: var(--nu-ink); font-weight: 700; }
-.apv__nota { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.apv__col--atual .apv__val { color: var(--nu-blue-text); font-weight: 800; }
+.apv__ano { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.apv__col--atual .apv__ano { color: var(--nu-ink); font-weight: 800; }
+.apv__nota { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 .apv__renda {
-  grid-column: 1 / -1; justify-self: start; margin: 0; padding: 9px 16px; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue-tint); color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;
+  grid-column: 1 / -1; justify-self: start; margin: 0; padding: 8px 14px; border-radius: var(--nu-r-tag);
+  background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; font-variant-numeric: tabular-nums;
 }
 @media (prefers-reduced-motion: reduce) {
   .apv__col, .apv__barra, .apv__cta { transition: none; }
   .apv__dica { animation: none; }
-  .apv__cta:hover, .apv__cta:active, .apv__col--on .apv__barra { transform: none; }
+  .apv__cta:active, .apv__col--on .apv__barra { transform: none; }
+  .apv__barra { animation: none; }
 }
 @media (max-width: 520px) {
   .apv__cols { height: 180px; }

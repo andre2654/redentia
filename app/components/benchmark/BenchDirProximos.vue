@@ -25,12 +25,12 @@ const icone = (k: string) => BENCH_ICONS[k] ?? BENCH_ICONS.trophy
 <style scoped>
 .bdp { list-style: none; margin: 0; padding: 0; container-type: inline-size; }
 .bdp__i { display: grid; grid-template-columns: 36px minmax(0, 1fr) minmax(0, 240px); align-items: center; gap: 16px; padding: 16px 0; }
-.bdp__i + .bdp__i { border-top: 1px solid var(--nu-cream-line); }
-.bdp__ic { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--nu-cream); color: var(--nu-blue-text); }
+.bdp__i + .bdp__i { border-top: 1.5px solid var(--nu-line-2); }
+.bdp__ic { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--nu-ink); color: var(--nu-white); }
 .bdp__ic svg { width: 18px; height: 18px; }
 .bdp__t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.bdp__nome { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600; }
-.bdp__q { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
+.bdp__nome { color: var(--nu-ink); font-size: 17px; font-weight: 700; }
+.bdp__q { color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.45; }
 .bdp__st { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 @container (max-width: 560px) {
   .bdp__i { grid-template-columns: 36px minmax(0, 1fr); row-gap: 4px; }

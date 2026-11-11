@@ -523,7 +523,7 @@ function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): Ac
     v: `+${nf2.format(n.contribution)}%`,
   }))
   const feeNote = x.fees.unmapped_fund_weight > 0.001
-    ? `${nf1.format(x.fees.unmapped_fund_weight * 100)}% da carteira está em fundos sem taxa mapeada — o custo efetivo é um piso, não o total.`
+    ? `${nf1.format(x.fees.unmapped_fund_weight * 100)}% da carteira está em fundos sem taxa mapeada: o custo efetivo é um piso, não o total.`
     : null
 
   // Correlação: 4 linhas de 12m na página; tudo (12m/90d + matriz) no modal.
@@ -576,7 +576,7 @@ function mapTreeNode(n: EtfXrayTreeNodeApi): EtfXrayTreeNodeVM {
   let note: string | null = null
   if (n.cycle) note = 'já aparece acima na árvore'
   else if (n.unopened) note = 'carteira ainda não ingerida'
-  else if ((n.type === 'fundo_cota' || n.type === 'fundo_exterior') && !children.length) note = 'fundo fora da bolsa — não abre'
+  else if ((n.type === 'fundo_cota' || n.type === 'fundo_exterior') && !children.length) note = 'fundo fora da bolsa, não abre'
   return {
     key: n.key,
     ticker: n.ticker,
@@ -1478,7 +1478,7 @@ function cadeiaResto(api: SupplyChainApi, eu: string, lado: 'clientes' | 'custo'
       de: clientes ? eu : 'Restante do custo',
       para: clientes ? 'Outros clientes' : eu,
       oQue: clientes
-        ? 'Empresas e pessoas fora da bolsa, no Brasil e no exterior. A Redentia não tem o nome de cada uma: é o que sobra da receita depois das vendas a empresas listadas.'
+        ? 'Empresas e pessoas fora da bolsa, no Brasil e no exterior. A Aportou não tem o nome de cada uma: é o que sobra da receita depois das vendas a empresas listadas.'
         : 'Compras de fornecedores fora da bolsa e os custos próprios que entram no custo dos produtos vendidos (pessoal, energia, depreciação). É o que sobra do custo depois das compras de empresas listadas.',
       valores: [],
       conta: [

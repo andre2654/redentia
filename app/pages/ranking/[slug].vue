@@ -105,7 +105,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: `${meta.title} - Redentia`,
+      name: `${meta.title} - ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       applicationSubCategory: 'Ranking de ativos',
       operatingSystem: 'Web',
@@ -149,7 +149,7 @@ usePageSeo({
 
       <header class="rks__toolbar">
         <div class="rks__toolbar-meta">
-          <p class="rks__toolbar-eyebrow">Lista completa</p>
+          <NuEyebrow como="p">Lista completa</NuEyebrow>
           <p class="rks__toolbar-count">{{ count }} {{ isTesouro ? 'títulos' : 'ativos' }} no ranking</p>
         </div>
         <!-- 1 tipo declarado = "Todos" e a tab seriam a mesma lista -->
@@ -160,7 +160,10 @@ usePageSeo({
         />
       </header>
 
-      <div v-if="pending" class="rks__state">Carregando o ranking…</div>
+      <!-- loading é sempre esqueleto (contrato da Aportou): a altura das linhas da tabela -->
+      <div v-if="pending" class="rks__sk" aria-busy="true" aria-label="Carregando o ranking">
+        <NuSkeleton v-for="i in 8" :key="i" variant="line" width="100%" height="44px" radius="chip" />
+      </div>
       <!-- backend fora (ou tesouro sem nenhum indexador vivo — o fetch
            parcial engole erro, então vazio ≈ indisponível lá) -->
       <div v-else-if="unavailable || (isTesouro && empty)" class="rks__state">
@@ -243,7 +246,7 @@ usePageSeo({
     <CalcSplit v-if="copy.faqItems.length" tone="cream" wide>
       <template #title>{{ copy.faqTitle || 'Perguntas Frequentes' }}</template>
       <template #left>
-        <NuxtLink to="/busca" class="rks__pill">Perguntar à Redentia AI</NuxtLink>
+        <NuBotaoSeta to="/busca" variante="azul" tamanho="m" class="rks__pill">Perguntar à IA</NuBotaoSeta>
       </template>
       <NuFaqAccordion :items="copy.faqItems" surface="white" />
     </CalcSplit>
@@ -251,11 +254,13 @@ usePageSeo({
     <!-- ============ CTA ============ -->
     <CalcBand tone="white" tight>
       <div class="rks__cta">
-        <h2 class="rks__cta-title">Acompanhe {{ meta.title.toLowerCase() }} na sua carteira</h2>
-        <p class="rks__cta-sub">Cadastre-se na Redentia e receba análises automáticas sobre os ativos que você acompanha, com dados atualizados diariamente.</p>
+        <MarcaCorte :largura="420" cor="var(--nu-white)" class="rks__cta-corte" />
+        <!-- o nome próprio (Aportou Score) não vai para a caixa baixa -->
+        <h2 class="rks__cta-title">Acompanhe {{ isScore ? `o ${meta.title}` : meta.title.toLowerCase() }} na sua carteira</h2>
+        <p class="rks__cta-sub">Cadastre-se na Aportou e receba análises automáticas sobre os ativos que você acompanha, com dados atualizados diariamente.</p>
         <div class="rks__cta-actions">
-          <NuxtLink to="/login" class="rks__pill rks__pill--light">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/rankings" class="rks__pill rks__pill--outline">Ver outros rankings</NuxtLink>
+          <NuBotaoSeta to="/login" variante="creme" tamanho="m">Criar conta grátis</NuBotaoSeta>
+          <NuxtLink to="/rankings" class="rks__cta-link">Ver outros rankings</NuxtLink>
         </div>
       </div>
     </CalcBand>
@@ -263,96 +268,96 @@ usePageSeo({
 </template>
 
 <style scoped>
+/* Aportou (11/11/2026): o corpo corre sobre o creme da página, a tabela e o
+   líder são cartões brancos, os selos têm raio 8 e a chamada final é o painel
+   de gradiente cobalto com o corte gigante. O conteúdo é o de antes. */
 /* ——— hero chips ——— */
 .rks__chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .rks__chip {
-  background: var(--nu-white); color: var(--nu-gray-2); border-radius: var(--nu-r-pill);
-  padding: 8px 16px; font-size: var(--nu-fs-sm); font-weight: 700;
+  display: inline-flex; align-items: center; min-height: 32px; background: var(--nu-cream-2); color: var(--nu-ink); border-radius: var(--nu-r-tag);
+  padding: 0 12px; font-size: 13.5px; font-weight: 700;
 }
 
-/* ——— corpo (leader + toolbar + tabela) sobre creme ——— */
+/* ——— corpo (leader + toolbar + tabela) ——— */
 .rks__body {
-  background: var(--nu-cream);
-  padding: 0 clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 90px);
+  background: var(--nu-page);
+  padding: 0 clamp(22px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
   display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 28px);
   animation: nu-fade .5s ease both;
 }
 .rks__toolbar {
   display: flex; align-items: flex-end; justify-content: space-between;
-  gap: 16px; flex-wrap: wrap;
+  gap: 16px; flex-wrap: wrap; margin-top: clamp(8px, 1.4vw, 16px);
 }
-.rks__toolbar-meta { display: flex; flex-direction: column; gap: 3px; }
-.rks__toolbar-eyebrow {
-  margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: .14em;
-}
+.rks__toolbar-meta { display: flex; flex-direction: column; gap: 8px; }
 .rks__toolbar-count {
-  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
-  font-variant-numeric: tabular-nums; letter-spacing: -.1px;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.025em; line-height: 1.1;
 }
+.rks__sk { display: flex; flex-direction: column; gap: 10px; background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(18px, 2vw, 28px); }
 .rks__state {
-  background: var(--nu-white); border-radius: var(--nu-r-card-lg);
+  background: var(--nu-card); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente);
   padding: clamp(32px, 4vw, 48px); text-align: center;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500;
 }
 .rks__answer {
-  margin: clamp(8px, 1.5vw, 16px) auto 0; max-width: 68ch; text-align: center;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
+  margin: clamp(8px, 1.5vw, 16px) 0 0; max-width: 76ch;
+  color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.6;
 }
 
 /* ——— líder do tesouro ——— */
-.rks__tleader { background: var(--nu-white); border-radius: var(--nu-r-card-lg); padding: clamp(24px, 3vw, 36px); }
+.rks__tleader { background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(24px, 3vw, 36px); }
 .rks__tleader-crown {
-  display: inline-flex; background: var(--nu-blue-tint); color: var(--nu-blue-text);
-  border-radius: var(--nu-r-pill); padding: 6px 14px;
-  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .2px; text-transform: uppercase;
+  display: inline-flex; align-items: center; min-height: 28px; background: var(--nu-blue-bg); color: var(--nu-blue-text);
+  border-radius: var(--nu-r-tag); padding: 0 10px;
+  font-size: 13.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
 }
 .rks__tleader-main {
   display: flex; align-items: center; justify-content: space-between;
   gap: 24px; flex-wrap: wrap; margin-top: 20px;
 }
 .rks__tleader-who { display: flex; flex-direction: column; gap: 2px; }
-.rks__tleader-name { color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.rks__tleader-sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rks__tleader-name { color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.rks__tleader-sub { color: var(--nu-gray); font-size: 14.5px; font-weight: 700; }
 .rks__tleader-metric { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
 .rks__tleader-rate {
-  color: var(--nu-blue-text); font-size: clamp(32px, 4vw, 48px); font-weight: 800;
-  letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums;
+  color: var(--nu-ink); font-size: clamp(46px, 5.2vw, 68px); font-weight: 800;
+  letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums;
 }
-.rks__tleader-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rks__tleader-label { color: var(--nu-gray); font-size: 14.5px; font-weight: 700; }
 
 /* ——— prosa educacional (mesma família das calculadoras) ——— */
 .rks__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6;
 }
 .rks__prose p:last-child { margin-bottom: 0; }
 .rks__h3 {
-  margin: 26px 0 12px; color: var(--nu-ink);
-  font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px;
+  margin: 28px 0 12px; color: var(--nu-ink);
+  font-size: clamp(20px, 1.8vw, 24px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15;
 }
 .rks__prose .rks__h3:first-child { margin-top: 0; }
 .rks__ul { margin: 0 0 16px; padding-left: 22px; }
 .rks__ul li {
   margin: 0 0 8px; color: var(--nu-gray-3);
-  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7;
+  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6;
 }
-.rks__prose-link { color: var(--nu-blue-text); font-weight: 800; }
-.rks__prose-link:hover { text-decoration: underline; }
+.rks__ul li::marker { color: var(--nu-blue); }
+.rks__prose-link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
 .rks__prose--band { max-width: 780px; margin: clamp(24px, 3vw, 40px) auto 0; }
 
-/* ——— metodologia (score) ——— */
+/* ——— metodologia (score): os passos numerados da marca ——— */
 .rks__steps {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 16px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.rks__step { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px; }
-.rks__step-title { margin: 0 0 8px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.rks__step-body { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.rks__step { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px; box-shadow: var(--nu-shadow-branco); border-top: 3px solid var(--nu-ink); }
+.rks__step-title { margin: 0 0 8px; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; }
+.rks__step-body { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
 .rks__formula { margin: 24px auto 0; max-width: 680px; text-align: center; }
 .rks__formula code {
-  display: inline-block; background: var(--nu-white); border-radius: var(--nu-r-input);
-  padding: 14px 20px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
+  display: inline-block; background: var(--nu-ink); border-radius: var(--nu-r-input);
+  padding: 14px 20px; color: var(--nu-white); font-family: inherit; font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
@@ -363,32 +368,31 @@ usePageSeo({
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .rks__card-link {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-branco);
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .rks__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.rks__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
-.rks__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.rks__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; transition: color .2s ease; }
+.rks__card-link:hover .rks__card-link-title { color: var(--nu-blue-text); }
+.rks__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
 
-/* ——— pills / CTA (mesma família das calculadoras) ——— */
-.rks__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.rks__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+/* ——— pílula da IA e a chamada final (o painel azul da marca) ——— */
+.rks__pill { margin-top: 28px; }
 .rks__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center;
-  max-width: 1080px; margin: 0 auto;
+  position: relative; overflow: hidden; isolation: isolate;
+  background: var(--nu-grad-cobalto); border-radius: var(--nu-r-secao);
+  padding: clamp(36px, 5vw, 64px);
+  max-width: 1240px; margin: 0 auto;
 }
-.rks__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.rks__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
-.rks__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.rks__cta .rks__pill { margin-top: 0; }
-.rks__pill--light { background: var(--nu-cream); color: var(--nu-blue-text); }
-.rks__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.rks__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
-.rks__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
+.rks__cta-corte { position: absolute; right: -40px; bottom: -70px; z-index: -1; opacity: .08; pointer-events: none; }
+.rks__cta-title { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; max-width: 20ch; }
+.rks__cta-sub { margin: 16px 0 0; color: var(--nu-blue-on-blue); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5; max-width: 560px; }
+.rks__cta-actions { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; margin-top: 28px; }
+.rks__cta-link {
+  display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 700;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-white-35); transition: text-decoration-color .2s ease;
+}
+.rks__cta-link:hover { color: var(--nu-white); text-decoration-color: currentColor; }
+@media (prefers-reduced-motion: reduce) { .rks__card-link { transition: none; } .rks__card-link:hover { transform: none; } }
 </style>

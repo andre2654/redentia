@@ -85,11 +85,9 @@ const total = computed(() => props.grupos.reduce((n, g) => n + g.itens.length, 0
         @click="emit('perguntar')"
         @mousemove="props.ativo !== total && emit('marcar', total)"
       >
-        <span class="bli__balao" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H6l-3 3V11.5A8.5 8.5 0 0 1 11.5 3h1A8.5 8.5 0 0 1 21 11.5z" /></svg>
-        </span>
+        <span class="bli__balao" aria-hidden="true"><MarcaCorte :largura="22" /></span>
         <span class="bli__perg-id">
-          <span class="bli__perg-titulo">Perguntar à Redentia: <q class="bli__perg-q">{{ props.pergunta.texto }}</q></span>
+          <span class="bli__perg-titulo">Perguntar à IA: <q class="bli__perg-q">{{ props.pergunta.texto }}</q></span>
           <span class="bli__perg-sub">{{ props.pergunta.logado ? 'A resposta abre ao lado, no chat.' : 'Entre na sua conta para perguntar.' }}</span>
         </span>
       </button>
@@ -104,45 +102,45 @@ const total = computed(() => props.grupos.reduce((n, g) => n + g.itens.length, 0
   min-height: 24px; margin-bottom: 4px;
 }
 .bli__rotulo {
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase;
 }
 .bli__limpar {
   background: none; border: none; padding: 8px 0 8px 12px; margin: -8px 0;
-  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
+  color: var(--nu-ink); font-size: 14.5px; font-weight: 700; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
 }
-.bli__limpar:hover { color: var(--nu-blue-hover); }
-.bli__limpar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 6px; }
+.bli__limpar:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
+.bli__limpar:focus-visible { border-radius: 6px; }
 
 .bli__linhas { list-style: none; margin: 0; padding: 0; }
-.bli__linhas > li + li { border-top: 1px solid var(--nu-cream-2); }
+.bli__linhas > li + li { border-top: 1.5px solid var(--nu-line-2); }
 
 /* skeleton espelha a linha: tile 40, ticker + nome, preço + variação */
 .bli__sk { display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px 0; }
-.bli__sk + .bli__sk { border-top: 1px solid var(--nu-cream-2); }
+.bli__sk + .bli__sk { border-top: 1.5px solid var(--nu-line-2); }
 .bli__sk-id { flex: 1; display: flex; flex-direction: column; gap: 7px; }
 .bli__sk-num { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
 
 /* a pergunta: última linha, separada da lista por um fio */
-.bli__grupo--pergunta { border-top: 1px solid var(--nu-cream-2); padding-top: 8px; margin-top: -12px; }
+.bli__grupo--pergunta { border-top: 1.5px solid var(--nu-line-2); padding-top: 8px; margin-top: -12px; }
 .bli__perguntar {
   display: flex; align-items: center; gap: 14px; width: calc(100% + 24px);
   min-height: 64px; padding: 10px 12px; margin: 0 -12px;
   background: none; border: none; border-radius: 14px; text-align: left; cursor: pointer;
   color: var(--nu-ink); transition: background .15s;
 }
-.bli__perguntar--ativo { background: var(--nu-cream); }
-.bli__perguntar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.bli__perguntar--ativo { background: var(--nu-cream-2); }
 .bli__balao {
   flex: none; width: 40px; height: 40px; border-radius: 12px;
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--nu-blue-tint); color: var(--nu-blue-text);
+  background: var(--nu-blue-bg);
 }
 .bli__perg-id { flex: 1; min-width: 0; }
 .bli__perg-titulo {
-  display: block; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1.3;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1.3;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bli__perg-q { color: var(--nu-ink); quotes: '“' '”'; }
-.bli__perg-sub { display: block; margin-top: 2px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.bli__perg-sub { display: block; margin-top: 2px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
 </style>

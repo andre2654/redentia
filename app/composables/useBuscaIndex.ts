@@ -260,7 +260,7 @@ const THESES_SEED: RawThesis[] = [
   {
     slug: 'reindustrializacao-eua',
     title: 'A fábrica volta para casa',
-    meta: 'Tese da Redentia',
+    meta: 'Tese da Aportou',
     image: '/teses/reindustrializacao-eua.webp',
     href: '/tese/reindustrializacao-eua',
     kw: normBusca('A fábrica volta para casa reindustrialização industrial caterpillar gerdau tupy'),
@@ -268,7 +268,7 @@ const THESES_SEED: RawThesis[] = [
   {
     slug: 'a-conta-de-luz-da-ia',
     title: 'Energia para IA',
-    meta: 'Tese da Redentia',
+    meta: 'Tese da Aportou',
     image: '/teses/a-conta-de-luz-da-ia.webp',
     href: '/tese/a-conta-de-luz-da-ia',
     kw: normBusca('Energia para IA energia data center nuclear engie'),
@@ -276,7 +276,7 @@ const THESES_SEED: RawThesis[] = [
   {
     slug: 'a-nova-geografia-do-frete',
     title: 'A nova geografia do frete',
-    meta: 'Tese da Redentia',
+    meta: 'Tese da Aportou',
     image: '/teses/a-nova-geografia-do-frete.webp',
     href: '/tese/a-nova-geografia-do-frete',
     kw: normBusca('A nova geografia do frete logística nearshoring portos frete'),
@@ -284,7 +284,7 @@ const THESES_SEED: RawThesis[] = [
   {
     slug: 'imovel-mais-disputado-data-center',
     title: 'O imóvel mais disputado do mundo',
-    meta: 'Tese da Redentia',
+    meta: 'Tese da Aportou',
     image: '/teses/imovel-mais-disputado-data-center.webp',
     href: '/tese/imovel-mais-disputado-data-center',
     kw: normBusca('O imóvel mais disputado do mundo data center imóveis galpão'),
@@ -415,7 +415,7 @@ export function useBuscaIndex() {
           slug: c.id,
           title: c.title,
           meta: [
-            c.conviction != null ? `Convicção ${c.conviction}` : (c.sector ?? 'Tese da Redentia'),
+            c.conviction != null ? `Convicção ${c.conviction}` : (c.sector ?? 'Tese da Aportou'),
             c.returnLabel ? `${c.returnLabel} desde o lançamento` : '',
           ].filter(Boolean).join(' · '),
           image: teseCover(c.image),

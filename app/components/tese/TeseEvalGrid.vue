@@ -74,7 +74,7 @@ const showGate = computed(() => !isAuthenticated.value && total.value > FREE)
           </span>
           <NuBadge :variant="c.badgeVariant" size="eval">{{ c.badgeText }}</NuBadge>
           <span v-if="!isLocked(i) && hrefFor(c.ticker)" class="tev__go" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
           </span>
         </div>
         <div class="tev__txt">{{ c.txt }}</div>
@@ -86,128 +86,112 @@ const showGate = computed(() => !isAuthenticated.value && total.value > FREE)
     </div>
 
     <!-- GATE (só anônimo): força o cadastro pra abrir o resto da tese -->
-    <div v-if="showGate" class="tev__gate">
-      <div class="tev__gate-glow" aria-hidden="true" />
-      <div class="tev__gate-left">
-        <span class="tev__gate-badge">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="11" width="15" height="10" rx="2.2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
-          Tese completa
-        </span>
-        <h2 class="tev__gate-title">Você viu {{ FREE }} dos {{ total }} ativos.</h2>
-        <p class="tev__gate-sub">Crie sua conta grátis para abrir a tese completa: a avaliação de todos os ativos, os sinais de risco, {{ hasReport ? 'o relatório completo' : 'o risco central' }} e o diário, revalidado todo dia pela Redentia.</p>
-        <div class="tev__gate-actions">
-          <NuxtLink :to="loginTo" class="tev__gate-cta">
-            Criar conta grátis<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
-          </NuxtLink>
-          <NuxtLink :to="loginTo" class="tev__gate-cta tev__gate-cta--ghost">Já tenho conta</NuxtLink>
+    <NuFaixaMarca v-if="showGate" rotulo="Tese completa" como="p" :altura="56" class="tev__gate">
+      <div class="tev__gate-in">
+        <div class="tev__gate-left">
+          <h2 class="tev__gate-title">Você viu {{ FREE }} dos {{ total }} ativos.</h2>
+          <p class="tev__gate-sub">Crie sua conta grátis para abrir a tese completa: a avaliação de todos os ativos, os sinais de risco, {{ hasReport ? 'o relatório completo' : 'o risco central' }} e o diário, revalidado todo dia pela Aportou.</p>
+          <div class="tev__gate-actions">
+            <NuBotaoSeta :to="loginTo" variante="azul" tamanho="m">Criar conta grátis</NuBotaoSeta>
+            <NuxtLink :to="loginTo" class="tev__gate-ghost">Já tenho conta</NuxtLink>
+          </div>
+          <span class="tev__gate-micro">Grátis, sem cartão de crédito</span>
         </div>
-        <span class="tev__gate-micro">Grátis, sem cartão de crédito</span>
+        <ul class="tev__gate-list">
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Avaliação dos <b>{{ total }} ativos</b> da carteira</span></li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Sinais de risco e risco central</span></li>
+          <li v-if="hasReport"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>O <b>relatório completo</b> da tese</span></li>
+          <li v-if="studiesCount > 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Diário da tese <b>· {{ studiesCount }} estudos</b></span></li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Acompanhe e receba alertas</span></li>
+        </ul>
       </div>
-      <ul class="tev__gate-list">
-        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Avaliação dos <b>{{ total }} ativos</b> da carteira</span></li>
-        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Sinais de risco e risco central</span></li>
-        <li v-if="hasReport"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>O <b>relatório completo</b> da tese</span></li>
-        <li v-if="studiesCount > 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Diário da tese <b>· {{ studiesCount }} estudos</b></span></li>
-        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Acompanhe e receba alertas</span></li>
-      </ul>
-    </div>
+    </NuFaixaMarca>
   </section>
 </template>
 
 <style scoped>
+/* Aportou (11/11/2026): a banda é o creme da página, os cartões são creme com a
+   sombra quente, o destaque é o fio cobalto, e o bloqueio do visitante é o
+   cartão carvão com a faixa da marca (NuFaixaMarca), com a pílula da seta. */
 .tev {
-  background: var(--nu-white);
-  padding: clamp(56px, 7vw, 96px) clamp(22px, 5.5vw, 80px);
+  background: var(--nu-band);
+  padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
 .tev__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
-.tev__meta { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
+.tev__meta { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
 
 /* grid compacto: colunas menores (cabem 3 em telas largas), menos padding */
 .tev__grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
-  gap: 14px; margin-top: 34px;
+  gap: 14px; margin-top: 36px;
 }
-.tev__card { display: block; background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 20px 22px; }
-.tev__card--hi { border: 2px solid var(--nu-blue); }
-.tev__card--link { transition: transform .15s, box-shadow .2s; }
+/* overflow: um selo comprido demais (texto do dado) não vaza para o cartão do lado */
+.tev__card { display: block; background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 20px 22px; box-shadow: var(--nu-shadow-quente); overflow: hidden; }
+.tev__card--hi { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
+.tev__card--link { transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1); }
 .tev__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.tev__card--hi.tev__card--link:hover { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-card); }
 .tev__card--link:hover .tev__ticker { color: var(--nu-blue-text); }
 .tev__card--link:hover .tev__go { background: var(--nu-blue-hover); }
+.tev__card--link:hover .tev__go svg { transform: translateX(2px); }
 /* embaçado (anônimo): tease não-interativo */
 .tev__card--locked { filter: blur(5px); opacity: .5; pointer-events: none; user-select: none; }
 
 .tev__card-head { display: flex; align-items: center; gap: 12px; }
 .tev__id { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
 .tev__names { flex: 1; min-width: 0; }
-.tev__ticker { display: block; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; white-space: nowrap; transition: color .2s; }
+.tev__ticker { display: block; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: 0.02em; white-space: nowrap; transition: color .2s; }
 .tev__name {
-  display: block; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
+  display: block; color: var(--nu-gray); font-size: 13.5px; font-weight: 500;
   margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .tev__go {
-  width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; background: var(--nu-blue);
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: var(--nu-blue); color: var(--nu-white);
   display: flex; align-items: center; justify-content: center; transition: background .16s;
 }
-.tev__txt { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; margin-top: 12px; }
-.tev__why { display: flex; gap: 9px; border-top: 1.5px solid var(--nu-cream-2); margin-top: 13px; padding-top: 12px; }
+.tev__go svg { transition: transform .2s ease; }
+.tev__txt { color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; margin-top: 12px; }
+.tev__why { display: flex; gap: 10px; border-top: 1.5px solid var(--nu-line-2); margin-top: 14px; padding-top: 12px; }
 .tev__why-lbl {
-  color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; flex-shrink: 0; margin-top: 2px;
+  color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; flex-shrink: 0; margin-top: 3px;
 }
-.tev__why-txt { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
+.tev__why-txt { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 
-/* ——— gate do anônimo (card navy) ——— */
-.tev__gate {
-  position: relative; overflow: hidden;
-  background: var(--nu-navy); border-radius: var(--nu-r-card-lg);
-  padding: clamp(28px, 3.6vw, 48px);
-  margin-top: 16px;
+/* ——— o bloqueio do visitante: o cartão carvão com a faixa da marca ——— */
+.tev__gate { margin-top: 20px; }
+.tev__gate-in {
+  padding: clamp(24px, 3vw, 40px) clamp(24px, 3.6vw, 48px) clamp(28px, 3.4vw, 44px);
   display: flex; gap: clamp(28px, 4vw, 72px); align-items: center; flex-wrap: wrap;
 }
-.tev__gate-glow {
-  position: absolute; top: -60px; right: -40px; width: 320px; height: 320px;
-  border-radius: 50%; background: radial-gradient(circle, rgba(47, 107, 255, .55), transparent 70%);
-  pointer-events: none;
-}
-.tev__gate-left { position: relative; flex: 1 1 380px; min-width: min(320px, 100%); }
-.tev__gate-badge {
-  display: inline-flex; align-items: center; gap: 7px;
-  color: var(--nu-green-soft); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  /* sobre o navy: verde translúcido com o texto verde claro (o --nu-green-bg é
-     do fundo claro e apagava o texto; dono, 02/11/2026) */
-  background: color-mix(in srgb, var(--nu-green-soft) 14%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nu-green-soft) 26%, transparent);
-  border-radius: var(--nu-r-pill); padding: 6px 12px;
-}
+.tev__gate-left { flex: 1 1 380px; min-width: min(320px, 100%); }
 .tev__gate-title {
-  margin: 16px 0 0; color: var(--nu-cream-text); font-size: clamp(26px, 3.2vw, 40px);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.04;
+  margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h3);
+  font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
 }
 .tev__gate-sub {
-  margin: 12px 0 0; color: var(--nu-cream-text-82); font-size: var(--nu-fs-md); font-weight: 500;
-  line-height: 1.55; max-width: 46ch;
+  margin: 14px 0 0; color: var(--nu-on-dark); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500;
+  line-height: 1.5; max-width: 48ch;
 }
-.tev__gate-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
-.tev__gate-cta {
-  display: inline-flex; align-items: center; gap: 9px; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 28px; font-size: var(--nu-fs-md); font-weight: 800;
-  transition: background .2s, transform .15s;
+.tev__gate-actions { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; margin-top: 26px; }
+.tev__gate-ghost {
+  display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 700;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-dark-chip-line);
+  transition: text-decoration-color .2s ease;
 }
-.tev__gate-cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); transform: translateY(-2px); }
-.tev__gate-cta--ghost {
-  background: transparent; color: var(--nu-cream-text);
-  border: 2px solid var(--nu-cream-text-45); padding: 13px 26px;
-}
-.tev__gate-cta--ghost:hover { background: var(--nu-cream-text-10); color: var(--nu-cream-text); }
-.tev__gate-micro { display: block; margin-top: 16px; color: var(--nu-cream-text-50); font-size: var(--nu-fs-dense); font-weight: 500; }
+.tev__gate-ghost:hover { color: var(--nu-white); text-decoration-color: currentColor; }
+.tev__gate-micro { display: block; margin-top: 14px; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 500; }
 
 .tev__gate-list {
-  position: relative; list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column; gap: 16px; flex: 0 1 340px; min-width: min(280px, 100%);
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 14px; flex: 0 1 360px; min-width: min(280px, 100%);
 }
-.tev__gate-list li { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-cream-text-85); font-size: var(--nu-fs-md); font-weight: 500; }
-.tev__gate-list svg { color: var(--nu-green-soft); flex-shrink: 0; margin-top: 2px; }
-.tev__gate-list b { color: var(--nu-cream-text); font-weight: 800; }
+.tev__gate-list li { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-on-dark); font-size: 15.5px; font-weight: 600; line-height: 1.4; }
+.tev__gate-list svg { color: var(--nu-green-soft); flex-shrink: 0; margin-top: 1px; }
+.tev__gate-list b { color: var(--nu-white); font-weight: 800; }
+@media (prefers-reduced-motion: reduce) {
+  .tev__card--link, .tev__go svg { transition: none; }
+  .tev__card--link:hover, .tev__card--link:hover .tev__go svg { transform: none; }
+}
 </style>

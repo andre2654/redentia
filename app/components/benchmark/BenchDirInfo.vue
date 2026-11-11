@@ -25,8 +25,8 @@ const blocosLeitura = computed<NuDayBlock[]>(() => (props.leitura
 
 <template>
   <span v-if="info || leitura" class="bdi" :class="`bdi--${tom}`">
-    <button v-if="leitura" type="button" class="bdi__b bdi__b--leitura" :aria-label="`Leitura da Redentia: ${titulo}`" aria-haspopup="dialog" @click="abertaLeitura = true">
-      <span class="bdi__selo" aria-hidden="true"><img src="/logo-branca.svg" alt="" width="10" height="10"></span>
+    <button v-if="leitura" type="button" class="bdi__b bdi__b--leitura" :aria-label="`Leitura da Aportou: ${titulo}`" aria-haspopup="dialog" @click="abertaLeitura = true">
+      <MarcaCorte :largura="20" />
       <span class="bdi__txt">Leitura</span>
     </button>
     <button v-if="info" type="button" class="bdi__b bdi__b--i" :aria-label="`Como ler: ${info.titulo}`" aria-haspopup="dialog" @click="abertoInfo = true">
@@ -35,27 +35,25 @@ const blocosLeitura = computed<NuDayBlock[]>(() => (props.leitura
       </svg>
     </button>
     <NuDayModal v-if="info" :open="abertoInfo" eyebrow="Como ler" :title="info.titulo" :date-line="info.sub" :blocks="blocos" @close="abertoInfo = false" />
-    <NuDayModal v-if="leitura" :open="abertaLeitura" eyebrow="Leitura da Redentia" :title="leitura.numero" :date-line="titulo" :blocks="blocosLeitura" @close="abertaLeitura = false" />
+    <NuDayModal v-if="leitura" :open="abertaLeitura" eyebrow="Leitura da Aportou" :title="leitura.numero" :date-line="titulo" :blocks="blocosLeitura" @close="abertaLeitura = false" />
   </span>
 </template>
 
 <style scoped>
 .bdi { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .bdi__b {
-  display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 34px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream); color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; cursor: pointer;
-  transition: background .2s, color .2s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border: 0; border-radius: var(--nu-r-pill);
+  background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer;
+  transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.bdi__b--i { width: 34px; }
-.bdi__b--leitura { padding: 0 13px 0 6px; }
-.bdi__b:hover { background: var(--nu-cream-hover); box-shadow: inset 0 0 0 1px var(--nu-cream-line); color: var(--nu-blue-text); }
-.bdi__b:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.bdi__selo { width: 22px; height: 22px; border-radius: 50%; background: var(--nu-blue); display: inline-flex; align-items: center; justify-content: center; }
-.bdi__selo img { width: 10px; height: 10px; display: block; }
+.bdi__b--i { width: 44px; }
+.bdi__b--leitura { padding: 0 16px 0 12px; }
+.bdi__b:hover { background: var(--nu-line-2); }
+.bdi__b:active { transform: scale(.98); }
 .bdi--escuro .bdi__b { background: var(--nu-agora-pilula); color: var(--nu-agora-texto); }
 .bdi--escuro .bdi__b:hover { background: var(--nu-white-18); box-shadow: none; color: var(--nu-agora-texto); }
 @media (max-width: 560px) {
-  .bdi__b--leitura { width: 34px; padding: 0; }
+  .bdi__b--leitura { width: 44px; padding: 0; }
   .bdi__txt { display: none; }
 }
 </style>

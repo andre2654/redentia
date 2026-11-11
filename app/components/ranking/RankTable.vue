@@ -127,23 +127,26 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
 
 <style scoped>
 /* container rola no eixo x; a página nunca (regra dura de responsivo) */
-.rkt { background: var(--nu-white); border-radius: var(--nu-r-card-lg); overflow-x: auto; }
+/* a tabela da Aportou: cartão branco, cabeçalho em caixa alta espaçada 13,5px,
+   fios leves de 1,5px e a linha que acende em creme */
+.rkt { background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); overflow-x: auto; }
 .rkt__table { width: 100%; min-width: 720px; border-collapse: collapse; }
 .rkt__th {
   padding: 18px 16px 14px; text-align: right; white-space: nowrap;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: .08em;
-  border-bottom: 1px solid var(--nu-cream-2);
+  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .16em;
+  border-bottom: 1.5px solid var(--nu-line-2);
 }
 .rkt__th--pos { width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px); }
 .rkt__th--asset { text-align: left; }
 .rkt__th--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 
 .rkt__row { cursor: pointer; transition: background .15s; }
-.rkt__row:hover { background: var(--nu-cream); }
+.rkt__row:hover { background: var(--nu-page); }
+.rkt__row:hover .rkt__asset-ticker { color: var(--nu-blue-text); }
 /* :not(:first-child) e não sibling: a linha de breakdown expandida não pode
    quebrar a cadeia de bordas entre linhas. */
-.rkt__row:not(:first-child) .rkt__cell { border-top: 1px solid var(--nu-cream-2); }
+.rkt__row:not(:first-child) .rkt__cell { border-top: 1.5px solid var(--nu-line-2); }
 
 .rkt__cell {
   padding: 13px 16px; text-align: right; white-space: nowrap;
@@ -152,7 +155,7 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
 }
 .rkt__cell--pos {
   width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px);
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700;
+  color: var(--nu-gray); font-size: 14.5px; font-weight: 700;
 }
 .rkt__cell--asset { text-align: left; }
 .rkt__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
@@ -162,36 +165,35 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
 /* ——— breakdown expansível (redentia-score) ——— */
 .rkt__toggle {
   background: none; border: 0; padding: 0; cursor: pointer;
-  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700;
-  font-family: inherit; white-space: nowrap;
+  color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; min-height: 44px;
+  font-family: inherit; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px;
 }
-.rkt__toggle:hover { text-decoration: underline; }
 .rkt__breakdown-cell {
   padding: 16px clamp(16px, 2vw, 28px) 20px;
-  background: var(--nu-cream); border-top: 1px solid var(--nu-cream-2);
+  background: var(--nu-page); border-top: 1.5px solid var(--nu-line-2);
 }
 .rkt__breakdown-label {
   display: block; margin-bottom: 12px;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: .12em;
+  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .16em;
 }
 .rkt__breakdown-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .rkt__chip {
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border: 1px solid var(--nu-cream-2);
-  border-radius: var(--nu-r-pill); padding: 7px 14px;
-  color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700;
-  white-space: nowrap; transition: border-color .15s;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-quente);
+  border-radius: var(--nu-r-pill); min-height: 36px; padding: 6px 14px;
+  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  white-space: nowrap; transition: background .2s;
 }
-.rkt__chip:hover { border-color: var(--nu-blue); }
+.rkt__chip:hover { background: var(--nu-cream-2); }
 .rkt__chip-pos { color: var(--nu-blue-text); font-weight: 800; font-variant-numeric: tabular-nums; }
 .rkt__breakdown-empty { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 .rkt__asset { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .rkt__asset-id { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.rkt__asset-ticker { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.1px; }
+.rkt__asset-ticker { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: 0.02em; transition: color .2s ease; }
 .rkt__asset-name {
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
+  color: var(--nu-gray); font-size: 13.5px; font-weight: 500;
   max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 

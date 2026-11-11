@@ -183,34 +183,34 @@ usePageSeo({
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas frequentes sobre o {{ shortName }}</template>
       <template #left>
-        <NuxtLink to="/busca" class="tsd__pill">Perguntar à Redentia AI</NuxtLink>
+        <NuBotaoSeta to="/busca" variante="azul" tamanho="m" class="tsd__pill">Perguntar à IA</NuBotaoSeta>
       </template>
       <NuFaqAccordion :items="titulo.faq" surface="white" />
     </CalcSplit>
 
     <!-- ============ CTA final full-bleed (só deslogado — mesmo padrão dos
-         outros CTAs da Redentia: NuCtaPhoto) ============ -->
+         outros CTAs da Aportou: NuCtaPhoto) ============ -->
     <NuCtaPhoto
       v-if="!isAuthenticated"
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
       :secondary="{ label: 'Ver todos os títulos', to: '/tesouro' }"
     >
-      <template #title>Acompanhe seus títulos<br>na Redentia</template>
+      <template #title>Acompanhe seus títulos<br>na Aportou</template>
       <template #subtitle>Cadastre-se e veja renda fixa, ações e FIIs em uma carteira só, com análises automáticas e dados atualizados diariamente.</template>
     </NuCtaPhoto>
   </div>
 </template>
 
 <style scoped>
-/* ——— leituras (cards brancos na banda creme, família das calculadoras) ——— */
+/* ——— leituras (cartões brancos na faixa, com o fio carvão dos passos da marca) ——— */
 .tsd__readings {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 16px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.tsd__reading { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
-.tsd__reading-title { margin: 0 0 8px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.tsd__reading-body { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
+.tsd__reading { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-branco); border-top: 3px solid var(--nu-ink); }
+.tsd__reading-title { margin: 0 0 8px; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; }
+.tsd__reading-body { margin: 0; color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.5; }
 
 /* ——— ferramentas relacionadas ——— */
 .tsd__grid-cards {
@@ -219,20 +219,17 @@ usePageSeo({
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .tsd__card-link {
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-quente);
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .tsd__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
-.tsd__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; transition: color .2s ease; }
+.tsd__card-link:hover .tsd__card-link-title { color: var(--nu-blue-text); }
+.tsd__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) { .tsd__card-link { transition: none; } .tsd__card-link:hover { transform: none; } }
 
-/* ——— pills / CTA (mesma família dos rankings/calculadoras) ——— */
-.tsd__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.tsd__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+/* ——— a pílula da IA no FAQ ——— */
+.tsd__pill { margin-top: 28px; }
 /* (CTA final = NuCtaPhoto full-bleed, estilos no componente) */
 </style>

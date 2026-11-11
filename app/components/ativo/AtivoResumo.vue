@@ -64,7 +64,7 @@ onBeforeUnmount(() => clearTimeout(fim))
       <summary class="ars2__sum" @click="aoClicar">
         <h2 class="ars2__h2">{{ resumo.fatos.titulo }}</h2>
         <span class="ars2__chev" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
         </span>
       </summary>
       <!-- eslint-disable-next-line vue/no-v-html — resumoHtml escapa tudo antes -->
@@ -74,35 +74,32 @@ onBeforeUnmount(() => clearTimeout(fim))
 </template>
 
 <style scoped>
-/* a faixa: de ponta a ponta (o pai não tem padding lateral), sem fio em cima:
-   a borda de cima é a troca do céu escuro para o branco. O texto fica nas
-   margens do conteúdo do céu (--g e a coluna de 1180px de AtivoNoite). Sem
-   100vw: a largura é a do pai, sem rolagem lateral. A altura é a de uma linha
-   de lista, no idioma das Perguntas frequentes. */
-.ars2 { --ars2-m: max(var(--g, 22px), calc((100% - 1180px) / 2)); }
-.ars2__mais { position: relative; isolation: isolate; border-bottom: 1px solid var(--nu-cream-line); }
+/* Aportou (11/11/2026): a faixa branca de ponta a ponta virou um cartão creme
+   na coluna do topo (não existe faixa branca na marca), no padrão do FAQ: a
+   pergunta em 700 e o "+" num círculo carvão que gira 45 graus ao abrir. */
+.ars2 { --ars2-m: clamp(18px, 2.4vw, 28px); max-width: 1240px; margin: 0 auto; }
+.ars2__mais { border-radius: var(--nu-r-panel); background: var(--nu-card); box-shadow: var(--nu-shadow-quente); overflow: hidden; }
 .ars2__sum {
-  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 20px;
-  min-height: 56px; padding: 14px var(--ars2-m); cursor: pointer; list-style: none;
-  color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 600; line-height: 1.35;
-  transition: color .2s ease;
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  min-height: 68px; padding: 14px var(--ars2-m); cursor: pointer; list-style: none;
+  color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 700; line-height: 1.3;
+  transition: background .2s ease;
 }
 .ars2__sum::-webkit-details-marker { display: none; }
-.ars2__h2 { margin: 0; font: inherit; color: inherit; letter-spacing: -0.01em; }
-.ars2__sum::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--nu-ink-04); opacity: 0; transition: opacity .2s ease; }
-.ars2__sum:hover { color: var(--nu-blue-text); }
-.ars2__sum:hover::before { opacity: 1; }
-.ars2__sum:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: -2px; }
+.ars2__h2 { margin: 0; font: inherit; color: inherit; letter-spacing: -0.015em; }
+.ars2__sum:hover { background: var(--nu-band); }
+.ars2__sum:focus-visible { outline-offset: -3px; border-radius: var(--nu-r-panel); }
 .ars2__chev {
-  display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
-  background: var(--nu-cream); color: var(--nu-ink);
-  transition: transform .42s cubic-bezier(.34, 1.56, .64, 1), background .2s ease, color .2s ease;
+  display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--nu-ink); color: var(--nu-white);
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1), background .2s ease;
 }
-.ars2__sum:hover .ars2__chev { background: var(--nu-ink); color: var(--nu-white); }
-.ars2__mais[open] .ars2__chev { transform: rotate(180deg); }
+.ars2__sum:hover .ars2__chev { background: var(--nu-ink-hover); }
+.ars2__mais[open] .ars2__chev { transform: rotate(45deg); }
+.ars2__mais[open] .ars2__sum { border-bottom: 1.5px solid var(--nu-line-2); }
 
 /* dentro: a largura toda, nas mesmas margens da barra */
-.ars2__corpo { padding: 2px var(--ars2-m) 24px; }
+.ars2__corpo { padding: 20px var(--ars2-m) 26px; }
 .ars2__corpo :deep(.ars2__frase) { margin: 0 0 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; font-variant-numeric: tabular-nums; }
 .ars2__corpo :deep(b) { color: var(--nu-ink); font-weight: 700; white-space: nowrap; }
 /* a lista corre em fileiras na largura toda (uma coluna no celular): segue lista simples */
@@ -111,12 +108,12 @@ onBeforeUnmount(() => clearTimeout(fim))
 .ars2__corpo :deep(.ars2__ind li::marker) { color: var(--nu-gray); }
 .ars2__corpo :deep(.ars2__nota) { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
 .ars2__corpo :deep(.ars2__prov) { margin-top: 20px; }
-.ars2__corpo :deep(.ars2__anos) { display: flex; flex-wrap: wrap; margin: 12px 0 0; border-top: 1px solid var(--nu-cream-line); border-bottom: 1px solid var(--nu-cream-line); font-variant-numeric: tabular-nums; }
+.ars2__corpo :deep(.ars2__anos) { display: flex; flex-wrap: wrap; margin: 12px 0 0; border-top: 1.5px solid var(--nu-line-2); border-bottom: 1.5px solid var(--nu-line-2); font-variant-numeric: tabular-nums; }
 .ars2__corpo :deep(.ars2__ano) { display: flex; flex-direction: column; gap: 2px; padding: 10px 18px 10px 0; margin-right: 18px; }
 .ars2__corpo :deep(.ars2__ano dt) { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; }
 .ars2__corpo :deep(.ars2__ano dd) { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600; }
 .ars2__corpo :deep(.ars2__ano--atual dt) { color: var(--nu-blue-text); }
-.ars2__corpo :deep(.ars2__ano--doze) { padding-left: 18px; border-left: 1px solid var(--nu-cream-line); }
+.ars2__corpo :deep(.ars2__ano--doze) { padding-left: 18px; border-left: 1.5px solid var(--nu-line-2); }
 .ars2__corpo :deep(.ars2__fontes) { margin: 20px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 
 /* a palavra surgindo do desfoque, como no chat (ChatMensagem) */
@@ -126,10 +123,10 @@ onBeforeUnmount(() => clearTimeout(fim))
 @media (max-width: 560px) {
   .ars2__corpo :deep(.ars2__ano) { padding-right: 12px; margin-right: 12px; }
   /* no celular, os 12 meses viram a última fileira, com o fio em cima */
-  .ars2__corpo :deep(.ars2__ano--doze) { flex-basis: 100%; margin-right: 0; padding-left: 0; border-left: 0; border-top: 1px solid var(--nu-cream-line); }
+  .ars2__corpo :deep(.ars2__ano--doze) { flex-basis: 100%; margin-right: 0; padding-left: 0; border-left: 0; border-top: 1.5px solid var(--nu-line-2); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ars2__sum, .ars2__sum::before, .ars2__chev { transition: none; }
+  .ars2__sum, .ars2__chev { transition: none; }
   .ars2__corpo :deep(.rp) { animation: none; }
 }
 </style>

@@ -107,12 +107,9 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
       <p v-if="latest.summary" class="tdi__summary">{{ latest.summary }}</p>
 
       <div class="tdi__foot">
-        <button type="button" class="tdi__cta" @click.stop="openStudy(latest.id)">
-          Ler o estudo completo
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
-        </button>
+        <NuBotaoSeta variante="carvao" tamanho="m" @click.stop="openStudy(latest.id)">Ler o estudo completo</NuBotaoSeta>
         <div class="tdi__sig">
-          <span class="tdi__sig-tile"><img src="/logo-branca.svg" alt="Redentia" class="tdi__sig-logo"></span>
+          <MarcaCorte :largura="22" />
           <span class="tdi__sig-txt">Estudo gerado pela IA na revalidação diária da tese.</span>
         </div>
       </div>
@@ -134,7 +131,7 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
 
     <NuDayModal
       :open="open"
-      eyebrow="Diário da tese · Redentia"
+      eyebrow="Diário da tese · Aportou"
       :title="modalTitle"
       :date-line="modalDateLine"
       :blocks="modalBlocks"
@@ -145,72 +142,67 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
 
 <style scoped>
 .tdi {
-  background: var(--nu-cream);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
+  background: var(--nu-page);
+  padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
 .tdi__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
-.tdi__meta { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
+.tdi__meta { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
 
 .tdi__card {
-  background: var(--nu-white); border-radius: 28px; padding: clamp(26px, 4vw, 44px); margin-top: 40px;
-  cursor: pointer; transition: transform .15s;
+  background: var(--nu-card); border-radius: var(--nu-r-card); padding: clamp(24px, 3vw, 40px); margin-top: 40px; box-shadow: var(--nu-shadow-quente);
+  cursor: pointer; transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-.tdi__card:hover { transform: translateY(-2px); }
+.tdi__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 /* embaçado (anônimo): diário tease não-interativo, atrás do cadastro */
 .tdi__locked { filter: blur(7px); opacity: .55; pointer-events: none; user-select: none; }
 .tdi__badges { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .tdi__title {
   margin: 20px 0 0; color: var(--nu-ink);
-  font-size: clamp(24px, 2.6vw, 36px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.15; max-width: 920px;
+  font-size: var(--nu-fs-h3); font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.05; max-width: 920px;
 }
 .tdi__summary {
-  margin: 16px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
-  line-height: 1.7; max-width: 920px;
+  margin: 16px 0 0; color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500;
+  line-height: 1.5; max-width: 920px;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 
 .tdi__foot { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-top: 26px; }
-.tdi__cta {
-  display: inline-flex; align-items: center; gap: 9px; border: none; font-family: inherit;
-  background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700;
-  padding: 13px 24px; border-radius: var(--nu-r-pill); cursor: pointer; transition: background .2s;
-}
-.tdi__cta:hover { background: var(--nu-ink-hover); }
-
-.tdi__sig { display: flex; align-items: center; gap: 9px; }
-.tdi__sig-tile {
-  width: 26px; height: 26px; border-radius: 8px; background: var(--nu-blue);
-  display: inline-flex; align-items: center; justify-content: center;
-}
-.tdi__sig-logo { width: 15px; height: 15px; display: block; object-fit: contain; }
-.tdi__sig-txt { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.tdi__sig { display: flex; align-items: center; gap: 10px; }
+.tdi__sig-txt { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
 
 .tdi__rows { margin-top: 16px; }
 .tdi__row {
   width: 100%; text-align: left; border: none; font-family: inherit;
   display: flex; align-items: center; gap: 16px;
-  background: var(--nu-white); border-radius: 20px; padding: 20px 26px; margin-bottom: 10px;
-  cursor: pointer; transition: transform .15s;
+  background: var(--nu-white); border-radius: var(--nu-r-tile); min-height: 64px; padding: 16px 24px; margin-bottom: 10px; box-shadow: var(--nu-shadow-quente);
+  cursor: pointer; transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-.tdi__row:hover { transform: translateY(-2px); }
+.tdi__row:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.tdi__row:hover .tdi__row-title { color: var(--nu-blue-text); }
+.tdi__row:hover .tdi__row-chevron { stroke: var(--nu-blue); transform: translateX(3px); }
 .tdi__row-date {
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; width: 52px; flex-shrink: 0;
+  color: var(--nu-gray); font-size: 13.5px; font-weight: 700; width: 56px; flex-shrink: 0;
   font-variant-numeric: tabular-nums;
 }
 .tdi__row-title {
   flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
-  line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .2s ease;
 }
-.tdi__row-chevron { flex-shrink: 0; stroke: var(--nu-sand); }
+.tdi__row-chevron { flex-shrink: 0; stroke: var(--nu-sand); transition: transform .2s ease, stroke .2s ease; }
 .tdi__more { text-align: center; margin-top: 20px; }
 .tdi__more-btn {
   display: inline-flex; align-items: center; border: none; font-family: inherit;
-  background: var(--nu-sand-2); color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700;
-  padding: 11px 22px; border-radius: var(--nu-r-pill); cursor: pointer; transition: background .2s;
+  background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14.5px; font-weight: 700;
+  min-height: 44px; padding: 0 22px; border-radius: var(--nu-r-pill); cursor: pointer; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.tdi__more-btn:hover { background: var(--nu-sand-hover); }
+.tdi__more-btn:hover { background: var(--nu-line-2); }
+.tdi__more-btn:active { transform: scale(.98); }
+@media (prefers-reduced-motion: reduce) {
+  .tdi__card, .tdi__row, .tdi__row-chevron, .tdi__more-btn { transition: none; }
+  .tdi__card:hover, .tdi__row:hover, .tdi__row:hover .tdi__row-chevron, .tdi__more-btn:active { transform: none; }
+}
 
 @media (max-width: 700px) {
   .tdi__foot { flex-direction: column; align-items: flex-start; }

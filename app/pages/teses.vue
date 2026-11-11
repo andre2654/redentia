@@ -30,9 +30,10 @@ usePageSeo({
     <section class="tsf">
       <div class="tsf__cols">
         <div class="tsf__left">
+          <NuEyebrow como="p">Perguntas</NuEyebrow>
           <h2 class="tsf__title">Ficou com alguma<br>dúvida?</h2>
-          <div class="tsf__copy">Respostas para as principais dúvidas sobre teses de investimento na Redentia.</div>
-          <button type="button" class="tsf__cta" @click="painel.abrir()">Perguntar à Redentia AI</button>
+          <div class="tsf__copy">Respostas para as principais dúvidas sobre teses de investimento na Aportou.</div>
+          <NuBotaoSeta variante="carvao" tamanho="m" class="tsf__cta" @click="painel.abrir()">Perguntar à IA</NuBotaoSeta>
         </div>
         <div class="tsf__right">
           <NuFaqAccordion :items="TESES_FAQS" :default-open="-1" surface="white" />
@@ -43,21 +44,15 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— FAQ ——— */
-.tsf { background: var(--nu-cream); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.tsf__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
+/* ——— FAQ (Aportou: a faixa quente, o eyebrow, o H2 em 800, a pílula com a seta) ——— */
+.tsf { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
+.tsf__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; max-width: 1240px; margin: 0 auto; }
 .tsf__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .tsf__title {
-  margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
-  font-weight: 500; letter-spacing: -0.045em; line-height: 1.02;
+  margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
-.tsf__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
-.tsf__cta {
-  display: inline-flex; align-items: center; height: 44px; padding: 0 22px; margin-top: 28px; border: 0; background: transparent; cursor: pointer;
-  border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1px var(--nu-ink-16);
-  font: inherit; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; transition: background .2s, box-shadow .2s;
-}
-.tsf__cta:hover { background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-ink-30); color: var(--nu-ink); }
-.tsf__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.tsf__copy { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; margin-top: 20px; max-width: 420px; }
+.tsf__cta { margin-top: 28px; }
 .tsf__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
 </style>

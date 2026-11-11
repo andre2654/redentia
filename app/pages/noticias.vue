@@ -46,7 +46,7 @@ if (ldItems.length) {
 
 usePageSeo({
   title: 'Notícias do mercado hoje, lidas pela IA',
-  description: 'As notícias que mexem com a B3, cada uma com a leitura da IA da Redentia: o que muda de verdade, para quais ativos e a direção do impacto em cada ticker. Ações, FIIs e macro, atualizado ao longo do pregão.',
+  description: 'As notícias que mexem com a B3, cada uma com a leitura da IA da Aportou: o que muda de verdade, para quais ativos e a direção do impacto em cada ticker. Ações, FIIs e macro, atualizado ao longo do pregão.',
   path: '/noticias',
   structuredData,
   breadcrumbs: [
@@ -82,9 +82,9 @@ usePageSeo({
             ? 'Conecte sua corretora para filtrar o feed pelos seus ativos: só o que afeta o seu dinheiro.'
             : 'Entre na sua conta e conecte a carteira para ver só o que afeta os seus ativos.' }}
         </div>
-        <NuxtLink :to="isAuthenticated ? '/' : '/login?redirect=/noticias'" class="nof__empty-cta">
-          {{ isAuthenticated ? 'Conectar carteira' : 'Entrar na Redentia' }}
-        </NuxtLink>
+        <NuBotaoSeta :to="isAuthenticated ? '/' : '/login?redirect=/noticias'" variante="azul" tamanho="m" class="nof__empty-cta">
+          {{ isAuthenticated ? 'Conectar carteira' : 'Entrar na Aportou' }}
+        </NuBotaoSeta>
       </div>
       <div v-else-if="emptyCat" class="nof__empty">
         <div class="nof__empty-title">Nada por aqui agora.</div>
@@ -99,31 +99,27 @@ usePageSeo({
 </template>
 
 <style scoped>
+/* Aportou: o feed corre sobre o creme da página (não há faixa branca) */
 .nof {
-  background: var(--nu-white);
-  padding: clamp(44px, 5.5vw, 72px) clamp(22px, 5.5vw, 80px) clamp(64px, 8vw, 100px);
+  background: var(--nu-page);
+  padding: clamp(44px, 5.5vw, 72px) clamp(22px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
   animation: nu-fade .5s ease both;
 }
 .nof__stack { display: flex; flex-direction: column; gap: clamp(52px, 6.5vw, 92px); }
 .nof__more { text-align: center; margin-top: clamp(48px, 6vw, 72px); }
 
-/* empty-state (sem spec no mock — linguagem do design: bloco creme, CTA azul) */
+/* estado vazio: o cartão creme da marca, com a pílula da seta */
 .nof__empty {
-  background: var(--nu-cream); border-radius: 28px; text-align: center;
+  background: var(--nu-card); border-radius: var(--nu-r-card); text-align: center; box-shadow: var(--nu-shadow-quente);
   padding: clamp(48px, 7vw, 88px) clamp(22px, 5vw, 64px);
 }
 .nof__empty-title {
-  color: var(--nu-ink); font-size: clamp(22px, 2.6vw, 32px);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.14;
+  color: var(--nu-ink); font-size: var(--nu-fs-h3);
+  font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
 }
 .nof__empty-sub {
-  color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
+  color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5;
   margin: 14px auto 0; max-width: 460px;
 }
-.nof__empty-cta {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 14px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 26px; transition: background .2s;
-}
-.nof__empty-cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.nof__empty-cta { margin-top: 26px; }
 </style>

@@ -24,7 +24,7 @@ const sobre = useSobreDoContexto()
 
 <style scoped>
 .tsc {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   padding: 0 clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 72px);
   animation: nu-fade .5s ease both;
 }
@@ -32,18 +32,19 @@ const sobre = useSobreDoContexto()
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 16px;
 }
-.tsc__card { background: var(--nu-white); border-radius: var(--nu-r-card-lg); padding: clamp(24px, 3vw, 34px); }
+.tsc__card { background: var(--nu-card); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(24px, 3vw, 36px); }
 .tsc__label {
-  margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: .14em;
+  margin: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .16em;
 }
 .tsc__price {
-  margin: 10px 0 0; color: var(--nu-ink); font-size: clamp(28px, 3.4vw, 42px);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;
+  margin: 14px 0 0; color: var(--nu-ink); font-size: clamp(34px, 4vw, 52px);
+  font-weight: 800; letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .tsc__rate {
-  margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700;
+  display: inline-flex; align-items: center; min-height: 28px; margin: 12px 0 0; padding: 0 10px; border-radius: var(--nu-r-tag);
+  background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-.tsc__note { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.tsc__note { margin: 12px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
 </style>

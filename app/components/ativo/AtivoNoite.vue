@@ -14,6 +14,11 @@
 // NuMarketTicker), sem px chutado.
 // Tudo sai do servidor: o texto, os links, o FAQ (<details>). Ao rolar, o
 // papel, o preço e a variação entram na barra que gruda, sem empurrar nada.
+// Aportou (11/11/2026): a página trocou de roupa, não de conteúdo. O topo é
+// creme, com o cartão carvão do gráfico (TopoBolsa); as bandas alternam o creme
+// da página e a faixa quente (--nu-band) no lugar do branco e do creme; cada
+// seção abre com o eyebrow da marca e o título em 800, alinhados à esquerda.
+// A ordem das seções, os títulos, os textos e os links são os mesmos.
 import type { AtivoDirecaoVM } from '~/composables/useAtivoDirecao'
 import AcaoEtfXray from '~/components/acao/AcaoEtfXray.vue'
 import AcaoFundInfo from '~/components/acao/AcaoFundInfo.vue'
@@ -78,10 +83,32 @@ onMounted(() => {
   obsHeroi.observe(heroi.value)
 })
 onBeforeUnmount(() => obsHeroi?.disconnect())
+
+// A entrada das seções (contrato da Aportou, seção 5): o cabeçalho e o conteúdo
+// sobem 10px com fade quando a seção chega perto da tela. Só embeleza: a classe
+// só entra em seção que montou FORA da tela, com a aba visível e sem pedido de
+// menos movimento; se o observador nunca disparar, o conteúdo já está lá.
+const raiz = ref<HTMLElement | null>(null)
+let obsSecoes: IntersectionObserver | null = null
+onMounted(() => {
+  const el = raiz.value
+  if (!el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  obsSecoes = new IntersectionObserver((entradas) => {
+    for (const e of entradas) {
+      if (!e.isIntersecting) continue
+      e.target.classList.add('an--entra')
+      obsSecoes?.unobserve(e.target)
+    }
+  }, { rootMargin: '0px 0px 12% 0px' })
+  el.querySelectorAll<HTMLElement>(':scope > .an__sec, :scope > .an__embutida').forEach((sec) => {
+    if (sec.getBoundingClientRect().top >= window.innerHeight) obsSecoes!.observe(sec)
+  })
+})
+onBeforeUnmount(() => obsSecoes?.disconnect())
 </script>
 
 <template>
-  <div class="an">
+  <div ref="raiz" class="an">
     <div id="cotacao" class="an__ativo">
       <!-- ============ o topo: o papel, o preço e a linha de luz ============ -->
       <div ref="heroi">
@@ -123,7 +150,7 @@ onBeforeUnmount(() => obsHeroi?.disconnect())
 
     <section v-if="cartoes.length" id="indicadores" v-contexto-chat="{ id: `fundamentos:${t}`, tipo: 'grafico', rotulo: rotuloComSobre('Fundamentos', t) }" class="an__sec" :class="tom('indicadores')">
       <header class="an__cab">
-        <p class="an__tipo">{{ rotulo('indicadores') }}</p>
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('indicadores') }}</NuEyebrow>
         <h2 class="an__h2">{{ a.fundHeading[0] }} {{ a.fundHeading[1] }}</h2>
         <p class="an__q">{{ a.fundSub }}</p>
       </header>
@@ -137,7 +164,7 @@ onBeforeUnmount(() => obsHeroi?.disconnect())
 
     <section v-if="a.dividends" id="dividendos" class="an__sec" :class="tom('dividendos')">
       <header class="an__cab">
-        <p class="an__tipo">{{ rotulo('dividendos') }}</p>
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('dividendos') }}</NuEyebrow>
         <h2 class="an__h2">{{ a.dividends.heading[0] }} {{ a.dividends.heading[1] }}</h2>
       </header>
       <div class="an__largo">
@@ -148,32 +175,32 @@ onBeforeUnmount(() => obsHeroi?.disconnect())
       </div>
     </section>
 
-    <section v-if="a.ai" id="analise" v-contexto-chat="{ id: `analise:${t}`, tipo: 'grafico', rotulo: `O que a Redentia vê · ${t}` }" class="an__sec" :class="tom('analise')">
+    <section v-if="a.ai" id="analise" v-contexto-chat="{ id: `analise:${t}`, tipo: 'grafico', rotulo: `O que a Aportou vê · ${t}` }" class="an__sec" :class="tom('analise')">
       <header class="an__cab">
-        <p class="an__tipo">{{ rotulo('analise') }}</p>
-        <h2 class="an__h2">O que a Redentia vê.</h2>
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('analise') }}</NuEyebrow>
+        <h2 class="an__h2">O que a Aportou vê.</h2>
       </header>
       <div class="an__largo"><AtivoLeitura :ticker="t" :ai="a.ai" @conversar="abrirCom()" /></div>
     </section>
 
     <section v-if="a.editorial?.sections.length" id="sobre" class="an__sec" :class="tom('sobre')">
-      <header class="an__cab">
-        <p class="an__tipo">{{ rotulo('sobre') }}</p>
+      <header class="an__cab an__cab--estreito">
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('sobre') }}</NuEyebrow>
       </header>
       <div class="an__estreito"><AtivoProsa :ticker="t" :secoes="a.editorial.sections" /></div>
     </section>
 
     <section v-if="a.theses.length" id="teses" v-contexto-chat="{ id: `teses:${t}`, tipo: 'tese', rotulo: `Teses com ${t}`, texto: `${tesesTitulo}\n${a.theses.map((x) => `${x.title}: ${x.roleStrong}${x.roleRest}`).join('\n')}` }" class="an__sec" :class="tom('teses')">
-      <header class="an__cab">
-        <p class="an__tipo">Teses Redentia</p>
+      <header class="an__cab an__cab--estreito">
+        <NuEyebrow como="p" class="an__tipo">Teses da Aportou</NuEyebrow>
         <h2 class="an__h2">{{ tesesTitulo }}</h2>
       </header>
       <div class="an__estreito"><AtivoTeses :theses="a.theses" /></div>
     </section>
 
     <section v-if="a.news" id="noticias" v-contexto-chat="{ id: `noticias:${t}`, tipo: 'noticia', rotulo: `Notícias de ${t}` }" class="an__sec" :class="tom('noticias')">
-      <header class="an__cab">
-        <p class="an__tipo">{{ rotulo('noticias') }}</p>
+      <header class="an__cab an__cab--estreito">
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('noticias') }}</NuEyebrow>
         <h2 class="an__h2">{{ t }} no noticiário.</h2>
         <p class="an__q">O que saiu sobre {{ t }}, com a variação do papel no dia de cada notícia.</p>
       </header>
@@ -187,7 +214,7 @@ onBeforeUnmount(() => obsHeroi?.disconnect())
 
     <section v-if="a.pares" id="setor" class="an__sec" :class="tom('setor')">
       <header class="an__cab">
-        <p class="an__tipo">{{ rotulo('setor') }}</p>
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('setor') }}</NuEyebrow>
         <h2 class="an__h2">Outras empresas do setor {{ a.pares.setor.nome.toLowerCase() }}.</h2>
       </header>
       <div class="an__largo"><AtivoPares :pares="a.pares" /></div>
@@ -208,106 +235,111 @@ onBeforeUnmount(() => obsHeroi?.disconnect())
 
 <style scoped>
 .an {
-  --g: clamp(22px, 5.5vw, 80px);
+  --g: clamp(20px, 5.5vw, 80px);
   /* a barra encosta embaixo do header (--nuh-h, useTopo) e da régua do
      mercado (--nut-h, NuMarketTicker): os dois publicam a altura no <html> */
   --cola: calc(var(--nuh-h, 72px) + var(--nut-h, 0px));
-  --barra-h: 57px;
-  --mola: cubic-bezier(.34, 1.56, .64, 1);
-  --a-h2: var(--nu-fs-h3); --a-h2-peso: 600;
-  background: var(--nu-white);
+  --barra-h: 61px;
+  --mola: cubic-bezier(.2, .8, .2, 1);
+  --a-h2: var(--nu-fs-h3); --a-h2-peso: 800;
+  /* a margem da coluna de 1240px (a do topo): a barra e as seções alinham nela */
+  --lado: max(var(--g), calc((100% - 1240px) / 2));
+  background: var(--nu-page);
 }
 
-/* ——— a barra que gruda: encosta na régua, fundo de vidro quase opaco ——— */
+/* ——— a barra que gruda: encosta na régua, creme da página quase opaco ——— */
 .an__barra {
   position: sticky; top: var(--cola); z-index: 30;
-  background: color-mix(in srgb, var(--nu-white) 94%, transparent);
+  background: color-mix(in srgb, var(--nu-page) 94%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px);
-  border-bottom: 1px solid var(--nu-cream-line);
+  border-top: 1.5px solid var(--nu-line-2); border-bottom: 1.5px solid var(--nu-line-2);
   /* o mesmo passo da régua e do header quando o header encolhe */
   transition: top .32s cubic-bezier(.2, .8, .2, 1);
   /* compacta: o papel à esquerda, as seções à direita */
   display: flex; align-items: center;
 }
 .an__barra .an__chips { flex: 1; min-width: 0; }
-.an__ident { display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-left: var(--g); animation: an-ident .22s ease both; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.an__ident { display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-left: var(--lado); animation: an-ident .22s ease both; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @keyframes an-ident { from { opacity: 0; transform: translateY(4px); } }
-.an__ident-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
-.an__ident-p { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600; }
+/* o papel na barra: a etiqueta carvão da marca */
+.an__ident-t { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 800; letter-spacing: 0.04em; }
+.an__ident-p { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
 .an__ident-v { font-size: var(--nu-fs-sm); font-weight: 700; }
 .an__ident-v--up { color: var(--nu-green-text); }
 .an__ident-v--down { color: var(--nu-red-text); }
 .an__barra--compacta .an__chip--ativo { display: none; }
 /* compacta, a fileira que rola some num degradê junto do papel (não corta seco) */
-.an__barra--compacta .an__chips { -webkit-mask-image: linear-gradient(90deg, transparent 6px, #000 22px); mask-image: linear-gradient(90deg, transparent 6px, #000 22px); }
-.an__chips { list-style: none; margin: 0; padding: 10px var(--g); display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.an__barra--compacta .an__chips { padding-left: 16px; -webkit-mask-image: linear-gradient(90deg, transparent 6px, var(--nu-ink) 22px); mask-image: linear-gradient(90deg, transparent 6px, var(--nu-ink) 22px); }
+.an__chips { list-style: none; margin: 0; padding: 8px var(--lado); display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; }
 .an__chips::-webkit-scrollbar { display: none; }
 .an__chip {
-  display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: var(--nu-r-pill); white-space: nowrap;
-  background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 600;
-  transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .45s var(--mola);
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: var(--nu-r-pill); white-space: nowrap;
+  background: transparent; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 600;
+  transition: background .2s ease, color .2s ease, transform .15s var(--mola);
 }
 .an__chip--ativo { font-weight: 800; }
-.an__chip:hover { background: var(--nu-white); color: var(--nu-ink); box-shadow: 0 0 0 1px var(--nu-navy-06), 0 10px 22px -14px var(--nu-navy-55); transform: translateY(-1px); }
-.an__chip:active { transform: scale(.96); }
-.an__chip--on, .an__chip--on:hover { background: var(--nu-ink); color: var(--nu-white); box-shadow: none; }
-.an__chip:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.an__chip:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
+.an__chip:active { transform: scale(.97); }
+.an__chip--on, .an__chip--on:hover { background: var(--nu-ink); color: var(--nu-white); font-weight: 700; }
 
-/* ——— cada seção: cabeçalho centrado, conteúdo embaixo ——— */
-.an__sec { scroll-margin-top: calc(var(--cola) + var(--barra-h)); padding: clamp(56px, 7vw, 96px) var(--g); }
+/* ——— cada seção: o eyebrow e o título à esquerda, o conteúdo embaixo ——— */
+.an__sec { scroll-margin-top: calc(var(--cola) + var(--barra-h)); padding: clamp(64px, 7vw, 100px) var(--g); }
 #cotacao { scroll-margin-top: var(--cola); }
-.an__sec--creme { background: var(--nu-cream); }
-/* a faixa do resumo encosta no céu: sem padding em cima nem dos lados (sem 100vw: nada de rolagem lateral) */
-.an__sec--resumo { padding: 0 0 clamp(40px, 5vw, 64px); }
+/* a entrada: o cabeçalho e, 60ms depois, o conteúdo (só com a classe do observador) */
+.an__sec.an--entra > *, .an__embutida.an--entra > * { animation: nu-fade .5s ease backwards; }
+.an__sec.an--entra > :nth-child(2) { animation-delay: 60ms; }
+/* a segunda cor da alternância: a faixa quente (era o creme sobre o branco) */
+.an__sec--creme { background: var(--nu-band); }
+/* o resumo mora logo abaixo do topo, na mesma coluna dele */
+.an__sec--resumo { padding: 0 clamp(20px, 4vw, 56px) clamp(36px, 4.4vw, 56px); }
 .an__sec--fim { padding-bottom: clamp(40px, 5vw, 64px); }
-.an__cab { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 720px; margin: 0 auto; }
-.an__tipo { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
-.an__h2 { margin: 10px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.045em; line-height: 1.05; text-wrap: balance; }
-.an__q { margin: 12px 0 0; max-width: 52ch; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; text-wrap: balance; }
+.an__cab { display: flex; flex-direction: column; align-items: flex-start; max-width: 1240px; margin: 0 auto; }
+.an__cab--estreito { max-width: 760px; }
+.an__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
+.an__q { margin: 14px 0 0; max-width: 60ch; color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5; }
 .an__estreito { max-width: 760px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
-.an__largo { max-width: 1080px; margin: clamp(28px, 3.4vw, 44px) auto 0; }
+.an__largo { max-width: 1240px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
+/* sem título, só o eyebrow (a prosa "Sobre" traz os próprios H2): menos respiro */
+.an__cab:not(:has(.an__h2)) + .an__estreito { margin-top: 22px; }
 .an__sec--creme .an__ind :deep(.ain__dim) { background: var(--nu-white); }
-.an__sec--creme :deep(.avt__lista a), .an__sec--creme :deep(.apv__cta:not(.apv__cta--1)) { background: var(--nu-white); }
+.an__sec--creme :deep(.avt__lista a) { background: var(--nu-white); }
 
 /* AcaoEtfXray e AcaoFundInfo vêm prontos (as bandas deles); aqui o título no
-   peso da página, a cor na alternância e o hover com mola e anel. A cadeia
+   peso da página, a cor na alternância e o cartão que sobe. A cadeia
    (CadeiaRazao) já recebe o tom da alternância. */
 .an__embutida { scroll-margin-top: calc(var(--cola) + var(--barra-h) - 20px); }
-.an__embutida :deep(.axb__title), .an__embutida :deep(.afi__title) { font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.045em; }
-.an__embutida--inverte :deep(.axb--white), .an__embutida--inverte :deep(.afi) { background: var(--nu-cream); }
-.an__embutida--inverte :deep(.axb--cream) { background: var(--nu-white); }
-.an__embutida--inverte :deep(.axb--cream .axb__card) { background: var(--nu-cream); }
+.an__embutida :deep(.axb__title), .an__embutida :deep(.afi__title) { font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; }
+.an__embutida--inverte :deep(.axb--white), .an__embutida--inverte :deep(.afi) { background: var(--nu-band); }
+.an__embutida--inverte :deep(.axb--cream) { background: var(--nu-page); }
 .an__embutida :deep(.axb__row) { transition: background .2s ease; border-radius: 8px; }
-.an__embutida :deep(.axb__row--link:hover) { background: var(--nu-ink-04); }
-.an__embutida :deep(.axb__card) { transition: transform .45s var(--mola), box-shadow .22s ease; }
-.an__embutida :deep(.axb__card:hover) { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); }
+.an__embutida :deep(.axb__row--link:hover) { background: var(--nu-cream-2); }
+.an__embutida :deep(.axb__card) { transition: transform .25s var(--mola), box-shadow .25s var(--mola); }
+.an__embutida :deep(.axb__card:hover) { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 
 /* a faixa do FAQ: a largura do /teses (sem o miolo de 760px), o gancho e o
    "veja também" embaixo das duas colunas */
 .an__sec--faq { padding-top: clamp(64px, 8.5vw, 110px); }
-.an__faq { max-width: 1280px; margin: 0 auto; }
+.an__faq { max-width: 1240px; margin: 0 auto; }
 .an__faq-pe { margin-top: clamp(48px, 6vw, 80px); }
-/* colada numa banda creme (a conta pintaria as perguntas de branco): um fio
-   no lugar do segundo respiro */
+/* colada numa banda da mesma cor (a conta pintaria as perguntas da cor da
+   página): um fio no lugar do segundo respiro */
 .an__sec--creme + .an__sec--faq, .an__embutida:has(.crz--creme) + .an__sec--faq { padding-top: 0; }
-.an__sec--creme + .an__sec--faq .an__faq, .an__embutida:has(.crz--creme) + .an__sec--faq .an__faq { padding-top: clamp(56px, 7vw, 96px); border-top: 1px solid var(--nu-cream-line); }
+.an__sec--creme + .an__sec--faq .an__faq, .an__embutida:has(.crz--creme) + .an__sec--faq .an__faq { padding-top: clamp(56px, 7vw, 96px); border-top: 1.5px solid var(--nu-line); }
 .an__veja { margin-top: 40px; }
 
 @media (max-width: 680px) {
-  .an { --barra-h: 53px; }
-  .an__chips { padding: 8px var(--g); }
-}
-/* no celular o papel encolhe, mas o preço fica: ticker, preço e variação */
-@media (max-width: 680px) {
+  .an { --barra-h: 57px; }
+  .an__chips { padding: 6px var(--lado); }
+  /* no celular o papel encolhe, mas o preço fica: ticker, preço e variação */
   .an__ident { gap: 6px; }
-  .an__ident-t, .an__ident-p { font-size: var(--nu-fs-sm); }
+  .an__ident-p { font-size: var(--nu-fs-sm); }
   .an__ident-v { font-size: var(--nu-fs-xs); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .an__ident { animation: none; }
+  .an__ident, .an__sec.an--entra > *, .an__embutida.an--entra > * { animation: none; }
   .an__chip, .an__barra,
   .an__embutida :deep(.axb__card) { transition: none; }
-  .an__chip:hover, .an__chip:active,
+  .an__chip:active,
   .an__embutida :deep(.axb__card:hover) { transform: none; }
 }
 </style>

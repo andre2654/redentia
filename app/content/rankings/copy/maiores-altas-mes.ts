@@ -94,7 +94,7 @@ const copy: RankingCopy = {
     // a página não existe no Nu (re-add quando existir).
     {
       title: 'Todos os Rankings',
-      desc: 'Lista completa de rankings da Redentia.',
+      desc: 'Lista completa de rankings da Aportou.',
       href: '/rankings',
     },
   ],

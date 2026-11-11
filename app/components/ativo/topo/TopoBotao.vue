@@ -4,12 +4,14 @@
 // da /carteira usar o MESMO botão (Esconder valores, Adicionar conta,
 // Perguntar): o ícone vem no slot, o rótulo e o estado por prop. Com `to`,
 // vira link; sem, botão. Mola só no toque.
-const props = withDefaults(defineProps<{ rotulo: string; to?: string; on?: boolean }>(), { to: undefined, on: false })
+// `tom="claro"` (Aportou, 11/11/2026) é o mesmo botão sobre o creme da página
+// do ativo: círculo creme, ícone carvão; ligado, carvão com o ícone branco.
+const props = withDefaults(defineProps<{ rotulo: string; to?: string; on?: boolean; tom?: 'escuro' | 'claro' }>(), { to: undefined, on: false, tom: 'escuro' })
 const Link = resolveComponent('NuxtLink')
 </script>
 
 <template>
-  <component :is="to ? Link : 'button'" :to="to" :type="to ? undefined : 'button'" class="tac__b" :class="{ 'tac__b--on': props.on }">
+  <component :is="to ? Link : 'button'" :to="to" :type="to ? undefined : 'button'" class="tac__b" :class="{ 'tac__b--on': props.on, 'tac__b--claro': props.tom === 'claro' }">
     <span class="tac__c" aria-hidden="true"><slot /></span>
     <span class="tac__r">{{ rotulo }}</span>
   </component>
@@ -35,6 +37,12 @@ const Link = resolveComponent('NuxtLink')
 .tac__r { color: var(--nu-agora-sub); }
 .tac__b--on .tac__c { background: var(--nu-green-soft); color: var(--nu-navy); box-shadow: none; }
 .tac__b:disabled { cursor: progress; }
+/* sobre o creme (o topo do /asset) */
+.tac__b--claro:focus-visible .tac__c { box-shadow: 0 0 0 3px var(--nu-blue); }
+.tac__b--claro .tac__c { background: var(--nu-cream-2); color: var(--nu-ink); box-shadow: none; }
+.tac__b--claro:hover .tac__c { background: var(--nu-line-2); }
+.tac__b--claro .tac__r { color: var(--nu-gray-3); }
+.tac__b--claro.tac__b--on .tac__c { background: var(--nu-ink); color: var(--nu-white); }
 @media (prefers-reduced-motion: reduce) {
   .tac__c { transition: none; }
   .tac__b:hover .tac__c, .tac__b:active .tac__c { transform: none; }

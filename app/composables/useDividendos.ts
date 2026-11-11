@@ -570,7 +570,7 @@ function buildPayload(c: Core): DividendosPayload {
         },
     {
       q: `Onde acompanhar os próximos pagamentos de ${c.ticker}?`,
-      a: `Os anúncios oficiais saem como fato relevante no site de RI e no sistema da CVM. Esta página consolida o histórico com dados da B3, e a página do ativo na Redentia traz cotação, fundamentos, notícias e a leitura da Redentia AI sobre ${c.ticker}.`,
+      a: `Os anúncios oficiais saem como fato relevante no site de RI e no sistema da CVM. Esta página consolida o histórico com dados da B3, e a página do ativo na Aportou traz cotação, fundamentos, notícias e a leitura da IA da Aportou sobre ${c.ticker}.`,
     },
   ]
 

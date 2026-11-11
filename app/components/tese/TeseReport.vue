@@ -48,7 +48,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
       <article class="trp__article">
       <!-- A oportunidade: o caso em 1-2 §§, lead em destaque -->
       <div v-if="report.opportunityHtml.length" id="rel-oportunidade" class="trp__block">
-        <div class="trp__eyebrow">A oportunidade</div>
+        <NuEyebrow como="div">A oportunidade</NuEyebrow>
         <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
         <p v-for="(p, i) in report.opportunityHtml" :key="i" class="trp__lead" v-html="p" />
       </div>
@@ -166,12 +166,12 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
 
 <style scoped>
 .trp {
-  background: var(--nu-white);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
+  background: var(--nu-page);
+  padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
 .trp__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
-.trp__meta { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; }
+.trp__meta { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
 /* duas colunas no padrão dos guias: índice sticky (NuTocSidebar) à esquerda +
    artigo longo à direita (mesma medida de 760px do corpo dos guias). */
@@ -186,10 +186,9 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
 .trp__block:first-child { margin-top: 0; }
 
 /* eyebrow + lead da oportunidade */
-.trp__eyebrow { color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
 .trp__lead {
   margin: 16px 0 0; color: var(--nu-ink);
-  font-size: clamp(19px, 2vw, 22px); font-weight: 500; line-height: 1.6;
+  font-size: clamp(19px, 2vw, 22px); font-weight: 600; line-height: 1.5;
   letter-spacing: -0.012em;
 }
 .trp__lead + .trp__lead { margin-top: 18px; }
@@ -197,21 +196,21 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
 /* h2 frase-argumento (medidas do corpo de artigo dos guias) */
 .trp__h2 {
   margin: 0; color: var(--nu-ink);
-  font-size: clamp(26px, 3vw, 38px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.1;
+  font-size: var(--nu-fs-h3); font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.05;
 }
 
 /* prosa (mesma voz do editorial da tese) */
 .trp__p {
   margin: 18px 0 0; color: var(--nu-gray-3);
-  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.75;
+  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6;
 }
 .trp__lead :deep(.tse-hi),
 .trp__p :deep(.tse-hi),
 .trp__pillar-txt :deep(.tse-hi),
 .trp__risk-txt :deep(.tse-hi),
 .trp__math-txt :deep(.tse-hi) {
-  background: var(--nu-blue-16); color: var(--nu-ink); font-weight: 800;
+  background: var(--nu-blue-bg); color: var(--nu-ink); font-weight: 800; border-radius: 4px;
   padding: 1px 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 .trp__p :deep(strong), .trp__lead :deep(strong) { font-weight: 800; color: var(--nu-ink); }
@@ -220,23 +219,23 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
 .trp__pillars { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
 .trp__pillar {
   display: flex; align-items: flex-start; gap: 16px;
-  background: var(--nu-cream); border-radius: 20px; padding: 20px 22px;
+  background: var(--nu-card); border-radius: var(--nu-r-tile); padding: 20px 22px; box-shadow: var(--nu-shadow-quente);
 }
 .trp__pillar-idx {
-  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800;
-  font-variant-numeric: tabular-nums; margin-top: 2px; flex-shrink: 0;
+  color: var(--nu-blue); font-size: var(--nu-fs-xl); font-weight: 800; line-height: 1.2;
+  font-variant-numeric: tabular-nums; flex-shrink: 0;
 }
 .trp__pillar-txt { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 
 /* riscos — card vermelho suave */
 .trp__risks {
-  background: var(--nu-tile-red-bg); border-radius: var(--nu-r-card);
+  background: var(--nu-red-bg); border-radius: var(--nu-r-panel);
   padding: 24px 26px; margin-top: 22px;
   display: flex; flex-direction: column; gap: 14px;
 }
 .trp__risk { display: flex; align-items: flex-start; gap: 12px; }
 .trp__risk-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--nu-red-2);
+  width: 8px; height: 8px; border-radius: 50%; background: var(--nu-red-text);
   flex-shrink: 0; margin-top: 8px;
 }
 .trp__risk-txt { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
@@ -245,23 +244,23 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
 .trp__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .trp__chip {
   display: inline-flex; align-items: center; gap: 7px;
-  background: var(--nu-cream); border-radius: var(--nu-r-pill); padding: 8px 14px;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700;
+  background: var(--nu-cream-2); border-radius: var(--nu-r-pill); min-height: 36px; padding: 6px 14px;
+  color: var(--nu-gray-3); font-size: 13.5px; font-weight: 700;
   transition: background .2s, color .2s;
 }
-a.trp__chip:hover { background: var(--nu-cream-hover); color: var(--nu-blue-text); }
+a.trp__chip:hover { background: var(--nu-line-2); color: var(--nu-blue-text); }
 .trp__chip-icon { flex-shrink: 0; color: var(--nu-gray); }
 a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
 
 /* rótulo pequeno dos cards internos */
 .trp__card-lbl {
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
-  letter-spacing: 1.3px; text-transform: uppercase;
+  color: var(--nu-gray); font-size: 13.5px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase;
 }
 
 /* valuation — premissas */
-.trp__assump { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 24px 26px; margin-top: 22px; }
-.trp__assump-row { border-top: 1.5px solid var(--nu-cream-line); padding: 14px 0; }
+.trp__assump { background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px 26px; margin-top: 22px; box-shadow: var(--nu-shadow-quente); }
+.trp__assump-row { border-top: 1.5px solid var(--nu-line-2); padding: 14px 0; }
 .trp__assump-row:first-of-type { border-top: none; margin-top: 12px; padding-top: 0; }
 .trp__assump-row:last-child { padding-bottom: 0; }
 .trp__assump-top { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; }
@@ -270,7 +269,7 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-.trp__assump-note { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; margin-top: 5px; }
+.trp__assump-note { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.55; margin-top: 5px; }
 
 /* valuation — contas numeradas */
 .trp__math { margin-top: 18px; }
@@ -278,11 +277,11 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
 .trp__math-list { list-style: none; margin: 0; padding: 0; }
 .trp__math-step {
   display: flex; align-items: flex-start; gap: 16px;
-  border-bottom: 1.5px solid var(--nu-cream-2); padding: 14px 0;
+  border-bottom: 1.5px solid var(--nu-line-2); padding: 14px 0;
 }
 .trp__math-idx {
-  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700;
-  font-variant-numeric: tabular-nums; margin-top: 2px; flex-shrink: 0;
+  color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800;
+  font-variant-numeric: tabular-nums; margin-top: 1px; flex-shrink: 0;
 }
 .trp__math-txt {
   color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
@@ -291,34 +290,34 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
 
 /* valuation — preço justo hero */
 .trp__fair {
-  background: var(--nu-navy); border-radius: var(--nu-r-card-lg);
+  background: var(--nu-ink); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-escuro);
   padding: clamp(26px, 3.5vw, 38px); margin-top: 22px;
 }
 .trp__fair-lbl {
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-dense); font-weight: 700;
-  letter-spacing: 1.3px; text-transform: uppercase;
+  color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase;
 }
 .trp__fair-value {
-  color: var(--nu-cream-text); font-size: clamp(38px, 5vw, 54px); font-weight: 800;
+  color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: 800;
   letter-spacing: -0.035em; line-height: 1.05; margin-top: 12px;
   font-variant-numeric: tabular-nums;
 }
 .trp__fair-vs {
-  color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500;
-  line-height: 1.55; margin-top: 10px; font-variant-numeric: tabular-nums;
+  color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500;
+  line-height: 1.5; margin-top: 10px; font-variant-numeric: tabular-nums;
 }
 
 /* marcos a acompanhar — checklist de observação (círculos, não checks:
    são marcos FUTUROS a vigiar, não itens cumpridos — estado honesto) */
-.trp__miles { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 24px 26px; margin-top: 22px; }
+.trp__miles { background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px 26px; margin-top: 22px; box-shadow: var(--nu-shadow-quente); }
 .trp__mile { display: flex; align-items: flex-start; gap: 13px; margin-top: 14px; }
 .trp__mile-icon { flex-shrink: 0; margin-top: 2px; color: var(--nu-blue); }
 .trp__mile-txt { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 
 /* fontes consolidadas (mesma anatomia das fontes do diário) */
 .trp__sources-lbl {
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
-  letter-spacing: 1.3px; text-transform: uppercase;
+  color: var(--nu-gray); font-size: 13.5px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase;
 }
 .trp__sources {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
@@ -326,10 +325,10 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
 }
 .trp__source {
   display: flex; align-items: center; gap: 14px; padding: 13px 0;
-  border-bottom: 1.5px solid var(--nu-cream-2);
+  border-bottom: 1.5px solid var(--nu-line-2);
 }
 .trp__source-title {
-  flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
+  flex: 1; min-width: 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 700;
   line-height: 1.4; transition: color .2s;
 }
 a.trp__source:hover .trp__source-title { color: var(--nu-blue-text); }

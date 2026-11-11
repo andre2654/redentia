@@ -72,7 +72,7 @@ const structuredData: Record<string, unknown>[] = [
     // wordCount só quando a tese TEM o relatório completo (o campo mede o
     // artigo longo, não os blocos vivos da página).
     ...(tese.value.seo.wordCount ? { wordCount: tese.value.seo.wordCount } : {}),
-    author: { '@type': 'Organization', name: 'Redentia', url: origin },
+    author: { '@type': 'Organization', name: MARCA.nome, url: origin },
   },
 ]
 

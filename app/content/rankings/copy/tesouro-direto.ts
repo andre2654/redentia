@@ -45,7 +45,7 @@ const copy: RankingCopy = {
     },
     {
       title: 'Outros rankings',
-      desc: 'Veja todos os rankings disponíveis na Redentia.',
+      desc: 'Veja todos os rankings disponíveis na Aportou.',
       href: '/rankings',
     },
   ],

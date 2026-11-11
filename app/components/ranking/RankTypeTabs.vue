@@ -31,14 +31,15 @@ const tabs = computed<{ value: RankingTypeFilter; label: string }[]>(() => [
 </template>
 
 <style scoped>
+/* o filtro da Aportou: chip creme desligado, pílula carvão ligada, 44px de toque */
 .rtt { display: flex; gap: 8px; flex-wrap: wrap; }
 .rtt__pill {
-  padding: 10px 18px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: 700;
-  cursor: pointer; border: 2px solid var(--nu-sand-border); background: var(--nu-white);
-  color: var(--nu-gray-2); transition: all .2s; white-space: nowrap;
+  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); font: inherit; font-size: 14.5px; font-weight: 600;
+  cursor: pointer; border: 0; background: var(--nu-cream-2);
+  color: var(--nu-ink); transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1); white-space: nowrap;
 }
-.rtt__pill--active {
-  border-color: var(--nu-ink); background: var(--nu-ink);
-  color: var(--nu-white); font-weight: 800;
-}
+.rtt__pill:hover { background: var(--nu-line-2); }
+.rtt__pill:active { transform: scale(.98); }
+.rtt__pill--active, .rtt__pill--active:hover { background: var(--nu-ink); color: var(--nu-white); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .rtt__pill { transition: none; } .rtt__pill:active { transform: none; } }
 </style>

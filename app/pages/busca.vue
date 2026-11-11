@@ -24,7 +24,7 @@ const VALID_TIPOS: BuscaType[] = ['todos', 'acoes', 'fiis', 'bdrs', 'etfs', 'eua
 
 usePageSeo({
   title: 'Busca',
-  description: 'Busque ações, FIIs, BDRs, ETFs, cripto, Tesouro Direto, teses e guias da Redentia.',
+  description: 'Busque ações, FIIs, BDRs, ETFs, cripto, Tesouro Direto, teses e guias da Aportou.',
   // Ferramenta: não rankeia, mas os links internos (ativos, teses) seguem rastreáveis.
   robots: 'noindex, follow',
 })
@@ -259,8 +259,8 @@ if (linkDeChat.tipo === 'login') {
 <style scoped>
 .bp__corpo {
   display: flex; flex-direction: column;
-  padding: clamp(24px, 3.2vw, 44px) clamp(22px, 5.5vw, 80px) clamp(64px, 8vw, 100px);
-  background: var(--nu-white);
+  padding: clamp(24px, 3.2vw, 44px) clamp(20px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
+  background: var(--nu-page);
 }
 .bp__corpo > * { width: 100%; max-width: 880px; }
 
@@ -269,34 +269,35 @@ if (linkDeChat.tipo === 'login') {
   margin-bottom: 8px;
 }
 .bp__cab-titulo {
-  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.01em;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.025em;
 }
 .bp__cab-n { margin-left: 6px; color: var(--nu-gray); font-weight: 700; font-variant-numeric: tabular-nums; }
 .bp__link {
   display: inline-flex; align-items: center; gap: 5px; min-height: 44px;
-  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
 }
-.bp__link:hover { color: var(--nu-blue-hover); }
+.bp__link:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
 .bp__link:hover svg { transform: translateX(3px); }
 .bp__link svg { transition: transform .2s ease; }
-.bp__link:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 6px; }
+.bp__link:focus-visible { border-radius: 6px; }
 
 .bp__vazio { padding: 8px 0 28px; }
 .bp__vazio-titulo {
-  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
   overflow-wrap: anywhere;
 }
-.bp__vazio-txt { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
-.bp__erro { margin: 0 0 24px; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
+.bp__vazio-txt { margin: 12px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
+.bp__erro { margin: 0 0 24px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
 
 .bp__outline {
-  align-self: flex-start; width: auto; margin-top: 18px; min-height: 44px; padding: 10px 22px;
-  background: var(--nu-white); color: var(--nu-blue-text);
-  border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s;
+  align-self: flex-start; width: auto; margin-top: 18px; min-height: 48px; padding: 0 24px;
+  background: var(--nu-white); color: var(--nu-ink);
+  border: 1.5px solid var(--nu-ink); border-radius: var(--nu-r-pill);
+  font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.bp__outline:hover { background: var(--nu-blue-tint-2); }
-.bp__outline:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.bp__outline:hover { background: var(--nu-row-hover); }
+.bp__outline:active { transform: scale(.98); }
 .bp__mais { margin-top: 24px; }
 
 .bp__dica {
@@ -305,7 +306,7 @@ if (linkDeChat.tipo === 'login') {
 .bp__dica span { margin: 0 6px; }
 .bp__dica kbd {
   display: inline-block; min-width: 22px; margin-right: 4px; padding: 1px 6px; text-align: center;
-  border: 1.5px solid var(--nu-cream-3); border-radius: 6px;
-  font: inherit; font-weight: 700; color: var(--nu-gray-2);
+  border: 1.5px solid var(--nu-line); border-radius: 6px;
+  font: inherit; font-weight: 700; color: var(--nu-gray-3);
 }
 </style>

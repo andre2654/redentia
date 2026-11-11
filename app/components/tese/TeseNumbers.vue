@@ -13,7 +13,10 @@ const hasBenchmark = computed(() => !!props.numbers.chart.benchmark)
 <template>
   <section class="tnu">
     <div class="tnu__head">
-      <h2 class="tnu__title">A tese<br>em números.</h2>
+      <div>
+        <NuEyebrow como="div" sobre="escuro">Desempenho</NuEyebrow>
+        <h2 class="tnu__title">A tese<br>em números.</h2>
+      </div>
       <div class="tnu__legend">
         <span class="tnu__legend-item"><span class="tnu__swatch-line" /><span class="tnu__legend-lbl">Tese</span></span>
         <span v-if="hasBenchmark" class="tnu__legend-item"><span class="tnu__swatch-dash" /><span class="tnu__legend-lbl">IBOV</span></span>
@@ -39,20 +42,20 @@ const hasBenchmark = computed(() => !!props.numbers.chart.benchmark)
 
 <style scoped>
 .tnu {
-  background: var(--nu-navy);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
+  background: var(--nu-ink);
+  padding: clamp(64px, 7vw, 100px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
   animation: nu-fade .5s ease both;
 }
 .tnu__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .tnu__title {
-  margin: 0; color: var(--nu-cream-text); font-size: clamp(36px, 5vw, 64px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h2);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
 .tnu__legend { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
 .tnu__legend-item { display: inline-flex; align-items: center; gap: 8px; }
-.tnu__swatch-line { width: 22px; height: 4px; border-radius: 3px; background: var(--nu-blue); }
-.tnu__swatch-dash { width: 22px; height: 0; border-top: 2.5px dashed var(--nu-cream-text-60); }
-.tnu__legend-lbl { color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 700; }
+.tnu__swatch-line { width: 22px; height: 4px; border-radius: 3px; background: var(--nu-blue-on-dark); }
+.tnu__swatch-dash { width: 22px; height: 0; border-top: 2.5px dashed var(--nu-on-dark-2); }
+.tnu__legend-lbl { color: var(--nu-on-dark); font-size: 14.5px; font-weight: 700; }
 .tnu__cols { display: flex; gap: clamp(28px, 4vw, 60px); align-items: stretch; margin-top: 36px; flex-wrap: wrap; }
 .tnu__stats { flex: 0 1 300px; min-width: min(260px, 100%); }
 .tnu__chart {

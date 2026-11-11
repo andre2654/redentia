@@ -25,16 +25,16 @@ const sobre = useSobreDoContexto()
 
 <style scoped>
 .afi {
-  background: var(--nu-white);
-  padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px);
+  background: var(--nu-page);
+  padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   animation: nu-fade .5s ease both;
 }
 .afi__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .afi__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .afi__title {
   margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
-.afi__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; }
+.afi__sub { color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 .afi__rows { flex: 1.2 1 380px; min-width: min(320px, 100%); }
 </style>

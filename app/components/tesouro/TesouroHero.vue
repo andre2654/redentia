@@ -12,7 +12,7 @@ const sobre = useSobreDoContexto()
 
 <template>
   <section v-contexto-chat="{ id: `tesouro-hero:${hero.name}`, tipo: 'ativo', rotulo: rotuloCurto(hero.name) }" class="thr">
-    <NuxtLink to="/tesouro" class="thr__eyebrow">Tesouro Direto</NuxtLink>
+    <NuxtLink to="/tesouro" class="thr__eyebrow nu-eyebrow"><MarcaCorte /><span>Tesouro Direto</span></NuxtLink>
     <div class="thr__badges">
       <NuBadge variant="blue" size="hero">{{ hero.indexerShort }}</NuBadge>
       <NuBadge v-if="hero.horizonLine" variant="neutral" size="hero">{{ hero.horizonLine }}</NuBadge>
@@ -27,29 +27,28 @@ const sobre = useSobreDoContexto()
 </template>
 
 <style scoped>
+/* Aportou (11/11/2026): o herói é creme, com o eyebrow da marca (o link para a
+   lista), o nome em 800 e a taxa como número-herói em carvão. */
 .thr {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(36px, 4.5vw, 56px);
   animation: nu-fade .5s ease both;
 }
-.thr__eyebrow {
-  display: inline-flex; color: var(--nu-blue-text);
-  font-size: clamp(16px, 1.5vw, 19px); font-weight: 800;
-}
-.thr__eyebrow:hover { color: var(--nu-blue-hover); }
-.thr__badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.thr__eyebrow { display: inline-flex; min-height: 44px; transition: color .2s ease; }
+.thr__eyebrow:hover { color: var(--nu-blue-text); }
+.thr__badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .thr__title {
-  margin: 14px 0 0; color: var(--nu-ink); font-size: clamp(34px, 4.6vw, 64px);
-  font-weight: 800; letter-spacing: -0.045em; line-height: 1.02;
+  margin: 16px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
-.thr__rate { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+.thr__rate { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
 .thr__rate-num {
-  color: var(--nu-blue-text); font-size: clamp(44px, 6.5vw, 92px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums;
+  color: var(--nu-ink); font-size: clamp(56px, 9vw, 120px); font-weight: 800;
+  letter-spacing: -0.045em; line-height: .95; font-variant-numeric: tabular-nums;
 }
-.thr__rate-suffix { color: var(--nu-gray); font-size: clamp(16px, 1.8vw, 21px); font-weight: 700; }
+.thr__rate-suffix { color: var(--nu-gray); font-size: clamp(18px, 1.8vw, 22px); font-weight: 700; }
 .thr__meta {
-  margin: 16px 0 0; color: var(--nu-gray); font-size: clamp(15px, 1.6vw, 18px);
+  margin: 18px 0 0; color: var(--nu-gray-3); font-size: clamp(16px, 1.5vw, 19px);
   font-weight: 500; font-variant-numeric: tabular-nums;
 }
 </style>

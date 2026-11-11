@@ -66,7 +66,7 @@ onMounted(() => {
     <section class="bno__ceu" aria-labelledby="bno-titulo">
       <div class="bno__luz" aria-hidden="true" />
       <div class="bno__texto">
-        <p class="bno__produto"><img src="/logo-branca.svg" alt="" width="18" height="18">Benchmark de IA</p>
+        <NuEyebrow como="p" sobre="escuro" class="bno__produto">Benchmark de IA</NuEyebrow>
         <h1 id="bno-titulo" class="bno__titulo">Ranking de IAs em finanças</h1>
         <p class="bno__dek">
           Dez IAs, a mesma prova de finanças, corrigida por gabarito.
@@ -149,7 +149,7 @@ onMounted(() => {
     <div class="bno__corpo">
     <section v-if="shown('inventa')" id="inventa" v-contexto-chat="ctx.inventa" class="bno__sec">
       <header class="bno__cab">
-        <p class="bno__tipo">Laboratório</p>
+        <NuEyebrow como="p" class="bno__tipo">Laboratório</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('inventa').name }}</h2>
         <p class="bno__q">{{ metodo('inventa').question }}</p>
         <p v-if="manchete.inventa" class="bno__man"><b>{{ manchete.inventa.numero }}</b> {{ manchete.inventa.frase }}</p>
@@ -158,13 +158,13 @@ onMounted(() => {
       <div class="bno__graf">
         <p class="bno__leg2"><span v-for="s in legendaInventa" :key="s.label"><i :class="`bno__sw bno__sw--${s.tom}`" />{{ s.label }} <b>{{ fmtBench.pct(s.media) }}</b></span><span class="bno__leg2-n">na média</span></p>
         <BenchDirLinhas :rows="inventaLinhas" :foco="foco" @hover="hover = $event" @pick="pick" />
-        <p v-if="vm.dados" class="bno__nota">Com os dados da Redentia no enunciado, a invenção média cai de <b>{{ fmtBench.pct(vm.dados.sem) }}</b> para <b>{{ fmtBench.pct(vm.dados.com) }}</b>. Essa rodada fica fora do ranking.</p>
+        <p v-if="vm.dados" class="bno__nota">Com os dados da Aportou no enunciado, a invenção média cai de <b>{{ fmtBench.pct(vm.dados.sem) }}</b> para <b>{{ fmtBench.pct(vm.dados.com) }}</b>. Essa rodada fica fora do ranking.</p>
       </div>
     </section>
 
     <section v-if="shown('amem')" id="amem" v-contexto-chat="ctx.amem" class="bno__sec">
       <header class="bno__cab">
-        <p class="bno__tipo">Laboratório</p>
+        <NuEyebrow como="p" class="bno__tipo">Laboratório</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('amem').name }}</h2>
         <p class="bno__q">{{ metodo('amem').question }}</p>
         <p v-if="manchete.amem" class="bno__man"><b>{{ manchete.amem.numero }}</b> {{ manchete.amem.frase }}</p>
@@ -179,7 +179,7 @@ onMounted(() => {
 
     <section v-if="shown('golpe')" id="golpe" v-contexto-chat="ctx.golpe" class="bno__sec">
       <header class="bno__cab">
-        <p class="bno__tipo">Laboratório</p>
+        <NuEyebrow como="p" class="bno__tipo">Laboratório</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('golpe').name }}</h2>
         <p class="bno__q">{{ metodo('golpe').question }}</p>
         <p v-if="manchete.golpe" class="bno__man"><b>{{ manchete.golpe.numero }}</b> {{ manchete.golpe.frase }}</p>
@@ -190,7 +190,7 @@ onMounted(() => {
 
     <section v-if="shown('leao')" id="leao" v-contexto-chat="ctx.leao" class="bno__sec">
       <header class="bno__cab">
-        <p class="bno__tipo">Laboratório</p>
+        <NuEyebrow como="p" class="bno__tipo">Laboratório</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('leao').name }}</h2>
         <p class="bno__q">{{ metodo('leao').question }}</p>
         <p v-if="manchete.leao" class="bno__man"><b>{{ manchete.leao.numero }}</b> {{ manchete.leao.frase }}</p>
@@ -201,7 +201,7 @@ onMounted(() => {
 
     <section v-if="shown('longo')" id="longo" v-contexto-chat="ctx.longo" class="bno__sec">
       <header class="bno__cab">
-        <p class="bno__tipo">Arena ao vivo</p>
+        <NuEyebrow como="p" class="bno__tipo">Arena ao vivo</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('longo').name }}</h2>
         <p class="bno__q">{{ metodo('longo').question }}</p>
         <p v-if="manchete.longo" class="bno__man"><b>{{ manchete.longo.numero }}</b> {{ manchete.longo.frase }}</p>
@@ -222,7 +222,7 @@ onMounted(() => {
 
     <section v-if="shown('curto')" id="curto" v-contexto-chat="ctx.curto" class="bno__sec">
       <header class="bno__cab">
-        <p class="bno__tipo">Arena ao vivo</p>
+        <NuEyebrow como="p" class="bno__tipo">Arena ao vivo</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('curto').name }}</h2>
         <p class="bno__q">{{ metodo('curto').question }}</p>
         <p v-if="manchete.curto" class="bno__man"><b>{{ manchete.curto.numero }}</b> {{ manchete.curto.frase }}</p>
@@ -239,7 +239,7 @@ onMounted(() => {
 
     <section v-if="vm.custo" id="custo" v-contexto-chat="ctx.custo" class="bno__sec">
       <header class="bno__cab">
-        <p class="bno__tipo">Conta aberta</p>
+        <NuEyebrow como="p" class="bno__tipo">Conta aberta</NuEyebrow>
         <h2 class="bno__h2">Custo por mil respostas</h2>
         <p class="bno__q">Quanto custa cada mil respostas, em dólar, contra a nota geral.</p>
         <p v-if="manchete.custo" class="bno__man"><b>{{ manchete.custo.numero }}</b> {{ manchete.custo.frase }}</p>
@@ -250,7 +250,7 @@ onMounted(() => {
 
     <section v-if="vm.proximos.length" id="proximos" class="bno__sec">
       <header class="bno__cab">
-        <p class="bno__tipo">Em construção</p>
+        <NuEyebrow como="p" class="bno__tipo">Em construção</NuEyebrow>
         <h2 class="bno__h2">Próximos índices</h2>
         <p class="bno__q">{{ vm.proximosDesc }}</p>
       </header>
@@ -263,33 +263,32 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.bno { --g: clamp(22px, 5.5vw, 80px); --cola: calc(var(--nuh-h, 76px) + 46px); background: var(--nu-white); }
+/* Aportou (11/11/2026): o palco do placar é carvão (não mais o preto), o corpo
+   corre sobre o creme da página, cada índice abre com o eyebrow da marca e o
+   título em 800. Os gráficos e os números são os de antes. */
+.bno { --g: clamp(22px, 5.5vw, 80px); --cola: calc(var(--nuh-h, 76px) + 46px); background: var(--nu-page); }
 
 /* ——— o céu: o mesmo do herói "A noite" da home ——— */
 .bno__ceu {
   position: relative; isolation: isolate; overflow: hidden;
   display: flex; flex-direction: column; align-items: center; text-align: center;
   padding: clamp(44px, 5vw, 72px) var(--g) clamp(48px, 5.5vw, 80px);
-  background: var(--nu-agora-bg); color: var(--nu-agora-texto);
+  background: var(--nu-ink); color: var(--nu-white);
 }
 .bno__luz {
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(60% 38% at 50% 0%, color-mix(in srgb, var(--nu-blue) 16%, transparent), transparent),
-    linear-gradient(180deg, var(--nu-navy) 0%, color-mix(in srgb, var(--nu-navy) 55%, var(--nu-agora-bg)) 46%, var(--nu-agora-bg) 80%);
+    radial-gradient(60% 38% at 50% 0%, color-mix(in srgb, var(--nu-blue) 18%, transparent), transparent);
 }
 .bno__texto { display: flex; flex-direction: column; align-items: center; max-width: 1000px; }
-.bno__produto { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: -0.02em; }
 .bno__titulo {
-  margin: 16px 0 0; max-width: 18ch; font-size: clamp(36px, 4.8vw, 68px); font-weight: 500; letter-spacing: -0.05em; line-height: 1.03; text-wrap: balance;
-  color: var(--nu-agora-texto);
-  background: linear-gradient(180deg, var(--nu-agora-texto) 35%, var(--nu-cream-text-70) 100%);
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  margin: 18px 0 0; max-width: 16ch; font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.035em; line-height: .98; text-wrap: balance;
+  color: var(--nu-white);
 }
-.bno__dek { margin: 18px 0 0; max-width: 52ch; color: var(--nu-agora-sub); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; text-wrap: balance; }
-.bno__link { color: var(--nu-agora-texto); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-white-35); }
-.bno__link:hover { text-decoration-color: var(--nu-agora-texto); }
-.bno__fresh { margin: 8px 0 0; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
+.bno__dek { margin: 20px 0 0; max-width: 52ch; color: var(--nu-on-dark); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: balance; }
+.bno__link { color: var(--nu-white); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-dark-chip-line); transition: text-decoration-color .2s ease; }
+.bno__link:hover { color: var(--nu-white); text-decoration-color: currentColor; }
+.bno__fresh { margin: 10px 0 0; color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
 
 /* ——— o palco: as colunas de luz sobre o horizonte ——— */
 .bno__palco { position: relative; width: min(1040px, 100%); margin-top: clamp(40px, 4.6vw, 64px); scroll-margin-top: var(--cola); }
@@ -303,30 +302,30 @@ onMounted(() => {
 .bno__area { position: relative; display: block; height: clamp(200px, 22vw, 290px); }
 .bno__pilar {
   position: absolute; left: 22%; right: 22%; bottom: 0; height: var(--h); border-radius: 10px 10px 0 0;
-  background: var(--nu-white-14); box-shadow: inset 0 2px 0 var(--nu-white-35);
+  background: var(--nu-dark-chip); box-shadow: inset 0 2px 0 var(--nu-dark-chip-line);
   transform-origin: 50% 100%; transition: background .2s ease, box-shadow .2s ease;
 }
-.bno__col--top .bno__pilar { background: color-mix(in srgb, var(--nu-blue) 78%, transparent); box-shadow: inset 0 2px 0 var(--nu-blue-soft), 0 0 42px -4px var(--nu-blue-28); }
+.bno__col--top .bno__pilar { background: var(--nu-blue); box-shadow: inset 0 2px 0 var(--nu-blue-soft), 0 0 42px -4px var(--nu-blue-28); }
 .bno__col--on .bno__pilar, .bno__b:hover .bno__pilar { background: var(--nu-blue-soft); box-shadow: inset 0 2px 0 var(--nu-white), 0 0 48px -2px var(--nu-blue-28); }
 /* a margem de erro: um traço fino no topo da coluna */
-.bno__ic { position: absolute; left: 50%; bottom: var(--lo); height: calc(var(--hi) - var(--lo)); width: 2px; transform: translateX(-50%); border-radius: 1px; background: var(--nu-agora-texto); opacity: .8; }
+.bno__ic { position: absolute; left: 50%; bottom: var(--lo); height: calc(var(--hi) - var(--lo)); width: 2px; transform: translateX(-50%); border-radius: 1px; background: var(--nu-white); opacity: .8; }
 .bno__ic::before, .bno__ic::after { content: ''; position: absolute; left: -4px; width: 10px; height: 2px; border-radius: 1px; background: inherit; }
 .bno__ic::before { top: 0; }
 .bno__ic::after { bottom: 0; }
 .bno__v {
   position: absolute; left: 0; right: 0; bottom: calc(max(var(--h), var(--hi)) + 10px);
-  color: var(--nu-agora-texto); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--nu-white); font-size: 14.5px; font-weight: 800; font-variant-numeric: tabular-nums;
 }
 .bno__col--top .bno__v, .bno__col--on .bno__v { color: var(--nu-blue-soft); }
 .bno__quem { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 16px; }
 .bno__tile {
   width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
   background: var(--nu-white); color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700;
-  box-shadow: 0 0 0 1px var(--nu-white-18), 0 8px 22px -8px var(--nu-agora-bg);
+  box-shadow: 0 0 0 1px var(--nu-white-18);
 }
 .bno__tile img { width: 16px; height: 16px; display: block; object-fit: contain; }
-.bno__nome { color: var(--nu-agora-texto); font-size: var(--nu-fs-xs); font-weight: 600; line-height: 1.25; text-wrap: balance; }
-.bno__pos { color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; }
+.bno__nome { color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 700; line-height: 1.25; text-wrap: balance; }
+.bno__pos { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; }
 /* a linha de luz: o brilho da barra da Redentia, esticado no horizonte (o do herói da home) */
 .bno__horizonte {
   position: absolute; left: -12%; right: -12%; top: clamp(200px, 22vw, 290px); height: 2px; pointer-events: none;
@@ -335,66 +334,67 @@ onMounted(() => {
   border-radius: 50%;
 }
 .bno__lista { display: none; }
-.bno__leg { margin: 28px auto 0; max-width: 64ch; color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.55; }
+.bno__leg { margin: 28px auto 0; max-width: 64ch; color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.55; }
 
 .bno__nums { list-style: none; margin: clamp(36px, 4vw, 52px) 0 0; padding: 0; width: min(960px, 100%); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 24px; text-align: left; }
-.bno__nums li { border-top: 1px solid var(--nu-agora-linha); }
+.bno__nums li { border-top: 1.5px solid var(--nu-dark-chip-line); }
 .bno__num { display: flex; flex-direction: column; gap: 6px; padding: 16px 0 4px; color: inherit; }
 .bno__num:focus-visible { outline: 2px solid var(--nu-white); outline-offset: 2px; border-radius: 4px; }
-.bno__num-v { display: inline-flex; align-items: center; gap: 10px; color: var(--nu-agora-texto); font-size: var(--nu-fs-h3); font-weight: 500; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; transition: color .2s; }
+.bno__num-v { display: inline-flex; align-items: center; gap: 10px; color: var(--nu-white); font-size: clamp(34px, 3.6vw, 48px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums; transition: color .2s; }
 .bno__num:hover .bno__num-v { color: var(--nu-blue-soft); }
-.bno__num-r { max-width: 30ch; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
+.bno__num-r { max-width: 30ch; color: var(--nu-on-dark); font-size: 14.5px; font-weight: 500; line-height: 1.45; }
 .bno__ponto { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.bno__ponto--bad { background: var(--nu-agora-vermelho); }
-.bno__ponto--good { background: var(--nu-agora-azul); }
+.bno__ponto--bad { background: var(--nu-red-soft); }
+.bno__ponto--good { background: var(--nu-blue-on-dark); }
 
 
 /* ——— a barra que gruda ——— */
 .bno__barra {
   position: sticky; top: var(--cola); z-index: 30;
-  background: color-mix(in srgb, var(--nu-white) 90%, transparent);
+  background: color-mix(in srgb, var(--nu-page) 92%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px);
-  border-bottom: 1px solid var(--nu-cream-line);
+  border-bottom: 1.5px solid var(--nu-line-2);
 }
-.bno__barra-in { display: flex; align-items: center; gap: 12px; padding: 12px var(--g); }
-.bno__barra-r { flex-shrink: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
+.bno__barra-in { display: flex; align-items: center; gap: 14px; padding: 8px var(--g); }
+.bno__barra-r { flex-shrink: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 .bno__chips { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
 .bno__chips::-webkit-scrollbar { display: none; }
 .bno__chip {
-  display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; height: 36px; padding: 0 14px 0 6px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream); color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; white-space: nowrap; cursor: pointer;
-  transition: background .2s, color .2s;
+  display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; min-height: 44px; padding: 0 16px 0 8px; border: 0; border-radius: var(--nu-r-pill);
+  background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; white-space: nowrap; cursor: pointer;
+  transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.bno__chip:hover { background: var(--nu-cream-hover); box-shadow: inset 0 0 0 1px var(--nu-cream-line); }
-.bno__chip--on, .bno__chip--on:hover { background: var(--nu-ink); color: var(--nu-white); box-shadow: none; }
-.bno__chip:focus-visible, .bno__limpar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.bno__chip-logo { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--nu-white); color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700; box-shadow: inset 0 0 0 1px var(--nu-cream-line); }
-.bno__chip-logo img { width: 12px; height: 12px; display: block; object-fit: contain; }
-.bno__limpar { flex-shrink: 0; width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--nu-sand-2); color: var(--nu-ink); cursor: pointer; }
-.bno__limpar svg { width: 13px; height: 13px; }
+.bno__chip:hover { background: var(--nu-line-2); }
+.bno__chip:active { transform: scale(.98); }
+.bno__chip--on, .bno__chip--on:hover { background: var(--nu-ink); color: var(--nu-white); font-weight: 700; }
+.bno__chip-logo { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--nu-white); color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700; }
+.bno__chip-logo img { width: 14px; height: 14px; display: block; object-fit: contain; }
+.bno__limpar { flex-shrink: 0; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer; transition: background .2s; }
+.bno__limpar:hover { background: var(--nu-line-2); }
+.bno__limpar svg { width: 14px; height: 14px; }
 
 /* ——— cada índice: cabeçalho centrado, gráfico embaixo ——— */
-.bno__sec { scroll-margin-top: calc(var(--cola) + 60px); padding: clamp(64px, 8vw, 112px) var(--g) 0; }
-.bno__corpo { padding-bottom: clamp(64px, 8vw, 112px); }
+.bno__sec { scroll-margin-top: calc(var(--cola) + 62px); padding: clamp(64px, 7vw, 100px) var(--g) 0; }
+.bno__corpo { padding-bottom: clamp(64px, 7vw, 100px); }
 .bno__cab { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 720px; margin: 0 auto; }
-.bno__tipo { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
-.bno__h2 { margin: 10px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.045em; line-height: 1.05; text-wrap: balance; }
-.bno__q { margin: 12px 0 0; max-width: 46ch; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; text-wrap: balance; }
-.bno__man { margin: 22px 0 18px; max-width: 46ch; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; text-wrap: balance; }
-.bno__man b { color: var(--nu-ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.bno__tipo { justify-content: center; }
+.bno__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
+.bno__q { margin: 14px 0 0; max-width: 46ch; color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5; text-wrap: balance; }
+.bno__man { margin: 22px 0 18px; max-width: 46ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; text-wrap: balance; }
+.bno__man b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
 .bno__cab > .bdi { margin-top: 20px; }
 .bno__man + .bdi { margin-top: 0; }
 .bno__graf { max-width: 920px; margin: clamp(28px, 3.4vw, 44px) auto 0; padding-bottom: clamp(8px, 2vw, 24px); }
 .bno__graf--largo { max-width: 1240px; }
-.bno__leg2 { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 18px; margin: 0 0 16px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
+.bno__leg2 { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 18px; margin: 0 0 16px; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; }
 .bno__leg2 span { display: inline-flex; align-items: center; gap: 7px; }
-.bno__leg2 b { color: var(--nu-ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.bno__leg2 b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
 .bno__leg2-n { color: var(--nu-gray); font-size: var(--nu-fs-xs); }
-.bno__sw { width: 10px; height: 10px; border-radius: 50%; }
+.bno__sw { width: 11px; height: 11px; border-radius: 50%; }
 .bno__sw--bom { background: var(--nu-blue); }
 .bno__sw--meio { background: var(--nu-sand); }
 .bno__sw--ruim { background: var(--nu-red); }
-.bno__nota { margin: 16px auto 0; max-width: 70ch; text-align: center; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.bno__nota { margin: 16px auto 0; max-width: 70ch; text-align: center; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
 .bno__nota b { color: var(--nu-ink); font-weight: 700; font-variant-numeric: tabular-nums; }
 .bno__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -410,7 +410,7 @@ onMounted(() => {
   .bno__palco { margin-top: 32px; }
   .bno__leg { margin-top: 18px; text-align: left; }
   .bno__barra-r { display: none; }
-  .bno__barra-in { padding: 10px var(--g); }
+  .bno__barra-in { padding: 6px var(--g); }
 }
 @media (max-width: 640px) { .bno { --cola: calc(var(--nuh-h, 58px) + 46px); } }
 @media (prefers-reduced-motion: reduce) {

@@ -42,31 +42,33 @@ defineProps<{ rows: TesouroRowVM[] }>()
 </template>
 
 <style scoped>
-.ttb { background: var(--nu-white); border-radius: var(--nu-r-card-lg); overflow-x: auto; }
+/* a tabela da Aportou: cabeçalho em caixa alta espaçada, fios leves de 1,5px, linha que acende em creme */
+.ttb { background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); overflow-x: auto; }
 .ttb__table { width: 100%; min-width: 680px; border-collapse: collapse; }
 .ttb__th {
   padding: 18px 16px 14px; text-align: right; white-space: nowrap;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: .08em;
-  border-bottom: 1px solid var(--nu-cream-2);
+  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .16em;
+  border-bottom: 1.5px solid var(--nu-line-2);
 }
 .ttb__th--asset { text-align: left; padding-left: clamp(16px, 2vw, 28px); }
 .ttb__th--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 .ttb__row { cursor: pointer; transition: background .15s; }
-.ttb__row:hover { background: var(--nu-cream-hover); }
-.ttb__row + .ttb__row .ttb__cell { border-top: 1px solid var(--nu-cream-2); }
+.ttb__row:hover { background: var(--nu-page); }
+.ttb__row:hover .ttb__link { color: var(--nu-blue-text); }
+.ttb__row + .ttb__row .ttb__cell { border-top: 1.5px solid var(--nu-line-2); }
 .ttb__cell {
   padding: 14px 16px; text-align: right; white-space: nowrap;
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .ttb__cell--asset { text-align: left; padding-left: clamp(16px, 2vw, 28px); }
-.ttb__link { color: var(--nu-ink); font-weight: 800; letter-spacing: -.1px; }
+.ttb__link { color: var(--nu-ink); font-weight: 800; letter-spacing: -.01em; transition: color .2s ease; }
 .ttb__link:hover { color: var(--nu-blue-text); }
-.ttb__cell--rate { color: var(--nu-blue-text); font-weight: 800; }
+.ttb__cell--rate { color: var(--nu-ink); font-weight: 800; }
 .ttb__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 .ttb__badge {
-  display: inline-flex; background: var(--nu-sand-2); color: var(--nu-gray-tag);
-  border-radius: var(--nu-r-chip); padding: 4px 10px; font-size: var(--nu-fs-xs); font-weight: 700;
+  display: inline-flex; background: var(--nu-cream-2); color: var(--nu-gray-3);
+  border-radius: var(--nu-r-tag); padding: 4px 9px; font-size: 13.5px; font-weight: 700;
 }
 </style>

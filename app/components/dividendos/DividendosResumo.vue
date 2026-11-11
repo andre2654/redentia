@@ -33,7 +33,7 @@ const sobre = useSobreDoContexto()
           <p v-if="fonte" class="dvr__fonte">{{ fonte }}</p>
         </div>
         <div class="dvr__cta-row">
-          <NuxtLink :to="`/calculadora/dividend-yield?ticker=${ticker}`" class="dvr__cta">Calcular o DY de {{ ticker }}</NuxtLink>
+          <NuBotaoSeta :to="`/calculadora/dividend-yield?ticker=${ticker}`" variante="carvao" tamanho="m">Calcular o DY de {{ ticker }}</NuBotaoSeta>
         </div>
       </div>
       <div class="dvr__right">
@@ -49,28 +49,23 @@ const sobre = useSobreDoContexto()
 
 <style scoped>
 .dvr {
-  background: var(--nu-white);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
+  /* Aportou: sem faixa branca de ponta a ponta; a banda é o creme da página */
+  background: var(--nu-page);
+  padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
 .dvr__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .dvr__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .dvr__title {
   margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
-.dvr__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; }
+.dvr__sub { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 .dvr__stats { margin-top: 26px; }
 .dvr__fonte {
-  margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm);
+  margin: 14px 0 0; color: var(--nu-gray); font-size: 13.5px;
   font-weight: 500; line-height: 1.5; max-width: 46ch;
 }
 .dvr__cta-row { margin-top: 28px; }
-.dvr__cta {
-  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue-text);
-  border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill); padding: 14px 26px;
-  font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s;
-}
-.dvr__cta:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue-text); }
 .dvr__right { flex: 1.6 1 460px; min-width: min(320px, 100%); }
 </style>

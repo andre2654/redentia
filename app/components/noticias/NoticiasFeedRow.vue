@@ -41,20 +41,20 @@ defineProps<{ item: NoticiasItem; reverse: boolean; naCarteira: boolean }>()
 /* sizing/radius do slot de imagem do design; miolo (img/fallback) = NuNewsImage */
 .nfr__media {
   flex: 1 1 320px; min-width: min(300px, 100%);
-  min-height: clamp(240px, 26vw, 380px); border-radius: 28px;
+  min-height: clamp(240px, 26vw, 380px); border-radius: var(--nu-r-card);
 }
 .nfr__content { flex: 1.1 1 340px; min-width: min(300px, 100%); }
 .nfr__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.nfr__veiculo { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
+.nfr__veiculo { color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 .nfr__dot { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
-.nfr__tempo { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.nfr__tempo { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
 .nfr__badge {
-  display: inline-flex; align-items: center; background: var(--nu-blue-tint); color: var(--nu-blue-text);
-  font-size: var(--nu-fs-xs); font-weight: 700; padding: 4px 11px; border-radius: var(--nu-r-pill);
+  display: inline-flex; align-items: center; min-height: 26px; background: var(--nu-blue-bg); color: var(--nu-blue-text);
+  font-size: 13.5px; font-weight: 700; padding: 0 9px; border-radius: var(--nu-r-tag);
 }
 .nfr__title {
-  display: block; color: var(--nu-ink); font-size: clamp(24px, 2.8vw, 38px);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.14; margin-top: 14px;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-h3);
+  font-weight: 800; letter-spacing: -0.025em; line-height: 1.06; margin-top: 14px; text-wrap: balance;
   transition: color .2s;
 }
 .nfr__title:hover { color: var(--nu-blue-text); }

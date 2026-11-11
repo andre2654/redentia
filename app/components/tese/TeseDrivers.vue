@@ -57,8 +57,9 @@ const { isAuthenticated } = useAuthState()
 
 <style scoped>
 .tdr {
-  background: var(--nu-blue);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
+  /* Aportou: o painel azul é o gradiente cobalto */
+  background: var(--nu-grad-cobalto);
+  padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
 .tdr__grid {
@@ -67,9 +68,9 @@ const { isAuthenticated } = useAuthState()
 }
 /* embaçado (anônimo): conteúdo tease não-interativo, atrás do cadastro */
 .tdr__grid--locked { filter: blur(7px); opacity: .55; pointer-events: none; user-select: none; }
-.tdr__card { background: var(--nu-blue-deep); border-radius: var(--nu-r-card-lg); padding: 28px; }
+.tdr__card { background: var(--nu-ink); border-radius: var(--nu-r-card); padding: 28px; box-shadow: var(--nu-shadow-escuro); }
 .tdr__card--risco { display: flex; flex-direction: column; }
-.tdr__lbl { font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; }
+.tdr__lbl { font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 .tdr__lbl--favor { color: var(--nu-green-soft); }
 .tdr__lbl--sinal { color: var(--nu-amber-soft); }
 .tdr__lbl--risco { color: var(--nu-red-soft); }
@@ -78,16 +79,16 @@ const { isAuthenticated } = useAuthState()
 .tdr__icon { flex-shrink: 0; margin-top: 3px; }
 .tdr__icon--check { stroke: var(--nu-green-soft); }
 .tdr__icon--alert { stroke: var(--nu-amber-soft); }
-.tdr__item-txt { color: var(--nu-cream-text-88); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
+.tdr__item-txt { color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 .tdr__risco-title {
-  color: var(--nu-cream-text); font-size: clamp(20px, 1.9vw, 24px); font-weight: 800;
-  letter-spacing: -.3px; line-height: 1.3; margin-top: 18px;
+  color: var(--nu-white); font-size: clamp(22px, 2vw, 27px); font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.15; margin-top: 18px;
 }
-.tdr__risco-body { color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; margin-top: 12px; }
+.tdr__risco-body { color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; margin-top: 12px; }
 .tdr__risco-foot {
   display: inline-flex; align-items: center; gap: 8px;
-  border-top: 1px solid var(--nu-cream-text-16); margin-top: auto; padding-top: 16px;
+  border-top: 1.5px solid var(--nu-dark-line); margin-top: auto; padding-top: 16px;
 }
 .tdr__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-red-soft); }
-.tdr__foot-txt { color: var(--nu-cream-text-65); font-size: var(--nu-fs-dense); font-weight: 700; }
+.tdr__foot-txt { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700; }
 </style>

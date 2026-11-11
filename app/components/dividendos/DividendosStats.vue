@@ -28,6 +28,7 @@ const sobre = useSobreDoContexto()
 }
 .dvs__card {
   background: var(--nu-white);
+  box-shadow: var(--nu-shadow-quente);
   border-radius: var(--nu-r-tile);
   padding: 18px 22px;
   display: flex;
@@ -35,14 +36,14 @@ const sobre = useSobreDoContexto()
   gap: 6px;
   animation: nu-fade .5s ease both;
 }
-.dvs__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.dvs__label { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
 .dvs__value {
-  color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800;
-  letter-spacing: -.3px; font-variant-numeric: tabular-nums; line-height: 1.2;
+  color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 30px); font-weight: 800;
+  letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1.2;
   overflow-wrap: anywhere;
 }
-.dvs__value--green { color: var(--nu-green-2); }
-.dvs__fonte { color: var(--nu-gray); font-size: 12px; font-weight: 500; line-height: 1.4; }
+.dvs__value--green { color: var(--nu-green-text); }
+.dvs__fonte { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.4; }
 
 @media (max-width: 760px) {
   .dvs { grid-template-columns: repeat(2, 1fr); }

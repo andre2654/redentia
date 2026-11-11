@@ -74,16 +74,15 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
   border-radius: 14px; color: var(--nu-ink);
   transition: background .15s;
 }
-.bl--ativo { background: var(--nu-cream); }
-.bl:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.bl--ativo { background: var(--nu-cream-2); }
 
 .bl__icone {
   flex: none; width: 40px; height: 40px; border-radius: 12px; overflow: hidden;
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--nu-cream); color: var(--nu-gray-2);
+  background: var(--nu-cream-2); color: var(--nu-ink);
 }
 .bl--ativo .bl__icone:not(.bl__icone--capa) { background: var(--nu-white); }
-.bl__icone--capa { background: var(--nu-navy); }
+.bl__icone--capa { background: var(--nu-ink); }
 .bl__icone--capa img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .bl__id { flex: 1; min-width: 0; }
@@ -97,14 +96,14 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
   white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
 }
 .bl__sub {
-  display: block; margin-top: 2px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
+  display: block; margin-top: 2px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 .bl__num { flex: none; display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
 .bl__valor { font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.bl__valor--leve { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
-.bl__pct { margin-top: 2px; font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bl__valor--leve { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; }
+.bl__pct { margin-top: 2px; font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bl__pct--up { color: var(--nu-green-text); }
 .bl__pct--down { color: var(--nu-red-text); }
 </style>

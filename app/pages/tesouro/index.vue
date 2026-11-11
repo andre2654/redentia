@@ -59,7 +59,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: 'Tesouro Direto hoje - Redentia',
+      name: `Tesouro Direto hoje - ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       applicationSubCategory: 'Taxas do Tesouro Direto',
       operatingSystem: 'Web',
@@ -84,11 +84,14 @@ usePageSeo({
     <!-- ============ Toolbar + tabela ============ -->
     <section class="tsh__body">
       <header class="tsh__toolbar">
-        <p class="tsh__toolbar-eyebrow">Lista completa</p>
+        <NuEyebrow como="p">Lista completa</NuEyebrow>
         <p class="tsh__toolbar-count">{{ count }} {{ count === 1 ? 'título' : 'títulos' }} · ordenados por vencimento</p>
       </header>
 
-      <div v-if="pending" class="tsh__state">Carregando as taxas…</div>
+      <!-- loading é sempre esqueleto (contrato da Aportou) -->
+      <div v-if="pending" class="tsh__sk" aria-busy="true" aria-label="Carregando as taxas">
+        <NuSkeleton v-for="i in 8" :key="i" variant="line" width="100%" height="44px" radius="chip" />
+      </div>
       <div v-else-if="unavailable" class="tsh__state">
         Taxas indisponíveis agora. Tente de novo em alguns minutos, o conteúdo abaixo continua valendo.
       </div>
@@ -144,7 +147,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ CTA final full-bleed (só deslogado — mesmo padrão dos
-         outros CTAs da Redentia: NuCtaPhoto) ============ -->
+         outros CTAs da Aportou: NuCtaPhoto) ============ -->
     <NuCtaPhoto
       v-if="!isAuthenticated"
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
@@ -157,35 +160,33 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— corpo (toolbar + tabela) sobre creme, mesma família do /ranking ——— */
+/* Aportou (11/11/2026): o corpo corre sobre o creme da página, a tabela é um
+   cartão branco; mesma família do /ranking. O conteúdo é o de antes. */
 .tsh__body {
-  background: var(--nu-cream);
-  padding: 0 clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 90px);
+  background: var(--nu-page);
+  padding: 0 clamp(22px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
   display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 28px);
   animation: nu-fade .5s ease both;
 }
-.tsh__toolbar { display: flex; flex-direction: column; gap: 3px; }
-.tsh__toolbar-eyebrow {
-  margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: .14em;
-}
+.tsh__toolbar { display: flex; flex-direction: column; gap: 8px; }
 .tsh__toolbar-count {
-  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
-  font-variant-numeric: tabular-nums; letter-spacing: -.1px;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.025em; line-height: 1.1;
 }
+.tsh__sk { display: flex; flex-direction: column; gap: 10px; background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(18px, 2vw, 28px); }
 .tsh__state {
-  background: var(--nu-white); border-radius: var(--nu-r-card-lg);
+  background: var(--nu-card); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente);
   padding: clamp(32px, 4vw, 48px); text-align: center;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500;
 }
 .tsh__answer {
-  margin: clamp(8px, 1.5vw, 16px) auto 0; max-width: 68ch; text-align: center;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
+  margin: clamp(8px, 1.5vw, 16px) 0 0; max-width: 76ch;
+  color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.6;
 }
 
 /* ——— prosa educacional (mesma família das calculadoras/rankings) ——— */
 .tsh__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6;
 }
 .tsh__prose p:last-child { margin-bottom: 0; }
 .tsh__prose strong { color: var(--nu-ink); font-weight: 800; }
@@ -197,13 +198,15 @@ usePageSeo({
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .tsh__card-link {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-branco);
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .tsh__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.tsh__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
-.tsh__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.tsh__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; transition: color .2s ease; }
+.tsh__card-link:hover .tsh__card-link-title { color: var(--nu-blue-text); }
+.tsh__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) { .tsh__card-link { transition: none; } .tsh__card-link:hover { transform: none; } }
 
 /* (CTA final = NuCtaPhoto full-bleed, estilos no componente) */
 </style>

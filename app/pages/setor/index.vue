@@ -50,7 +50,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'ItemList',
-      name: 'Setores da B3 - Redentia',
+      name: `Setores da B3 - ${MARCA.nome}`,
       numberOfItems: SETORES.length,
       itemListElement: SETORES.map((s, i) => ({
         '@type': 'ListItem',
@@ -87,7 +87,7 @@ usePageSeo({
             </span>
           </div>
           <p class="sth__card-desc">{{ s.blurb }}</p>
-          <span class="sth__card-cta">Ver setor</span>
+          <span class="sth__card-cta">Ver setor<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
       </div>
     </section>
@@ -104,9 +104,11 @@ usePageSeo({
 </template>
 
 <style scoped>
+/* Aportou: a grade corre sobre o creme da página; cada setor é um cartão creme
+   com a sombra quente, que sobe 2px ao passar o ponteiro */
 .sth__grid-wrap {
-  background: var(--nu-white);
-  padding: clamp(40px, 5.5vw, 72px) clamp(22px, 5.5vw, 80px) clamp(64px, 8vw, 104px);
+  background: var(--nu-page);
+  padding: clamp(24px, 3vw, 40px) clamp(22px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
   animation: nu-fade .5s ease both;
 }
 .sth__grid {
@@ -115,18 +117,26 @@ usePageSeo({
 }
 .sth__card {
   display: flex; flex-direction: column; gap: 10px;
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
-  transition: transform .18s, box-shadow .2s;
+  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-quente);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .sth__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.sth__card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.sth__card-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.sth__card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.sth__card-title { margin: 0; color: var(--nu-ink); font-size: clamp(20px, 1.8vw, 24px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; transition: color .2s ease; }
+.sth__card:hover .sth__card-title { color: var(--nu-blue-text); }
 .sth__card-count {
-  color: var(--nu-blue-text); font-size: var(--nu-fs-dense); font-weight: 700;
+  display: inline-flex; align-items: center; min-height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-white);
+  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .sth__card-desc {
-  margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
+  margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5;
 }
-.sth__card-cta { margin-top: auto; padding-top: 6px; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.sth__card-cta { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.sth__card-cta svg { transition: transform .2s ease; }
+.sth__card:hover .sth__card-cta svg { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) {
+  .sth__card, .sth__card-cta svg { transition: none; }
+  .sth__card:hover, .sth__card:hover .sth__card-cta svg { transform: none; }
+}
 </style>

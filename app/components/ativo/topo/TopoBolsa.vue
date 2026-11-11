@@ -1,16 +1,21 @@
 <script setup lang="ts">
-// O topo do /asset: "A bolsa no bolso" (03/11/2026, a escolha do dono entre
-// três topos com cara de app), o idioma do app Ações e da página do papel no app da Redentia (V4Ativo): tudo
-// alinhado à margem esquerda, sem centralizar. Em cima, o papel e as ações em
-// botões redondos; embaixo, o preço na fonte fina e grande, que acompanha a
-// mira quando o dedo (ou o mouse) passa no gráfico, com a data e a variação
-// desde o início do período no lugar do fechamento anterior. O gráfico vai de
-// borda a borda e o período fica embaixo dele, num controle segmentado largo.
-// O H1 é o mesmo do céu anterior, com o mesmo texto e o mesmo nível.
-// De borda a borda sem cortar nada: a linha e os fios vão até a beira, mas o
-// ponto de hoje, o halo e o rótulo ficam recuados pela margem da página (no
-// mínimo 44px, o raio do halo com respiro), e os rótulos das marcas começam na
-// margem do texto (--agr-esq, --agr-dir e --agr-rotulo-esq do AtivoGrafico).
+// O topo do /asset. Nasceu "A bolsa no bolso" (03/11/2026, a escolha do dono
+// entre três topos com cara de app): um céu escuro de borda a borda, o preço
+// fino e grande. Em 11/11/2026 a Redentia de investidor virou APORTOU e o topo
+// trocou de roupa, sem trocar de conteúdo (docs/aportou/contrato.md, o
+// meio-termo): a página é creme; o papel leva o código numa etiqueta carvão; a
+// cotação é o número-herói em 800, com o "R$" pequeno e elevado; a variação do
+// dia é um selo de raio 8 (verde ou vermelho); e o gráfico mora no cartão
+// carvão com a faixa da marca (NuFaixaMarca), o rótulo do período na aba e o
+// seletor à direita dela. Os números em fila viraram o cartão creme de dados.
+// No desktop são duas colunas (o papel e o preço à esquerda, o cartão do
+// gráfico à direita); a ordem no HTML é a mesma de antes.
+// O que NÃO mudou: o H1 (mesmo texto, mesmo nível), o H2 do gráfico (agora o
+// rótulo da faixa, sem o ponto final), o preço que acompanha a mira quando o
+// dedo (ou o mouse) passa no gráfico, os números, as perguntas prontas e o
+// link do simulador. O céu escuro continua existindo no topo da /carteira
+// (CarteiraAgora), que segue usando topo-noite.css; este componente tem o
+// estilo próprio desde a troca.
 // A linha se desenhando é Web Animations, uma vez no mount, só com a aba
 // visível, o gráfico na tela e sem pedido de menos movimento (a lição do
 // /benchmark-ia: nada espera o observador para existir).
@@ -41,6 +46,15 @@ const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const leitura = ref<LeituraDoGrafico | null>(null)
 const logoFalhou = ref(false)
 const preco = computed(() => leitura.value?.preco ?? props.a.hero.priceFmt)
+// "R$ 45,36" → a moeda pequena e elevada + o número (o TopoPreco anima só as casas)
+const partes = computed(() => {
+  const m = preco.value.match(/^([A-Z]{0,2}\$)\s*(.+)$/)
+  return m ? { moeda: m[1]!, numero: m[2]! } : { moeda: '', numero: preco.value }
+})
+// o nome sem o código: o código vai na etiqueta carvão ao lado
+const nome = computed(() => props.a.hero.companyLine.replace(` · ${props.t}`, ''))
+// o rótulo da faixa da marca: o título do gráfico sem o ponto final (vai em caixa alta)
+const rotuloFaixa = computed(() => props.tituloGrafico.replace(/\.$/, ''))
 
 const palco = ref<HTMLElement | null>(null)
 onMounted(() => {
@@ -51,71 +65,193 @@ onMounted(() => {
   const curva = 'cubic-bezier(.2, .8, .2, 1)'
   el.querySelector('.agr__svg')?.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 1400, delay: 150, easing: curva, fill: 'backwards' })
   el.querySelectorAll('.agr__fim, .agr__hoje').forEach((x) => x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 1350, easing: 'ease', fill: 'backwards' }))
-  el.querySelector('.tbo__horizonte')?.animate([{ opacity: 0.2, transform: 'scaleX(.5)' }, { opacity: 1, transform: 'none' }], { duration: 1400, easing: curva, fill: 'backwards' })
 })
 </script>
 
 <template>
   <section v-contexto-chat="contexto" class="tbo" aria-labelledby="tbo-h1">
-    <div class="tbo__luz" aria-hidden="true" />
     <p v-if="renamedFrom" class="tbo__trocou">{{ renamedFrom }} agora negocia como {{ t }}.</p>
-    <div class="tbo__linha1">
+    <div class="tbo__grade">
       <div class="tbo__id">
-        <img v-if="a.hero.logo && !logoFalhou" :src="a.hero.logo" alt="" width="28" height="28" class="tbo__logo" @error="logoFalhou = true">
-        <div>
-          <p class="tbo__empresa">{{ a.hero.companyLine }} <span class="tbo__bolsa">{{ a.hero.exchangeLabel || 'B3' }}</span></p>
+        <img v-if="a.hero.logo && !logoFalhou" :src="a.hero.logo" alt="" width="40" height="40" class="tbo__logo" @error="logoFalhou = true">
+        <div class="tbo__quem">
+          <p class="tbo__empresa">
+            <span class="tbo__nome">{{ nome }}</span>
+            <span class="tbo__ticker">{{ t }}</span>
+            <span class="tbo__bolsa">{{ a.hero.exchangeLabel || 'B3' }}</span>
+          </p>
           <h1 v-if="a.resumo" id="tbo-h1" class="tbo__h1">{{ a.resumo.h1 }}</h1>
         </div>
         <span v-if="position" class="tbo__posicao">Na sua carteira · {{ nf0.format(position.qty) }} {{ position.qty === 1 ? 'cota' : 'cotas' }}</span>
       </div>
-      <TopoAcoes :ticker="t" :seguivel="seguivel" @perguntar="emit('abrir')" />
-    </div>
 
-    <div class="tbo__preco-linha">
-      <p class="tbo__preco"><TopoPreco :valor="preco" /></p>
-      <p class="tbo__dia">
-        <template v-if="leitura">
-          <span class="tbo__delta" :class="`tbo__delta--${leitura.dir}`">{{ leitura.medida ? `${leitura.delta} (${leitura.var})` : leitura.var }}</span>
-          <span class="tbo__meta">{{ leitura.medida ? `de ${leitura.de} a ${leitura.data}` : `em ${leitura.data}, desde o início do período` }}</span>
-        </template>
-        <template v-else>
-          <span v-if="a.hero.changeLine" class="tbo__delta" :class="`tbo__delta--${a.hero.dir}`">{{ a.hero.changeLine }}</span>
-          <span v-if="a.hero.metaLine" class="tbo__meta">{{ a.hero.metaLine }}</span>
-        </template>
-      </p>
-    </div>
-
-    <div v-if="series" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco">
-      <div class="tbo__palco-cab">
-        <h2 class="tbo__h2">{{ tituloGrafico }}</h2>
-        <p v-if="legenda.length" class="tbo__legenda">
-          <span v-for="l in legenda" :key="l.rotulo" class="tbo__leg">
-            <i class="tbo__traco" :class="{ 'tbo__traco--ibov': l.rotulo === 'IBOV' }" aria-hidden="true" />{{ l.rotulo }}
-            <b :class="l.dir ? `tbo__leg--${l.dir}` : ''">{{ l.pct }}</b>
-          </span>
+      <div class="tbo__preco-linha">
+        <p class="tbo__preco" :class="{ 'tbo__preco--longo': partes.numero.length > 8 }">
+          <span v-if="partes.moeda" class="tbo__moeda">{{ partes.moeda }}</span><TopoPreco :valor="partes.numero" />
+        </p>
+        <p class="tbo__dia">
+          <template v-if="leitura">
+            <span class="tbo__selo" :class="`tbo__selo--${leitura.dir}`">{{ leitura.medida ? `${leitura.delta} (${leitura.var})` : leitura.var }}</span>
+            <span class="tbo__meta">{{ leitura.medida ? `de ${leitura.de} a ${leitura.data}` : `em ${leitura.data}, desde o início do período` }}</span>
+          </template>
+          <template v-else>
+            <span v-if="a.hero.changeLine" class="tbo__selo" :class="`tbo__selo--${a.hero.dir}`">
+              <svg class="tbo__seta" width="11" height="10" viewBox="0 0 11 10" aria-hidden="true"><path d="M5.5 0 11 10H0Z" /></svg>{{ a.hero.changeLine }}
+            </span>
+            <span v-if="a.hero.metaLine" class="tbo__meta">{{ a.hero.metaLine }}</span>
+          </template>
         </p>
       </div>
-      <div class="tbo__grafico">
-        <AtivoGrafico :ativo="series.asset" :ibov="series.ibov" :ticker="t" :atual="a.hero.priceFmt" :rotulo="tituloGrafico" tom="luz" :carregando="rangeLoading" @leitura="leitura = $event" />
-      </div>
-      <div class="tbo__horizonte" aria-hidden="true" />
-      <div class="tbo__periodo"><AtivoPeriodo :model-value="range" :disabled="rangeLoading" tom="escuro" class="tbo__seg" @update:model-value="emit('periodo', $event)" /></div>
-      <p class="tbo__uso" aria-hidden="true">Passe o cursor para ler um dia; arraste para medir entre dois.</p>
-    </div>
 
-    <dl v-if="linhas.length" class="tbo__nums">
-      <div v-for="r in linhas" :key="r.l" v-contexto-chat="{ id: `linha:${t}:${r.l}`, tipo: 'grafico', rotulo: rotuloComSobre(r.l, t), texto: `${r.l} (${t}): ${r.v}` }" class="tbo__num">
-        <dt>{{ r.l }}</dt><dd>{{ r.v }}</dd>
+      <TopoAcoes :ticker="t" :seguivel="seguivel" tom="claro" class="tbo__acoes" @perguntar="emit('abrir')" />
+
+      <div v-if="series" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco">
+        <NuFaixaMarca :rotulo="rotuloFaixa" :altura="56" class="tbo__cartao">
+          <template #acoes>
+            <AtivoPeriodo :model-value="range" :disabled="rangeLoading" tom="escuro" class="tbo__seg tbo__seg--topo" @update:model-value="emit('periodo', $event)" />
+          </template>
+          <p v-if="legenda.length" class="tbo__legenda">
+            <span v-for="(l, i) in legenda" :key="l.rotulo" class="tbo__leg" :class="{ 'tbo__leg--1': i === 0 }">
+              <b :class="l.dir ? `tbo__leg--${l.dir}` : ''">{{ l.pct }}</b>
+              <span class="tbo__leg-r"><i class="tbo__traco" :class="{ 'tbo__traco--ibov': l.rotulo === 'IBOV' }" aria-hidden="true" />{{ l.rotulo }}</span>
+            </span>
+          </p>
+          <div class="tbo__grafico">
+            <AtivoGrafico :ativo="series.asset" :ibov="series.ibov" :ticker="t" :atual="a.hero.priceFmt" :rotulo="tituloGrafico" tom="luz" :carregando="rangeLoading" @leitura="leitura = $event" />
+          </div>
+          <div class="tbo__periodo"><AtivoPeriodo :model-value="range" :disabled="rangeLoading" tom="escuro" class="tbo__seg tbo__seg--pe" @update:model-value="emit('periodo', $event)" /></div>
+          <p class="tbo__uso" aria-hidden="true">Passe o cursor para ler um dia; arraste para medir entre dois.</p>
+        </NuFaixaMarca>
       </div>
-    </dl>
-    <div class="tbo__pe">
-      <AtivoPerguntaChips :perguntas="perguntas" tom="escuro" :rotulo="null" @perguntar="emit('perguntar', $event)" />
-      <p v-if="a.simuladorHref" class="tbo__sim">
-        <NuxtLink :to="a.simuladorHref" class="tbo__sim-l">Simulador de ações</NuxtLink>
-        <span>Quanto {{ t }} teria rendido com dividendos reinvestidos, no histórico real da B3.</span>
-      </p>
+
+      <dl v-if="linhas.length" class="tbo__nums">
+        <div v-for="r in linhas" :key="r.l" v-contexto-chat="{ id: `linha:${t}:${r.l}`, tipo: 'grafico', rotulo: rotuloComSobre(r.l, t), texto: `${r.l} (${t}): ${r.v}` }" class="tbo__num">
+          <dt>{{ r.l }}</dt><dd>{{ r.v }}</dd>
+        </div>
+      </dl>
+      <div class="tbo__pe">
+        <AtivoPerguntaChips :perguntas="perguntas" tom="claro" :rotulo="null" @perguntar="emit('perguntar', $event)" />
+        <p v-if="a.simuladorHref" class="tbo__sim">
+          <NuxtLink :to="a.simuladorHref" class="tbo__sim-l">Simulador de ações</NuxtLink>
+          <span>Quanto {{ t }} teria rendido com dividendos reinvestidos, no histórico real da B3.</span>
+        </p>
+      </div>
     </div>
   </section>
 </template>
 
-<style scoped src="./topo-noite.css"></style>
+<style scoped>
+/* O topo creme da Aportou (11/11/2026). O céu escuro de antes ficou em
+   topo-noite.css, que a /carteira ainda usa. */
+.tbo {
+  --g: clamp(20px, 4vw, 56px);
+  padding: clamp(28px, 3.4vw, 48px) var(--g) clamp(28px, 3.4vw, 48px);
+  background: var(--nu-page); color: var(--nu-ink);
+}
+.tbo__trocou { max-width: 1240px; margin: 0 auto 14px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
+.tbo__grade {
+  max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "id" "preco" "acoes" "palco" "nums" "pe"; row-gap: clamp(20px, 2.4vw, 28px);
+}
+.tbo__id { grid-area: id; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; min-width: 0; animation: nu-fade .5s ease both; }
+.tbo__logo { width: 40px; height: 40px; border-radius: var(--nu-r-chip); background: var(--nu-white); object-fit: cover; box-shadow: var(--nu-shadow-quente); }
+.tbo__quem { min-width: 0; }
+.tbo__empresa { margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tbo__nome { font-size: clamp(24px, 2.6vw, 34px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+/* as etiquetas: o código em carvão, a bolsa em creme (selos de raio 8) */
+.tbo__ticker, .tbo__bolsa { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-sm); font-weight: 800; letter-spacing: 0.04em; }
+.tbo__ticker { background: var(--nu-ink); color: var(--nu-white); }
+.tbo__bolsa { background: var(--nu-cream-2); color: var(--nu-ink); }
+.tbo__h1 { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; letter-spacing: 0; line-height: 1.4; }
+.tbo__posicao { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+
+/* a cotação: o número-herói da marca, com a moeda pequena e elevada */
+.tbo__preco-linha { grid-area: preco; animation: nu-fade .5s ease .06s both; }
+.tbo__preco { margin: 0; display: flex; align-items: flex-start; gap: .08em; font-size: clamp(64px, 17vw, 132px); font-weight: 800; letter-spacing: -0.045em; line-height: .92; }
+.tbo__preco--longo { font-size: clamp(44px, 11.5vw, 92px); }
+/* cada casa do TopoPreco corta o que sai da caixa (é o que esconde o dígito que troca); com a
+   letra apertada do número-herói o desenho passa da caixa: a folga volta por dentro */
+.tbo__preco :deep(.tpr__casa) { padding: .1em .05em; margin: -.1em -.05em; }
+.tbo__moeda { margin-top: .16em; font-size: .36em; letter-spacing: -0.02em; line-height: 1; }
+.tbo__dia { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; min-height: 38px; margin: clamp(14px, 1.6vw, 20px) 0 0; font-variant-numeric: tabular-nums; }
+.tbo__selo { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 6px 14px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-lg); font-weight: 700; }
+.tbo__selo--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.tbo__selo--down { background: var(--nu-red-bg); color: var(--nu-red-text); }
+.tbo__seta { flex: none; fill: currentColor; }
+.tbo__selo--down .tbo__seta { transform: rotate(180deg); }
+.tbo__meta { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; }
+
+.tbo__acoes { grid-area: acoes; animation: nu-fade .5s ease .12s both; }
+
+/* o cartão do gráfico: carvão, com a faixa da marca e o período à direita dela */
+.tbo__palco { grid-area: palco; min-width: 0; animation: nu-fade .5s ease .1s both; }
+.tbo__cartao { --pad: clamp(18px, 2.2vw, 30px); padding-bottom: clamp(16px, 2vw, 24px); }
+.tbo__cartao :deep(.nfm__acoes) { padding: 10px 12px 0 0; }
+.tbo__cartao .tbo__seg--topo { background: transparent; }
+.tbo__cartao .tbo__seg :deep(.ape__b) { height: 38px; color: var(--nu-on-dark); font-weight: 700; }
+.tbo__cartao .tbo__seg :deep(.ape__b:hover) { color: var(--nu-white); }
+.tbo__cartao .tbo__seg :deep(.ape__b--on), .tbo__cartao .tbo__seg :deep(.ape__b--on:hover) { background: var(--nu-creme); color: var(--nu-ink); }
+.tbo__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(18px, 2vw, 26px) var(--pad) 0; }
+.tbo__leg { display: inline-flex; align-items: baseline; gap: 10px; }
+.tbo__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.tbo__leg--1 b { font-size: clamp(38px, 4.4vw, 58px); letter-spacing: -0.04em; line-height: 1; }
+.tbo__leg b.tbo__leg--up { color: var(--nu-green-soft); }
+.tbo__leg b.tbo__leg--down { color: var(--nu-red-soft); }
+.tbo__leg-r { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 600; }
+.tbo__traco { width: 14px; height: 2px; border-radius: 1px; background: var(--nu-blue-on-dark); }
+.tbo__traco--ibov { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
+/* o gráfico vai de beira a beira do cartão; o ponto de hoje, o halo e o rótulo
+   recuam (no mínimo 44px), os rótulos das marcas começam na margem do texto */
+.tbo__grafico {
+  position: relative; height: clamp(220px, 23vw, 320px); margin-top: 14px;
+  --agr-esq: var(--pad); --agr-dir: max(var(--pad), 44px); --agr-rotulo-esq: var(--pad);
+  --agr-hoje-bg: var(--nu-creme); --agr-hoje-fg: var(--nu-ink); --agr-hoje-sub: var(--nu-gray);
+}
+.tbo__periodo { display: none; margin: 16px var(--pad) 0; }
+.tbo__seg--pe { width: 100%; }
+.tbo__seg--pe :deep(.ape__b) { flex: 1; height: 40px; }
+.tbo__uso { margin: 12px var(--pad) 0; color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 500; }
+@media (hover: none) { .tbo__uso { display: none; } }
+
+/* os números do gráfico: o cartão creme de dados, com fios de 1,5px */
+.tbo__nums {
+  grid-area: nums; margin: 0; padding: 0 clamp(18px, 2vw, 24px); border-radius: var(--nu-r-panel); overflow: hidden;
+  background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); column-gap: clamp(20px, 2.6vw, 32px);
+  animation: nu-fade .5s ease .16s both;
+}
+/* o fio fica em cima de cada linha; o da primeira fileira some no corte do cartão */
+.tbo__num { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: -1.5px; padding: 15px 0 14px; border-top: 1.5px solid var(--nu-line-2); }
+.tbo__num dt { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.3; }
+.tbo__num dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+
+.tbo__pe { grid-area: pe; display: flex; justify-content: space-between; align-items: center; gap: 16px 32px; flex-wrap: wrap; }
+.tbo__sim { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.tbo__sim-l { margin-right: 8px; color: var(--nu-ink); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line); transition: text-decoration-color .2s ease, color .2s ease; }
+.tbo__sim-l:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
+
+/* duas colunas: o papel e o preço à esquerda, o cartão do gráfico à direita */
+@media (min-width: 1080px) {
+  .tbo__grade {
+    grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); column-gap: clamp(36px, 4.4vw, 72px);
+    grid-template-areas: "id palco" "preco palco" "acoes palco" "nums palco" "pe pe"; grid-template-rows: auto auto auto 1fr auto;
+  }
+  .tbo__preco { font-size: clamp(84px, 8.4vw, 132px); }
+  .tbo__preco--longo { font-size: clamp(52px, 5.2vw, 84px); }
+  .tbo__nums { align-self: end; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tbo__grafico { height: clamp(260px, 25vw, 372px); }
+}
+@media (max-width: 760px) {
+  /* no celular o período desce para baixo do gráfico, largo, como era */
+  .tbo__cartao :deep(.nfm__acoes) { display: none; }
+  .tbo__periodo { display: flex; }
+}
+@media (max-width: 480px) {
+  .tbo__nums { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
+  .tbo__num { flex-direction: column; gap: 2px; }
+  .tbo__num dd { text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tbo__id, .tbo__preco-linha, .tbo__acoes, .tbo__palco, .tbo__nums { animation: none; }
+}
+</style>

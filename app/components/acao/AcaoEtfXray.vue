@@ -57,7 +57,7 @@ const open = ref(false)
               <span class="axb__row-bar"><span class="axb__row-fill" :style="{ width: `${(h.pct / Math.max(xray.top[0]?.pct ?? 1, 0.01)) * 100}%` }" /></span>
               <span class="axb__row-pct">{{ h.pctLabel }}</span>
               <span v-if="h.ticker" class="axb__go" aria-hidden="true">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
               </span>
             </component>
           </div>
@@ -127,39 +127,42 @@ const open = ref(false)
 </template>
 
 <style scoped>
-.axb { padding: clamp(56px, 7vw, 92px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.axb--white { background: var(--nu-white); }
-.axb--cream { background: var(--nu-cream); }
+/* a mesma coluna de 1240px do resto da página do ativo */
+.axb { padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); animation: nu-fade .5s ease both; }
+/* Aportou: não existe faixa branca de ponta a ponta. A 1ª banda é o creme da
+   página; a 2ª, a faixa quente (branco é só o cartão) */
+.axb--white { background: var(--nu-page); }
+.axb--cream { background: var(--nu-band); }
 .axb__cols { display: flex; gap: clamp(28px, 5vw, 76px); align-items: flex-start; flex-wrap: wrap; }
 .axb__left { flex: 1 1 300px; min-width: min(280px, 100%); display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
 .axb__title {
   margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 58px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
-.axb__sub { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+.axb__sub { color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5; }
 .axb__badges { display: flex; gap: 8px; flex-wrap: wrap; }
 .axb__content { flex: 1.35 1 420px; min-width: min(340px, 100%); }
 
-.axb__bar { display: flex; height: 12px; border-radius: var(--nu-r-pill); overflow: hidden; gap: 3px; }
-.axb__bar-seg { height: 100%; }
+.axb__bar { display: flex; height: 26px; border-radius: 15px; overflow: hidden; gap: 4px; }
+.axb__bar-seg { height: 100%; border-radius: 5px; }
 .axb__legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; }
 .axb__legend-item { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
 .axb__legend-item b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
-.axb__legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.axb__legend-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
 
 .axb__rows { margin-top: 14px; }
-.axb__row { display: flex; align-items: center; gap: 14px; padding: 11px 0; border-top: 1.5px solid var(--nu-cream-2); text-decoration: none; }
+.axb__row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1.5px solid var(--nu-line-2); text-decoration: none; }
 .axb__row--link:hover .axb__row-name b { color: var(--nu-blue-text); }
 .axb__row-rank { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; width: 22px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
 .axb__row-name { flex: 1.1; min-width: 0; display: flex; align-items: baseline; gap: 9px; }
 .axb__row-name b { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; transition: color .15s; }
 .axb__row-sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.axb__row-bar { flex: 1; height: 6px; background: var(--nu-cream-2); border-radius: var(--nu-r-pill); overflow: hidden; min-width: 70px; }
+.axb__row-bar { flex: 1; height: 8px; background: var(--nu-line-2); border-radius: var(--nu-r-pill); overflow: hidden; min-width: 70px; }
 .axb__row-fill { display: block; height: 100%; background: var(--nu-blue); border-radius: var(--nu-r-pill); }
 .axb__row-pct { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; min-width: 60px; text-align: right; font-variant-numeric: tabular-nums; }
 /* botão azul da Redentia (mesmo dos movers da home): a linha leva pro ativo */
 .axb__go {
-  width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: var(--nu-blue);
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: var(--nu-blue); color: var(--nu-white);
   display: flex; align-items: center; justify-content: center; transition: background .16s;
 }
 .axb__row--link:hover .axb__go { background: var(--nu-blue-hover); }
@@ -170,23 +173,25 @@ const open = ref(false)
   display: inline-flex; align-items: center; gap: 8px; border: none; background: transparent;
   font-family: inherit; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; padding: 0;
 }
-.axb__link:hover { color: var(--nu-blue-2, #1E4FD6); }
+.axb__link svg { transition: transform .2s ease; }
+.axb__link:hover { color: var(--nu-blue-text); text-decoration: underline; text-underline-offset: 3px; }
+.axb__link:hover svg { transform: translateX(3px); }
 .axb__link--sm { margin-top: 16px; }
 
 .axb__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 14px; }
-.axb__card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 22px; transition: transform .15s; }
+.axb__card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 22px; box-shadow: var(--nu-shadow-quente); transition: transform .15s; }
 .axb__card:hover { transform: translateY(-2px); }
 .axb__card-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.axb__card-value { color: var(--nu-ink); font-size: clamp(24px, 2.1vw, 30px); font-weight: 800; letter-spacing: -1px; margin-top: 10px; font-variant-numeric: tabular-nums; }
+.axb__card-value { color: var(--nu-ink); font-size: clamp(26px, 2.4vw, 34px); font-weight: 800; letter-spacing: -0.03em; margin-top: 10px; font-variant-numeric: tabular-nums; }
 .axb__card-note { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; margin-top: 10px; }
 
-.axb__lbl { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; margin-top: 26px; }
+.axb__lbl { color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; margin-top: 26px; }
 .axb__note { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; margin: 12px 0 0; max-width: 620px; }
 
 .axb__corr { margin-top: 6px; }
-.axb__corr-row { display: flex; align-items: center; gap: 15px; padding: 11px 0; border-top: 1.5px solid var(--nu-cream-line, #E7E0D2); }
+.axb__corr-row { display: flex; align-items: center; gap: 15px; padding: 11px 0; border-top: 1.5px solid var(--nu-line-2); }
 .axb__corr-sym { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; width: 74px; flex-shrink: 0; }
-.axb__corr-track { position: relative; flex: 1; height: 9px; background: var(--nu-sand-2); border-radius: var(--nu-r-pill); }
+.axb__corr-track { position: relative; flex: 1; height: 10px; background: var(--nu-line-2); border-radius: var(--nu-r-pill); }
 .axb__corr-mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px; background: var(--nu-sand); border-radius: 1px; }
 .axb__corr-fill { position: absolute; top: 0; bottom: 0; background: var(--nu-green); border-radius: var(--nu-r-pill); }
 .axb__corr-fill--neg { background: var(--nu-red); }

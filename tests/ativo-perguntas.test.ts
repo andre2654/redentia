@@ -20,7 +20,8 @@ test('AtivoPerguntas: o título grande é o H2 de antes, as respostas em <detail
   assert.equal((tpl.match(/<details\b/g) ?? []).length, 2)
   assert.doesNotMatch(tpl, /<p[^>]*v-if[^>]*class="apg__a"|class="apg__a"[^>]*v-if/)
   assert.match(src, /if \(props\.editorial\?\.faq\.length\) useFaqSchema\(props\.editorial\.faq\)\nelse if \(props\.resumo\?\.faq\.length\) useFaqSchema\(props\.resumo\.faq\)/)
-  assert.match(tpl, /@click="emit\('perguntar'\)">Perguntar à Redentia AI</)
+  // Aportou (11/11/2026): a IA não leva mais o nome antigo; o botão é a pílula com a seta
+  assert.match(tpl, /@click="emit\('perguntar'\)">Perguntar à IA</)
 })
 
 test('AtivoNoite: a seção de perguntas abre o painel com o ativo e mantém o gancho e o "veja também"', () => {

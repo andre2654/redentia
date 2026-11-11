@@ -67,7 +67,7 @@ const sub = (r: BenchRankingRow) => r.extra ?? (r.hi > r.lo ? `de ${fmt(r.lo)} a
   padding: 10px 0;
 }
 .brl--plain .brl__row { grid-template-columns: 32px 1fr auto; }
-.brl__row + .brl__row { border-top: 1px solid var(--nu-cream-2); }
+.brl__row + .brl__row { border-top: 1.5px solid var(--nu-line-2); }
 .brl__pos { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
 .brl__tile {
   width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center;
@@ -79,8 +79,8 @@ const sub = (r: BenchRankingRow) => r.extra ?? (r.hi > r.lo ? `de ${fmt(r.lo)} a
   color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px;
 }
 .brl__tie {
-  flex-shrink: 0; border-radius: var(--nu-r-pill); padding: 1px 7px;
-  background: var(--nu-blue-tint); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0;
+  flex-shrink: 0; border-radius: var(--nu-r-tag); padding: 1px 7px;
+  background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0;
 }
 .brl__prov { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
 .brl__num { display: flex; flex-direction: column; align-items: flex-end; }
@@ -93,18 +93,18 @@ const sub = (r: BenchRankingRow) => r.extra ?? (r.hi > r.lo ? `de ${fmt(r.lo)} a
   margin: 0 -12px; padding: 10px 12px; border-radius: var(--nu-r-tile); cursor: pointer; outline: none;
   transition: background .18s;
 }
-.brl--live .brl__row:hover, .brl--live .brl__row:focus-visible { background: var(--b-surface, var(--nu-cream)); }
-.brl--live .brl__row:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: -2px; }
+.brl--live .brl__row:hover, .brl--live .brl__row:focus-visible { background: var(--b-surface, var(--nu-cream-2)); }
+.brl--live .brl__row:focus-visible { outline-offset: -3px; }
 .brl__tile { transition: background .18s, color .18s; }
 .brl__row--on .brl__tile { background: var(--nu-blue); color: var(--nu-white); }
 /* logo do modelo: fundo branco com fio, para a cor da marca não brigar com o azul da casa */
-.brl__tile--logo { background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-cream-2); }
+.brl__tile--logo { background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line-2); }
 .brl__row--on .brl__tile--logo { background: var(--nu-white); box-shadow: inset 0 0 0 2px var(--nu-blue); }
 .brl__logo { width: 62%; height: 62%; display: block; object-fit: contain; }
 
 @container (max-width: 600px) {
   .brl { grid-template-columns: 1fr; }
-  .brl__col + .brl__col .brl__row:first-child { border-top: 1px solid var(--nu-cream-2); }
+  .brl__col + .brl__col .brl__row:first-child { border-top: 1.5px solid var(--nu-line-2); }
   .brl__row { grid-template-columns: 18px 30px 1fr auto; gap: 10px; }
   .brl--plain .brl__row { grid-template-columns: 30px 1fr auto; }
   .brl__tile { width: 30px; height: 30px; border-radius: 9px; }

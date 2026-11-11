@@ -54,20 +54,21 @@ function fmtMaturity(iso: string | null): string {
 </template>
 
 <style scoped>
-.rkt { background: var(--nu-white); border-radius: var(--nu-r-card-lg); overflow-x: auto; }
+.rkt { background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); overflow-x: auto; }
 .rkt__table { width: 100%; min-width: 680px; border-collapse: collapse; }
 .rkt__th {
   padding: 18px 16px 14px; text-align: right; white-space: nowrap;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: .08em;
-  border-bottom: 1px solid var(--nu-cream-2);
+  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .16em;
+  border-bottom: 1.5px solid var(--nu-line-2);
 }
 .rkt__th--pos { width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px); }
 .rkt__th--asset { text-align: left; }
 .rkt__th--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 .rkt__row { cursor: pointer; transition: background .15s; }
-.rkt__row:hover { background: var(--nu-cream-hover); }
-.rkt__row + .rkt__row .rkt__cell { border-top: 1px solid var(--nu-cream-2); }
+.rkt__row:hover { background: var(--nu-page); }
+.rkt__row:hover .rkt__link { color: var(--nu-blue-text); }
+.rkt__row + .rkt__row .rkt__cell { border-top: 1.5px solid var(--nu-line-2); }
 .rkt__cell {
   padding: 14px 16px; text-align: right; white-space: nowrap;
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
@@ -75,15 +76,15 @@ function fmtMaturity(iso: string | null): string {
 }
 .rkt__cell--pos {
   width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px);
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700;
+  color: var(--nu-gray); font-size: 14.5px; font-weight: 700;
 }
-.rkt__cell--asset { text-align: left; font-weight: 800; letter-spacing: -.1px; }
-.rkt__link { color: var(--nu-ink); }
+.rkt__cell--asset { text-align: left; font-weight: 800; letter-spacing: -.01em; }
+.rkt__link { color: var(--nu-ink); transition: color .2s ease; }
 .rkt__link:hover { color: var(--nu-blue-text); }
-.rkt__cell--rate { color: var(--nu-blue-text); font-weight: 800; }
+.rkt__cell--rate { color: var(--nu-ink); font-weight: 800; }
 .rkt__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 .rkt__badge {
-  display: inline-flex; background: var(--nu-sand-2); color: var(--nu-gray-tag);
-  border-radius: var(--nu-r-chip); padding: 4px 10px; font-size: var(--nu-fs-xs); font-weight: 700;
+  display: inline-flex; background: var(--nu-cream-2); color: var(--nu-gray-3);
+  border-radius: var(--nu-r-tag); padding: 4px 9px; font-size: 13.5px; font-weight: 700;
 }
 </style>

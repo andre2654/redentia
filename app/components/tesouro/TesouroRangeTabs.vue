@@ -33,19 +33,16 @@ function select(value: TesouroRange) {
 </template>
 
 <style scoped>
-.trt { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; }
+.trt { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; }
 .trt__tab {
-  padding: 11px 20px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
+  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); border: none; background: transparent;
+  color: var(--nu-on-dark); font: inherit; font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
   transition: color .2s, background .2s;
 }
-.trt__tab:hover { color: var(--nu-cream-text-85); }
-.trt__tab--active {
-  background: var(--nu-cream); color: var(--nu-navy); font-weight: 800;
-}
-.trt__tab--active:hover { color: var(--nu-navy); }
+.trt__tab:hover { color: var(--nu-white); }
+.trt__tab--active, .trt__tab--active:hover { background: var(--nu-creme); color: var(--nu-ink); }
 
 @media (max-width: 760px) {
-  .trt__tab { padding: 9px 14px; font-size: var(--nu-fs-sm); }
+  .trt__tab { padding: 0 14px; font-size: 14.5px; }
 }
 </style>

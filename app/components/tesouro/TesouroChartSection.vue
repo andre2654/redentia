@@ -39,7 +39,10 @@ const MODES: { value: TesouroChartMode; label: string }[] = [
 <template>
   <section v-contexto-chat="{ id: `tesouro-grafico:${sobre}`, tipo: 'grafico', rotulo: rotuloComSobre('Gráfico', sobre.replace(/^Tesouro\s+/i, '')) }" class="tcs">
     <div class="tcs__head">
-      <h2 class="tcs__title">{{ name }}<br>em {{ heading }}.</h2>
+      <div>
+        <NuEyebrow como="div" sobre="escuro">Histórico</NuEyebrow>
+        <h2 class="tcs__title">{{ name }}<br>em {{ heading }}.</h2>
+      </div>
       <div class="tcs__controls">
         <div class="tcs__modes" role="group" aria-label="Eixo do gráfico">
           <button
@@ -64,7 +67,10 @@ const MODES: { value: TesouroChartMode; label: string }[] = [
           v-if="points.length >= 2"
           :points="points" :mode="mode" pill-label="Venda hoje" :current-label="currentLabel"
         />
-        <p v-else-if="rangeLoading || (!unavailable && points.length < 2)" class="tcs__state">Carregando o histórico…</p>
+        <!-- loading é sempre esqueleto (contrato da Aportou) -->
+        <div v-else-if="rangeLoading || (!unavailable && points.length < 2)" class="tcs__sk" aria-busy="true" aria-label="Carregando o histórico">
+          <NuSkeleton variant="block" tone="navy" width="100%" height="100%" radius="card" />
+        </div>
         <p v-else class="tcs__state">Histórico indisponível agora. Os dados do título acima continuam valendo.</p>
       </div>
     </div>
@@ -73,25 +79,25 @@ const MODES: { value: TesouroChartMode; label: string }[] = [
 
 <style scoped>
 .tcs {
-  background: var(--nu-navy);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
+  background: var(--nu-ink);
+  padding: clamp(64px, 7vw, 100px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
   animation: nu-fade .5s ease both;
 }
 .tcs__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .tcs__title {
-  margin: 0; color: var(--nu-cream-text); font-size: clamp(32px, 4.4vw, 58px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h2);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
 .tcs__controls { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
-.tcs__modes { display: flex; gap: 4px; background: var(--nu-cream-text-12); border-radius: var(--nu-r-pill); padding: 4px; }
+.tcs__modes { display: flex; gap: 4px; background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line); border-radius: var(--nu-r-pill); padding: 4px; }
 .tcs__mode {
-  padding: 8px 16px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-cream-text-50); font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
+  min-height: 36px; padding: 0 16px; border-radius: var(--nu-r-pill); border: none; background: transparent;
+  color: var(--nu-on-dark); font: inherit; font-size: 14.5px; font-weight: 700; cursor: pointer;
   transition: color .2s, background .2s;
 }
-.tcs__mode:hover { color: var(--nu-cream-text-85); }
-.tcs__mode--active { background: var(--nu-cream); color: var(--nu-navy); font-weight: 800; }
-.tcs__legend { margin: 18px 0 0; color: var(--nu-cream-text-50); font-size: var(--nu-fs-sm); font-weight: 500; }
+.tcs__mode:hover { color: var(--nu-white); }
+.tcs__mode--active, .tcs__mode--active:hover { background: var(--nu-creme); color: var(--nu-ink); }
+.tcs__legend { margin: 18px 0 0; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 500; }
 .tcs__cols { display: flex; gap: clamp(28px, 4vw, 60px); align-items: stretch; margin-top: 32px; flex-wrap: wrap; }
 .tcs__stats { flex: 0 1 300px; min-width: min(260px, 100%); }
 .tcs__chart {
@@ -100,9 +106,10 @@ const MODES: { value: TesouroChartMode; label: string }[] = [
   /* full-bleed: sangra até a borda direita/inferior espelhando o padding da seção */
   margin: 0 calc(clamp(22px, 5.5vw, 80px) * -1) calc(clamp(48px, 6vw, 76px) * -1) 0;
 }
+.tcs__sk { position: absolute; inset: 0 clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px) 0; }
 .tcs__state {
   margin: 0; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 500; text-align: center;
+  color: var(--nu-on-dark-2); font-size: var(--nu-fs-md); font-weight: 500; text-align: center;
   padding: 0 clamp(22px, 5.5vw, 80px);
 }
 </style>

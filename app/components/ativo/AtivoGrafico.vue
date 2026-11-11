@@ -481,8 +481,10 @@ function aoTeclar(e: KeyboardEvent) {
 .agr__hoje-v { font-size: var(--nu-fs-sm); font-weight: 700; }
 .agr--claro .agr__hoje { background: var(--nu-white); color: var(--nu-ink); box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); }
 .agr--claro .agr__hoje-r { color: var(--nu-gray); }
-.agr--escuro .agr__hoje, .agr--luz .agr__hoje { background: var(--nu-navy-2); color: var(--nu-cream-text); box-shadow: 0 0 0 1px var(--nu-cream-text-12); }
-.agr--escuro .agr__hoje-r, .agr--luz .agr__hoje-r { color: var(--nu-cream-text-55); }
+/* quem hospeda o gráfico pode vestir o rótulo de hoje (--agr-hoje-*): no cartão
+   carvão do /asset ele é o cartãozinho creme da Aportou */
+.agr--escuro .agr__hoje, .agr--luz .agr__hoje { background: var(--agr-hoje-bg, var(--nu-navy-2)); color: var(--agr-hoje-fg, var(--nu-cream-text)); box-shadow: 0 0 0 1px var(--nu-cream-text-12); }
+.agr--escuro .agr__hoje-r, .agr--luz .agr__hoje-r { color: var(--agr-hoje-sub, var(--nu-cream-text-55)); }
 
 /* a mira e a medida */
 .agr__mira { position: absolute; top: 0; bottom: 0; width: 1px; transform: translateX(-.5px); pointer-events: none; background: var(--nu-ink-14); }

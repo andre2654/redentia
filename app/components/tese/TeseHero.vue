@@ -43,7 +43,7 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
       </div>
       <div class="the__ctas">
         <NuFollowButton :following="following" @toggle="onToggleFollow" />
-        <NuxtLink to="/busca" class="the__ask">Perguntar à IA</NuxtLink>
+        <NuBotaoSeta to="/busca" variante="creme" tamanho="m" class="the__ask">Perguntar à IA</NuBotaoSeta>
       </div>
     </div>
   </section>
@@ -51,7 +51,7 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
 
 <style scoped>
 .the {
-  position: relative; background: var(--nu-navy);
+  position: relative; background: var(--nu-ink);
   min-height: min(78vh, 680px);
   display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden;
 }
@@ -65,32 +65,25 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
 }
 .the__crumb {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  color: var(--nu-cream-text-65); font-size: var(--nu-fs-sm); font-weight: 500;
+  color: var(--nu-on-dark); font-size: 14.5px; font-weight: 600;
 }
-.the__crumb-link { pointer-events: auto; transition: color .2s; }
+.the__crumb-link { pointer-events: auto; text-decoration: underline; text-underline-offset: 3px; transition: color .2s; }
 .the__crumb-link:hover { color: var(--nu-white); }
-.the__crumb-cat { letter-spacing: 1.5px; text-transform: uppercase; font-size: var(--nu-fs-dense); font-weight: 700; }
+.the__crumb-cat { letter-spacing: .2em; text-transform: uppercase; font-size: 13.5px; font-weight: 700; color: var(--nu-white); }
 .the__title {
-  margin: 18px 0 0; color: var(--nu-cream-text);
-  font-size: clamp(42px, 6.2vw, 92px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.0; max-width: 1000px;
+  margin: 18px 0 0; color: var(--nu-white);
+  font-size: var(--nu-fs-hero); font-weight: 800;
+  letter-spacing: -0.035em; line-height: .98; max-width: 1000px;
 }
 .the__hi {
   background: var(--nu-blue); color: var(--nu-white); padding: 1px 12px;
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 .the__sub {
-  color: var(--nu-cream-text-78); font-size: clamp(17px, 1.9vw, 22px);
-  font-weight: 500; line-height: 1.5; margin-top: 18px; max-width: 680px;
+  color: var(--nu-on-dark); font-size: clamp(18px, 1.5vw, 21px);
+  font-weight: 500; line-height: 1.45; margin-top: 18px; max-width: 680px;
 }
 .the__badges { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-top: 26px; }
 .the__ctas { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
-.the__ask {
-  pointer-events: auto; display: inline-flex; align-items: center; gap: 10px;
-  background: transparent; color: var(--nu-cream-text);
-  border: 2px solid var(--nu-cream-text-40); border-radius: var(--nu-r-pill);
-  padding: 13px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  transition: background .2s, border-color .2s;
-}
-.the__ask:hover { background: var(--nu-cream-text-10); border-color: var(--nu-cream-text-70); }
+.the__ask { pointer-events: auto; }
 </style>

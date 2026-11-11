@@ -28,7 +28,7 @@ const copy: RankingCopy = {
   crossLinks: [
     {
       title: 'Pergunte ao assistente',
-      desc: 'Use a IA da Redentia pra resumir o que está acontecendo com qualquer ticker.',
+      desc: 'Use a IA da Aportou pra resumir o que está acontecendo com qualquer ticker.',
       // re-mapeado: /help (chat da Redentia antiga) → /busca (IA do Nu)
       href: '/busca',
     },
@@ -44,14 +44,14 @@ const copy: RankingCopy = {
     },
     {
       title: 'Outros rankings',
-      desc: 'Veja todos os rankings disponíveis na Redentia.',
+      desc: 'Veja todos os rankings disponíveis na Aportou.',
       href: '/rankings',
     },
   ],
   faqItems: [
     {
       q: 'Como o número de menções é calculado?',
-      a: 'A Redentia coleta diariamente notícias de portais financeiros brasileiros (InfoMoney, Money Times, Valor, Brazil Journal, Suno, etc.) e conta quantas matérias citam cada ticker nos últimos 30 dias. Quanto mais menções, maior a posição no ranking. Atualizado diariamente.',
+      a: 'A Aportou coleta diariamente notícias de portais financeiros brasileiros (InfoMoney, Money Times, Valor, Brazil Journal, Suno, etc.) e conta quantas matérias citam cada ticker nos últimos 30 dias. Quanto mais menções, maior a posição no ranking. Atualizado diariamente.',
     },
     {
       q: 'Por que algumas ações pequenas aparecem entre as mais mencionadas?',

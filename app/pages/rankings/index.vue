@@ -133,7 +133,7 @@ onBeforeUnmount(() => observer?.disconnect())
 usePageSeo({
   title: 'Rankings da B3 2026: Top Ações, FIIs, BDRs e Tesouro',
   description:
-    'Todos os rankings da bolsa brasileira em um lugar: dividend yield, valor de mercado, Graham, Bazin, ROE, crescimento, Redentia Score e Tesouro Direto. Atualizados diariamente.',
+    'Todos os rankings da bolsa brasileira em um lugar: dividend yield, valor de mercado, Graham, Bazin, ROE, crescimento, Aportou Score e Tesouro Direto. Atualizados diariamente.',
   path: '/rankings',
   breadcrumbs: [
     { name: 'Início', path: '/' },
@@ -142,7 +142,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'ItemList',
-      name: 'Rankings da B3 - Redentia',
+      name: `Rankings da B3 - ${MARCA.nome}`,
       numberOfItems: ALL.length,
       itemListElement: ALL.map((m, i) => ({
         '@type': 'ListItem',
@@ -164,7 +164,7 @@ function cardTypes(meta: RankingMeta): string[] {
     <!-- ============ Hero ============ -->
     <NuPageHero
       size="lg" eyebrow="Ferramentas"
-      subtitle="A B3 inteira ranqueada do maior pro menor: dividendos, tamanho, valuation, crescimento e o Redentia Score. Atualizado diariamente após o pregão."
+      subtitle="A B3 inteira ranqueada do maior pro menor: dividendos, tamanho, valuation, crescimento e o Aportou Score. Atualizado diariamente após o pregão."
     >
       <template #title>Rankings da B3.</template>
       <NuFilterPills :items="pillItems" :model-value="activePill" @update:model-value="setPill" />
@@ -172,24 +172,27 @@ function cardTypes(meta: RankingMeta): string[] {
 
     <!-- ============ Destaque: Redentia Score top 5 (SSR real) ============ -->
     <section v-if="scoreTop.length" class="rkh__spot-wrap">
-      <NuxtLink v-contexto-chat="{ id: 'ranking:redentia-score', tipo: 'ranking', rotulo: 'Ranking · Redentia Score' }" to="/ranking/redentia-score" class="rkh__spot">
-        <div class="rkh__spot-left">
-          <span class="rkh__spot-eyebrow">Exclusivo Redentia</span>
-          <h2 class="rkh__spot-title">Redentia Score.</h2>
-          <p class="rkh__spot-sub">
-            A nota de 0 a 100 que cruza 15 rankings fundamentalistas de uma vez.
-            Quem aparece bem em vários, sobe. Quem só brilha em um, não.
-          </p>
-          <span class="rkh__spot-cta">Ver o ranking completo</span>
-        </div>
-        <ol class="rkh__spot-list">
-          <li v-for="(row, i) in scoreTop" :key="rankingTicker(row)" v-contexto-chat="{ id: `ranking:redentia-score:${rankingTicker(row)}`, tipo: 'ranking', rotulo: `${i + 1}º ${rankingTicker(row)} · Score`, texto: `${i + 1}º no Redentia Score: ${rankingTicker(row)} (${rankingName(row)}), nota ${scoreOf(row)}` }" class="rkh__spot-row">
-            <span class="rkh__spot-pos">{{ i + 1 }}</span>
-            <span class="rkh__spot-ticker">{{ rankingTicker(row) }}</span>
-            <span class="rkh__spot-name">{{ rankingName(row) }}</span>
-            <span class="rkh__spot-score">{{ scoreOf(row) }}</span>
-          </li>
-        </ol>
+      <NuxtLink v-contexto-chat="{ id: 'ranking:redentia-score', tipo: 'ranking', rotulo: 'Ranking · Aportou Score' }" to="/ranking/redentia-score" class="rkh__spot">
+        <NuFaixaMarca rotulo="Exclusivo Aportou" como="span" :altura="52" class="rkh__spot-card">
+          <div class="rkh__spot-in">
+            <div class="rkh__spot-left">
+              <h2 class="rkh__spot-title">Aportou Score.</h2>
+              <p class="rkh__spot-sub">
+                A nota de 0 a 100 que cruza 15 rankings fundamentalistas de uma vez.
+                Quem aparece bem em vários, sobe. Quem só brilha em um, não.
+              </p>
+              <span class="rkh__spot-cta">Ver o ranking completo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+            </div>
+            <ol class="rkh__spot-list">
+              <li v-for="(row, i) in scoreTop" :key="rankingTicker(row)" v-contexto-chat="{ id: `ranking:redentia-score:${rankingTicker(row)}`, tipo: 'ranking', rotulo: `${i + 1}º ${rankingTicker(row)} · Score`, texto: `${i + 1}º no Aportou Score: ${rankingTicker(row)} (${rankingName(row)}), nota ${scoreOf(row)}` }" class="rkh__spot-row">
+                <span class="rkh__spot-pos">{{ i + 1 }}</span>
+                <span class="rkh__spot-ticker">{{ rankingTicker(row) }}</span>
+                <span class="rkh__spot-name">{{ rankingName(row) }}</span>
+                <span class="rkh__spot-score">{{ scoreOf(row) }}</span>
+              </li>
+            </ol>
+          </div>
+        </NuFaixaMarca>
       </NuxtLink>
     </section>
 
@@ -214,7 +217,7 @@ function cardTypes(meta: RankingMeta): string[] {
                 <span class="rkh__card-preview-value">{{ p.value }}</span>
               </li>
             </ol>
-            <span class="rkh__card-cta">Ver ranking</span>
+            <span class="rkh__card-cta">Ver ranking<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
           </NuxtLink>
         </div>
       </div>
@@ -234,59 +237,55 @@ function cardTypes(meta: RankingMeta): string[] {
 </template>
 
 <style scoped>
-/* ——— destaque score ——— */
+/* ——— destaque do score: o cartão carvão com a faixa da marca ——— */
 .rkh__spot-wrap {
-  background: var(--nu-cream);
-  padding: 0 clamp(22px, 5.5vw, 80px) clamp(24px, 3vw, 40px);
+  background: var(--nu-page);
+  padding: 0 clamp(22px, 5.5vw, 80px) clamp(28px, 3.4vw, 44px);
   animation: nu-fade .5s ease both;
 }
-.rkh__spot {
+.rkh__spot { display: block; border-radius: var(--nu-r-card); transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.rkh__spot:hover { transform: translateY(-2px); }
+.rkh__spot-in {
   display: flex; gap: clamp(24px, 4vw, 64px); align-items: center; flex-wrap: wrap;
-  background: var(--nu-navy); border-radius: var(--nu-r-card-lg);
-  padding: clamp(28px, 4vw, 52px);
-  transition: transform .18s, box-shadow .2s;
+  padding: clamp(22px, 3vw, 36px) clamp(24px, 4vw, 52px) clamp(28px, 3.6vw, 48px);
 }
-.rkh__spot:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-float); }
 .rkh__spot-left { flex: 1 1 320px; min-width: min(280px, 100%); }
-.rkh__spot-eyebrow {
-  display: inline-flex; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 6px 14px;
-  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-}
 .rkh__spot-title {
-  margin: 16px 0 0; color: var(--nu-cream-text);
-  font-size: clamp(32px, 4vw, 52px); font-weight: 800; letter-spacing: -.04em; line-height: 1.04;
+  margin: 0; color: var(--nu-white);
+  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
 .rkh__spot-sub {
-  margin: 14px 0 0; color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500;
-  line-height: 1.6; max-width: 460px;
+  margin: 16px 0 0; color: var(--nu-on-dark); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500;
+  line-height: 1.5; max-width: 460px;
 }
-.rkh__spot-cta { display: inline-block; margin-top: 20px; color: var(--nu-blue-soft); font-size: var(--nu-fs-md); font-weight: 800; }
+.rkh__spot-cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-dark-chip-line); }
+.rkh__spot-cta svg { color: var(--nu-blue-on-dark); transition: transform .2s ease; }
+.rkh__spot:hover .rkh__spot-cta svg { transform: translateX(3px); }
 .rkh__spot-list { flex: 1 1 340px; min-width: min(300px, 100%); margin: 0; padding: 0; list-style: none; }
 .rkh__spot-row {
-  display: flex; align-items: center; gap: 14px; padding: 13px 0;
+  display: flex; align-items: center; gap: 14px; padding: 14px 0;
   font-variant-numeric: tabular-nums;
 }
-.rkh__spot-row + .rkh__spot-row { border-top: 1px solid var(--nu-cream-text-12); }
-.rkh__spot-pos { width: 22px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 700; }
-.rkh__spot-ticker { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.1px; }
+.rkh__spot-row + .rkh__spot-row { border-top: 1.5px solid var(--nu-dark-line); }
+.rkh__spot-pos { width: 22px; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 700; }
+.rkh__spot-ticker { color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: 0.04em; }
 .rkh__spot-name {
-  flex: 1; min-width: 0; color: var(--nu-cream-text-60); font-size: var(--nu-fs-dense); font-weight: 500;
+  flex: 1; min-width: 0; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 500;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.rkh__spot-score { color: var(--nu-green-soft); font-size: var(--nu-fs-md); font-weight: 800; }
+.rkh__spot-score { color: var(--nu-green-soft); font-size: var(--nu-fs-xl); font-weight: 800; }
 
-/* ——— grid por tema ——— */
+/* ——— grid por tema (sobre o creme da página; os cartões são creme com a sombra quente) ——— */
 .rkh__grid-wrap {
-  background: var(--nu-white);
+  background: var(--nu-page);
   /* bottom maior: a CTA full-bleed (NuCtaPhoto) cola logo abaixo */
-  padding: clamp(48px, 6vw, 80px) clamp(22px, 5.5vw, 80px) clamp(64px, 8vw, 104px);
+  padding: clamp(40px, 5vw, 64px) clamp(22px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
   animation: nu-fade .5s ease both;
 }
 .rkh__group + .rkh__group { margin-top: clamp(44px, 5.5vw, 72px); }
 .rkh__group-title {
   margin: 0 0 clamp(18px, 2.5vw, 28px); color: var(--nu-ink);
-  font-size: clamp(24px, 2.8vw, 34px); font-weight: 800; letter-spacing: -.03em;
+  font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
 }
 .rkh__grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
@@ -294,32 +293,39 @@ function cardTypes(meta: RankingMeta): string[] {
 }
 .rkh__card {
   display: flex; flex-direction: column; gap: 10px;
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px;
-  transition: transform .18s, box-shadow .2s;
+  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px; box-shadow: var(--nu-shadow-quente);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .rkh__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .rkh__card-chips { display: flex; gap: 6px; flex-wrap: wrap; }
 .rkh__card-chip {
-  background: var(--nu-white); color: var(--nu-gray-2); border-radius: var(--nu-r-chip);
-  padding: 4px 10px; font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  background: var(--nu-white); color: var(--nu-gray-3); border-radius: var(--nu-r-tag);
+  padding: 4px 9px; font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
 }
-.rkh__card-title { margin: 2px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.rkh__card-title { margin: 4px 0 0; color: var(--nu-ink); font-size: clamp(19px, 1.6vw, 22px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; transition: color .2s ease; }
+.rkh__card:hover .rkh__card-title { color: var(--nu-blue-text); }
 .rkh__card-desc {
-  margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
+  margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
-.rkh__card-preview { margin: 6px 0 0; padding: 4px 0 0; list-style: none; border-top: 1px solid var(--nu-cream-line); }
+.rkh__card-preview { margin: 6px 0 0; padding: 4px 0 0; list-style: none; border-top: 1.5px solid var(--nu-line-2); }
 .rkh__card-preview-row {
   display: flex; align-items: center; gap: 10px; padding: 7px 0;
   font-variant-numeric: tabular-nums;
 }
-.rkh__card-preview-pos { width: 16px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
+.rkh__card-preview-pos { width: 16px; color: var(--nu-gray); font-size: 13.5px; font-weight: 700; }
 .rkh__card-preview-ticker {
-  flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
+  flex: 1; min-width: 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: 0.02em;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.rkh__card-preview-value { color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
-.rkh__card-cta { margin-top: auto; padding-top: 6px; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rkh__card-preview-value { color: var(--nu-ink); font-size: 14.5px; font-weight: 700; }
+.rkh__card-cta { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.rkh__card-cta svg { transition: transform .2s ease; }
+.rkh__card:hover .rkh__card-cta svg { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) {
+  .rkh__spot, .rkh__card, .rkh__card-cta svg, .rkh__spot-cta svg { transition: none; }
+  .rkh__spot:hover, .rkh__card:hover, .rkh__card:hover .rkh__card-cta svg, .rkh__spot:hover .rkh__spot-cta svg { transform: none; }
+}
 /* (CTA final = NuCtaPhoto full-bleed, estilos no componente; o grid acima
    fecha com o próprio padding-bottom) */
 </style>

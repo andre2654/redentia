@@ -13,7 +13,7 @@ defineProps<{ editorial: TeseEditorialVM }>()
   <section class="ted">
     <div class="ted__cols">
       <div class="ted__left">
-        <div class="ted__eyebrow">A tese</div>
+        <NuEyebrow como="div">A tese</NuEyebrow>
         <h2 class="ted__title">{{ editorial.heading }}</h2>
       </div>
       <div class="ted__right">
@@ -26,32 +26,31 @@ defineProps<{ editorial: TeseEditorialVM }>()
 
 <style scoped>
 .ted {
-  background: var(--nu-cream);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
+  background: var(--nu-page);
+  padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
 .ted__cols { display: flex; gap: clamp(28px, 5vw, 80px); flex-wrap: wrap; }
 .ted__left { flex: 0 1 300px; min-width: min(260px, 100%); }
-.ted__eyebrow { color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
 .ted__title {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(30px, 3.4vw, 46px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.06;
+  margin: 18px 0 0; color: var(--nu-ink);
+  font-size: var(--nu-fs-h2-sm); font-weight: 800;
+  letter-spacing: -0.03em; line-height: 1.04;
 }
 .ted__right { flex: 1.6 1 480px; min-width: min(320px, 100%); max-width: 860px; }
 .ted__p {
   margin: 0; color: var(--nu-gray-3);
-  font-size: clamp(17px, 1.8vw, 19.5px); font-weight: 500; line-height: 1.75;
+  font-size: clamp(17px, 1.6vw, 19px); font-weight: 500; line-height: 1.6;
 }
 .ted__p + .ted__p { margin-top: 20px; }
 .ted__p :deep(.tse-hi) {
-  background: var(--nu-blue-16); color: var(--nu-ink); font-weight: 800;
+  background: var(--nu-blue-bg); color: var(--nu-ink); font-weight: 800; border-radius: 4px;
   padding: 1px 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 .ted__p :deep(strong) { font-weight: 800; color: var(--nu-ink); }
 .ted__p :deep(a) {
-  color: var(--nu-blue-text); font-weight: 800;
-  border-bottom: 2px solid var(--nu-blue-30); transition: border-color .2s;
+  color: var(--nu-blue-text); font-weight: 700;
+  border-bottom: 1.5px solid var(--nu-blue-30); transition: border-color .2s;
 }
 .ted__p :deep(a:hover) { border-bottom-color: var(--nu-blue); }
 </style>
