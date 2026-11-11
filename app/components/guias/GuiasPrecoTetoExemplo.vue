@@ -47,33 +47,34 @@ const view = computed(() => data.value)
 <style scoped>
 .gpt {
   margin-top: 28px;
-  background: var(--nu-cream);
+  background: var(--nu-band);
   border-radius: var(--nu-r-card);
-  padding: clamp(20px, 2.6vw, 28px);
+  box-shadow: var(--nu-shadow-quente);
+  padding: clamp(22px, 2.8vw, 32px);
 }
 .gpt__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
 .gpt__kicker {
-  color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
 }
 .gpt__asof { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .gpt__h3 {
   margin: 14px 0 0; color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.15;
+  font-weight: 800; letter-spacing: -0.025em; line-height: 1.1;
 }
 .gpt__lead {
   margin: 12px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md);
   font-weight: 500; line-height: 1.6;
 }
-.gpt__steps { margin: 18px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; }
-.gpt__steps li { margin: 0; }
+.gpt__steps { margin: 20px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; }
+.gpt__steps li { margin: 0; padding: 16px 0; border-top: 1.5px solid var(--nu-line); }
 .gpt__h4 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
 .gpt__steps p {
   margin: 6px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md);
   font-weight: 500; line-height: 1.55;
 }
 .gpt__note {
-  margin: 16px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense);
+  margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px;
   font-weight: 500; line-height: 1.55;
 }
 .gpt__links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 16px 0 0; }

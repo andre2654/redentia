@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// /institucional/contact — "Fale com a Redentia" (portada de
+// /institucional/contact — "Fale com a Aportou" (até 11/11/2026, "…a Redentia"; portada de
 // Frontend/app/pages/institucional/contact.vue). Placeholders de brand
 // resolvidos: brand.name = "Redentia", e-mail de suporte =
 // relacionamento@redentia.com.br.
@@ -32,7 +32,7 @@ const faqs: NuFaqItem[] = [
   },
   {
     q: 'Meus dados estão seguros?',
-    a: 'Sim! Utilizamos criptografia de nível bancário e seguimos todas as diretrizes da LGPD. Seus dados são protegidos com as melhores práticas de segurança do mercado.',
+    a: 'Sim. Utilizamos criptografia de nível bancário e seguimos todas as diretrizes da LGPD. Seus dados são protegidos com as melhores práticas de segurança do mercado.',
   },
   {
     q: 'Posso cancelar minha assinatura a qualquer momento?',
@@ -59,9 +59,9 @@ const channels = [
 usePageSeo({
   // Título VERBATIM da página antiga ("Fale com a Redentia | Atendimento e
   // suporte"); o app.vue sufixa "· Redentia" (house style Nu).
-  title: 'Fale com a Redentia | Atendimento e suporte',
+  title: `Fale com a ${MARCA.nome} | Atendimento e suporte`,
   description:
-    'Entre em contato com a equipe Redentia para tirar dúvidas, enviar sugestões ou falar sobre parcerias. Respondemos rapidamente.',
+    `Entre em contato com a equipe ${MARCA.nome} para tirar dúvidas, enviar sugestões ou falar sobre parcerias. Respondemos rapidamente.`,
   path: '/institucional/contact',
   breadcrumbs: [
     { name: 'Início', path: '/' },
@@ -75,7 +75,7 @@ useHead({ titleTemplate: null })
 
 <template>
   <div>
-    <LegalHero eyebrow="Contato" title="Fale com a Redentia" />
+    <LegalHero eyebrow="Contato" title="Fale com a Aportou" />
 
     <section class="ctc">
       <div class="ctc__inner">
@@ -107,12 +107,12 @@ useHead({ titleTemplate: null })
     <section class="cfq">
       <div class="cfq__cols">
         <div class="cfq__left">
-          <NuSectionHeading>Ficou com alguma<br>dúvida?</NuSectionHeading>
-          <div class="cfq__copy">Respostas para as principais dúvidas sobre a Redentia. Se preferir, pergunte direto à nossa IA.</div>
-          <NuxtLink to="/busca" class="cfq__cta">Perguntar à Redentia AI</NuxtLink>
+          <NuSectionHeading eyebrow="Dúvidas">Ficou com alguma<br>dúvida?</NuSectionHeading>
+          <div class="cfq__copy">Respostas para as principais dúvidas sobre a Aportou. Se preferir, pergunte direto à nossa IA.</div>
+          <NuBotaoSeta to="/busca" variante="carvao" tamanho="m" class="cfq__cta">Perguntar à IA</NuBotaoSeta>
         </div>
         <div class="cfq__right">
-          <NuFaqAccordion :items="faqs" surface="white" />
+          <NuFaqAccordion :items="faqs" />
         </div>
       </div>
     </section>
@@ -120,64 +120,60 @@ useHead({ titleTemplate: null })
 </template>
 
 <style scoped>
+/* Contato na personalidade da Aportou (11/11/2026): creme da página, o
+   formulário num cartão creme, os canais em cartões com a sombra quente e a
+   faixa quente do FAQ. Conteúdo, canais e horários iguais. */
 .ctc {
-  background: var(--nu-white);
-  padding: clamp(44px, 6vw, 76px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 80px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-page);
+  padding: clamp(44px, 6vw, 76px) clamp(20px, 5.5vw, 80px) clamp(56px, 7vw, 96px);
+  animation: nu-fade .5s ease .06s both;
 }
-.ctc__inner { max-width: 720px; margin: 0 auto; }
+.ctc__inner { max-width: 760px; margin: 0 auto; }
 
 .ctc__lede {
-  margin: 0; color: var(--nu-gray-2);
-  font-size: clamp(17px, 1.5vw, 18px); font-weight: 500; line-height: 1.65;
+  margin: 0; color: var(--nu-gray-3);
+  font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45;
 }
 .ctc__form { margin-top: clamp(28px, 3.5vw, 40px); }
 
 .ctc__h2 {
-  margin: clamp(44px, 5vw, 60px) 0 0; color: var(--nu-ink);
-  font-size: clamp(22px, 2.3vw, 27px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.14;
+  margin: clamp(48px, 5.5vw, 68px) 0 0; color: var(--nu-ink);
+  font-size: var(--nu-fs-h3); font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.05;
 }
 
 .ctc__channels {
-  margin-top: 22px; display: grid; gap: 16px;
+  margin-top: 24px; display: grid; gap: 16px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .ctc__channel {
-  background: var(--nu-cream); border-radius: var(--nu-r-panel);
-  padding: 24px 26px; text-align: center;
+  background: var(--nu-card); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-quente);
+  padding: 24px 26px;
 }
 .ctc__channel-icon {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 46px; height: 46px; border-radius: 50%;
-  background: var(--nu-blue-tint); color: var(--nu-blue); margin-bottom: 12px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--nu-ink); color: var(--nu-white); margin-bottom: 16px;
 }
-.ctc__channel-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.15px; }
-.ctc__channel-value { margin-top: 5px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.ctc__channel-value--link { color: var(--nu-blue-text); text-decoration: none; transition: color .2s; }
-.ctc__channel-value--link:hover { color: var(--nu-blue-hover); text-decoration: underline; text-underline-offset: 2px; }
+.ctc__channel-label { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.ctc__channel-value { margin-top: 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+.ctc__channel-value--link { display: inline-block; color: var(--nu-blue-text); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; transition: color .2s; }
+.ctc__channel-value--link:hover { color: var(--nu-blue-hover); }
 
-/* FAQ — seção padrão (mesmo bloco .mfq do /mercado): 2 colunas, título +
-   copy + CTA à esquerda, accordion à direita. */
+/* FAQ — seção padrão: 2 colunas, título + texto + chamada à esquerda,
+   accordion à direita, sobre a faixa quente */
 .cfq {
-  /* banda creme própria (color-blocking creme→branco→creme); cards do
-     accordion viram brancos (surface=white) pra contrastar. */
-  background: var(--nu-cream);
-  padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-band);
+  padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px);
 }
-.cfq__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
+.cfq__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; max-width: 1240px; margin: 0 auto; }
 .cfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.cfq__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
-.cfq__cta {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.cfq__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.cfq__copy { color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; max-width: 420px; }
+.cfq__cta { margin-top: 30px; }
 .cfq__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
 
 @media (max-width: 760px) {
   .ctc__channels { grid-template-columns: 1fr; }
 }
+@media (prefers-reduced-motion: reduce) { .ctc { animation: none; } }
 </style>

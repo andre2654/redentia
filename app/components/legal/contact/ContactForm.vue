@@ -67,7 +67,7 @@ function validate(): boolean {
 
 function mailtoHref(): string {
   const opt = subjectOptions.find((o) => o.value === state.subject)
-  const subject = `[Contato Redentia] ${opt?.label ?? 'Contato'}`
+  const subject = `[Contato ${MARCA.nome}] ${opt?.label ?? 'Contato'}`
   const lines = [
     `Nome: ${state.name}`,
     `Email: ${state.email}`,
@@ -176,7 +176,7 @@ function onSubmit() {
           rows="5"
           class="ctf__input ctf__textarea"
           :class="{ 'ctf__input--err': errors.message }"
-          placeholder="Descreva sua dúvida, sugestão ou como podemos ajudá-lo..."
+          placeholder="Descreva sua dúvida, sugestão ou como podemos ajudar"
         />
         <p v-if="errors.message" class="ctf__err">{{ errors.message }}</p>
       </div>
@@ -196,78 +196,71 @@ function onSubmit() {
         <p v-if="errors.acceptTerms" class="ctf__err">{{ errors.acceptTerms }}</p>
       </div>
 
-      <button type="submit" class="ctf__submit" :disabled="submitting">
-        <span v-if="!submitting">Abrir o app de e-mail com a mensagem pronta</span>
-        <span v-else>Abrindo o app de e-mail...</span>
-      </button>
+      <NuBotaoSeta type="submit" class="ctf__submit" tamanho="m" largo :loading="submitting">
+        Abrir o app de e-mail com a mensagem pronta
+      </NuBotaoSeta>
     </form>
   </div>
 </template>
 
 <style scoped>
-.ctf { animation: nu-fade .5s ease both; }
-.ctf__form { display: flex; flex-direction: column; gap: 20px; }
+/* O formulário no padrão de campo da Aportou (11/11/2026): cartão creme com a
+   sombra quente, campo branco de 56px com borda de 1,5px e raio 16, rótulo de
+   15px em 700 acima, anel cobalto de 3px no foco, e a pílula da seta no envio. */
+.ctf {
+  background: var(--nu-card); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente);
+  padding: clamp(24px, 3vw, 40px);
+  animation: nu-fade .5s ease both;
+}
+.ctf__form { display: flex; flex-direction: column; gap: 22px; }
 
 .ctf__field { display: flex; flex-direction: column; gap: 8px; }
-.ctf__label { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.ctf__label { color: var(--nu-ink); font-size: 15px; font-weight: 700; }
 
 .ctf__input {
-  width: 100%; background: var(--nu-white);
-  border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-input);
-  outline: none; padding: 13px 16px; color: var(--nu-ink);
-  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.4;
-  transition: border-color .2s, box-shadow .2s;
+  width: 100%; min-height: 56px; background: var(--nu-white);
+  border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input);
+  outline: none; padding: 14px 16px; color: var(--nu-ink);
+  font-family: var(--nu-font); font-size: 17px; font-weight: 500; line-height: 1.4;
+  transition: border-color .2s;
 }
 .ctf__input::placeholder { color: var(--nu-placeholder); font-weight: 500; }
-.ctf__input:focus { border-color: var(--nu-blue); box-shadow: 0 0 0 3px var(--nu-blue-tint); }
+.ctf__input:focus, .ctf__input:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .ctf__input--tabular { font-variant-numeric: tabular-nums; }
 .ctf__input--err { border-color: var(--nu-red); }
-.ctf__input--err:focus { box-shadow: 0 0 0 3px var(--nu-red-tint); }
+.ctf__input--err:focus, .ctf__input--err:focus-visible { outline-color: var(--nu-red); border-color: var(--nu-red); }
 
-.ctf__textarea { resize: vertical; min-height: 120px; }
+.ctf__textarea { resize: vertical; min-height: 140px; }
 
 .ctf__select-wrap { position: relative; }
 .ctf__select {
   appearance: none; -webkit-appearance: none; -moz-appearance: none;
-  padding-right: 44px; cursor: pointer;
+  padding-right: 48px; cursor: pointer;
 }
 .ctf__select--empty { color: var(--nu-placeholder); }
 .ctf__chev {
-  position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-  color: var(--nu-gray); pointer-events: none;
+  position: absolute; right: 17px; top: 50%; transform: translateY(-50%);
+  color: var(--nu-ink); pointer-events: none;
 }
 
-.ctf__check { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+.ctf__check { display: flex; align-items: flex-start; gap: 12px; min-height: 44px; cursor: pointer; }
 .ctf__checkbox {
-  appearance: auto; width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0;
+  appearance: auto; width: 22px; height: 22px; margin-top: 1px; flex-shrink: 0;
   accent-color: var(--nu-blue); cursor: pointer;
 }
-.ctf__check-text { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.ctf__check-text { color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.5; }
 .ctf__link {
-  color: var(--nu-blue-text); text-decoration: underline;
-  text-underline-offset: 2px; text-decoration-thickness: 1px; transition: color .2s;
+  color: var(--nu-blue-text); font-weight: 700; text-decoration: underline;
+  text-underline-offset: 2px; text-decoration-thickness: 1.5px; transition: color .2s;
 }
 .ctf__link:hover { color: var(--nu-blue-hover); }
 
-.ctf__submit {
-  margin-top: 4px; background: var(--nu-blue); color: var(--nu-white);
-  border: none; border-radius: var(--nu-r-input); padding: 15px 24px;
-  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.1px;
-  cursor: pointer; transition: background .2s;
-}
-.ctf__submit:hover { background: var(--nu-blue-hover); }
-.ctf__submit:disabled { opacity: .7; cursor: default; }
+.ctf__submit { margin-top: 4px; white-space: normal; text-align: left; }
 
-.ctf__err { color: var(--nu-red-text); font-size: var(--nu-fs-dense); font-weight: 500; }
+.ctf__err { color: var(--nu-red-text); font-size: 13.5px; font-weight: 600; }
 
-.ctf__done {
-  background: var(--nu-green-soft); border-radius: var(--nu-r-panel);
-  padding: 28px 30px; text-align: center;
-}
-.ctf__done-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
-.ctf__done-sub { margin-top: 6px; color: var(--nu-ink-75); font-size: var(--nu-fs-md); font-weight: 500; }
-
-@media (max-width: 760px) {
-  .ctf__input { font-size: var(--nu-fs-md); }
-}
+.ctf__done { text-align: center; padding: 8px 0; animation: nu-fade .25s ease both; }
+.ctf__done-title { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.ctf__done-sub { margin-top: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; }
+@media (prefers-reduced-motion: reduce) { .ctf, .ctf__done { animation: none; } }
 </style>

@@ -9,15 +9,15 @@ import type { GuideDoc } from '~/types/guias'
 
 export const MCP_PARA_INVESTIMENTOS_GUIDE: GuideDoc = {
   slug: 'mcp-para-investimentos',
-  tag: 'Guia Redentia',
+  tag: 'Guia Aportou',
   title: 'MCP para investimentos: o que é e como usar',
   dek: 'O padrão que conecta assistentes de IA aos seus dados financeiros, explicado sem jargão, com o caminho prático para usar na sua carteira da B3.',
   description:
-    'O que é MCP (Model Context Protocol) e como usar para investimentos no Brasil. O padrão aberto que conecta o Claude e o Cursor à sua carteira da B3, cotações, teses e notícias, com acesso somente leitura via Redentia MCP.',
+    'O que é MCP (Model Context Protocol) e como usar para investimentos no Brasil. O padrão aberto que conecta o Claude e o Cursor à sua carteira da B3, cotações, teses e notícias, com acesso somente leitura via Aportou MCP.',
   summary:
     'MCP (Model Context Protocol) é o padrão aberto que conecta assistentes de IA a fontes de dados. Aplicado a investimentos, ele leva a sua carteira da B3, as cotações e as teses para dentro do Claude e do Cursor. Veja o que é e como usar.',
   minutes: 8,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-19',
   dateModified: '2026-07-19',
   updatedLine: 'Atualizado em 19 jul 2026 · 8 min de leitura',
@@ -53,19 +53,19 @@ export const MCP_PARA_INVESTIMENTOS_GUIDE: GuideDoc = {
     },
     {
       id: 'sec-3',
-      title: 'O que dá para fazer com o MCP da Redentia',
+      title: 'O que dá para fazer com o MCP da Aportou',
       blocks: [
         {
           kind: 'p',
-          html: 'O Redentia MCP é o servidor oficial da Redentia nesse padrão. Ele expõe quatro tipos de dado, cada um com o próprio interruptor de permissão:',
+          html: 'O Aportou MCP é o servidor oficial da Aportou nesse padrão. Ele expõe quatro tipos de dado, cada um com o próprio interruptor de permissão:',
         },
         {
           kind: 'checks',
           items: [
             'Carteira: posições, saldo e proventos da sua carteira real, conectada via Open Finance, somente leitura.',
             'Mercado: cotações e fundamentos de ações, FIIs e BDRs da B3, e o placar do dia.',
-            'Teses: as teses de investimento da Redentia, com composição e convicção atualizadas.',
-            'Notícias: notícias do mercado com a leitura da Redentia e os relatórios das teses.',
+            'Teses: as teses de investimento da Aportou, com composição e convicção atualizadas.',
+            'Notícias: notícias do mercado com a leitura da Aportou e os relatórios das teses.',
           ],
         },
         {
@@ -81,15 +81,15 @@ export const MCP_PARA_INVESTIMENTOS_GUIDE: GuideDoc = {
         {
           kind: 'steps',
           items: [
-            'Crie uma conta na Redentia e conecte a sua carteira pelo Open Finance, a conexão regulada pelo Banco Central.',
-            'Gere a sua chave gratuita do Redentia MCP em Configurações, na seção MCP.',
+            'Crie uma conta na Aportou e conecte a sua carteira pelo Open Finance, a conexão regulada pelo Banco Central.',
+            'Gere a sua chave gratuita do Aportou MCP em Configurações, na seção MCP.',
             'Escolha o seu assistente na página do MCP e cole a configuração pronta (Claude, Cursor, Raycast e outros clientes compatíveis).',
             'Comece a perguntar. A IA passa a responder com os seus dados reais, sem sair da conversa.',
           ],
         },
         {
           kind: 'p',
-          html: 'Os blocos de configuração de cada cliente, com prints do passo a passo, ficam em <strong>redentia.com.br/mcp</strong>.',
+          html: 'Os blocos de configuração de cada cliente, com prints do passo a passo, ficam na <a href="/mcp">página do Aportou MCP</a>.',
         },
       ],
     },
@@ -99,7 +99,7 @@ export const MCP_PARA_INVESTIMENTOS_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'Na chave pessoal, o Redentia MCP é <strong>somente leitura</strong>: responde consultas e não executa nenhuma ação: não existe ferramenta de compra, venda ou transferência. A IA enxerga os seus dados, mas não mexe no seu dinheiro.',
+          html: 'Na chave pessoal, o Aportou MCP é <strong>somente leitura</strong>: responde consultas e não executa nenhuma ação: não existe ferramenta de compra, venda ou transferência. A IA enxerga os seus dados, mas não mexe no seu dinheiro.',
         },
         {
           kind: 'p',
@@ -110,7 +110,7 @@ export const MCP_PARA_INVESTIMENTOS_GUIDE: GuideDoc = {
   ],
   cta: {
     title: 'Experimente o MCP na sua carteira',
-    subtitle: 'Gere a chave gratuita do Redentia MCP e conecte o seu assistente de IA aos seus dados da B3.',
+    subtitle: 'Gere a chave gratuita do Aportou MCP e conecte o seu assistente de IA aos seus dados da B3.',
     to: '/mcp',
   },
   faqTitle: 'Perguntas frequentes',
@@ -121,11 +121,11 @@ export const MCP_PARA_INVESTIMENTOS_GUIDE: GuideDoc = {
     },
     {
       q: 'Preciso saber programar para usar?',
-      a: 'Não. Você gera a chave em Configurações e cola um bloco de configuração pronto no seu assistente. A página do Redentia MCP tem o bloco de cada cliente, com prints, pronto para copiar.',
+      a: 'Não. Você gera a chave em Configurações e cola um bloco de configuração pronto no seu assistente. A página do Aportou MCP tem o bloco de cada cliente, com prints, pronto para copiar.',
     },
     {
-      q: 'Quanto custa o Redentia MCP?',
-      a: 'A chave é gratuita. Basta ter uma conta na Redentia, conectar a carteira pelo Open Finance e gerar a chave.',
+      q: 'Quanto custa o Aportou MCP?',
+      a: 'A chave é gratuita. Basta ter uma conta na Aportou, conectar a carteira pelo Open Finance e gerar a chave.',
     },
     {
       q: 'Quais assistentes suportam MCP hoje?',

@@ -24,7 +24,7 @@ const updatedText = computed(() => {
 <template>
   <div class="lgh">
     <div class="lgh__inner">
-      <div class="lgh__eyebrow">{{ eyebrow }}</div>
+      <NuEyebrow como="div">{{ eyebrow }}</NuEyebrow>
       <h1 class="lgh__title">{{ title }}</h1>
       <div v-if="updatedText" class="lgh__updated">Atualizado em {{ updatedText }}</div>
     </div>
@@ -32,23 +32,24 @@ const updatedText = computed(() => {
 </template>
 
 <style scoped>
+/* Na Aportou (11/11/2026) o herói senta no creme da página, como o NuPageHero:
+   eyebrow com o corte, H1 em 800 com a entrelinha apertada e um fio de 1,5px
+   separando do documento. */
 .lgh {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(36px, 4.5vw, 56px);
+  background: var(--nu-page);
+  padding: clamp(48px, 6.5vw, 88px) clamp(20px, 5.5vw, 80px) clamp(32px, 4vw, 48px);
+  border-bottom: 1.5px solid var(--nu-line-2);
   animation: nu-fade .5s ease both;
 }
 .lgh__inner { max-width: 920px; }
-.lgh__eyebrow {
-  color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800;
-  letter-spacing: -.2px;
-}
 .lgh__title {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(38px, 5.2vw, 68px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.02;
+  margin: 18px 0 0; color: var(--nu-ink);
+  font-size: clamp(40px, 5.5vw, 76px); font-weight: 800;
+  letter-spacing: -0.035em; line-height: .98; text-wrap: balance;
 }
 .lgh__updated {
-  margin-top: 20px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
+  margin-top: 22px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
+@media (prefers-reduced-motion: reduce) { .lgh { animation: none; } }
 </style>

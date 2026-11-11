@@ -47,7 +47,7 @@ withDefaults(defineProps<{
   font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
 }
 .lgb__p--lede {
-  color: var(--nu-gray-2); font-size: clamp(17px, 1.5vw, 18px); line-height: 1.65;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 20px); line-height: 1.55;
 }
 
 .lgb__list {
@@ -62,13 +62,13 @@ withDefaults(defineProps<{
   color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
   padding-left: 4px;
 }
-.lgb__li::marker { color: var(--nu-gray); font-weight: 700; }
+.lgb__li::marker { color: var(--nu-blue-text); font-weight: 700; }
 
 .lgb__sub { margin-top: 4px; }
 .lgb__h3 {
   margin: clamp(24px, 2.6vw, 32px) 0 0; color: var(--nu-ink);
-  font-size: clamp(18px, 1.7vw, 21px); font-weight: 800;
-  letter-spacing: -0.02em; line-height: 1.25;
+  font-size: clamp(19px, 1.7vw, 22px); font-weight: 800;
+  letter-spacing: -0.02em; line-height: 1.2;
   scroll-margin-top: 88px;
 }
 </style>

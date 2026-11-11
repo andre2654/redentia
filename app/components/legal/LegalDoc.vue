@@ -43,10 +43,11 @@ const tocItems = computed(() =>
 </template>
 
 <style scoped>
+/* o documento sobre o creme da página (não existe faixa branca de ponta a ponta) */
 .lgd {
-  background: var(--nu-white);
-  padding: clamp(44px, 6vw, 76px) clamp(22px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-page);
+  padding: clamp(44px, 6vw, 76px) clamp(20px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  animation: nu-fade .5s ease .06s both;
 }
 .lgd__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
 .lgd__cols--toc { justify-content: flex-start; }
@@ -58,10 +59,11 @@ const tocItems = computed(() =>
 
 .lgd__h2 {
   margin: clamp(40px, 4.5vw, 56px) 0 0; color: var(--nu-ink);
-  font-size: clamp(24px, 2.5vw, 30px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.14;
+  font-size: clamp(26px, 2.6vw, 32px); font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.08;
   /* compensa a faixa "Mercado agora" sticky (~48px) + respiro */
   scroll-margin-top: 88px;
 }
 .lgd__h2--first { margin-top: 0; }
+@media (prefers-reduced-motion: reduce) { .lgd { animation: none; } }
 </style>

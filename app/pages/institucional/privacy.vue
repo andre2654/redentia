@@ -25,6 +25,20 @@ const doc: LegalDocData = {
       { text: 'Redentia', bold: true },
       { text: ` é operada pela ${EMPRESA.razaoSocial}, inscrita no CNPJ sob o nº ${EMPRESA.cnpj}, controladora dos Dados Pessoais tratados na Plataforma e no aplicativo.` },
     ] },
+    // as duas marcas da casa, definidas uma vez (11/11/2026): a plataforma de
+    // investidor passou a se chamar Aportou; a controladora é a mesma empresa.
+    // Nenhuma cláusula mudou. PENDENTE: revisão jurídica.
+    { kind: 'p', text: [
+      { text: 'A plataforma para investidores se chama ' },
+      { text: 'Aportou', bold: true },
+      { text: '. A ' },
+      { text: 'Aportou', bold: true },
+      { text: ' é uma marca da ' },
+      { text: 'Redentia', bold: true },
+      { text: `, operada pela mesma ${EMPRESA.razaoSocial}, que continua sendo a controladora dos Dados Pessoais. Nesta Política, ` },
+      { text: 'Redentia', bold: true },
+      { text: ' designa a empresa responsável pelos serviços, que também dá nome ao produto para escritórios de investimento.' },
+    ] },
     { kind: 'p', text: 'Esta política descreve as formas como coletamos, armazenamos e protegemos os Dados Pessoais dos usuários da Plataforma e do aplicativo.' },
     { kind: 'p', text: [
       { text: 'O usuário dos nossos serviços pode a qualquer momento deixar de receber comunicações da nossa Plataforma. Para tanto, basta clicar nos links “remover” ou “descadastramento”, contidos ao final de cada e-mail enviado aos Usuários ou enviar um e-mail para o nosso suporte ' },
@@ -38,6 +52,12 @@ const doc: LegalDocData = {
       title: 'Definições',
       blocks: [
         { kind: 'list', items: [
+          { text: [
+            { text: 'Aportou', bold: true },
+            { text: ' – a marca sob a qual a ' },
+            { text: 'Redentia', bold: true },
+            { text: ' oferece a Plataforma e o aplicativo aos investidores.' },
+          ] },
           { text: [
             { text: 'Dados Pessoais', bold: true },
             { text: ' – toda informação relacionada a pessoa natural identificada ou identificável. Exemplos: nome, endereço, telefone, CPF, número da carteira de habilitação e detalhes de transações comerciais pessoais.' },
@@ -240,7 +260,7 @@ usePageSeo({
   // title BARE: o app.vue já sufixa "· Redentia" em todo title (house style Nu).
   // A página antiga era "Política de Privacidade | Redentia" — mesmas palavras.
   title: 'Política de Privacidade',
-  description: 'Saiba como a Redentia coleta, utiliza e protege seus dados pessoais e financeiros de acordo com a LGPD.',
+  description: `Saiba como a ${MARCA.nome} coleta, utiliza e protege seus dados pessoais e financeiros de acordo com a LGPD.`,
   path: '/institucional/privacy',
   breadcrumbs: [
     { name: 'Início', path: '/' },

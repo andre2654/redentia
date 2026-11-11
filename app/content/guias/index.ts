@@ -37,7 +37,7 @@ import { COMO_CALCULAR_PRECO_TETO_GUIDE } from '~/content/guias/como-calcular-pr
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
   'Tudo',
-  'Guia Redentia',
+  'Guia Aportou',
   'Ações',
   'FIIs',
   'Renda fixa',
@@ -89,14 +89,14 @@ export const GUIDES: GuideMeta[] = [
   {
     title: 'Como conectar sua carteira ao ChatGPT e ao Claude',
     description: 'A IA responde sobre a sua carteira real da B3, no Brasil, com acesso somente leitura.',
-    tag: 'Guia Redentia',
+    tag: 'Guia Aportou',
     minutes: 9,
     slug: 'conectar-carteira-ao-chatgpt',
   },
   {
     title: 'MCP para investimentos: o que é e como usar',
     description: 'O padrão que conecta assistentes de IA aos seus dados da B3, sem jargão.',
-    tag: 'Guia Redentia',
+    tag: 'Guia Aportou',
     minutes: 8,
     slug: 'mcp-para-investimentos',
   },
@@ -165,7 +165,7 @@ export const GUIDES: GuideMeta[] = [
   {
     title: 'Como declarar investimentos no IR',
     description: 'Ações, FIIs e cripto na declaração: o passo a passo completo.',
-    tag: 'Guia Redentia',
+    tag: 'Guia Aportou',
     minutes: 15,
     slug: 'como-declarar-investimentos-no-ir',
   },
@@ -179,7 +179,7 @@ export const GUIDES: GuideMeta[] = [
   {
     title: 'Como montar uma carteira de investimentos',
     description: 'Alocação por objetivo, diversificação de verdade e rebalanceamento, sem fórmula mágica.',
-    tag: 'Guia Redentia',
+    tag: 'Guia Aportou',
     minutes: 10,
     slug: 'como-montar-carteira-de-investimentos',
   },

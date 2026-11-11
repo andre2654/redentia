@@ -305,11 +305,11 @@ export const GRUPO_3: GlossaryTerm[] = [
       'O indicador <strong>Dívida Líquida/EBITDA</strong> é um dos termômetros mais usados de saúde financeira. Ele divide a dívida líquida (a dívida total menos o caixa e as aplicações) pelo <a href="/glossario/ebitda">EBITDA</a> anual, respondendo a uma pergunta simples: quantos anos de geração operacional a empresa levaria para pagar o que deve.',
       'A leitura é intuitiva, e quanto menor, mais folgada a empresa. Um resultado abaixo de uma vez costuma indicar endividamento conservador; entre uma e duas vezes, uma situação saudável; acima de três vezes, começa o sinal de alerta, porque a dívida passa a consumir boa parte do caixa gerado e deixa a empresa vulnerável a solavancos.',
       'O nível aceitável muda muito com o setor. Empresas de infraestrutura e utilities, com receitas estáveis e previsíveis, convivem bem com múltiplos mais altos; negócios cíclicos ou de baixa previsibilidade precisam de bem mais folga. Por isso o indicador anda junto do estudo de <a href="/glossario/alavancagem">alavancagem</a> e da qualidade da geração de caixa.',
-      'Ressalva honesta: em empresas cíclicas, o número engana se calculado na hora errada. Um EBITDA inflado no topo do ciclo faz a dívida parecer baixa; quando o ciclo vira, a mesma dívida vira um problema. O ideal é olhar a razão em anos de EBITDA normalizado. Avalie a solidez das empresas no <a href="/ranking/redentia-score">ranking do Redentia Score</a>.',
+      'Ressalva honesta: em empresas cíclicas, o número engana se calculado na hora errada. Um EBITDA inflado no topo do ciclo faz a dívida parecer baixa; quando o ciclo vira, a mesma dívida vira um problema. O ideal é olhar a razão em anos de EBITDA normalizado. Avalie a solidez das empresas no <a href="/ranking/redentia-score">ranking do Aportou Score</a>.',
     ],
     related: ['ebitda', 'alavancagem', 'ev-ebitda', 'roic'],
     backlink: {
-      label: 'Avaliar a solidez das empresas pelo Redentia Score',
+      label: 'Avaliar a solidez das empresas pelo Aportou Score',
       to: '/ranking/redentia-score',
     },
     faq: [
@@ -401,11 +401,11 @@ export const GRUPO_3: GlossaryTerm[] = [
       'O <strong>Novo Mercado</strong> é o segmento de listagem mais exigente da <a href="/glossario/b3">B3</a> em termos de governança. Criado para elevar o padrão das empresas brasileiras, ele impõe regras que vão muito além do mínimo legal, com foco em transparência e nos direitos de quem investe pouco.',
       'Entre as exigências, três se destacam: só são admitidas <a href="/glossario/acoes-on-pn">ações ordinárias</a>, todas com direito a voto; o <a href="/glossario/tag-along">tag along</a> é de 100%, garantindo que o minoritário receba o mesmo valor do controlador numa venda de controle; e há um <a href="/glossario/free-float">free float</a> mínimo, além de conselho com membros independentes e demonstrações em padrão internacional.',
       'Para o investidor, o Novo Mercado funciona como um selo. Ele não garante que a empresa seja lucrativa, mas reduz o risco de governança: menos surpresas com acionistas majoritários, mais informação e regras claras de proteção. É por isso que muitas das empresas mais conhecidas da bolsa estão nesse segmento.',
-      'Ressalva honesta: governança boa não é sinônimo de investimento bom. Uma empresa do Novo Mercado pode ter resultados ruins, e uma fora dele pode ser excelente. O segmento reduz um tipo específico de risco, o de governança, e deve entrar na análise junto dos fundamentos. Avalie a qualidade das empresas no <a href="/ranking/redentia-score">ranking do Redentia Score</a>.',
+      'Ressalva honesta: governança boa não é sinônimo de investimento bom. Uma empresa do Novo Mercado pode ter resultados ruins, e uma fora dele pode ser excelente. O segmento reduz um tipo específico de risco, o de governança, e deve entrar na análise junto dos fundamentos. Avalie a qualidade das empresas no <a href="/ranking/redentia-score">ranking do Aportou Score</a>.',
     ],
     related: ['acoes-on-pn', 'tag-along', 'free-float', 'b3'],
     backlink: {
-      label: 'Ver a qualidade das empresas pelo Redentia Score',
+      label: 'Ver a qualidade das empresas pelo Aportou Score',
       to: '/ranking/redentia-score',
     },
     faq: [

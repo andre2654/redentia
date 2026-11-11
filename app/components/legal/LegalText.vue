@@ -22,8 +22,8 @@ defineProps<{ value: LegalText }>()
 <style scoped>
 .ltx__b { font-weight: 800; color: var(--nu-ink); }
 .ltx__a {
-  color: var(--nu-blue-text); text-decoration: underline;
-  text-underline-offset: 2px; text-decoration-thickness: 1px;
+  color: var(--nu-blue-text); font-weight: 700; text-decoration: underline;
+  text-underline-offset: 2px; text-decoration-thickness: 1.5px;
   transition: color .2s;
 }
 .ltx__a:hover { color: var(--nu-blue-hover); }

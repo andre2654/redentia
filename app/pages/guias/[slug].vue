@@ -39,7 +39,7 @@ usePageSeo({
       description: doc.description,
       datePublished: doc.datePublished,
       dateModified: doc.dateModified,
-      author: { '@type': 'Organization', name: 'Redentia' },
+      author: { '@type': 'Organization', name: MARCA.nome },
       articleSection: doc.tag,
       inLanguage: 'pt-BR',
     },
@@ -82,7 +82,7 @@ usePageSeo({
       <div class="gdp__cols">
         <NuTocSidebar :items="tocItems">
           <NuAiPromptCard
-            kicker="Redentia AI"
+            kicker="IA da Aportou"
             text="Dúvida no meio do guia? Pergunte à IA."
             to="/busca"
           />
@@ -117,17 +117,18 @@ usePageSeo({
 </template>
 
 <style scoped>
+/* o miolo sobre o creme da página (não existe faixa branca de ponta a ponta) */
 .gdp {
-  background: var(--nu-white);
-  padding: clamp(48px, 6vw, 80px) clamp(22px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  background: var(--nu-page);
+  padding: clamp(48px, 6vw, 80px) clamp(20px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
 }
 .gdp__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
 .gdp__article { flex: 1; min-width: 0; max-width: 760px; }
 
 .gdp__h2 {
   margin: clamp(44px, 5vw, 64px) 0 0; color: var(--nu-ink);
-  font-size: clamp(26px, 3vw, 38px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.1;
+  font-size: var(--nu-fs-h3); font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.05; text-wrap: balance;
   /* 40px do design + a faixa "Mercado agora" sticky (~48px) do layout */
   scroll-margin-top: 88px;
 }
@@ -135,7 +136,7 @@ usePageSeo({
 
 .gdp__p {
   margin: 18px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg);
-  font-weight: 500; line-height: 1.75;
+  font-weight: 500; line-height: 1.7;
 }
 .gdp__p + .gdp__p { margin-top: 16px; }
 .gdp__p :deep(strong) { font-weight: 800; }
@@ -143,7 +144,8 @@ usePageSeo({
 .gdp__article :deep(a) {
   color: var(--nu-blue-text); font-weight: 700;
   text-decoration: underline; text-underline-offset: 2px;
-  text-decoration-thickness: 1px; text-decoration-color: var(--nu-blue-soft);
+  text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
+  transition: text-decoration-color .2s;
 }
 .gdp__article :deep(a:hover) { text-decoration-color: var(--nu-blue); }
 

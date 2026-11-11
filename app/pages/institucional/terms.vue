@@ -23,6 +23,20 @@ const doc: LegalDocData = {
       { text: 'Redentia', bold: true },
       { text: ` é operada pela ${EMPRESA.razaoSocial}, inscrita no CNPJ sob o nº ${EMPRESA.cnpj}.` },
     ] },
+    // as duas marcas da casa, definidas uma vez (11/11/2026): a plataforma de
+    // investidor passou a se chamar Aportou; "Redentia" segue como o termo
+    // definido da empresa. Nenhuma cláusula mudou. PENDENTE: revisão jurídica.
+    { kind: 'p', text: [
+      { text: 'A plataforma para investidores se chama ' },
+      { text: 'Aportou', bold: true },
+      { text: '. A ' },
+      { text: 'Aportou', bold: true },
+      { text: ' é uma marca da ' },
+      { text: 'Redentia', bold: true },
+      { text: `, operada pela mesma ${EMPRESA.razaoSocial}. Nestes Termos de Uso, ` },
+      { text: 'Redentia', bold: true },
+      { text: ' designa a empresa responsável pelos serviços, que também dá nome ao produto para escritórios de investimento.' },
+    ] },
     { kind: 'p', text: [
       { text: 'POR FAVOR, LEIA COM ATENÇÃO ESTES TERMOS DE USO.', bold: true },
       { text: ' Eles abrangem informações relevantes sobre o serviço prestados pela ' },
@@ -42,6 +56,7 @@ const doc: LegalDocData = {
       title: 'Definições',
       blocks: [
         { kind: 'list', items: [
+          { text: [{ text: '"Aportou"', bold: true }, { text: ' – significa a marca sob a qual a ' }, { text: 'Redentia', bold: true }, { text: ` oferece a Plataforma e os serviços aos investidores, operada pela ${EMPRESA.razaoSocial}, inscrita no CNPJ sob o nº ${EMPRESA.cnpj}.` }] },
           { text: [{ text: '"Cadastro"', bold: true }, { text: ' – significa o cadastro do Usuário feito no Site para ter acesso aos Conteúdos da Carteira.' }] },
           { text: [{ text: '"Chat"', bold: true }, { text: ' – significa o chat que se encontra na Plataforma para atendimento ao público.' }] },
           { text: [{ text: '"Código de Defesa do Consumidor"', bold: true }, { text: ' – significa a Lei nº 8.078, de 11 de setembro de 1990, conforme alterada.' }] },
@@ -450,7 +465,7 @@ usePageSeo({
   // title BARE: o app.vue já sufixa "· Redentia" em todo title (house style Nu).
   // A página antiga era "Termos de Uso | Redentia" — mesmas palavras.
   title: 'Termos de Uso',
-  description: 'Conheça os direitos e deveres ao utilizar a plataforma Redentia, incluindo regras de serviço e proteção de dados.',
+  description: `Conheça os direitos e deveres ao utilizar a plataforma ${MARCA.nome}, incluindo regras de serviço e proteção de dados.`,
   path: '/institucional/terms',
   breadcrumbs: [
     { name: 'Início', path: '/' },

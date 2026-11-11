@@ -49,37 +49,44 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
 </template>
 
 <style scoped>
+/* Na Aportou (11/11/2026) o topo do cartão é uma das três cores da marca
+   (cobalto, carvão, sálvia), com o selo de raio 8; o corpo é creme no hub e
+   branco sobre a faixa quente do "Continue lendo.". */
 .gdc {
   border-radius: var(--nu-r-card); overflow: hidden;
-  display: flex; flex-direction: column; transition: transform .15s;
+  display: flex; flex-direction: column;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-.gdc--hub { background: var(--nu-cream); }
-.gdc--related { background: var(--nu-white); }
-.gdc:hover { transform: translateY(-3px); }
+.gdc--hub { background: var(--nu-card); box-shadow: var(--nu-shadow-quente); }
+.gdc--related { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
+.gdc:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .gdc--soon:hover { transform: none; }
+.gdc--soon.gdc--hub:hover { box-shadow: var(--nu-shadow-quente); }
+.gdc--soon.gdc--related:hover { box-shadow: var(--nu-shadow-branco); }
 
-.gdc__banner { display: flex; align-items: flex-start; }
+.gdc__banner { display: flex; align-items: flex-start; color: var(--nu-white); }
 .gdc--hub .gdc__banner { height: 120px; padding: 20px; }
 .gdc--related .gdc__banner { height: 104px; padding: 18px; }
-/* os 3 gradients do design, rotacionados por índice (i % 3) */
-.gdc__banner--g1 { background: linear-gradient(200deg, var(--nu-blue-soft) 0%, var(--nu-grad-blue-1) 32%, var(--nu-navy-2) 82%); }
-.gdc__banner--g2 { background: linear-gradient(165deg, var(--nu-blue) 0%, var(--nu-blue-deep) 45%, var(--nu-navy) 100%); }
-.gdc__banner--g3 { background: linear-gradient(205deg, var(--nu-grad-blue-2) 0%, var(--nu-blue-deep) 55%, var(--nu-navy) 95%); }
+/* as 3 cores da marca, rotacionadas por índice (i % 3) */
+.gdc__banner--g1 { background: var(--nu-grad-cobalto); }
+.gdc__banner--g2 { background: var(--nu-ink); }
+.gdc__banner--g3 { background: var(--nu-sage); color: var(--nu-ink); }
 .gdc__tag {
   display: inline-flex; align-items: center; background: var(--nu-white-20);
-  color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: .8px; text-transform: uppercase;
-  padding: 5px 12px; border-radius: var(--nu-r-pill);
+  color: inherit; font-size: var(--nu-fs-dense); font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 6px 10px; border-radius: var(--nu-r-tag);
 }
+.gdc__banner--g3 .gdc__tag { background: var(--nu-ink-10); }
 
 .gdc__body { display: flex; flex-direction: column; flex: 1; }
 .gdc--hub .gdc__body { padding: 22px 24px 24px; }
 .gdc--related .gdc__body { padding: 20px 22px 22px; }
-.gdc__title { color: var(--nu-ink); font-weight: 800; letter-spacing: -.3px; line-height: 1.25; }
+.gdc__title { color: var(--nu-ink); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; text-wrap: balance; }
 .gdc--hub .gdc__title { font-size: var(--nu-fs-xl); }
-.gdc--related .gdc__title { font-size: var(--nu-fs-lg); }
+.gdc--related .gdc__title { font-size: var(--nu-fs-xl); }
 .gdc__desc {
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500;
   line-height: 1.55; margin-top: 8px;
 }
 .gdc__foot {
@@ -87,21 +94,25 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
   margin-top: auto;
 }
 .gdc--hub .gdc__foot { padding-top: 20px; }
-.gdc--related .gdc__foot { padding-top: 16px; }
-.gdc__min { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
+.gdc--related .gdc__foot { padding-top: 18px; }
+.gdc__min { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 .gdc__arrow {
-  border-radius: 50%; background: var(--nu-blue); color: var(--nu-white);
-  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--nu-ink); color: var(--nu-white);
+  display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
+.gdc__arrow svg { transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.gdc:hover .gdc__arrow { background: var(--nu-blue); }
+.gdc:hover .gdc__arrow svg { transform: translateX(2px); }
 .gdc--hub .gdc__arrow { width: 38px; height: 38px; }
-.gdc--related .gdc__arrow { width: 36px; height: 36px; }
+.gdc--related .gdc__arrow { width: 38px; height: 38px; }
 .gdc--hub .gdc__arrow svg { width: 14px; height: 14px; }
-.gdc--related .gdc__arrow svg { width: 13px; height: 13px; }
-/* estado "em breve" (linguagem do design: pill areia como as tags neutras) */
+.gdc--related .gdc__arrow svg { width: 14px; height: 14px; }
+/* estado "em breve": selo neutro de raio 8 */
 .gdc__soon {
-  display: inline-flex; align-items: center; background: var(--nu-sand-2);
-  color: var(--nu-gray-tag); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: .8px; text-transform: uppercase;
-  padding: 6px 13px; border-radius: var(--nu-r-pill);
+  display: inline-flex; align-items: center; background: var(--nu-cream-2);
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 6px 10px; border-radius: var(--nu-r-tag);
 }
+@media (prefers-reduced-motion: reduce) { .gdc, .gdc__arrow svg { transition: none; } }
 </style>

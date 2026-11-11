@@ -75,11 +75,11 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 </template>
 
 <style scoped>
-/* espelha a casca do shared legal/LegalDoc.vue — banda branca + coluna 820px */
+/* espelha a casca do shared legal/LegalDoc.vue: o creme da página + coluna 820px */
 .met-doc {
-  background: var(--nu-white);
-  padding: clamp(44px, 6vw, 76px) clamp(22px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-page);
+  padding: clamp(44px, 6vw, 76px) clamp(20px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  animation: nu-fade .5s ease .06s both;
 }
 .met-doc__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
 .met-doc__cols--toc { justify-content: flex-start; }
@@ -90,45 +90,50 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 
 .met-doc__h2 {
   margin: clamp(40px, 4.5vw, 56px) 0 0; color: var(--nu-ink);
-  font-size: clamp(24px, 2.5vw, 30px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.14;
+  font-size: clamp(26px, 2.6vw, 32px); font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.08;
   scroll-margin-top: 88px;
 }
 .met-doc__h2--first { margin-top: 0; }
 
-/* tabela de atualização (§5) — cabeçalho creme, linhas alternadas, números tabulares */
-.met-doc__tablewrap { margin: 20px 0 0; overflow-x: auto; }
+/* tabela de atualização (§5): cartão branco, cabeçalho em caixa alta, fios de 1,5px */
+.met-doc__tablewrap {
+  margin: 22px 0 0; overflow-x: auto; background: var(--nu-white);
+  border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-quente);
+}
 .met-doc__table {
   width: 100%; border-collapse: collapse; font-size: var(--nu-fs-md);
   min-width: 520px;
 }
 .met-doc__table th,
 .met-doc__table td {
-  border: 1px solid var(--nu-cream-line);
-  padding: 11px 14px; text-align: left; vertical-align: top;
+  padding: 14px 18px; text-align: left; vertical-align: top;
+  border-bottom: 1.5px solid var(--nu-line-2);
 }
+.met-doc__table tbody tr:last-child td { border-bottom: 0; }
 .met-doc__table th {
-  background: var(--nu-cream); color: var(--nu-ink);
-  font-weight: 700; font-size: var(--nu-fs-sm); letter-spacing: -0.01em;
+  color: var(--nu-gray); font-weight: 700; font-size: var(--nu-fs-dense);
+  letter-spacing: 0.14em; text-transform: uppercase;
 }
 .met-doc__table td {
   color: var(--nu-gray-3); font-weight: 500; line-height: 1.55;
   font-variant-numeric: tabular-nums;
 }
-.met-doc__table tbody tr:nth-child(even) { background: var(--nu-sand); }
+.met-doc__table td:first-child { color: var(--nu-ink); font-weight: 700; }
 
-/* box de disclaimer educacional (§7) */
+/* box de disclaimer educacional (§7): faixa quente com o fio cobalto */
 .met-doc__callout {
-  margin-top: 20px; padding: clamp(18px, 2.4vw, 26px);
+  margin-top: 20px; padding: clamp(20px, 2.6vw, 28px);
   border-left: 3px solid var(--nu-blue);
-  background: var(--nu-cream);
-  border-radius: 0 var(--nu-r-card) var(--nu-r-card) 0;
+  background: var(--nu-band);
+  border-radius: 0 var(--nu-r-panel) var(--nu-r-panel) 0;
 }
 .met-doc__callout :deep(.lgb__p:first-child) { margin-top: 0; }
 
 @media (max-width: 760px) {
   .met-doc__table { font-size: var(--nu-fs-sm); }
   .met-doc__table th,
-  .met-doc__table td { padding: 9px 11px; }
+  .met-doc__table td { padding: 11px 13px; }
 }
+@media (prefers-reduced-motion: reduce) { .met-doc { animation: none; } }
 </style>

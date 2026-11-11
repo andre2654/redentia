@@ -19,11 +19,11 @@ export const BITCOIN_NA_CARTEIRA_GUIDE: GuideDoc = {
   title: 'Bitcoin na carteira: quanto alocar?',
   dek: 'A pergunta certa não é se bitcoin sobe, é quanto dele cabe na sua carteira sem tirar seu sono. Faixas por perfil, a tese de reserva e o que a volatilidade cobra.',
   description:
-    'Quanto alocar em bitcoin na carteira: faixas ilustrativas por perfil de risco, a tese de reserva de valor, como lidar com a volatilidade, custódia segura e o que declarar no Imposto de Renda. Guia principiológico da Redentia, sem preço-alvo.',
+    'Quanto alocar em bitcoin na carteira: faixas ilustrativas por perfil de risco, a tese de reserva de valor, como lidar com a volatilidade, custódia segura e o que declarar no Imposto de Renda. Guia principiológico da Aportou, sem preço-alvo.',
   summary:
     'Bitcoin não é aposta de tudo ou nada. Veja as faixas de alocação por perfil, a tese por trás do ativo, o que a volatilidade cobra de quem entra e como não errar na custódia.',
   minutes: 6,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-13',
   dateModified: '2026-07-13',
   updatedLine: 'Atualizado em 13 jul 2026 · 6 min de leitura',
@@ -117,7 +117,7 @@ export const BITCOIN_NA_CARTEIRA_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Duas defesas contra o pânico: alocar pouco (uma fatia pequena oscilando não desequilibra o conjunto) e <strong>aportar aos poucos</strong>, em vez de tudo de uma vez. Comprar em parcelas regulares dilui o preço de entrada e tira de você a tarefa impossível de acertar o fundo. As <a href="/calculadoras">calculadoras da Redentia</a> ajudam a transformar isso num plano de aportes.',
+          html: 'Duas defesas contra o pânico: alocar pouco (uma fatia pequena oscilando não desequilibra o conjunto) e <strong>aportar aos poucos</strong>, em vez de tudo de uma vez. Comprar em parcelas regulares dilui o preço de entrada e tira de você a tarefa impossível de acertar o fundo. As <a href="/calculadoras">calculadoras da Aportou</a> ajudam a transformar isso num plano de aportes.',
         },
       ],
     },

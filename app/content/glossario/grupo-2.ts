@@ -215,7 +215,7 @@ export const GRUPO_2: GlossaryTerm[] = [
     ],
     related: ['acoes-on-pn', 'novo-mercado', 'free-float', 'b3', 'cvm'],
     backlink: {
-      label: 'Ver empresas ranqueadas pelo Redentia Score',
+      label: 'Ver empresas ranqueadas pelo Aportou Score',
       to: '/ranking/redentia-score',
     },
     faq: [
@@ -380,7 +380,7 @@ export const GRUPO_2: GlossaryTerm[] = [
     ],
     related: ['ibovespa', 'ifix', 'cdi', 'etf', 'ipca'],
     backlink: {
-      label: 'Ver empresas ranqueadas pelo Redentia Score',
+      label: 'Ver empresas ranqueadas pelo Aportou Score',
       to: '/ranking/redentia-score',
     },
     faq: [

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// /institucional/about — Sobre a Redentia (portada VERBATIM de
+// /institucional/about — Sobre a Aportou (até 11/11/2026, "Sobre a Redentia"; portada VERBATIM de
 // Frontend/app/pages/institucional/about.vue, cujo texto vinha do config do
 // tenant: brand.about.title + brand.about.paragraphs). Placeholders resolvidos:
 // brand.name = "Redentia". Path e SEO preservados de propósito (mesma URL).
@@ -12,12 +12,14 @@ import type { LegalDocData } from '~/types/legal'
 
 const doc: LegalDocData = {
   eyebrow: 'Institucional',
-  title: 'Sobre a Redentia',
+  title: 'Sobre a Aportou',
   intro: [
-    { kind: 'p', text: 'A Redentia é uma plataforma de investimentos que combina tecnologia de ponta com inteligência artificial para democratizar o acesso à informação financeira de qualidade.' },
+    { kind: 'p', text: 'A Aportou é uma plataforma de investimentos que combina tecnologia de ponta com inteligência artificial para democratizar o acesso à informação financeira de qualidade.' },
     { kind: 'p', text: 'Oferecemos cotações em tempo real, análises fundamentalistas, calculadoras financeiras e assessoria com IA, tudo em um único lugar, gratuito e acessível.' },
     { kind: 'p', text: 'Nossa missão é empoderar investidores de todos os níveis com ferramentas profissionais e dados confiáveis para tomadas de decisão mais inteligentes.' },
     { kind: 'p', text: 'Comprometidos com transparência, segurança e inovação, transformamos a experiência de investir no Brasil.' },
+    // a casa (11/11/2026): a Aportou é a marca de investidor; a Redentia fica com os escritórios
+    { kind: 'p', text: 'A Aportou é uma empresa Redentia, que faz tecnologia de dados para escritórios de investimento.' },
   ],
   sections: [],
 }
@@ -25,8 +27,8 @@ const doc: LegalDocData = {
 usePageSeo({
   // SEO igual ao antigo (about.vue): brand.name resolvido = "Redentia". O app.vue
   // sufixa "· Redentia" em todo title (house style Nu).
-  title: 'Sobre a Redentia | Plataforma inteligente de investimentos',
-  description: 'Entenda a missão da Redentia e como combinamos consolidação de carteira e inteligência artificial para simplificar a vida do investidor brasileiro.',
+  title: `Sobre a ${MARCA.nome} | Plataforma inteligente de investimentos`,
+  description: `Entenda a missão da ${MARCA.nome} e como combinamos consolidação de carteira e inteligência artificial para simplificar a vida do investidor brasileiro.`,
   path: '/institucional/about',
   breadcrumbs: [
     { name: 'Início', path: '/' },

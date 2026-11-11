@@ -65,7 +65,7 @@ const asOfLine = computed(() => {
 <template>
   <div v-if="rows.length" class="getc">
     <div class="getc__head">
-      <span class="getc__kicker">Custo real, calculado pela Redentia</span>
+      <span class="getc__kicker">Custo real, calculado pela Aportou</span>
       <span class="getc__asof">{{ asOfLine }} · atualiza sozinho todo mês</span>
     </div>
     <div class="getc__scroll">
@@ -95,24 +95,29 @@ const asOfLine = computed(() => {
 </template>
 
 <style scoped>
-.getc { margin-top: 28px; background: var(--nu-cream); border-radius: var(--nu-r-card); padding: clamp(20px, 2.6vw, 28px); }
+/* cartão creme da Aportou: sombra quente, fios de 1,5px, ticker em selo carvão de raio 8 */
+.getc { margin-top: 28px; background: var(--nu-band); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(22px, 2.8vw, 32px); }
 .getc__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.getc__kicker { color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.getc__kicker { color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
 .getc__asof { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .getc__scroll { overflow-x: auto; margin-top: 14px; }
 .getc__table { width: 100%; border-collapse: collapse; min-width: 420px; }
 .getc__table th {
-  text-align: left; color: var(--nu-gray-tag); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: 0.07em; text-transform: uppercase; padding: 0 12px 8px 0;
+  text-align: left; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; padding: 0 12px 10px 0;
 }
-.getc__table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--nu-ink-14); font-size: var(--nu-fs-md); font-weight: 500; color: var(--nu-gray-2); }
-.getc__tk { color: var(--nu-blue-text); font-weight: 800; text-decoration: none; }
-.getc__tk:hover { text-decoration: underline; text-underline-offset: 2px; }
-.getc__num { font-variant-numeric: tabular-nums; color: var(--nu-ink); font-weight: 700; }
+.getc__table td { padding: 12px 12px 12px 0; border-top: 1.5px solid var(--nu-line); font-size: var(--nu-fs-md); font-weight: 500; color: var(--nu-gray-2); }
+.getc .getc__tk {
+  display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: var(--nu-r-tag);
+  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: 800; letter-spacing: 0.04em;
+  text-decoration: none; transition: background .2s;
+}
+.getc .getc__tk:hover { background: var(--nu-blue); }
+.getc__table .getc__num { font-variant-numeric: tabular-nums; color: var(--nu-ink); font-weight: 700; }
 .getc__piso {
-  margin-left: 8px; background: var(--nu-sand-2); color: var(--nu-gray-tag);
-  font-size: var(--nu-fs-xs); font-weight: 700; padding: 2px 8px; border-radius: var(--nu-r-pill);
+  margin-left: 8px; background: var(--nu-amber-bg); color: var(--nu-amber-text);
+  font-size: var(--nu-fs-xs); font-weight: 700; padding: 3px 8px; border-radius: var(--nu-r-tag);
   vertical-align: 1px;
 }
-.getc__note { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.55; }
+.getc__note { margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.55; }
 </style>

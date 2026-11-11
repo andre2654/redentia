@@ -49,6 +49,9 @@ const idx = ref(0)
 const TOTAL = 5
 
 const NOME: Record<Assistente, string> = { claude: 'Claude', chatgpt: 'ChatGPT' }
+// o nome que a pessoa digita no conector: no B2C (/mcp, /conta) é a Aportou;
+// no painel do escritório segue Redentia (11/11/2026)
+const nomeConector = computed(() => (props.origem === 'mcp' ? MARCA.nome : MARCA.b2b))
 
 const TITULOS: Record<string, string> = {
   'prep-claude': 'Abra os conectores.',
@@ -128,7 +131,7 @@ onBeforeUnmount(() => {
       <div ref="cardRef" class="rbcx__card" role="dialog" aria-modal="true" :aria-labelledby="titleId" tabindex="-1" @click.stop>
         <div class="rbcx__head">
           <span class="rbcx__eyebrow">
-            {{ assistente ? `Conectar · ${NOME[assistente]}` : (origem === 'business' ? 'Conectar · Redentia For Business' : 'Conectar · Redentia MCP') }}
+            {{ assistente ? `Conectar · ${NOME[assistente]}` : (origem === 'business' ? 'Conectar · Redentia For Business' : 'Conectar · Aportou MCP') }}
           </span>
           <button type="button" class="rbcx__close" aria-label="Fechar" @click="emit('close')">✕</button>
         </div>
@@ -182,12 +185,12 @@ onBeforeUnmount(() => {
         <!-- ——— 3 · criar o conector ——— -->
         <div v-else-if="telaId === 'url'" class="rbcx__body">
           <p v-if="assistente === 'claude'" class="rbcx__dek">
-            No <strong>Name</strong>, digite <code class="rbcx__inline">Redentia</code>.
+            No <strong>Name</strong>, digite <code class="rbcx__inline">{{ nomeConector }}</code>.
             Na <strong>URL</strong>, cole o endereço abaixo. Conclua com <strong>Add</strong>
             e clique em <strong>Connect</strong>.
           </p>
           <p v-else class="rbcx__dek">
-            Clique em <strong>Create</strong>, nomeie <code class="rbcx__inline">Redentia</code>,
+            Clique em <strong>Create</strong>, nomeie <code class="rbcx__inline">{{ nomeConector }}</code>,
             cole a URL abaixo e escolha <strong>OAuth</strong> na autenticação.
           </p>
           <div class="rbcx__code-wrap">
@@ -199,7 +202,7 @@ onBeforeUnmount(() => {
         <!-- ——— 4 · autorizar ——— -->
         <div v-else-if="telaId === 'chave'" class="rbcx__body">
           <p class="rbcx__dek">
-            A página de autorização da Redentia abre sozinha. Cole a chave e clique em
+            A página de autorização da {{ nomeConector }} abre sozinha. Cole a chave e clique em
             <strong>Autorizar</strong>.
           </p>
           <template v-if="temChave">
@@ -229,7 +232,7 @@ onBeforeUnmount(() => {
         <div v-else class="rbcx__body">
           <p class="rbcx__dek">
             Abra uma conversa nova e cole a frase abaixo. O {{ assistente ? NOME[assistente] : 'assistente' }} já sabe
-            quando chamar a Redentia, e a resposta vem pronta. Não precisa instalar nada.
+            quando chamar a {{ nomeConector }}, e a resposta vem pronta. Não precisa instalar nada.
           </p>
           <div class="rbcx__code-wrap">
             <button type="button" class="rbcx__copy" @click="copiar('frase', frases[0]!.texto)">{{ copiado === 'frase' ? 'Copiada' : 'Copiar' }}</button>

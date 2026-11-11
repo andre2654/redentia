@@ -91,7 +91,7 @@ const CORE_PAGES: SitePage[] = [
   // fusão home+carteira (2026-07-13): /mercado morreu (301 → '/') e a home
   // pública herdou o panorama do mercado — 1 entrada só.
   // lastmod de '/', '/noticias' e '/teses' sai do dado em getSiteSections
-  { path: '/', title: 'Home', description: 'Panorama diário do mercado brasileiro: índices, altas, baixas, Tesouro Direto, notícias e a IA da Redentia.' },
+  { path: '/', title: 'Home', description: 'Panorama diário do mercado brasileiro: índices, altas, baixas, Tesouro Direto, notícias e a IA da Aportou.' },
   { path: '/noticias', title: 'Notícias', description: 'Notícias do mercado financeiro brasileiro curadas e comentadas.' },
   { path: '/teses', title: 'Teses de investimento', description: 'Teses temáticas com empresas, score de convicção e fontes, revalidadas diariamente.' },
   { path: '/guias', title: 'Guias', description: 'Conteúdo educacional sobre investimentos no Brasil.' },
@@ -100,10 +100,10 @@ const CORE_PAGES: SitePage[] = [
   // toda URL do sitemap resolve 200. Cards href-only (ex.: Análise PETR4 →
   // /asset/PETR4) não têm doc e já entram pela seção de ativos.
   ...guideDocPages(),
-  { path: '/calculadoras', title: 'Hub de calculadoras', description: 'Todas as calculadoras financeiras gratuitas da Redentia.' },
-  { path: '/mcp', title: 'Redentia MCP', description: 'Servidor MCP da Redentia: conecte sua carteira da B3, teses e dados de mercado ao Claude, ChatGPT e Cursor.' },
+  { path: '/calculadoras', title: 'Hub de calculadoras', description: 'Todas as calculadoras financeiras gratuitas da Aportou.' },
+  { path: '/mcp', title: 'Aportou MCP', description: 'Servidor MCP da Aportou: conecte sua carteira da B3, teses e dados de mercado ao Claude, ChatGPT e Cursor.' },
   // A página do plano único (31/10/2026): R$ 19,99 por mês, 3 dias grátis.
-  { path: '/assinar', title: 'Assinatura Redentia', description: 'Sua carteira de qualquer banco pelo Open Finance, testada em 2.000 cenários, com a IA que responde com os seus números.', lastmod: '2026-10-31' },
+  { path: '/assinar', title: 'Assinatura Aportou', description: 'Sua carteira de qualquer banco pelo Open Finance, testada em 2.000 cenários, com a IA que responde com os seus números.', lastmod: '2026-10-31' },
   // Indexável desde 20/10/2026 (decisão do dono; o noindex era trava de
   // compliance). lastmod = a última mudança de conteúdo da página.
   { path: '/business', title: 'Redentia For Business', description: 'Para escritórios de investimento: a carteira do cliente consolidada por Open Finance, com o consentimento dele, no Claude ou no ChatGPT da mesa.', lastmod: '2026-10-15' },
@@ -126,7 +126,7 @@ const CORE_PAGES: SitePage[] = [
 ]
 
 const INSTITUCIONAL_PAGES: SitePage[] = [
-  { path: '/institucional/about', title: 'Sobre a Redentia' },
+  { path: '/institucional/about', title: 'Sobre a Aportou' },
   { path: '/institucional/contact', title: 'Contato' },
   { path: '/institucional/how-works', title: 'Como funciona' },
   { path: '/institucional/privacy', title: 'Política de privacidade' },

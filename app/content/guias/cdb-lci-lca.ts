@@ -34,11 +34,11 @@ export const CDB_LCI_LCA_GUIDE: GuideDoc = {
   title: 'CDB, LCI e LCA: como escolher a renda fixa do banco',
   dek: 'As três siglas dividem a mesma mecânica e mudam em três pontos que decidem tudo: quem garante, quanto o imposto leva e quando o dinheiro volta.',
   description:
-    'CDB, LCI e LCA explicados sem jargão: como o título bancário funciona, a diferença entre pós-fixado, prefixado e IPCA+, o que o FGC cobre, por que a isenção de LCI e LCA nem sempre vence e como comparar duas ofertas pelo retorno líquido. Guia claro e honesto da Redentia.',
+    'CDB, LCI e LCA explicados sem jargão: como o título bancário funciona, a diferença entre pós-fixado, prefixado e IPCA+, o que o FGC cobre, por que a isenção de LCI e LCA nem sempre vence e como comparar duas ofertas pelo retorno líquido. Guia claro e honesto da Aportou.',
   summary:
     'A renda fixa do banco não é uma coisa só. Entenda o que você compra em um CDB, o que muda em LCI e LCA, até onde vai a garantia do FGC e o roteiro para comparar ofertas sem se deixar levar pela taxa da vitrine.',
   minutes: 10,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-08-04',
   dateModified: '2026-08-04',
   updatedLine: 'Atualizado em 4 ago 2026 · 10 min de leitura',
@@ -135,7 +135,7 @@ export const CDB_LCI_LCA_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'É por isso que a pergunta "isento rende mais?" não tem resposta fixa. Uma LCI isenta com taxa menor pode perder de um CDB tributado com taxa maior, e o inverso também acontece; o ponto de virada depende do prazo, porque a alíquota do CDB cai com o tempo. Faça a conta nos dois casos com o prazo real que você tem em mente. As <a href="/calculadoras">calculadoras da Redentia</a> ajudam a projetar o valor final, e o guia de <a href="/guias/como-declarar-investimentos-no-ir">como declarar investimentos no IR</a> cobre o que aparece na declaração anual, inclusive os papéis isentos, que também são declarados.',
+          html: 'É por isso que a pergunta "isento rende mais?" não tem resposta fixa. Uma LCI isenta com taxa menor pode perder de um CDB tributado com taxa maior, e o inverso também acontece; o ponto de virada depende do prazo, porque a alíquota do CDB cai com o tempo. Faça a conta nos dois casos com o prazo real que você tem em mente. As <a href="/calculadoras">calculadoras da Aportou</a> ajudam a projetar o valor final, e o guia de <a href="/guias/como-declarar-investimentos-no-ir">como declarar investimentos no IR</a> cobre o que aparece na declaração anual, inclusive os papéis isentos, que também são declarados.',
         },
       ],
     },
@@ -210,7 +210,7 @@ export const CDB_LCI_LCA_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para quem quer entender cada termo isolado, o <a href="/glossario">glossário</a> destrincha as siglas desta página, e a <a href="/metodologia">metodologia</a> explica como a Redentia calcula e apresenta os dados das páginas de investimento.',
+          html: 'Para quem quer entender cada termo isolado, o <a href="/glossario">glossário</a> destrincha as siglas desta página, e a <a href="/metodologia">metodologia</a> explica como a Aportou calcula e apresenta os dados das páginas de investimento.',
         },
       ],
     },

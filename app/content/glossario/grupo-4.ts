@@ -76,7 +76,7 @@ export const GRUPO_4: GlossaryTerm[] = [
     ],
     related: ['volatilidade', 'diversificacao', 'beta', 'alocacao-carteira'],
     backlink: {
-      label: 'Avaliar a qualidade das empresas pelo Redentia Score',
+      label: 'Avaliar a qualidade das empresas pelo Aportou Score',
       to: '/ranking/redentia-score',
     },
     faq: [
@@ -412,7 +412,7 @@ export const GRUPO_4: GlossaryTerm[] = [
     ],
     related: ['b3', 'corretora', 'ipo', 'novo-mercado'],
     backlink: {
-      label: 'Avaliar empresas listadas pelo Redentia Score',
+      label: 'Avaliar empresas listadas pelo Aportou Score',
       to: '/ranking/redentia-score',
     },
     faq: [

@@ -19,11 +19,11 @@ export const TESOURO_DIRETO_PARA_INICIANTES_GUIDE: GuideDoc = {
   title: 'Tesouro Direto para iniciantes',
   dek: 'IPCA+, Selic ou Prefixado: para que serve cada título, o que é marcação a mercado e como escolher sem juridiquês.',
   description:
-    'Tesouro Direto para iniciantes: entenda IPCA+, Selic e Prefixado, o que é marcação a mercado, quanto começar, imposto de renda e como escolher o título certo para cada objetivo. Guia claro da Redentia.',
+    'Tesouro Direto para iniciantes: entenda IPCA+, Selic e Prefixado, o que é marcação a mercado, quanto começar, imposto de renda e como escolher o título certo para cada objetivo. Guia claro da Aportou.',
   summary:
     'Tesouro Direto não é um investimento só, são três tipos de título com funções diferentes. Veja para que serve IPCA+, Selic e Prefixado, o que é marcação a mercado e como escolher sem chute.',
   minutes: 9,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-13',
   dateModified: '2026-07-13',
   updatedLine: 'Atualizado em 13 jul 2026 · 9 min de leitura',
@@ -86,13 +86,13 @@ export const TESOURO_DIRETO_PARA_INICIANTES_GUIDE: GuideDoc = {
           items: [
             '<strong>Abra conta em uma corretora.</strong> Só precisa de CPF e alguns dados. Prefira instituições reguladas pela CVM; a abertura é digital e a maioria não cobra taxa de corretagem no Tesouro Direto.',
             '<strong>Transfira o dinheiro.</strong> Um Pix ou TED deixa o saldo disponível. Não há valor mínimo alto: dá para comprar uma fração de título por poucas dezenas de reais.',
-            '<strong>Escolha o título pelo objetivo.</strong> Reserva de emergência pede Selic; meta de longo prazo protegida da inflação pede IPCA+; um valor certo em uma data futura pede Prefixado. Compare vencimentos e taxas no <a href="/ranking/tesouro-direto">ranking de Tesouro Direto da Redentia</a> antes de decidir.',
+            '<strong>Escolha o título pelo objetivo.</strong> Reserva de emergência pede Selic; meta de longo prazo protegida da inflação pede IPCA+; um valor certo em uma data futura pede Prefixado. Compare vencimentos e taxas no <a href="/ranking/tesouro-direto">ranking de Tesouro Direto da Aportou</a> antes de decidir.',
             '<strong>Confirme a compra e acompanhe.</strong> A ordem é executada e o título aparece na sua posição. Depois disso, o combinado é deixar trabalhar até o vencimento, sem checar o preço todo dia.',
           ],
         },
         {
           kind: 'p',
-          html: 'A página de cada título traz taxa, vencimento e a leitura da Redentia. Comece pela lista em <a href="/tesouro">Tesouro Direto</a> para ver os títulos disponíveis lado a lado.',
+          html: 'A página de cada título traz taxa, vencimento e a leitura da Aportou. Comece pela lista em <a href="/tesouro">Tesouro Direto</a> para ver os títulos disponíveis lado a lado.',
         },
       ],
     },
@@ -142,7 +142,7 @@ export const TESOURO_DIRETO_PARA_INICIANTES_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para transformar objetivo em número, quanto aportar por mês e quanto isso vira ao longo dos anos, use as <a href="/calculadoras">calculadoras da Redentia</a>. Um plano de aportes regulares no título certo vence, no longo prazo, a tentativa de adivinhar o melhor momento de comprar.',
+          html: 'Para transformar objetivo em número, quanto aportar por mês e quanto isso vira ao longo dos anos, use as <a href="/calculadoras">calculadoras da Aportou</a>. Um plano de aportes regulares no título certo vence, no longo prazo, a tentativa de adivinhar o melhor momento de comprar.',
         },
       ],
     },
@@ -187,7 +187,7 @@ export const TESOURO_DIRETO_PARA_INICIANTES_GUIDE: GuideDoc = {
   ],
   cta: {
     title: 'Compare os títulos do Tesouro Direto',
-    subtitle: 'Taxas e vencimentos lado a lado, com a leitura da Redentia · grátis para começar',
+    subtitle: 'Taxas e vencimentos lado a lado, com a leitura da Aportou · grátis para começar',
     to: '/ranking/tesouro-direto',
   },
   faqTitle: 'Perguntas frequentes',

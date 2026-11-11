@@ -33,7 +33,7 @@ const listable = [
 usePageSeo({
   title: 'Guias de investimento: aprenda a investir melhor',
   description:
-    'Guias em português claro sobre ações, FIIs, renda fixa, cripto e dividendos: do primeiro aporte à carteira que paga suas contas. Conteúdo aberto do blog da Redentia, sem precisar de conta.',
+    `Guias em português claro sobre ações, FIIs, renda fixa, cripto e dividendos: do primeiro aporte à carteira que paga suas contas. Conteúdo aberto da ${MARCA.nome}, sem precisar de conta.`,
   path: '/guias',
   structuredData: [{
     '@type': 'ItemList',

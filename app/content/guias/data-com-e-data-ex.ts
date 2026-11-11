@@ -47,11 +47,11 @@ export const DATA_COM_E_DATA_EX_GUIDE: GuideDoc = {
   title: 'Data com e data ex: quando o dividendo passa a ser seu',
   dek: 'O provento não é de quem tem a ação no dia do pagamento, é de quem tinha no fechamento da data com. Entenda as quatro datas, por que o preço cai no dia seguinte e por que isso não é prejuízo.',
   description:
-    'Data com e data ex explicadas: as quatro datas de um provento, até quando comprar para receber, por que a ação cai na data ex, quanto tempo até o dinheiro cair na conta e quantas vezes por ano cada ativo paga. Guia claro e honesto da Redentia.',
+    'Data com e data ex explicadas: as quatro datas de um provento, até quando comprar para receber, por que a ação cai na data ex, quanto tempo até o dinheiro cair na conta e quantas vezes por ano cada ativo paga. Guia claro e honesto da Aportou.',
   summary:
     'Quem compra no dia do pagamento não recebe nada. O direito ao provento é decidido semanas antes, no fechamento da data com, e a queda no preço do dia seguinte assusta quem não sabe que ela é aritmética, não notícia ruim.',
   minutes: 10,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-09-09',
   dateModified: '2026-09-09',
   updatedLine: 'Atualizado em 9 set 2026 · 10 min de leitura',
@@ -206,7 +206,7 @@ export const DATA_COM_E_DATA_EX_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'A fonte primária é sempre a companhia ou o gestor: o fato relevante, o aviso aos acionistas ou o comunicado ao mercado, publicados na área de relações com investidores e no sistema da CVM. Portais financeiros e a página do ativo agregam essa informação e servem para consultar rápido, mas em caso de divergência o documento oficial é que vale. Na Redentia, o histórico de proventos com os valores e as datas de cada pagamento fica na página de dividendos de cada ativo, alcançável pela <a href="/busca">busca por ticker</a>, e as divulgações recentes aparecem nas <a href="/noticias">notícias</a>.',
+          html: 'A fonte primária é sempre a companhia ou o gestor: o fato relevante, o aviso aos acionistas ou o comunicado ao mercado, publicados na área de relações com investidores e no sistema da CVM. Portais financeiros e a página do ativo agregam essa informação e servem para consultar rápido, mas em caso de divergência o documento oficial é que vale. Na Aportou, o histórico de proventos com os valores e as datas de cada pagamento fica na página de dividendos de cada ativo, alcançável pela <a href="/busca">busca por ticker</a>, e as divulgações recentes aparecem nas <a href="/noticias">notícias</a>.',
         },
         {
           kind: 'p',

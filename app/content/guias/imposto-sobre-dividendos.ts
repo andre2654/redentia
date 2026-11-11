@@ -40,11 +40,11 @@ export const IMPOSTO_SOBRE_DIVIDENDOS_GUIDE: GuideDoc = {
   title: 'Imposto sobre dividendos: quem paga, quanto e o que mudou',
   dek: 'Por décadas o dividendo caía limpo na conta da pessoa física. Isso mudou, mas não para todo mundo: veja onde fica a linha, por que JCP segue outra regra e por que o rendimento de FII é um regime à parte.',
   description:
-    'Imposto sobre dividendos no Brasil: a regra dos R$ 50 mil por mês, o efeito degrau, por que JCP é tributado diferente, o regime próprio dos FIIs e a tributação mínima das altas rendas. Guia claro e honesto da Redentia.',
+    'Imposto sobre dividendos no Brasil: a regra dos R$ 50 mil por mês, o efeito degrau, por que JCP é tributado diferente, o regime próprio dos FIIs e a tributação mínima das altas rendas. Guia claro e honesto da Aportou.',
   summary:
     'A isenção total dos dividendos acabou, mas o novo imposto tem um limite alto que a maioria dos investidores da B3 nunca encosta. Veja onde fica a linha, o que muda em JCP e FII e o que a regra de transição ainda protege.',
   minutes: 10,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-08-26',
   dateModified: '2026-08-26',
   updatedLine: 'Atualizado em 26 ago 2026 · 10 min de leitura',

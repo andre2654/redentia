@@ -9,7 +9,8 @@
 //
 // Conteúdo/estilo do chat = o contrato visual do MCP (nasceu do mockup do
 // antigo pop-up de anúncio, removido em 15/10/2026): card creme, header
-// Claude + badge, bolha do usuário, chip mono `redentia · get_portfolio`,
+// Claude + badge, bolha do usuário, chip mono `aportou · get_portfolio` (o
+// nome que a pessoa dá ao conector, com o corte da marca),
 // resposta com números em destaque.
 
 type Phase = 'dock' | 'to-icon' | 'click' | 'open' | 'typing' | 'to-send' | 'send' | 'tool' | 'answer' | 'hold'
@@ -116,11 +117,11 @@ onBeforeUnmount(clearAll)
         <!-- bolha do usuário (entra no send) -->
         <div class="mhd__user" :class="{ 'mhd__user--in': sent }">{{ QUESTION }}</div>
 
-        <!-- chamada da Redentia: o momento do filme -->
+        <!-- a chamada da Aportou: o momento do filme -->
         <div v-if="toolVisible" class="mhd__toolrow">
           <span class="mhd__tool" :class="{ 'mhd__tool--live': !toolDone }">
-            <svg class="mhd__diamond" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l10 10-10 10L2 12z" fill="currentColor" /></svg>
-            redentia · get_portfolio
+            <MarcaCorte :largura="14" cor="currentColor" />
+            aportou · get_portfolio
             <span v-if="!toolDone" class="mhd__tool-dots"><i /><i /><i /></span>
             <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg>
           </span>
@@ -152,7 +153,7 @@ onBeforeUnmount(clearAll)
       class="mhd__cursor" :class="[`mhd__cursor--${phase}`, { 'mhd__cursor--gone': cursorGone }]"
       width="22" height="22" viewBox="0 0 24 24" fill="none"
     >
-      <path d="M5 3l14 8-6.5 1.5L9 19z" fill="#0A0A0C" stroke="#fff" stroke-width="1.6" stroke-linejoin="round" />
+      <path class="mhd__ponteiro" d="M5 3l14 8-6.5 1.5L9 19z" stroke-width="1.6" stroke-linejoin="round" />
     </svg>
   </div>
 </template>
@@ -183,8 +184,8 @@ onBeforeUnmount(clearAll)
 /* ——— janela ——— */
 .mhd__win {
   position: absolute; inset: 0;
-  background: var(--nu-white); border-radius: var(--nu-r-card);
-  box-shadow: var(--nu-shadow-card);
+  background: var(--nu-white); border-radius: var(--nu-r-panel);
+  box-shadow: var(--nu-shadow-branco);
   display: flex; flex-direction: column; overflow: hidden;
   opacity: 0; transform: scale(.94) translateY(10px);
   transition: opacity .5s ease, transform .55s cubic-bezier(.34, 1.3, .5, 1);
@@ -194,7 +195,7 @@ onBeforeUnmount(clearAll)
 
 .mhd__bar {
   display: flex; align-items: center; gap: 10px;
-  padding: 13px 16px; border-bottom: 1.5px solid var(--nu-cream-2);
+  padding: 13px 16px; border-bottom: 1.5px solid var(--nu-line-2);
 }
 .mhd__dots { display: flex; gap: 5px; }
 .mhd__dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--nu-cream-2); }
@@ -213,17 +214,16 @@ onBeforeUnmount(clearAll)
 }
 .mhd__user--in { opacity: 1; transform: translateY(0); }
 
-/* chip da tool call: o pulso mint é o "chamando a Redentia" */
+/* chip da chamada da ferramenta: o pulso verde claro é o "chamando a Aportou" */
 .mhd__toolrow { display: flex; }
 .mhd__tool {
   display: inline-flex; align-items: center; gap: 7px;
-  background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .1)); color: var(--nu-blue-text);
+  background: var(--nu-blue-bg); color: var(--nu-blue-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: var(--nu-fs-xs); font-weight: 700; padding: 7px 12px; border-radius: 10px;
+  font-size: var(--nu-fs-xs); font-weight: 700; padding: 7px 12px; border-radius: var(--nu-r-tag);
   animation: mhd-pop .35s cubic-bezier(.34, 1.4, .6, 1) both;
 }
-.mhd__tool--live { box-shadow: 0 0 0 0 rgba(143, 240, 181, .65); animation: mhd-pop .35s cubic-bezier(.34, 1.4, .6, 1) both, mhd-pulse 1.1s ease-out .3s infinite; }
-.mhd__diamond { color: var(--nu-blue-text); }
+.mhd__tool--live { box-shadow: 0 0 0 0 color-mix(in srgb, var(--nu-green-soft) 65%, transparent); animation: mhd-pop .35s cubic-bezier(.34, 1.4, .6, 1) both, mhd-pulse 1.1s ease-out .3s infinite; }
 .mhd__tool-dots { display: inline-flex; gap: 3px; }
 .mhd__tool-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; animation: mhd-blink 1s ease-in-out infinite; }
 .mhd__tool-dots i:nth-child(2) { animation-delay: .18s; }
@@ -231,7 +231,7 @@ onBeforeUnmount(clearAll)
 
 .mhd__answer { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; max-width: 95%; }
 .mhd__answer strong { font-weight: 800; }
-.mhd__answer em { color: var(--nu-green-2); font-style: normal; font-weight: 800; }
+.mhd__answer em { color: var(--nu-green-text); font-style: normal; font-weight: 800; }
 
 .mhd__input {
   display: flex; align-items: center; gap: 10px; margin: 10px 14px 14px;
@@ -241,7 +241,7 @@ onBeforeUnmount(clearAll)
 .mhd__placeholder { color: var(--nu-gray); font-weight: 500; }
 .mhd__send {
   width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%;
-  background: var(--nu-blue); color: #fff; display: flex; align-items: center; justify-content: center;
+  background: var(--nu-ink); color: var(--nu-white); display: flex; align-items: center; justify-content: center;
   transition: transform .15s ease;
 }
 .mhd__send--pressed { transform: scale(.85); }
@@ -252,8 +252,9 @@ onBeforeUnmount(clearAll)
 .mhd__cursor {
   position: absolute; z-index: 3; left: 82%; top: 88%;
   transition: left .95s cubic-bezier(.45, 0, .2, 1), top .95s cubic-bezier(.45, 0, .2, 1), transform .16s ease, opacity .4s ease;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .3));
+  filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--nu-ink) 30%, transparent));
 }
+.mhd__ponteiro { fill: var(--nu-ink); stroke: var(--nu-white); }
 .mhd__cursor--to-icon, .mhd__cursor--click { left: 51%; top: 52%; }
 .mhd__cursor--click { transform: scale(.82); }
 .mhd__cursor--open, .mhd__cursor--typing { left: 40%; top: 78%; }
@@ -262,6 +263,6 @@ onBeforeUnmount(clearAll)
 .mhd__cursor--gone { opacity: 0; }
 
 @keyframes mhd-pop { from { opacity: 0; transform: translateY(6px) scale(.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes mhd-pulse { from { box-shadow: 0 0 0 0 rgba(143, 240, 181, .65); } to { box-shadow: 0 0 0 14px rgba(143, 240, 181, 0); } }
+@keyframes mhd-pulse { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--nu-green-soft) 65%, transparent); } to { box-shadow: 0 0 0 14px transparent; } }
 @keyframes mhd-blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
 </style>

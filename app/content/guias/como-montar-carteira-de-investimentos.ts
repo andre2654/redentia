@@ -15,15 +15,15 @@ import type { GuideDoc } from '~/types/guias'
 
 export const COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE: GuideDoc = {
   slug: 'como-montar-carteira-de-investimentos',
-  tag: 'Guia Redentia',
+  tag: 'Guia Aportou',
   title: 'Como montar uma carteira de investimentos',
   dek: 'A lógica por trás de uma carteira que dorme tranquila: alocação por objetivo, diversificação de verdade e rebalanceamento, sem chute e sem fórmula mágica.',
   description:
-    'Como montar uma carteira de investimentos do zero: entenda alocação por objetivo, as classes de ativos, o que é diversificação de verdade, como definir percentuais pelo seu perfil e por que rebalancear. Guia claro e honesto da Redentia.',
+    'Como montar uma carteira de investimentos do zero: entenda alocação por objetivo, as classes de ativos, o que é diversificação de verdade, como definir percentuais pelo seu perfil e por que rebalancear. Guia claro e honesto da Aportou.',
   summary:
     'Uma carteira não é uma coleção de palpites, é um plano. Veja como alocar por objetivo, diversificar sem exagero, escolher percentuais pelo seu perfil e manter tudo no rumo com rebalanceamento.',
   minutes: 10,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-15',
   dateModified: '2026-07-15',
   updatedLine: 'Atualizado em 15 jul 2026 · 10 min de leitura',
@@ -69,7 +69,7 @@ export const COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Essa separação resolve o dilema que paralisa iniciantes, "renda fixa ou renda variável". A resposta honesta é: as duas, para objetivos diferentes. Cada prazo pede um tipo de risco, e é o objetivo que manda no ativo, nunca o contrário. Para transformar cada objetivo em um número de aporte, as <a href="/calculadoras">calculadoras da Redentia</a> ajudam a chegar no valor mensal.',
+          html: 'Essa separação resolve o dilema que paralisa iniciantes, "renda fixa ou renda variável". A resposta honesta é: as duas, para objetivos diferentes. Cada prazo pede um tipo de risco, e é o objetivo que manda no ativo, nunca o contrário. Para transformar cada objetivo em um número de aporte, as <a href="/calculadoras">calculadoras da Aportou</a> ajudam a chegar no valor mensal.',
         },
       ],
     },
@@ -121,7 +121,7 @@ export const COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para enxergar setores e comparar empresas sem depender de achismo, os <a href="/rankings">rankings da Redentia</a> organizam o mercado por critério, e o <a href="/ranking/redentia-score">Redentia Score</a> resume a avaliação de cada ação em uma nota de 0 a 100.',
+          html: 'Para enxergar setores e comparar empresas sem depender de achismo, os <a href="/rankings">rankings da Aportou</a> organizam o mercado por critério, e o <a href="/ranking/redentia-score">Aportou Score</a> resume a avaliação de cada ação em uma nota de 0 a 100.',
         },
       ],
     },
@@ -178,7 +178,7 @@ export const COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para acompanhar como sua carteira está distribuída e onde ela se desviou do plano, a Redentia usa o <a href="/metodologia">Redentia Score</a> e os rankings como raio-x, de forma que rebalancear deixa de ser chute e vira leitura.',
+          html: 'Para acompanhar como sua carteira está distribuída e onde ela se desviou do plano, a Aportou usa o <a href="/metodologia">Aportou Score</a> e os rankings como raio-x, de forma que rebalancear deixa de ser chute e vira leitura.',
         },
       ],
     },
@@ -209,7 +209,7 @@ export const COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE: GuideDoc = {
   ],
   cta: {
     title: 'Descubra a nota das ações da sua carteira',
-    subtitle: 'O Redentia Score avalia cada ação de 0 a 100 · grátis para começar',
+    subtitle: 'O Aportou Score avalia cada ação de 0 a 100 · grátis para começar',
     to: '/ranking/redentia-score',
   },
   faqTitle: 'Perguntas frequentes',

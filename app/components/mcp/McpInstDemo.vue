@@ -110,7 +110,7 @@ onBeforeUnmount(clearAll)
       class="mid__cursor" :class="[`mid__cursor--${phase}`, { 'mid__cursor--gone': cursorGone }]"
       width="22" height="22" viewBox="0 0 24 24" fill="none"
     >
-      <path d="M5 3l14 8-6.5 1.5L9 19z" fill="#0A0A0C" stroke="#fff" stroke-width="1.6" stroke-linejoin="round" />
+      <path class="mid__ponteiro" d="M5 3l14 8-6.5 1.5L9 19z" stroke-width="1.6" stroke-linejoin="round" />
     </svg>
   </div>
 </template>
@@ -120,15 +120,15 @@ onBeforeUnmount(clearAll)
 
 .mid__win {
   position: relative; overflow: hidden;
-  background: var(--nu-white); border-radius: var(--nu-r-card);
-  box-shadow: var(--nu-shadow-card);
+  background: var(--nu-white); border-radius: var(--nu-r-panel);
+  box-shadow: var(--nu-shadow-branco);
   display: flex; flex-direction: column;
 }
-.mid__bar { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-bottom: 1.5px solid var(--nu-cream-2); }
+.mid__bar { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-bottom: 1.5px solid var(--nu-line-2); }
 .mid__dots { display: flex; gap: 5px; }
 .mid__dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--nu-cream-2); }
 .mid__title { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
-.mid__of { margin-left: auto; background: var(--nu-green-bg, rgba(31, 156, 88, .1)); color: var(--nu-green-2); font-size: var(--nu-fs-xs); font-weight: 700; padding: 4px 9px; border-radius: 999px; }
+.mid__of { margin-left: auto; background: var(--nu-green-bg); color: var(--nu-green-text); font-size: var(--nu-fs-xs); font-weight: 700; padding: 4px 9px; border-radius: var(--nu-r-tag); }
 
 .mid__search {
   display: flex; align-items: center; gap: 9px; margin: 12px 14px 0;
@@ -144,7 +144,7 @@ onBeforeUnmount(clearAll)
   padding: 10px 16px; transition: background .25s ease;
 }
 .mid__row--hover { background: var(--nu-cream); }
-.mid__row--on { background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .08)); }
+.mid__row--on { background: var(--nu-blue-bg); }
 .mid__logo { width: 26px; height: 26px; flex-shrink: 0; border-radius: 7px; object-fit: contain; background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-cream-2); padding: 2px; }
 .mid__name { flex: 1; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mid__check {
@@ -153,7 +153,7 @@ onBeforeUnmount(clearAll)
   display: flex; align-items: center; justify-content: center;
   transition: background .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
 }
-.mid__check--on { background: #8FF0B5; border-color: #8FF0B5; color: #0A2050; transform: scale(1.08); }
+.mid__check--on { background: var(--nu-green-soft); border-color: var(--nu-green-soft); color: var(--nu-ink); transform: scale(1.08); }
 
 .mid__btn {
   margin: 10px 14px 14px; border: 0; cursor: default;
@@ -166,13 +166,13 @@ onBeforeUnmount(clearAll)
 
 .mid__done {
   position: absolute; inset: 0; z-index: 2;
-  background: rgba(255, 255, 255, .96); backdrop-filter: blur(4px);
+  background: color-mix(in srgb, var(--nu-white) 96%, transparent); backdrop-filter: blur(4px);
   display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
   opacity: 0; transition: opacity .45s ease; pointer-events: none; padding: 20px;
 }
 .mid__done--on { opacity: 1; }
 .mid__done-ic {
-  width: 54px; height: 54px; border-radius: 50%; background: #8FF0B5; color: #0A2050;
+  width: 54px; height: 54px; border-radius: 50%; background: var(--nu-green-soft); color: var(--nu-ink);
   display: flex; align-items: center; justify-content: center;
 }
 .mid__done-t { margin-top: 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
@@ -182,8 +182,9 @@ onBeforeUnmount(clearAll)
 .mid__cursor {
   position: absolute; z-index: 3; left: 85%; top: 92%;
   transition: left .95s cubic-bezier(.45, 0, .2, 1), top .95s cubic-bezier(.45, 0, .2, 1), transform .16s ease, opacity .4s ease;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .3));
+  filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--nu-ink) 30%, transparent));
 }
+.mid__ponteiro { fill: var(--nu-ink); stroke: var(--nu-white); }
 .mid__cursor--to-xp, .mid__cursor--click-xp { left: 72%; top: 34%; }
 .mid__cursor--click-xp { transform: scale(.82); }
 .mid__cursor--scroll { left: 72%; top: 40%; }

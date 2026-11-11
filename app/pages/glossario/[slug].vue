@@ -29,7 +29,7 @@ usePageSeo({
     description: term.short,
     inDefinedTermSet: {
       '@type': 'DefinedTermSet',
-      name: 'Glossário do investidor Redentia',
+      name: `Glossário do investidor ${MARCA.nome}`,
       url: `${useSiteOrigin()}/glossario`,
     },
     inLanguage: 'pt-BR',
@@ -46,7 +46,8 @@ usePageSeo({
   <div class="gt">
     <!-- hero -->
     <header class="gt__hero">
-      <nav class="gt__crumbs" aria-label="Trilha">
+      <nav class="gt__crumbs nu-eyebrow" aria-label="Trilha">
+        <MarcaCorte />
         <NuxtLink to="/glossario" class="gt__crumb">Glossário</NuxtLink>
         <span class="gt__crumb-sep">/</span>
         <span class="gt__crumb gt__crumb--here">{{ term.letter }}</span>
@@ -76,6 +77,7 @@ usePageSeo({
 
       <!-- backlink forte pra plataforma -->
       <NuxtLink :to="term.backlink.to" class="gt__cta">
+        <MarcaCorte class="gt__cta-corte" :largura="300" cor="var(--nu-white)" />
         <div class="gt__cta-text">
           <span class="gt__cta-kicker">Na plataforma</span>
           <span class="gt__cta-label">{{ term.backlink.label }}</span>
@@ -110,104 +112,118 @@ usePageSeo({
 </template>
 
 <style scoped>
-.gt { background: var(--nu-white); }
+/* O termo na personalidade da Aportou (11/11/2026): tudo sobre o creme da
+   página, trilha no eyebrow com o corte, título em 800, chips de 44px, o
+   painel cobalto do backlink e fios de 1,5px. Conteúdo e ordem iguais. */
+.gt { background: var(--nu-page); }
 
 .gt__hero {
-  background: var(--nu-cream);
-  padding: clamp(44px, 6vw, 80px) clamp(22px, 5.5vw, 80px) clamp(36px, 4.5vw, 52px);
+  padding: clamp(44px, 6vw, 80px) clamp(20px, 5.5vw, 80px) clamp(36px, 4.5vw, 52px);
+  border-bottom: 1.5px solid var(--nu-line-2);
   animation: nu-fade .5s ease both;
 }
-.gt__crumbs { display: flex; align-items: center; gap: 10px; font-size: var(--nu-fs-md); font-weight: 800; }
-.gt__crumb { color: var(--nu-blue-text); }
-.gt__crumb--here { color: var(--nu-gray-2); }
-.gt__crumb-sep { color: var(--nu-gray); }
+.gt__crumb { color: var(--nu-ink); transition: color .2s; }
+a.gt__crumb:hover { color: var(--nu-blue-text); }
+.gt__crumb--here { color: var(--nu-gray); }
+.gt__crumb-sep { color: var(--nu-sand); }
 .gt__title {
-  margin: 16px 0 0; color: var(--nu-ink);
-  font-size: clamp(40px, 6vw, 76px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.02;
+  margin: 18px 0 0; color: var(--nu-ink);
+  font-size: var(--nu-fs-hero); font-weight: 800;
+  letter-spacing: -0.035em; line-height: .98; text-wrap: balance;
 }
 .gt__short {
-  margin: 18px 0 0; color: var(--nu-gray); font-size: clamp(17px, 1.9vw, 22px);
-  font-weight: 500; line-height: 1.5; max-width: 680px;
+  margin: 20px 0 0; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px);
+  font-weight: 500; line-height: 1.45; max-width: 680px;
 }
 
 .gt__body {
   max-width: 760px; margin: 0 auto;
-  padding: clamp(40px, 5.5vw, 72px) clamp(22px, 5.5vw, 40px) clamp(64px, 8vw, 110px);
+  padding: clamp(40px, 5.5vw, 72px) clamp(20px, 5.5vw, 40px) clamp(64px, 8vw, 110px);
+  animation: nu-fade .5s ease .06s both;
 }
 .gt__article { max-width: 760px; }
-.gt__p { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.78; }
+.gt__p { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7; }
 .gt__p + .gt__p { margin-top: 18px; }
 .gt__p :deep(strong) { color: var(--nu-ink); font-weight: 800; }
 .gt__article :deep(a) {
   color: var(--nu-blue-text); font-weight: 700;
   text-decoration: underline; text-underline-offset: 2px;
-  text-decoration-thickness: 1px; text-decoration-color: var(--nu-blue-soft);
+  text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
+  transition: text-decoration-color .2s;
 }
 .gt__article :deep(a:hover) { text-decoration-color: var(--nu-blue); }
 
 .gt__block { margin-top: clamp(40px, 5vw, 56px); }
 .gt__h2 {
-  margin: 0 0 18px; color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px);
-  font-weight: 800; letter-spacing: -0.03em;
+  margin: 0 0 18px; color: var(--nu-ink); font-size: clamp(24px, 2.4vw, 30px);
+  font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
 }
 .gt__chips { display: flex; flex-wrap: wrap; gap: 10px; }
 .gt__chip {
-  display: inline-flex; align-items: center; padding: 10px 18px;
-  background: var(--nu-cream); border-radius: var(--nu-r-pill);
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
-  transition: background .16s, color .16s;
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px;
+  background: var(--nu-cream-2); border-radius: var(--nu-r-pill);
+  color: var(--nu-ink); font-size: 14.5px; font-weight: 600;
+  transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.gt__chip:hover { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
+.gt__chip:hover { background: var(--nu-ink); color: var(--nu-white); }
+.gt__chip:active { transform: scale(.98); }
 
-/* card de backlink forte */
+/* o backlink forte: painel cobalto com o corte gigante a 8% */
 .gt__cta {
+  position: relative; overflow: hidden;
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
   margin-top: clamp(40px, 5vw, 56px);
-  background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-tile); padding: clamp(24px, 3vw, 34px) clamp(24px, 3.5vw, 38px);
-  transition: background .2s, transform .2s;
+  background: var(--nu-grad-cobalto); color: var(--nu-white);
+  border-radius: var(--nu-r-card); padding: clamp(24px, 3vw, 34px) clamp(24px, 3.5vw, 38px);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-.gt__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); transform: translateY(-2px); }
-.gt__cta-text { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
-.gt__cta-kicker { font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.72; }
-.gt__cta-label { font-size: clamp(19px, 2.2vw, 25px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+.gt__cta:hover { color: var(--nu-white); transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.gt__cta-corte { position: absolute; right: 40px; bottom: -110px; opacity: .08; pointer-events: none; }
+.gt__cta-text { position: relative; display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+.gt__cta-kicker { color: var(--nu-blue-on-blue); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+.gt__cta-label { font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; text-wrap: balance; }
 .gt__cta-arrow {
-  flex-shrink: 0; width: 52px; height: 52px; border-radius: 50%;
-  background: rgba(255, 255, 255, 0.16);
+  position: relative; flex-shrink: 0; width: 46px; height: 46px; border-radius: 50%;
+  background: var(--nu-white); color: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
-  transition: background .2s, transform .2s;
 }
-.gt__cta:hover .gt__cta-arrow { background: rgba(255, 255, 255, 0.26); transform: translateX(3px); }
+.gt__cta-arrow svg { width: 20px; height: 20px; transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.gt__cta:hover .gt__cta-arrow svg { transform: translateX(3px); }
 
 .gt__faq { margin-top: 0; }
 
 /* nav anterior/próximo */
 .gt__nav {
   display: flex; gap: 14px; margin-top: clamp(48px, 6vw, 68px);
-  padding-top: clamp(28px, 3.5vw, 40px); border-top: 1.5px solid var(--nu-cream-2);
+  padding-top: clamp(28px, 3.5vw, 40px); border-top: 1.5px solid var(--nu-line);
 }
 .gt__nav-item {
   flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px;
-  background: var(--nu-cream); border-radius: var(--nu-r-tile); padding: 18px 22px;
-  transition: background .16s;
+  background: var(--nu-card); border-radius: var(--nu-r-tile); padding: 18px 22px;
+  box-shadow: var(--nu-shadow-quente);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-.gt__nav-item:hover { background: var(--nu-cream-hover); }
+.gt__nav-item:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-quente), var(--nu-shadow-card); }
 .gt__nav-item--next { text-align: right; align-items: flex-end; }
 .gt__nav-spacer { flex: 1; }
-.gt__nav-dir { color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.gt__nav-dir { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
 .gt__nav-term { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
 
 .gt__back {
   display: inline-block; margin-top: clamp(32px, 4vw, 44px);
-  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800;
-  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-blue-soft);
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px;
+  transition: color .2s, transform .2s;
 }
-.gt__back:hover { text-decoration-color: var(--nu-blue); }
+.gt__back:hover { color: var(--nu-blue-text); transform: translateX(3px); }
 
 @media (max-width: 640px) {
   .gt__nav { flex-direction: column; }
   .gt__nav-item--next { text-align: left; align-items: flex-start; }
   .gt__nav-spacer { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gt__hero, .gt__body { animation: none; }
+  .gt__cta, .gt__nav-item, .gt__chip, .gt__back, .gt__cta-arrow svg { transition: none; }
 }
 </style>

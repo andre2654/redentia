@@ -16,6 +16,15 @@ const doc: LegalDocData = {
       { text: 'Redentia', bold: true },
       { text: ' utiliza cookies e tecnologias similares em nossa plataforma para melhorar sua experiência de usuário, personalizar conteúdo e garantir o funcionamento adequado de nossos serviços.' },
     ] },
+    // as duas marcas da casa, ditas uma vez (11/11/2026). Nenhuma regra de
+    // cookie mudou; a data "Atualizado em" fica até a revisão jurídica.
+    { kind: 'p', text: [
+      { text: 'A ' },
+      { text: 'Aportou', bold: true },
+      { text: ' é a marca da plataforma para investidores da ' },
+      { text: 'Redentia', bold: true },
+      { text: '. Esta Política de Cookies vale para as páginas das duas marcas neste site.' },
+    ] },
   ],
   sections: [
     {
@@ -206,7 +215,7 @@ usePageSeo({
   // title BARE: o app.vue já sufixa "· Redentia" em todo title (house style Nu).
   // A página antiga era "Política de Cookies | Redentia" — mesmas palavras.
   title: 'Política de Cookies',
-  description: 'Entenda quais cookies utilizamos, por que eles são importantes e como personalizar suas preferências na plataforma Redentia.',
+  description: `Entenda quais cookies utilizamos, por que eles são importantes e como personalizar suas preferências na plataforma ${MARCA.nome}.`,
   path: '/institucional/cookies',
   breadcrumbs: [
     { name: 'Início', path: '/' },

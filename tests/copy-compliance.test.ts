@@ -144,8 +144,8 @@ test('CV-16: o FAQ de limites cita o teto global do motor (limiter mcp-simulate)
 
 test('CV-17: o guia de MCP restringe o "somente leitura" à chave pessoal', () => {
   const g = plano('content/guias/mcp-para-investimentos.ts')
-  assert.doesNotMatch(g, /O Redentia MCP é <strong>somente leitura<\/strong>\./)
-  assert.match(g, /Na chave pessoal, o Redentia MCP é <strong>somente leitura<\/strong>/)
+  assert.doesNotMatch(g, /O (Redentia|Aportou) MCP é <strong>somente leitura<\/strong>\./)
+  assert.match(g, /Na chave pessoal, o Aportou MCP é <strong>somente leitura<\/strong>/)
 })
 
 /*

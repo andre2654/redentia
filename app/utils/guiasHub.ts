@@ -4,7 +4,7 @@
  * rotina semanal continua escrevendo `app/content/guias/<slug>.ts` + uma linha
  * em GUIDE_DOCS e outra em GUIDES, e tudo o que entra lá aparece sozinho no
  * hub. O tema sai da `tag` que a rotina já escreve; os mapas abaixo só
- * refinam (o guia de IR mora em "Imposto de renda", não em "Guia Redentia").
+ * refinam (o guia de IR mora em "Imposto de renda", não em "Guia Aportou").
  *
  * Sem `~/` em import de valor: o teste (node --test) importa este arquivo.
  */
@@ -31,7 +31,7 @@ const TEMA_DA_TAG: Record<GuideTag, GuiaTemaId> = {
   'Análise': 'acoes',
   'Dividendos': 'dividendos',
   'FIIs': 'fiis',
-  'Guia Redentia': 'carteira',
+  'Guia Aportou': 'carteira',
   'Cripto': 'cripto',
 }
 

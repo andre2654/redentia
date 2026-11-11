@@ -24,14 +24,14 @@ export const NAV_DO_TOPO: NavItem[] = [
   },
   {
     label: 'Teses', to: '/teses',
-    panel: { desc: 'As teses vivas da Redentia, com convicção, estudos diários e catalisadores.', vig: 'teses' },
+    panel: { desc: 'As teses vivas da Aportou, com convicção, estudos diários e catalisadores.', vig: 'teses' },
   },
   {
     label: 'Ferramentas',
     children: [
       { label: 'Simulação', to: '/simulacao', tag: 'novo', authOnly: true, desc: 'Dez anos de cenários na sua carteira, em poder de compra de hoje.', vig: 'simulacao' },
       { label: 'Calculadoras', to: '/calculadoras', desc: 'Juros compostos, renda passiva, primeiro milhão — as contas prontas.', vig: 'calculadoras' },
-      { label: 'Redentia MCP', to: '/mcp', desc: 'Os dados e a leitura da Redentia dentro do seu Claude ou ChatGPT.', vig: 'mcp' },
+      { label: 'Aportou MCP', to: '/mcp', desc: 'Os dados e a leitura da Aportou dentro do seu Claude ou ChatGPT.', vig: 'mcp' },
       // os rankings com demanda medida no Search Console (ver NuHeader)
       { label: 'Maiores dividend yields', to: '/ranking/maiores-dividend-yield', desc: 'As maiores pagadoras da bolsa, ranqueadas por yield.', vig: 'rank-yield' },
       { label: 'Mais baratas por Graham', to: '/ranking/mais-baratas-graham', desc: 'O preço justo clássico contra o preço de tela.', vig: 'rank-graham' },

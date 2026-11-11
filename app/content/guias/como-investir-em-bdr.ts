@@ -36,11 +36,11 @@ export const COMO_INVESTIR_EM_BDR_GUIDE: GuideDoc = {
   title: 'BDRs: o que são e como investir',
   dek: 'O certificado que traz a empresa estrangeira para a B3, o que ele entrega de verdade e as três diferenças que pegam o investidor de surpresa.',
   description:
-    'O que é um BDR, como funciona o certificado de depósito de empresa estrangeira negociado na B3, quais tipos existem, se BDR paga dividendo, como o imposto de renda muda em relação às ações brasileiras e o que conferir antes da primeira compra. Guia claro e honesto da Redentia.',
+    'O que é um BDR, como funciona o certificado de depósito de empresa estrangeira negociado na B3, quais tipos existem, se BDR paga dividendo, como o imposto de renda muda em relação às ações brasileiras e o que conferir antes da primeira compra. Guia claro e honesto da Aportou.',
   summary:
     'Comprar empresa de fora sem abrir conta no exterior, em reais e pelo home broker de sempre. Entenda o que você está comprando de fato, por que o dividendo chega diferente e onde o imposto do BDR não é o imposto da ação.',
   minutes: 10,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-08-12',
   dateModified: '2026-08-12',
   updatedLine: 'Atualizado em 12 ago 2026 · 10 min de leitura',
@@ -216,14 +216,14 @@ export const COMO_INVESTIR_EM_BDR_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Com os limites claros, o BDR volta a ser o que ele tem de melhor: o caminho mais curto entre o seu home broker e uma empresa que não está listada aqui, sem abrir conta fora e sem remeter dinheiro. Para se aprofundar, o <a href="/glossario">glossário</a> destrincha os termos citados, a <a href="/metodologia">metodologia</a> explica como a Redentia calcula os indicadores das páginas de ativo, a <a href="/carteira">carteira</a> reúne suas posições em um lugar só, e o guia de <a href="/guias/como-investir-em-acoes">como investir em ações</a> cobre a abertura de conta e a primeira ordem, que é exatamente o mesmo caminho usado para comprar um BDR.',
+          html: 'Com os limites claros, o BDR volta a ser o que ele tem de melhor: o caminho mais curto entre o seu home broker e uma empresa que não está listada aqui, sem abrir conta fora e sem remeter dinheiro. Para se aprofundar, o <a href="/glossario">glossário</a> destrincha os termos citados, a <a href="/metodologia">metodologia</a> explica como a Aportou calcula os indicadores das páginas de ativo, a <a href="/carteira">carteira</a> reúne suas posições em um lugar só, e o guia de <a href="/guias/como-investir-em-acoes">como investir em ações</a> cobre a abertura de conta e a primeira ordem, que é exatamente o mesmo caminho usado para comprar um BDR.',
         },
       ],
     },
   ],
   cta: {
     title: 'Consulte qualquer BDR pelo código na B3',
-    subtitle: 'Busca da Redentia · fundamentos, proventos e indicadores de ações, FIIs e BDRs',
+    subtitle: 'Busca da Aportou · fundamentos, proventos e indicadores de ações, FIIs e BDRs',
     to: '/busca',
   },
   faqTitle: 'Perguntas frequentes',

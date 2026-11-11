@@ -13,12 +13,12 @@ const origin = useSiteOrigin()
 
 usePageSeo({
   title: `Glossário do investidor: ${TERM_COUNT} termos da bolsa explicados`,
-  description: `Dicionário de investimentos da Redentia: ${TERM_COUNT} termos do mercado financeiro, de Dividend Yield a P/L, explicados de forma clara e com exemplos. Busca A-Z instantânea.`,
+  description: `Dicionário de investimentos da ${MARCA.nome}: ${TERM_COUNT} termos do mercado financeiro, de Dividend Yield a P/L, explicados de forma clara e com exemplos. Busca A-Z instantânea.`,
   path: '/glossario',
   structuredData: [
     {
       '@type': 'DefinedTermSet',
-      name: 'Glossário do investidor Redentia',
+      name: `Glossário do investidor ${MARCA.nome}`,
       description: 'Termos do mercado financeiro brasileiro definidos de forma clara e honesta.',
       hasDefinedTerm: allTerms.map((t) => ({
         '@type': 'DefinedTerm',
@@ -127,8 +127,8 @@ const totalShown = computed(() => filtered.value.length)
       </div>
 
       <p v-if="totalShown === 0" class="glx__empty">
-        Tente outra palavra, ou pergunte diretamente à
-        <NuxtLink to="/busca" class="glx__empty-link">Redentia AI</NuxtLink>.
+        Tente outra palavra, ou pergunte direto à
+        <NuxtLink to="/busca" class="glx__empty-link">IA da Aportou</NuxtLink>.
       </p>
 
       <section v-for="sec in sections" :id="`letra-${sec.letter}`" :key="sec.letter" class="glx__section">
@@ -153,71 +153,79 @@ const totalShown = computed(() => filtered.value.length)
 </template>
 
 <style scoped>
-.glx { background: var(--nu-white); }
+/* O hub na personalidade da Aportou (11/11/2026): creme da página, a busca no
+   padrão de campo (borda de 1,5px, anel cobalto no foco), o A-Z com fios de
+   1,5px e cartões creme com a sombra quente. Estrutura e conteúdo iguais. */
+.glx { background: var(--nu-page); }
 
 /* hero extras (busca dentro do slot de ações do NuPageHero) */
 .glx__hero-sub {
-  color: var(--nu-gray); font-size: clamp(17px, 1.8vw, 21px); font-weight: 500;
-  line-height: 1.55; max-width: 620px;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
+  line-height: 1.45; max-width: 620px;
 }
 .glx__search {
   display: flex; align-items: center; gap: 12px; margin-top: 28px;
-  max-width: 560px; background: var(--nu-white);
-  border: 2px solid var(--nu-ink-10); border-radius: var(--nu-r-pill);
-  padding: 4px 8px 4px 20px; transition: border-color .2s, box-shadow .2s;
+  max-width: 560px; min-height: 56px; background: var(--nu-white);
+  border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-pill);
+  padding: 0 8px 0 20px; transition: border-color .2s, box-shadow .2s;
 }
-.glx__search:focus-within { border-color: var(--nu-blue); box-shadow: 0 0 0 4px var(--nu-blue-tint); }
-.glx__search-ic { color: var(--nu-gray-2); flex-shrink: 0; }
+.glx__search:focus-within { border-color: var(--nu-blue); box-shadow: 0 0 0 3px var(--nu-blue-tint); }
+.glx__search-ic { color: var(--nu-gray); flex-shrink: 0; }
 .glx__search-input {
   flex: 1; min-width: 0; border: none; outline: none; background: transparent;
-  font-family: inherit; font-size: var(--nu-fs-md); font-weight: 500; color: var(--nu-ink);
+  font-family: inherit; font-size: 17px; font-weight: 500; color: var(--nu-ink);
   padding: 14px 0;
 }
-.glx__search-input::placeholder { color: var(--nu-gray-2); font-weight: 500; }
+.glx__search-input::placeholder { color: var(--nu-gray); font-weight: 500; }
+.glx__search-input::-webkit-search-cancel-button { display: none; }
 .glx__search-clear {
-  width: 34px; height: 34px; flex-shrink: 0; border: none; cursor: pointer;
-  background: var(--nu-cream); border-radius: 50%; color: var(--nu-ink);
-  display: flex; align-items: center; justify-content: center; transition: background .15s;
+  width: 40px; height: 40px; flex-shrink: 0; border: none; cursor: pointer;
+  background: var(--nu-cream-2); border-radius: 50%; color: var(--nu-ink);
+  display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
-.glx__search-clear:hover { background: var(--nu-cream-hover); }
+.glx__search-clear:hover { background: var(--nu-line); }
 
 /* nav A-Z sticky */
 .glx__az {
-  position: sticky; top: var(--nuh-h, 76px); z-index: 20;
-  background: var(--nu-white); border-bottom: 1.5px solid var(--nu-cream-2);
+  /* gruda embaixo do topo E da régua do mercado (39px; 29px no celular), como a barra dos guias */
+  position: sticky; top: calc(var(--nuh-h, 76px) + 39px); z-index: 20;
+  background: color-mix(in srgb, var(--nu-page) 92%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px);
+  border-top: 1.5px solid var(--nu-line-2); border-bottom: 1.5px solid var(--nu-line-2);
   transition: top .28s ease;
 }
 .glx__az-inner {
   display: flex; flex-wrap: wrap; gap: 2px; justify-content: center;
-  max-width: 980px; margin: 0 auto; padding: 12px clamp(16px, 4vw, 40px);
+  max-width: 980px; margin: 0 auto; padding: 10px clamp(16px, 4vw, 40px);
 }
 .glx__az-item {
-  min-width: 30px; height: 30px; padding: 0 4px;
+  min-width: 32px; height: 32px; padding: 0 4px;
   display: inline-flex; align-items: center; justify-content: center;
   color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
-  border-radius: 9px; transition: background .15s, color .15s;
+  border-radius: var(--nu-r-tag); transition: background .2s, color .2s;
   font-variant-numeric: tabular-nums;
 }
-.glx__az-item:hover { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
-.glx__az-item--off { color: var(--nu-ink-30); pointer-events: none; cursor: default; }
+.glx__az-item:hover { background: var(--nu-ink); color: var(--nu-white); }
+.glx__az-item--off { color: var(--nu-sand); pointer-events: none; cursor: default; }
 
 .glx__body {
   max-width: 980px; margin: 0 auto;
   padding: clamp(32px, 5vw, 56px) clamp(20px, 5vw, 48px) clamp(64px, 8vw, 110px);
 }
 .glx__count {
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600;
   font-variant-numeric: tabular-nums; margin-bottom: 12px;
 }
-.glx__empty { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 24px; }
-.glx__empty-link { color: var(--nu-blue-text); font-weight: 800; }
+.glx__empty { color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 24px; }
+.glx__empty-link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
-.glx__section { margin-top: clamp(36px, 4.5vw, 56px); scroll-margin-top: calc(var(--nuh-h, 76px) + 60px); }
+.glx__section { margin-top: clamp(36px, 4.5vw, 56px); scroll-margin-top: calc(var(--nuh-h, 76px) + 140px); }
 .glx__section:first-of-type { margin-top: 8px; }
+/* a letra: número-herói cobalto sobre um fio carvão de 3px */
 .glx__letter {
-  color: var(--nu-blue-text); font-size: clamp(30px, 4vw, 44px); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1; margin-bottom: 20px;
-  padding-bottom: 14px; border-bottom: 2px solid var(--nu-cream-2);
+  color: var(--nu-blue); font-size: clamp(46px, 5.2vw, 68px); font-weight: 800;
+  letter-spacing: -0.035em; line-height: 1; margin-bottom: 20px;
+  padding-bottom: 12px; border-bottom: 3px solid var(--nu-ink);
 }
 .glx__grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -225,23 +233,29 @@ const totalShown = computed(() => filtered.value.length)
 }
 .glx__card {
   position: relative; display: flex; flex-direction: column; gap: 8px;
-  background: var(--nu-cream); border-radius: var(--nu-r-tile);
-  padding: 22px 24px; transition: background .18s, transform .18s;
+  background: var(--nu-card); border-radius: var(--nu-r-panel);
+  box-shadow: var(--nu-shadow-quente);
+  padding: 22px 24px;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
   animation: nu-fade .4s ease both;
 }
-.glx__card:hover { background: var(--nu-cream-hover); transform: translateY(-2px); }
-.glx__card-term { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
+.glx__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-quente), var(--nu-shadow-card); }
+.glx__card-term { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; padding-right: 28px; }
 .glx__card-short {
   color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
   display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .glx__card-arrow {
-  position: absolute; top: 20px; right: 20px; color: var(--nu-gray);
-  opacity: 0; transform: translateX(-4px); transition: opacity .18s, transform .18s;
+  position: absolute; top: 22px; right: 20px; color: var(--nu-blue);
+  opacity: 0; transform: translateX(-4px); transition: opacity .2s, transform .25s cubic-bezier(.2, .8, .2, 1);
 }
-.glx__card:hover .glx__card-arrow { opacity: 1; transform: none; color: var(--nu-blue); }
+.glx__card:hover .glx__card-arrow { opacity: 1; transform: none; }
 
 @media (max-width: 760px) {
   .glx__grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) { .glx__az { top: calc(var(--nuh-h, 52px) + 29px); } }
+@media (prefers-reduced-motion: reduce) {
+  .glx__card, .glx__card-arrow { animation: none; transition: none; }
 }
 </style>

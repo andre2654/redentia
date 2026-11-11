@@ -17,15 +17,15 @@ const doc = (slug: string, tag: string, data: string, secoes: string[] = ['Uma s
 const DOCS = {
   'reserva-de-emergencia': doc('reserva-de-emergencia', 'Renda fixa', '2026-07-22'),
   'tesouro-direto-para-iniciantes': doc('tesouro-direto-para-iniciantes', 'Renda fixa', '2026-07-13'),
-  'como-declarar-investimentos-no-ir': doc('como-declarar-investimentos-no-ir', 'Guia Redentia', '2026-07-13', ['Ações na declaração']),
+  'como-declarar-investimentos-no-ir': doc('como-declarar-investimentos-no-ir', 'Guia Aportou', '2026-07-13', ['Ações na declaração']),
   'guia-novo-da-rotina': doc('guia-novo-da-rotina', 'FIIs', '2026-11-09'),
-  'open-finance': doc('open-finance', 'Guia Redentia', '2026-07-08'),
+  'open-finance': doc('open-finance', 'Guia Aportou', '2026-07-08'),
 }
 const META = [
   { title: 'Reserva de emergência', description: 'O colchão', tag: 'Renda fixa', minutes: 8, slug: 'reserva-de-emergencia' },
   { title: 'Tesouro Direto para iniciantes', description: 'IPCA+ e Selic', tag: 'Renda fixa', minutes: 9, slug: 'tesouro-direto-para-iniciantes' },
   { title: 'Análise PETR4', description: 'veredito', tag: 'Análise', minutes: 12, href: '/asset/PETR4' },
-  { title: 'Como declarar investimentos no IR', description: 'Ações, FIIs e cripto', tag: 'Guia Redentia', minutes: 15, slug: 'como-declarar-investimentos-no-ir' },
+  { title: 'Como declarar investimentos no IR', description: 'Ações, FIIs e cripto', tag: 'Guia Aportou', minutes: 15, slug: 'como-declarar-investimentos-no-ir' },
   { title: 'Guia novo', description: 'que a rotina escreveu', tag: 'FIIs', minutes: 10, slug: 'guia-novo-da-rotina' },
 ] as any
 
@@ -46,7 +46,7 @@ test('card sem guia escrito fica fora, e o destaque de hoje (fora da lista) entr
   assert.equal(b.itens.length, 5)
 })
 
-test('o guia de IR mora em Imposto de renda, não em Guia Redentia', () => {
+test('o guia de IR mora em Imposto de renda, não em Guia Aportou', () => {
   const b = montarBibliotecaGuias(META, DOCS)
   assert.equal(b.itens.find((g) => g.chave === 'como-declarar-investimentos-no-ir')!.tema, 'impostos')
 })

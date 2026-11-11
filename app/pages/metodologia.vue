@@ -19,7 +19,7 @@ interface MetSection { id: string; title: string; callout?: boolean; blocks: Met
 
 // lede: o parágrafo-subtítulo do hero antigo (abre o documento).
 const intro: LegalBlock[] = [
-  { kind: 'p', text: 'Esta página explica como o conteúdo da Redentia é produzido, quais fontes públicas alimentam as calculadoras e os rankings, quais fórmulas estão por trás de cada simulação e em que situações cada modelo deixa de funcionar bem. O objetivo é deixar visível tudo que sustenta o que você lê aqui, para que você possa replicar, contestar ou aprofundar qualquer cálculo.' },
+  { kind: 'p', text: 'Esta página explica como o conteúdo da Aportou é produzido, quais fontes públicas alimentam as calculadoras e os rankings, quais fórmulas estão por trás de cada simulação e em que situações cada modelo deixa de funcionar bem. O objetivo é deixar visível tudo que sustenta o que você lê aqui, para que você possa replicar, contestar ou aprofundar qualquer cálculo.' },
 ]
 
 const sections: MetSection[] = [
@@ -27,7 +27,7 @@ const sections: MetSection[] = [
     id: 'principios',
     title: '1. Princípios editoriais',
     blocks: [
-      { kind: 'p', text: 'A Redentia produz conteúdo sob quatro princípios não-negociáveis. Eles existem porque YMYL (Your Money Your Life), conteúdo financeiro que pode afetar dinheiro, saúde ou bem-estar do leitor, exige um padrão editorial mais alto que conteúdo de entretenimento.' },
+      { kind: 'p', text: 'A Aportou produz conteúdo sob quatro princípios não-negociáveis. Eles existem porque YMYL (Your Money Your Life), conteúdo financeiro que pode afetar dinheiro, saúde ou bem-estar do leitor, exige um padrão editorial mais alto que conteúdo de entretenimento.' },
       { kind: 'subsection', title: 'Independência editorial', blocks: [
         { kind: 'p', text: 'Calculadoras, rankings e análises não são patrocinados. Quando há link de afiliado (ex: corretora parceira em um guia), ele é declarado de forma visível na própria página com o aviso "link patrocinado". Nenhum cálculo é alterado para favorecer um produto.' },
       ] },
@@ -46,7 +46,7 @@ const sections: MetSection[] = [
     id: 'fontes',
     title: '2. Fontes de dados',
     blocks: [
-      { kind: 'p', text: 'Toda informação numérica exibida nas páginas da Redentia pode ser rastreada até uma das seis fontes abaixo. Não usamos dados de terceiros sem origem rastreável, e quando consumimos um agregador (StatusInvest, ComDinheiro, etc), explicitamos que o dado de base também vem destas fontes oficiais.' },
+      { kind: 'p', text: 'Toda informação numérica exibida nas páginas da Aportou pode ser rastreada até uma das seis fontes abaixo. Não usamos dados de terceiros sem origem rastreável, e quando consumimos um agregador (StatusInvest, ComDinheiro, etc), explicitamos que o dado de base também vem destas fontes oficiais.' },
       { kind: 'subsection', title: 'B3 (Brasil, Bolsa, Balcão)', blocks: [
         { kind: 'p', text: 'Cotações de ações, FIIs, ETFs e BDRs (preço, volume, ticker), composição de índices (Ibovespa, IFIX, IBrX, Small Cap Index), eventos corporativos (dividendos, JCP, splits, grupamentos, bonificações), composição setorial e dados fundamentalistas reportados pelas companhias listadas. Frequência: dados de pregão em tempo real (com até 15 min de defasagem para feed gratuito), eventos diários, fundamentalistas trimestrais.' },
       ] },
@@ -72,7 +72,7 @@ const sections: MetSection[] = [
     id: 'calculadoras',
     title: '3. Metodologia das calculadoras',
     blocks: [
-      { kind: 'p', text: 'As calculadoras da Redentia são determinísticas: dado o mesmo input, sempre retornam o mesmo output. Não há randomização, não há "machine learning sugerindo número diferente". Abaixo, a fórmula central de cada uma e os pressupostos adotados por padrão.' },
+      { kind: 'p', text: 'As calculadoras da Aportou são determinísticas: dado o mesmo input, sempre retornam o mesmo output. Não há randomização, não há "machine learning sugerindo número diferente". Abaixo, a fórmula central de cada uma e os pressupostos adotados por padrão.' },
       { kind: 'subsection', title: 'Juros compostos', blocks: [
         { kind: 'p', text: [
           { text: 'Fórmula: ' },
@@ -204,14 +204,14 @@ const sections: MetSection[] = [
     callout: true,
     blocks: [
       { kind: 'p', text: [
-        { text: 'Todo o conteúdo da Redentia é exclusivamente ' },
+        { text: 'Todo o conteúdo da Aportou é exclusivamente ' },
         { text: 'educacional e informativo', bold: true },
         { text: '. Não constitui recomendação de compra, venda ou manutenção de qualquer ativo, nem aconselhamento personalizado de investimento. Calculadoras, simuladores e análises servem para apoiar o seu processo de decisão, mas não substituem a avaliação do seu perfil, objetivos e tolerância a risco por um profissional certificado.' },
       ] },
       { kind: 'p', text: [
         { text: 'Antes de tomar qualquer decisão financeira relevante, consulte um ' },
         { text: 'profissional certificado', bold: true },
-        { text: ': assessor de investimentos credenciado pela CVM (AAI), planejador financeiro (CFP, certificado pela Planejar), gestor de carteiras (CGA, certificado pela ANBIMA), ou consultor de valores mobiliários autorizado pela CVM. A Redentia não é corretora, distribuidora, gestora ou agente autônomo, e não recebe ordens de compra ou venda.' },
+        { text: ': assessor de investimentos credenciado pela CVM (AAI), planejador financeiro (CFP, certificado pela Planejar), gestor de carteiras (CGA, certificado pela ANBIMA), ou consultor de valores mobiliários autorizado pela CVM. A Aportou não é corretora, distribuidora, gestora ou agente autônomo, e não recebe ordens de compra ou venda.' },
       ] },
     ],
   },
@@ -226,7 +226,7 @@ const CONTENT_VERSION = '2026-10-15'
 const lastUpdatedISO = new Date(CONTENT_VERSION).toISOString()
 
 const pageDescription =
-  'Como o conteúdo da Redentia é produzido, quais fontes oficiais (B3, BCB, CVM, IBGE, ANBIMA) alimentam as calculadoras e quais limitações cada modelo tem.'
+  `Como o conteúdo da ${MARCA.nome} é produzido, quais fontes oficiais (B3, BCB, CVM, IBGE, ANBIMA) alimentam as calculadoras e quais limitações cada modelo tem.`
 
 usePageSeo({
   title: 'Metodologia e fontes de dados',
@@ -246,9 +246,9 @@ usePageSeo({
       dateModified: lastUpdatedISO,
       author: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: MARCA.nome,
         url: origin,
-        logo: { '@type': 'ImageObject', url: `${origin}/logo-azul.svg` },
+        logo: { '@type': 'ImageObject', url: `${origin}/icone-aportou.svg` },
       },
       about: [
         { '@type': 'Organization', name: 'B3', url: 'https://www.b3.com.br' },
@@ -280,7 +280,7 @@ usePageSeo({
           </svg>
         </div>
         <div class="met-author__body">
-          <p>Conteúdo produzido e revisado pela equipe editorial da Redentia, com base em fontes públicas (B3, BCB, CVM, Receita Federal, IBGE, ANBIMA).</p>
+          <p>Conteúdo produzido e revisado pela equipe editorial da Aportou, com base em fontes públicas (B3, BCB, CVM, Receita Federal, IBGE, ANBIMA). A Aportou é uma empresa Redentia, que faz tecnologia de dados para escritórios de investimento.</p>
           <p>Encontrou divergência ou erro? Reporte em <a href="mailto:relacionamento@redentia.com.br">relacionamento@redentia.com.br</a>.</p>
         </div>
       </aside>
@@ -289,35 +289,35 @@ usePageSeo({
 </template>
 
 <style scoped>
+/* a autoria num cartão creme da Aportou (sombra quente, sem borda) */
 .met-author {
   display: flex; gap: 18px; align-items: flex-start;
   margin-top: clamp(40px, 5vw, 60px);
-  padding: clamp(20px, 2.6vw, 28px);
-  border: 1px solid var(--nu-cream-line);
+  padding: clamp(22px, 2.8vw, 32px);
   border-radius: var(--nu-r-card);
-  background: var(--nu-cream);
+  background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
 }
 .met-author__icon {
   flex-shrink: 0; width: 46px; height: 46px;
   display: flex; align-items: center; justify-content: center;
-  border-radius: 999px;
-  background: var(--nu-blue-bg); color: var(--nu-blue);
+  border-radius: 50%;
+  background: var(--nu-ink); color: var(--nu-white);
 }
-.met-author__icon svg { width: 24px; height: 24px; }
+.met-author__icon svg { width: 22px; height: 22px; }
 .met-author__body p {
   margin: 0; color: var(--nu-gray-3);
   font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
 }
 .met-author__body p + p { margin-top: 8px; }
 .met-author__body a {
-  color: var(--nu-blue-text); text-decoration: underline;
-  text-underline-offset: 2px; text-decoration-thickness: 1px;
+  color: var(--nu-blue-text); font-weight: 700; text-decoration: underline;
+  text-underline-offset: 2px; text-decoration-thickness: 1.5px; transition: color .2s;
 }
 .met-author__body a:hover { color: var(--nu-blue-hover); }
 
 @media (max-width: 760px) {
   .met-author { gap: 14px; }
   .met-author__icon { width: 40px; height: 40px; }
-  .met-author__icon svg { width: 21px; height: 21px; }
+  .met-author__icon svg { width: 20px; height: 20px; }
 }
 </style>
