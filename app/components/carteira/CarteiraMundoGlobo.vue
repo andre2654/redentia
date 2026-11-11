@@ -311,9 +311,9 @@ function aoSair() {
 .cmg__dica {
   position: absolute; transform: translate(-50%, calc(-100% - 14px)); pointer-events: none; white-space: nowrap;
   background: var(--nu-navy); color: var(--nu-cream-text); border-radius: var(--nu-r-pill);
-  padding: 7px 12px; font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums;
+  padding: 7px 12px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
   box-shadow: 0 18px 40px -18px color-mix(in srgb, var(--nu-ink) 50%, transparent);
-  animation: cmg-dica .18s var(--nu-ease-saida) both;
+  animation: cmg-dica var(--nu-dur-media) var(--nu-ease-saida) both;
 }
 .cmg__dica strong { font-weight: var(--nu-w-forte); margin-right: 4px; }
 @keyframes cmg-dica { from { opacity: 0; transform: translate(-50%, calc(-100% - 8px)); } }

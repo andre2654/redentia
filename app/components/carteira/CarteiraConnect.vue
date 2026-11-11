@@ -40,6 +40,6 @@ function connect() {
 
 <style scoped>
 .cct { display: inline-flex; flex-direction: column; gap: 12px; }
-.cct__ok { margin: 0; color: var(--nu-green-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; max-width: 460px; }
-.cct__error { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; max-width: 460px; }
+.cct__ok { margin: 0; color: var(--nu-green-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; max-width: 460px; }
+.cct__error { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; max-width: 460px; }
 </style>

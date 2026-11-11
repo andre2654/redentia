@@ -47,16 +47,16 @@ const id = useId()
 .cfl__input {
   width: 100%; height: 56px; background: var(--nu-white); color: var(--nu-ink);
   border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input);
-  padding: 0 18px; font-family: var(--nu-font); font-size: 17px; font-weight: 500;
+  padding: 0 18px; font-family: var(--nu-font); font-size: 17px; font-weight: var(--nu-w-texto);
   outline: none;
-  transition: border-color .2s, background .2s;
+  transition: border-color var(--nu-dur-media) var(--nu-ease-cor), background var(--nu-dur-media) var(--nu-ease-cor);
 }
-.cfl__input::placeholder { color: var(--nu-placeholder); font-weight: 500; }
+.cfl__input::placeholder { color: var(--nu-placeholder); font-weight: var(--nu-w-texto); }
 .cfl__input:hover { border-color: var(--nu-gray); }
 .cfl__input:focus, .cfl__input:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .cfl__box--ro .cfl__input { background: var(--nu-page); border-color: var(--nu-line); color: var(--nu-gray); cursor: default; }
 .cfl__box--ro .cfl__input:hover { border-color: var(--nu-line); }
 .cfl__box--ro .cfl__input:focus, .cfl__box--ro .cfl__input:focus-visible { outline: 2px solid var(--nu-line); outline-offset: 1px; border-color: var(--nu-line); }
 .cfl__trailing { position: absolute; right: 16px; display: inline-flex; align-items: center; }
-.cfl__hint { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
+.cfl__hint { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.5; }
 </style>

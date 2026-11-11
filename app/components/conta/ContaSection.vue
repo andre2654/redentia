@@ -19,7 +19,7 @@ defineProps<{ title: string; subtitle?: string }>()
 
 <style scoped>
 .cse { background: var(--nu-card); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(24px, 3vw, 40px); }
-.cse__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -.025em; line-height: 1.05; }
-.cse__sub { margin: 10px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+.cse__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.05; }
+.cse__sub { margin: 10px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; }
 .cse__body { margin-top: clamp(24px, 3vw, 34px); }
 </style>

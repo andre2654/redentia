@@ -57,6 +57,7 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
     <h3 class="vlr__frase"><FraseDestaque :texto="frase" /></h3>
     <p class="vlr__nota">Cada ativo conta no fator que mais o move. O efeito de cada cenário sai do motor de simulação da Aportou.</p>
 
+    <!-- a legenda da barra é a lista logo abaixo (o ponto de cada fator tem a mesma cor) -->
     <div class="vlr__barra" role="img" :aria-label="fatores.map((f) => `${f.nome} ${pctTxt(f.pct)}`).join(', ')">
       <span
         v-for="f in fatores" :key="f.chave" class="vlr__seg" :class="{ 'vlr__seg--apagado': ativo && ativo !== f.chave }"
@@ -64,7 +65,7 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
       />
     </div>
 
-    <ul class="vlr__lista">
+    <ul v-revelar="{ alvo: 'filhos' }" class="vlr__lista">
       <li
         v-for="f in fatores" :key="f.chave" class="vlr__linha" :class="{ 'vlr__linha--apagada': ativo && ativo !== f.chave }" tabindex="0"
         @pointerenter="ativo = f.chave" @pointerleave="ativo = null" @focus="ativo = f.chave" @blur="ativo = null"
@@ -77,24 +78,29 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
         <span class="vlr__se">
           <span class="vlr__se-c">{{ f.seCenario }}</span>
           <span class="vlr__se-e" :class="`vlr__se-e--${f.efeitoDir}`">{{ mask(f.efeito) }}</span>
+          <!-- "Como calculei": o "+" da base (NuMais) que gira ao abrir; a conta abre embaixo com a altura animada -->
           <button
             v-if="f.metodo" type="button" class="vlr__como" :aria-expanded="comoAberto === f.chave" :aria-controls="`vlr-como-${f.chave}`"
             @click="alternarComo(f.chave)"
           >
             Como calculei
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            <NuMais :tamanho="28" :aberto="comoAberto === f.chave" />
           </button>
         </span>
         <span class="vlr__valores">
           <span class="vlr__pct">{{ pctTxt(f.pct) }}</span>
           <span class="vlr__valor">{{ mask(brl0(f.valor)) }}</span>
         </span>
-        <p v-if="comoAberto === f.chave" :id="`vlr-como-${f.chave}`" class="vlr__prova">{{ f.metodo }}</p>
+        <!-- a conta fica no HTML (fechada, com altura 0 e inert), como no NuAcordeao -->
+        <div
+          v-if="f.metodo" :id="`vlr-como-${f.chave}`" class="vlr__dobra" :class="{ 'vlr__dobra--aberta': comoAberto === f.chave }"
+          :inert="comoAberto !== f.chave || undefined"
+        ><div class="vlr__dobra-in"><p class="vlr__prova">{{ f.metodo }}</p></div></div>
       </li>
     </ul>
     </template>
 
-    <div v-if="visao.protecoes.length || juntos.length" class="vlr__duas">
+    <div v-if="visao.protecoes.length || juntos.length" v-revelar="{ alvo: 'filhos' }" class="vlr__duas">
       <div v-if="visao.protecoes.length">
         <h4 class="vlr__h4">Quem diversifica a carteira</h4>
         <p class="vlr__h4-s">Andam pouco ou ao contrário do resto. Por isso ficam de fora das trocas que o motor simula, mesmo os que pagam pouco provento.</p>
@@ -123,20 +129,20 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
 </template>
 
 <style scoped>
-.vlr__frase { margin: 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
-.vlr__nota { margin: 16px 0 0; max-width: 620px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+.vlr__frase { margin: 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.04; text-wrap: balance; }
+.vlr__nota { margin: 16px 0 0; max-width: 620px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; }
 /* a barra empilhada da marca: 28px, vão de 4px, pontas redondas só nos extremos */
-.vlr__barra { display: flex; gap: 4px; height: 28px; margin-top: clamp(26px, 3.4vw, 40px); transform-origin: left; animation: vlr-cresce .6s var(--nu-ease-saida) both; }
+.vlr__barra { display: flex; gap: 4px; height: 28px; margin-top: clamp(26px, 3.4vw, 40px); transform-origin: left; animation: vlr-cresce var(--nu-dur-entrada) var(--nu-ease-saida) both; }
 @keyframes vlr-cresce { from { transform: scaleX(0); opacity: 0; } }
-.vlr__seg { flex-basis: 0; min-width: 8px; border-radius: 6px; transition: opacity .25s; }
+.vlr__seg { flex-basis: 0; min-width: 8px; border-radius: 6px; transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .vlr__seg:first-child { border-top-left-radius: 15px; border-bottom-left-radius: 15px; }
 .vlr__seg:last-child { border-top-right-radius: 15px; border-bottom-right-radius: 15px; }
 .vlr__seg--apagado { opacity: .3; }
 /* os fatores num cartão creme sobre a faixa */
 .vlr__lista { list-style: none; margin: clamp(20px, 2.6vw, 28px) 0 0; padding: clamp(8px, 1.2vw, 14px) clamp(18px, 2.4vw, 28px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
 .vlr__linha {
-  display: grid; grid-template-columns: 12px minmax(0, 1.1fr) minmax(0, 1fr) auto; align-items: center; gap: 16px;
-  padding: 16px 10px; margin: 0 -10px; border-radius: var(--nu-r-chip); border-top: 1px solid var(--nu-line-2); transition: background .18s, opacity .25s;
+  display: grid; grid-template-columns: 12px minmax(0, 1.1fr) minmax(0, 1fr) auto; align-items: center; gap: 0 16px;
+  padding: 16px 10px; margin: 0 -10px; border-radius: var(--nu-r-chip); border-top: 1px solid var(--nu-line-2); transition: background var(--nu-dur-media) var(--nu-ease-cor), opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
 .vlr__linha:first-child { border-top-color: transparent; }
 .vlr__linha:hover { background: var(--nu-cream-2); }
@@ -144,24 +150,35 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
 .vlr__ponto { width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 16%, transparent); }
 .vlr__nome { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .vlr__nome-t { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -0.01em; }
-.vlr__sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vlr__sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .vlr__se { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.vlr__se-c { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; }
+.vlr__se-c { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 .vlr__se-e { font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .vlr__se-e--down { color: var(--nu-red-text); }
 .vlr__se-e--up { color: var(--nu-green-text, var(--nu-green)); }
 .vlr__valores { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
-.vlr__como { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; margin-top: 2px; padding: 2px 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap; }
-.vlr__como svg { transition: transform .2s; }
-.vlr__como[aria-expanded='true'] svg { transform: rotate(180deg); }
-.vlr__como:focus-visible { border-radius: 4px; }
-.vlr__prova { grid-column: 2 / -1; margin: 4px 0 0; padding: 12px 14px; max-width: 80ch; border-radius: var(--nu-r-chip); background: var(--nu-band); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; animation: nu-fade .2s ease both; }
-.vlr__pct { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.vlr__valor { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* "Como calculei": o rótulo e o "+" (NuMais 28) num botão de 44px; sob o ponteiro o rótulo e o círculo vão ao cobalto, como no NuAcordeao */
+.vlr__como {
+  display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; min-height: 44px; margin: -4px 0 -8px; padding: 0; border: 0; border-radius: var(--nu-r-tag);
+  background: none; cursor: pointer; color: var(--nu-gray-3); font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.vlr__como:hover { color: var(--nu-blue-text); }
+.vlr__como:hover .nmx { background: var(--nu-blue); }
+/* a conta: a altura anima de 0 ao conteúdo (o gesto do NuAcordeao), com a opacidade junto */
+.vlr__dobra {
+  grid-column: 2 / -1; display: grid; grid-template-rows: 0fr; opacity: 0;
+  transition: grid-template-rows var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-lenta) var(--nu-ease-troca);
+}
+.vlr__dobra--aberta { grid-template-rows: 1fr; opacity: 1; }
+.vlr__dobra-in { min-height: 0; overflow: hidden; }
+.vlr__prova { margin: 12px 0 0; padding: 12px 16px; max-width: 80ch; border-radius: var(--nu-r-chip); background: var(--nu-band); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; }
+.vlr__pct { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums; }
+.vlr__valor { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 
 .vlr__duas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px clamp(28px, 4vw, 64px); margin-top: clamp(32px, 4vw, 52px); padding-top: clamp(24px, 3vw, 36px); border-top: 1px solid var(--nu-line); }
-.vlr__h4 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
-.vlr__h4-s { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.vlr__h4 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+.vlr__h4-s { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
 .vlr__mini { list-style: none; margin: 12px 0 0; padding: 0; }
 .vlr__mini li { display: grid; grid-template-columns: minmax(84px, auto) minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding: 11px 0; border-top: 1px solid var(--nu-line); }
 /* os pares têm nome comprido (dois títulos do Tesouro): o nome na linha de cima, a frase e o número embaixo */
@@ -171,15 +188,15 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
 .vlr__mini--pares .vlr__mini-c { grid-area: c; }
 .vlr__mini-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); text-decoration: none; }
 a.vlr__mini-t:hover { color: var(--nu-blue-text); }
-.vlr__mini-x { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
+.vlr__mini-x { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.45; }
 .vlr__mini-c { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .vlr__mini-c--neg { color: var(--nu-green-text, var(--nu-green)); }
-.vlr__fonte { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+.vlr__fonte { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
 
 @media (max-width: 900px) {
   .vlr__linha { grid-template-columns: 12px minmax(0, 1fr) auto; }
-  .vlr__se { grid-column: 2 / -1; grid-row: 2; }
-  .vlr__prova { grid-row: 3; }
+  .vlr__se { grid-column: 2 / -1; grid-row: 2; margin-top: 12px; }
+  .vlr__dobra { grid-row: 3; }
   .vlr__duas { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 480px) {
@@ -190,7 +207,7 @@ a.vlr__mini-t:hover { color: var(--nu-blue-text); }
   .vlr__mini-c { grid-area: c; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .vlr__prova, .vlr__barra { animation: none; }
-  .vlr__como svg { transition: none; }
+  .vlr__barra { animation: none; }
+  .vlr__dobra { transition: none; }
 }
 </style>

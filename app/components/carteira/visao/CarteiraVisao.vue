@@ -100,10 +100,11 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
       id="hoje" :agora="agora" :avisos="visao.avisos" :conexoes="visao.conexoes" :ativos="visao.posicoes.length"
       :renda="visao.renda" :dados-de="visao.dadosDe" :mock="mock" @connected="emit('connected')"
     />
+    <!-- o "Reconectar" mora uma linha acima, no pé do topo, junto da conexão parada (e no cartão de atenção):
+         a mesma ação num lugar só (robustez 11/11; antes eram três "Reconectar" em 300px) -->
     <p v-if="visao.dadosDe" class="cvi__parcial" role="status">
       <span class="cvi__parcial-p" aria-hidden="true" />
       O que está abaixo é de {{ visao.dadosDe }}, a última vez que {{ parada }} atualizou. Os números de imposto e risco esperam a reconexão.
-      <NuxtLink to="/conta#open-finance">Reconectar</NuxtLink>
     </p>
     <VisaoOndeEsta id="onde" :visao="visao" />
     <VisaoRenda v-if="visao.renda" id="renda" :visao="visao" />
@@ -146,10 +147,10 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
 .cvi :deep(.nusk:not(.nusk--navy)) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-page)); background-image: linear-gradient(100deg, var(--esq) 25%, var(--nu-white) 50%, var(--esq) 75%); }
 .cvi__parcial {
   display: block; margin: 0 var(--cvi-g) clamp(28px, 3.4vw, 44px); padding: 14px 18px;
-  border-radius: var(--nu-r-tile); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5;
-  animation: nu-fade .5s ease both;
+  border-radius: var(--nu-r-tile); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5;
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) backwards;
 }
-.cvi__parcial a { margin-left: 6px; color: inherit; font-weight: var(--nu-w-forte); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+
 .cvi__parcial-p { display: inline-block; width: 8px; height: 8px; margin-right: 10px; border-radius: 50%; background: var(--nu-amber-fill); vertical-align: 1px; }
 .cvi__dev {
   position: fixed; left: 16px; bottom: 16px; z-index: 50; display: flex; align-items: center; gap: 4px; padding: 4px;

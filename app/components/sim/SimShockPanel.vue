@@ -148,11 +148,11 @@ const iPetroleo = computed(() => Math.abs(model.value.petroleo) / 60)
   border: none; border-radius: var(--nu-r-pill);
   background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-quente);
   padding: 11px 20px; font-size: 14.5px; font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
-  transition: transform 0.25s var(--nu-ease-saida), box-shadow 0.25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .ssp__replay:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .ssp__replay:active { transform: scale(.98); }
-.ssp__replay em { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; font-style: normal; }
+.ssp__replay em { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); font-style: normal; }
 /* "voltar para hoje": o mesmo chip, no carvão */
 .ssp__replay--reset { align-items: center; background: var(--nu-ink); color: var(--nu-white); box-shadow: none; }
 .ssp__replay--reset:hover { box-shadow: none; background: var(--nu-ink-hover); }

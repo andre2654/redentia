@@ -42,9 +42,9 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .sfm__steps { display: flex; flex-direction: column; gap: 13px; min-height: 132px; }
 .sfm__step {
   display: inline-flex; align-items: center; gap: 12px;
-  color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500;
+  color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto);
   opacity: 0; transform: translateY(8px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida), transform var(--nu-dur-lenta) var(--nu-ease-saida);
 }
 .sfm__step--on { opacity: 1; transform: none; }
 .sfm__check { width: 20px; color: var(--nu-green-soft); flex-shrink: 0; }

@@ -102,9 +102,8 @@ function betaMeta(p: SimPositionImpact): string | null {
             />
           </span>
           <span class="spi__pct" :class="`spi__val--${dir(p.shockPct)}`">{{ p.shockPct === 0 ? '—' : fmtPct(p.shockPct) }}</span>
-          <span class="spi__chev" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
-          </span>
+          <!-- o "+" da base (NuMais): gira 45° ao abrir a ficha -->
+          <NuMais :tamanho="32" :aberto="openTicker === p.ticker" class="spi__chev" />
         </button>
 
         <!-- a FICHA: a conta aberta, linha a linha -->
@@ -150,15 +149,15 @@ function betaMeta(p: SimPositionImpact): string | null {
   display: flex; align-items: baseline; gap: 10px 18px; flex-wrap: wrap;
   margin-bottom: 28px;
   opacity: 0; transform: translateY(10px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida), transform var(--nu-dur-lenta) var(--nu-ease-saida);
 }
 .spi__hero--in { opacity: 1; transform: none; }
-.spi__hero-label { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
-.spi__hero-value { font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums; }
+.spi__hero-label { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
+.spi__hero-value { font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1; font-variant-numeric: tabular-nums; }
 .spi__val--down { color: var(--nu-red-text); }
 .spi__val--up { color: var(--nu-green-text); }
 .spi__val--flat { color: var(--nu-gray-3); }
-.spi__hero-value.spi__val--flat { font-size: var(--nu-fs-h3); letter-spacing: -0.025em; line-height: 1.05; }
+.spi__hero-value.spi__val--flat { font-size: var(--nu-fs-h3); letter-spacing: var(--nu-ls-titulo); line-height: 1.05; }
 
 /* a lista "em claro": linha creme da página sobre a faixa, raio 16; abre em
    acordeão. A entrada é em cascata (60ms); ao passar o ponteiro, sobe 2px. */
@@ -166,9 +165,9 @@ function betaMeta(p: SimPositionImpact): string | null {
 .spi__card {
   background: var(--nu-page); border-radius: var(--nu-r-tile); box-shadow: var(--nu-shadow-quente);
   opacity: 0;
-  transition: transform 0.25s var(--nu-ease-saida), box-shadow 0.25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.spi__card--in { opacity: 1; animation: nu-fade 0.5s ease backwards; animation-delay: var(--d, 0ms); }
+.spi__card--in { opacity: 1; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) backwards; animation-delay: var(--d, 0ms); }
 .spi__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .spi__card--open, .spi__card--open:hover { transform: none; box-shadow: var(--nu-shadow-quente); }
 .spi__row {
@@ -177,14 +176,9 @@ function betaMeta(p: SimPositionImpact): string | null {
   gap: 18px; align-items: center; text-align: left;
   padding: 12px 14px 12px 20px; cursor: pointer; border-radius: var(--nu-r-tile);
 }
-/* o "+" do acordeão da marca: círculo carvão que gira ao abrir */
-.spi__chev {
-  width: 36px; height: 36px; border-radius: 50%; background: var(--nu-cream-2); color: var(--nu-ink);
-  display: inline-flex; align-items: center; justify-content: center;
-  transition: transform 0.25s var(--nu-ease-saida), background 0.2s, color 0.2s;
-}
-.spi__row:hover .spi__chev { background: var(--nu-line-2); }
-.spi__card--open .spi__chev { transform: rotate(180deg); background: var(--nu-ink); color: var(--nu-white); }
+/* o "+" do acordeão é o da base (NuMais 32); sob o ponteiro, o cobalto */
+.spi__chev { justify-self: end; }
+.spi__row:hover .spi__chev { background: var(--nu-blue); }
 
 /* o selo do ticker: carvão, letra branca 800, raio 8 */
 .spi__pill {
@@ -196,28 +190,28 @@ function betaMeta(p: SimPositionImpact): string | null {
 
 .spi__who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .spi__name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.spi__weight { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; font-style: normal; font-variant-numeric: tabular-nums; }
+.spi__weight { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); font-style: normal; font-variant-numeric: tabular-nums; }
 
 /* a barra cresce da esquerda em 0,6s (só transform) */
 .spi__track { position: relative; height: 12px; border-radius: 999px; background: var(--nu-line-2); overflow: hidden; }
 .spi__fill {
   position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px;
   transform: scaleX(0); transform-origin: left center;
-  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: transform var(--nu-dur-lenta) var(--nu-ease-troca);
 }
 .spi__fill--on { transform: scaleX(1); }
 .spi__fill--down { background: var(--nu-red); }
 .spi__fill--up { background: var(--nu-green); }
 .spi__fill--flat { background: var(--nu-sand); }
 
-.spi__pct { text-align: right; font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.spi__pct { text-align: right; font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* a ficha */
-.spi__detail { padding: 0 20px 18px; animation: nu-fade 0.3s ease both; }
+.spi__detail { padding: 0 20px 18px; animation: nu-fade var(--nu-dur-media) var(--nu-ease-saida) backwards; }
 .spi__meta {
   display: flex; gap: 8px 22px; flex-wrap: wrap;
   padding: 14px 0 10px; border-top: 1px solid var(--nu-line);
-  color: var(--nu-gray-3); font-size: 13.5px; font-weight: 500;
+  color: var(--nu-gray-3); font-size: 13.5px; font-weight: var(--nu-w-texto);
 }
 .spi__meta b { color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .spi__meta--free { color: var(--nu-green-text); font-weight: var(--nu-w-forte); }
@@ -226,12 +220,12 @@ function betaMeta(p: SimPositionImpact): string | null {
   gap: 14px; align-items: baseline; padding: 6px 0;
 }
 .spi__line-name { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
-.spi__line-math { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.spi__line-math { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 .spi__line-val { text-align: right; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .spi__line--sum { border-top: 1.5px dashed var(--nu-line); margin-top: 4px; padding-top: 10px; }
-.spi__none { margin: 4px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
+.spi__none { margin: 4px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); }
 .spi__timeline { margin: 8px 0 0; color: var(--nu-blue-text); font-size: 13.5px; font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
-.spi__stress { margin: 8px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.45; }
+.spi__stress { margin: 8px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.45; }
 .spi__stress b { color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 /* o selo "atenção" */
 .spi__suspect { display: inline-block; margin: 8px 0 0; padding: 5px 10px; border-radius: var(--nu-r-tag); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: 13.5px; font-weight: var(--nu-w-medio); }

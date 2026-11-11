@@ -94,7 +94,7 @@ const style = computed(() => ({
 }
 
 /* os efeitos: anel no topo + glow difuso, respirando no ritmo da intensidade */
-.sdc__fx { position: absolute; pointer-events: none; transition: opacity 0.35s ease; }
+.sdc__fx { position: absolute; pointer-events: none; transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .sdc__fx--ring {
   inset: -55% -25% auto -25%; height: 120%;
   background:
@@ -118,12 +118,12 @@ const style = computed(() => ({
 .sdc__label {
   position: relative;
   color: var(--nu-on-dark); font-size: 13.5px; font-weight: var(--nu-w-medio);
-  letter-spacing: 0.16em; text-transform: uppercase;
+  letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
 }
 .sdc__value {
   position: relative;
   color: var(--nu-white); font-size: clamp(38px, 3.8vw, 52px); font-weight: var(--nu-w-display);
-  letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums;
+  letter-spacing: var(--nu-ls-display); line-height: 1; font-variant-numeric: tabular-nums;
 }
 /* o selo do delta: o chip sobre carvão, raio 8 */
 .sdc__delta {
@@ -132,22 +132,22 @@ const style = computed(() => ({
   background: var(--nu-dark-chip);
   color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio);
   font-variant-numeric: tabular-nums;
-  transition: color 0.3s, border-color 0.3s;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), border-color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .sdc__delta--live { color: var(--nu-white); border-color: var(--nu-on-dark-2); }
 
 .sdc__note {
   position: relative;
-  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 500;
+  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto);
   text-align: center; max-width: 210px; line-height: 1.35;
-  animation: nu-fade 0.25s ease both;
+  animation: nu-fade var(--nu-dur-media) var(--nu-ease-saida) backwards;
 }
 
 /* "acontece em [ano]" — só quando o dial saiu de hoje */
 .sdc__year {
   position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 30px;
   color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio);
-  animation: nu-fade 0.25s ease both;
+  animation: nu-fade var(--nu-dur-media) var(--nu-ease-saida) backwards;
 }
 .sdc__year-select {
   appearance: none; -webkit-appearance: none;

@@ -85,7 +85,8 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 
 <template>
   <section class="vim" aria-labelledby="vim-titulo" data-clarity-mask="true">
-    <div class="vim__grade">
+    <!-- a resposta e o cartão das vendas entram ao rolar, um depois do outro (v-revelar) -->
+    <div v-revelar="{ alvo: 'filhos', passo: 90 }" class="vim__grade">
     <div class="vim__texto">
     <NuEyebrow>Devo imposto?</NuEyebrow>
     <h2 id="vim-titulo" class="vim__frase"><FraseDestaque :texto="frase" /></h2>
@@ -95,7 +96,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
     <ul v-if="completos.length" class="vim__grupos">
       <li v-for="{ g, l, texto } in completos" :key="g.grupo" class="vim__grupo">
         <div class="vim__g-cab">
-          <span class="vim__g-n">{{ l.nome }}<span v-if="l.semCusto" class="vim__tag">Custo desconhecido</span></span>
+          <span class="vim__g-n">{{ l.nome }}<NuSelo v-if="l.semCusto" tom="ambar" tamanho="p">Custo desconhecido</NuSelo></span>
           <span class="vim__g-v">{{ l.direita }}</span>
         </div>
         <div
@@ -137,6 +138,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
     <!-- os últimos 12 meses, com o selo: o cartão de dado da seção -->
     <div class="vim__cartao">
     <h3 class="vim__h3">Vendas na bolsa, mês a mês</h3>
+    <p class="vim__dica">Abra um mês com vendas para ver as operações.</p>
     <ol class="vim__meses">
       <li v-for="m in meses" :key="m.mes">
         <button
@@ -163,7 +165,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
         <li v-for="(o, i) in mesAberto.operacoes" :key="`${o.data}-${o.ticker}-${o.lado}-${i}`">
           <span class="vim__op-d">{{ fmtData(o.data) }}</span>
           <span class="vim__op-t">
-            <span class="vim__op-tk">{{ o.ticker }}<span class="vim__lado" :class="`vim__lado--${o.lado}`">{{ o.lado === 'venda' ? 'Venda' : 'Compra' }}</span></span>
+            <span class="vim__op-tk">{{ o.ticker }}<NuSelo :tom="o.lado === 'venda' ? 'ambar' : 'azul'" tamanho="p">{{ o.lado === 'venda' ? 'Venda' : 'Compra' }}</NuSelo></span>
             <span v-if="subDaOperacao(o)" class="vim__op-q">{{ subDaOperacao(o) }}</span>
           </span>
           <span class="vim__op-v">{{ mask(brl2(o.valor)) }}</span>
@@ -178,8 +180,8 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 
 <style scoped>
 .vim { background: var(--nu-page); padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px)); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
-.vim__frase { margin: 18px 0 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04; font-variant-numeric: tabular-nums; text-wrap: balance; }
-.vim__sub { margin: 16px 0 0; max-width: 760px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.vim__frase { margin: 18px 0 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.04; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.vim__sub { margin: 16px 0 0; max-width: 760px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; font-variant-numeric: tabular-nums; }
 
 /* ——— o mês atual, por grupo ——— */
 /* a pergunta e a resposta à esquerda; as vendas do ano no cartão de dado à direita (no celular, um embaixo do outro) */
@@ -193,22 +195,22 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__g-cab { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; }
 .vim__g-n { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -0.01em; }
 .vim__g-v { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.vim__tag { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0; }
+
 .vim__trilho { display: flex; gap: 4px; height: 16px; margin-top: 10px; border-radius: 8px; background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line); overflow: hidden; }
-.vim__vendido { background: var(--nu-blue); border-radius: 8px 4px 4px 8px; transform-origin: left; animation: vim-cresce .9s var(--nu-ease-saida) .1s both; }
+.vim__vendido { background: var(--nu-blue); border-radius: 8px 4px 4px 8px; transform-origin: left; animation: vim-cresce var(--nu-dur-entrada) var(--nu-ease-saida) .1s both; }
 .vim__vendido--passou { background: var(--nu-amber-fill); }
 .vim__cabe { flex: 1; min-width: 0; background: var(--nu-green-bg); border-radius: 4px 8px 8px 4px; }
 /* os grupos sem venda: blocos pequenos, lado a lado */
-.vim__resto { margin: 18px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.vim__resto { margin: 18px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
 /* o prejuízo para abater: um número por balde */
-.vim__prej { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; font-variant-numeric: tabular-nums; }
+.vim__prej { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; font-variant-numeric: tabular-nums; }
 .vim__prej-t { margin-right: 8px; color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .vim__prej b { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .vim__prej-s { margin: 0 8px; color: var(--nu-gray); }
-.vim__imposto { background: var(--nu-amber-fill); border-radius: 8px 4px 4px 8px; transform-origin: left; animation: vim-cresce .9s var(--nu-ease-saida) .1s both; }
-.vim__fica { flex: 1; background: color-mix(in srgb, var(--nu-blue) 35%, transparent); border-radius: 4px 8px 8px 4px; transform-origin: left; animation: vim-cresce .9s var(--nu-ease-saida) .3s both; }
+.vim__imposto { background: var(--nu-amber-fill); border-radius: 8px 4px 4px 8px; transform-origin: left; animation: vim-cresce var(--nu-dur-entrada) var(--nu-ease-saida) .1s both; }
+.vim__fica { flex: 1; background: color-mix(in srgb, var(--nu-blue) 35%, transparent); border-radius: 4px 8px 8px 4px; transform-origin: left; animation: vim-cresce var(--nu-dur-entrada) var(--nu-ease-saida) .3s both; }
 @keyframes vim-cresce { from { transform: scaleX(0); } }
-.vim__g-x { margin: 8px 0 0; max-width: 76ch; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.vim__g-x { margin: 8px 0 0; max-width: 76ch; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; font-variant-numeric: tabular-nums; }
 
 .vim__darf {
   display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; box-sizing: border-box; margin: 14px 0 0; padding: 14px 18px;
@@ -216,15 +218,15 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 }
 .vim__darf-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .vim__darf-v { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); }
-.vim__darf-d { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 600; }
+.vim__darf-d { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 
 /* ——— os últimos 12 meses: a fileira do "mês a mês" de Quanto ele te paga ——— */
-.vim__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; }
+.vim__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
 .vim__h3-s { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); line-height: 1.45; }
 .vim__meses { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; list-style: none; margin: 18px 0 0; padding: 0; }
 .vim__mes {
   display: grid; grid-template-rows: 92px auto; gap: 6px; width: 100%; padding: 8px 2px 0; border: 0; border-radius: 12px;
-  background: transparent; font: inherit; text-align: center; cursor: pointer; transition: background .2s;
+  background: transparent; font: inherit; text-align: center; cursor: pointer; transition: background var(--nu-dur-media) var(--nu-ease-cor);
 }
 .vim__mes:disabled { cursor: default; }
 .vim__mes:not(:disabled):hover { background: var(--nu-cream-2); }
@@ -232,7 +234,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__mes-v { color: var(--nu-gray-3); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .vim__mes-b { display: flex; align-items: flex-end; justify-content: center; }
 .vim__mes-b i { display: block; width: min(40px, 70%); border-radius: 8px 8px 3px 3px; }
-.vim__mes-n { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; border-top: 1px solid var(--nu-line); padding: 6px 0 8px; }
+.vim__mes-n { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); border-top: 1px solid var(--nu-line); padding: 6px 0 8px; }
 .vim__mes--on .vim__mes-n, .vim__mes--on .vim__mes-v { color: var(--nu-ink); }
 .vim__mes--isento .vim__mes-b i, .vim__k--isento { background: var(--nu-green); }
 .vim__mes--pago .vim__mes-b i, .vim__k--pago { background: var(--nu-blue); }
@@ -241,27 +243,26 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__mes--custo_desconhecido .vim__mes-b i, .vim__k--custo_desconhecido { background: repeating-linear-gradient(135deg, var(--nu-amber-fill) 0 3px, color-mix(in srgb, var(--nu-amber-fill) 30%, transparent) 3px 6px); }
 .vim__k--sem_venda { background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line); }
 .vim__legenda { display: flex; flex-wrap: wrap; gap: 6px 20px; list-style: none; margin: 12px 0 0; padding: 0; }
-.vim__legenda li { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 600; }
+.vim__legenda li { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .vim__k { width: 12px; height: 12px; border-radius: 4px; }
 
 /* as operações do mês aberto: a tabela, no cartão creme de dentro (raio 22) */
-.vim__ops { margin-top: 18px; padding: 18px 22px 6px; border-radius: var(--nu-r-panel); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); animation: vim-fade .25s ease both; }
-.vim__ops-cab { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; margin: 14px 0 0; padding-bottom: 8px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
+.vim__dica { margin: 8px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: var(--nu-w-texto); line-height: 1.45; }
+.vim__ops { margin-top: 16px; padding: 16px 24px 8px; border-radius: var(--nu-r-panel); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); animation: vim-fade var(--nu-dur-media) var(--nu-ease-saida) both; }
+.vim__ops-cab { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; margin: 14px 0 0; padding-bottom: 8px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .vim__ops-cab span:last-child { text-align: right; }
 @keyframes vim-fade { from { opacity: 0; transform: translateY(4px); } }
 .vim__ops-t { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
-.vim__ops-t span { color: var(--nu-gray-3); font-weight: 600; }
+.vim__ops-t span { color: var(--nu-gray-3); font-weight: var(--nu-w-medio); }
 .vim__ops-l { list-style: none; margin: 8px 0 0; padding: 0; }
-.vim__ops-l li { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding: 10px 8px; margin: 0 -8px; border-top: 1px solid var(--nu-line); font-size: var(--nu-fs-md); transition: background .18s; }
+.vim__ops-l li { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding: 10px 8px; margin: 0 -8px; border-top: 1px solid var(--nu-line); font-size: var(--nu-fs-md); transition: background var(--nu-dur-media) var(--nu-ease-cor); }
 .vim__ops-l li:hover { background: var(--nu-cream-2); }
 .vim__op-d { color: var(--nu-gray); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .vim__op-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .vim__op-tk { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: var(--nu-w-forte); }
-.vim__op-q { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.vim__op-q { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.45; font-variant-numeric: tabular-nums; }
 .vim__op-v { color: var(--nu-ink); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
-.vim__lado { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
-.vim__lado--venda { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
-.vim__lado--compra { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
+
 
 
 @media (max-width: 640px) {

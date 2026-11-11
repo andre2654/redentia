@@ -74,7 +74,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
       <span class="sco__hero-label">Intensidade de co-movimento</span>
       <div class="sco__hero-row">
         <span class="sco__hero-value">{{ corr.avgPct }}<i class="sco__hero-unit">/100</i></span>
-        <span class="sco__hero-tag" :class="`sco__tag--${heroTone}`">{{ heroTag }}</span>
+        <NuSelo :tom="heroTone === 'hi' ? 'vermelho' : heroTone === 'mid' ? 'ambar' : 'azul'" class="sco__hero-tag">{{ heroTag }}</NuSelo>
       </div>
       <p class="sco__hero-line">{{ heroLine }}</p>
       <p v-if="nProtect" class="sco__hero-sub">{{ nProtect }} {{ nProtect === 1 ? 'par anda' : 'pares andam' }} em direções opostas: proteção de verdade, listada abaixo.</p>
@@ -183,27 +183,20 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 .sco__hero {
   margin-bottom: 28px;
   opacity: 0; transform: translateY(10px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida), transform var(--nu-dur-lenta) var(--nu-ease-saida);
 }
 .sco__hero--in { opacity: 1; transform: none; }
-.sco__hero-label { display: block; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
+.sco__hero-label { display: block; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .sco__hero-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
 .sco__hero-value {
   color: var(--nu-ink);
-  font-size: clamp(54px, 6.4vw, 88px); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1;
+  font-size: clamp(54px, 6.4vw, 88px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1;
   font-variant-numeric: tabular-nums;
 }
-.sco__hero-unit { color: var(--nu-gray); font-size: 0.36em; font-style: normal; font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
-/* o selo da marca: raio 8 */
-.sco__hero-tag {
-  padding: 6px 12px; border-radius: var(--nu-r-tag);
-  font-size: 14px; font-weight: var(--nu-w-medio); white-space: nowrap;
-}
-.sco__tag--hi { background: var(--nu-red-bg); color: var(--nu-red-text); }
-.sco__tag--mid { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
-.sco__tag--lo { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
-.sco__coverage { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.45; }
-.sco__hero-line { max-width: 56ch; margin: 14px 0 0; color: var(--nu-gray-3); font-size: clamp(17px, 1.4vw, 19px); font-weight: 500; line-height: 1.45; }
+.sco__hero-unit { color: var(--nu-gray); font-size: 0.36em; font-style: normal; font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+/* o selo é o da base (NuSelo): vermelho anda junto, âmbar moderado, azul diversifica */
+.sco__coverage { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.45; }
+.sco__hero-line { max-width: 56ch; margin: 14px 0 0; color: var(--nu-gray-3); font-size: clamp(17px, 1.4vw, 19px); font-weight: var(--nu-w-texto); line-height: 1.45; }
 .sco__hero-sub { max-width: 56ch; margin: 8px 0 0; color: var(--nu-green-text); font-size: 15px; font-weight: var(--nu-w-medio); }
 .sco__panel-label--protect { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--nu-line); }
 
@@ -215,7 +208,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
   box-shadow: var(--nu-shadow-quente);
 }
 .sco__panel--through { gap: 18px; }
-.sco__panel-label { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; line-height: 1.4; text-transform: uppercase; }
+.sco__panel-label { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); line-height: 1.4; text-transform: uppercase; }
 
 /* ——— a lista ordenada de pares ——— */
 .sco__list { display: flex; flex-direction: column; margin-top: 6px; }
@@ -224,7 +217,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
   gap: 16px; align-items: center;
   padding: 13px 0; border-bottom: 1px solid var(--nu-line-2);
   opacity: 0; transform: translateY(8px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida), transform var(--nu-dur-lenta) var(--nu-ease-saida);
 }
 .sco__list .sco__row:last-child { border-bottom: none; }
 .sco__row--in { opacity: 1; transform: none; }
@@ -234,14 +227,14 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 .sco__who { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; min-width: 0; }
 .sco__tk { color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-forte); letter-spacing: 0.02em; }
 .sco__x { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-style: normal; font-weight: var(--nu-w-medio); }
-.sco__note { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; font-style: normal; }
+.sco__note { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio); font-style: normal; }
 
 /* a barra cresce da esquerda em 0,6s (só transform) */
 .sco__track { position: relative; height: 10px; border-radius: 999px; background: var(--nu-line-2); overflow: hidden; }
 .sco__fill {
   position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px;
   transform: scaleX(0); transform-origin: left center;
-  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: transform var(--nu-dur-lenta) var(--nu-ease-troca);
 }
 .sco__fill--on { transform: scaleX(1); }
 .sco__fill--hi { background: var(--nu-red); }
@@ -249,7 +242,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 .sco__fill--lo { background: var(--nu-blue-soft); }
 .sco__fill--neg { background: var(--nu-green); }
 
-.sco__val { text-align: right; font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.sco__val { text-align: right; font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums; }
 .sco__val--hi { color: var(--nu-red-text); }
 .sco__val--mid { color: var(--nu-amber-text); }
 .sco__val--lo { color: var(--nu-ink); }
@@ -259,7 +252,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 .sco__legend {
   display: flex; flex-wrap: wrap; gap: 6px 16px;
   margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--nu-line);
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 .sco__legend span { display: inline-flex; align-items: center; gap: 7px; }
 .sco__dot { width: 11px; height: 11px; border-radius: 999px; }
@@ -280,7 +273,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 .sco__th-fill:last-child { border-top-right-radius: 999px; border-bottom-right-radius: 999px; }
 .sco__th-fill--direct { background: var(--nu-blue); }
 .sco__th-fill--etf { background: var(--nu-blue-soft); }
-.sco__th-sub { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.sco__th-sub { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 
 @media (max-width: 900px) { .sco__grid { grid-template-columns: 1fr; } }
 @media (max-width: 760px) {

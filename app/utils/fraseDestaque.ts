@@ -17,3 +17,29 @@ export function partesDaFrase(frase: string, alvo: RegExp = ALVO): [string, stri
   if (!m || !m[0]) return [frase, '', '']
   return [frase.slice(0, m.index), m[0], frase.slice(m.index + m[0].length)]
 }
+
+/** Uma palavra da frase partida para o destaque: o pedaço antes, o que leva o cobalto e o depois. */
+export interface PalavraComDestaque { antes: string; destaque: string; depois: string }
+
+/**
+ * A frase palavra a palavra (como `frase.split(' ')`), cada uma com o pedaço
+ * que leva o destaque (11/11/2026, robustez): para quem faz a frase surgir
+ * palavra por palavra (No mundo, Na cadeia) e não usa o FraseDestaque. O texto
+ * não muda; o trecho é o mesmo de `partesDaFrase` (a vírgula colada fica fora).
+ */
+export function palavrasComDestaque(frase: string, alvo: RegExp = ALVO): PalavraComDestaque[] {
+  const [antes, d] = partesDaFrase(frase, alvo)
+  const ini = antes.length
+  const fim = ini + d.length
+  const out: PalavraComDestaque[] = []
+  let cursor = 0
+  for (const p of frase.split(' ').filter(Boolean)) {
+    const at = frase.indexOf(p, cursor)
+    cursor = at + p.length
+    if (!d || at + p.length <= ini || at >= fim) { out.push({ antes: p, destaque: '', depois: '' }); continue }
+    const a = Math.max(0, ini - at)
+    const b = Math.min(p.length, fim - at)
+    out.push({ antes: p.slice(0, a), destaque: p.slice(a, b), depois: p.slice(b) })
+  }
+  return out
+}

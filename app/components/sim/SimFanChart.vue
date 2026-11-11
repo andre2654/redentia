@@ -188,20 +188,20 @@ const fmt = fmtBRL
 <style scoped>
 .sfc { position: relative; width: 100%; height: 100%; }
 .sfc__svg { display: block; width: 100%; height: calc(100% - 26px); overflow: visible; }
-.sfc__band { opacity: 0; transition: opacity 1.1s ease 0.9s; }
+.sfc__band { opacity: 0; transition: opacity var(--nu-dur-entrada) var(--nu-ease-saida) 0.9s; }
 .sfc__band--in { opacity: 0.18; }
-.sfc__cmp { animation: nu-fade 0.5s ease both; }
-.sfc__macro { animation: nu-fade 0.5s ease both; }
+.sfc__cmp { animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) backwards; }
+.sfc__macro { animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) backwards; }
 .sfc__tip-row--macro { border-top: 1px solid var(--nu-dark-chip-line); padding-top: 4px; margin-top: 2px; }
 .sfc__tip-row--macro ~ .sfc__tip-row--macro { border-top: none; padding-top: 0; margin-top: 0; }
 /* dasharray SÓ durante o desenho: mantido permanente, o arredondamento do
    pathLength normalizado deixava o rabo da linha sem pintar (dono 25/08) */
-.sfc__line--draw { stroke-dasharray: 1; animation: sfc-draw 1.8s cubic-bezier(0.65, 0, 0.35, 1) both; }
+.sfc__line--draw { stroke-dasharray: 1; animation: sfc-draw var(--nu-dur-entrada) var(--nu-ease-saida) both; }
 @keyframes sfc-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 .sfc__event {
   position: absolute; top: -4px; transform: translateX(-50%);
   color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
-  letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;
+  letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; white-space: nowrap;
 }
 .sfc__event--choque { color: var(--nu-amber); }
 /* título de biblioteca pode ser longo ("CONSOLIDAÇÃO FISCAL PÓS-2026") e
@@ -225,8 +225,8 @@ const fmt = fmtBRL
   box-shadow: var(--nu-shadow-chart-tip);
   pointer-events: none;
 }
-.sfc__tip-date { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: 0.12em; }
-.sfc__tip-row { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-on-dark); font-size: var(--nu-fs-dense); font-weight: 500; }
+.sfc__tip-date { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: var(--nu-ls-caixa); }
+.sfc__tip-row { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-on-dark); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 .sfc__tip-row b { color: var(--nu-white); font-variant-numeric: tabular-nums; }
 .sfc__dot { width: 8px; height: 8px; border-radius: 50%; }
 .sfc__dot--hi { background: var(--nu-green-soft); }

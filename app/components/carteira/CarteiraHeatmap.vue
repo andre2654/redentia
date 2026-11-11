@@ -23,14 +23,14 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
 </script>
 
 <template>
-  <section v-contexto-chat="{ id: 'carteira:pnl', tipo: 'grafico', rotulo: 'P&L mês a mês' }" class="chm">
+  <section v-contexto-chat="{ id: 'carteira:pnl', tipo: 'grafico', rotulo: 'P&L mês a mês' }" v-revelar="{ alvo: 'filhos' }" class="chm">
     <div class="chm__head">
       <div>
         <h2 class="chm__title">P&amp;L mês a mês.</h2>
         <div class="chm__sub">{{ heatmap.sub }}</div>
       </div>
       <div class="chm__legend">
-        <span class="chm__legend-lbl">-3%</span>
+        <span class="chm__legend-lbl">−3%</span>
         <span class="chm__swatches">
           <span class="chm__swatch chm__swatch--r85" />
           <span class="chm__swatch chm__swatch--r40" />
@@ -63,14 +63,13 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
 .chm {
   background: var(--nu-band);
   padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px));
-  animation: nu-fade .5s ease both;
 }
 .chm__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .chm__title {
   margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
-  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02;
 }
-.chm__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 14px; }
+.chm__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); margin-top: 14px; }
 .chm__legend { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .chm__legend-lbl { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
 .chm__swatches { display: flex; gap: 4px; }
@@ -87,7 +86,7 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
 .chm__matrix { min-width: 920px; }
 .chm__grid { display: grid; grid-template-columns: 56px repeat(12, 1fr) 96px; gap: 6px; }
 .chm__grid--row { margin-top: 6px; align-items: stretch; }
-.chm__month { text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: 0.12em; }
+.chm__month { text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: var(--nu-ls-caixa); }
 .chm__month--ano { color: var(--nu-ink); }
 .chm__year { display: flex; align-items: center; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .chm__cell {
@@ -98,5 +97,5 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
 .chm__cell--ano { color: var(--nu-white); font-size: var(--nu-fs-dense); }
 .chm__cell--ano-pos { background: var(--nu-hm-green); }
 .chm__cell--ano-neg { background: var(--nu-red); }
-.chm__note { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 22px; }
+.chm__note { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); margin-top: 22px; }
 </style>

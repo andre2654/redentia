@@ -139,10 +139,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 
       <template v-if="loadFailed">
         <p class="mcp__key-empty">Não consegui carregar sua chave agora.</p>
-        <button type="button" class="mcp__gen" @click="load">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5" /></svg>
-          Tentar de novo
-        </button>
+        <NuBotaoSeta variante="creme" tamanho="m" class="mcp__gerar" @click="load">Tentar de novo</NuBotaoSeta>
       </template>
 
       <template v-else-if="hasKey">
@@ -207,10 +204,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
       </div>
     </div>
 
-    <NuxtLink to="/mcp" class="mcp__docs">
-      Ver documentação do MCP
-      <svg class="mcp__docs-seta" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9" /></svg>
-    </NuxtLink>
+    <p class="mcp__docs"><NuLinkSeta to="/mcp" tom="claro">Ler a documentação do MCP</NuLinkSeta></p>
 
     <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" origem="mcp" @close="conexaoAberta = false" />
   </section>
@@ -225,7 +219,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
   box-shadow: var(--nu-shadow-card);
 }
 /* a posição é da classe global .nu-corte-fundo (sai sempre do canto de cima à esquerda); aqui só a opacidade */
-.mcp__corte { opacity: .08; transition: opacity .3s ease; }
+.mcp__corte { opacity: .08; transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
 
 /* DESLIGADO (dono 2026-07-14): card cinza, como se o MCP estivesse mesmo fora.
    Fundo vira o carvão apagado + conteúdo dessatura/esmaece/trava; SÓ o
@@ -235,7 +229,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 .mcp__panel,
 .mcp__perms-label,
 .mcp__perms,
-.mcp__docs { transition: filter .3s ease, opacity .3s ease; }
+.mcp__docs { transition: filter var(--nu-dur-media) var(--nu-ease-cor), opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .mcp--off { background: color-mix(in srgb, var(--nu-ink) 78%, var(--nu-sand)); box-shadow: none; }
 .mcp--off .mcp__corte { opacity: .04; }
 .mcp--off .mcp__head-txt,
@@ -247,8 +241,8 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 
 .mcp__head { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .mcp__head-txt { flex: 1 1 280px; max-width: 580px; min-width: 0; }
-.mcp__title { margin: 16px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; }
-.mcp__desc { margin: 12px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
+.mcp__title { margin: 16px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.05; }
+.mcp__desc { margin: 12px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.55; }
 
 .mcp__apps { position: relative; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
 .mcp__app {
@@ -263,18 +257,18 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 .mcp__app-img { width: 100%; height: 100%; object-fit: contain; padding: 3px; display: block; }
 
 .mcp__panel { position: relative; background: color-mix(in srgb, var(--nu-ink) 46%, transparent); border: 1.5px solid var(--nu-white-18); border-radius: var(--nu-r-panel); padding: clamp(18px, 2.2vw, 24px); margin-top: 22px; }
-.mcp__panel-label, .mcp__perms-label { color: var(--nu-blue-on-blue); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
+.mcp__panel-label, .mcp__perms-label { color: var(--nu-blue-on-blue); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .mcp__key-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
 .mcp__key {
   flex: 1; min-width: 200px; min-height: 44px; display: flex; align-items: center;
   background: color-mix(in srgb, var(--nu-ink) 62%, transparent); color: var(--nu-green-soft);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--nu-fs-sm); font-weight: 500;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto);
   padding: 0 16px; border-radius: var(--nu-r-chip); letter-spacing: .3px; overflow-x: auto; white-space: nowrap;
 }
 .mcp__reveal, .mcp__copy {
   min-height: 44px; border: none; font-family: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
   cursor: pointer; padding: 0 16px; border-radius: var(--nu-r-chip); white-space: nowrap;
-  transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
+  transition: background var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .mcp__reveal:active, .mcp__copy:active { transform: scale(.98); }
 .mcp__reveal { background: var(--nu-white-14); color: var(--nu-white); }
@@ -286,50 +280,37 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 .mcp__regen {
   display: inline-flex; align-items: center; gap: 7px; min-height: 44px; background: transparent; border: none;
   color: var(--nu-blue-on-blue); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer; padding: 0;
-  font-family: inherit; text-decoration: underline; text-underline-offset: 3px; transition: color .2s;
+  font-family: inherit; text-decoration: underline; text-underline-offset: 3px; transition: color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.mcp__regen svg { transition: transform .3s var(--nu-ease-saida); }
+.mcp__regen svg { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .mcp__regen:hover:not(:disabled) { color: var(--nu-white); }
 .mcp__regen:hover:not(:disabled) svg { transform: rotate(90deg); }
 .mcp__regen:disabled { opacity: .5; cursor: default; }
-.mcp__key-meta { color: var(--nu-blue-on-blue-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
+.mcp__key-meta { color: var(--nu-blue-on-blue-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 .mcp__key-warn { margin: 10px 0 0; color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
-.mcp__key-empty { margin: 12px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.mcp__key-empty { margin: 12px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
 .mcp__gerar { margin-top: 16px; }
-/* "Tentar de novo", quando a chave não carregou: a pílula creme simples */
-.mcp__gen {
-  display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; min-height: 44px;
-  background: var(--nu-creme); color: var(--nu-ink); border: 0; border-radius: var(--nu-r-pill);
-  padding: 0 20px; font-family: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer;
-  transition: background .2s, transform .15s var(--nu-ease-saida);
-}
-.mcp__gen:hover:not(:disabled) { background: var(--nu-white); }
-.mcp__gen:active { transform: scale(.98); }
-.mcp__gen:disabled { opacity: .55; cursor: default; }
 
 .mcp__perms-label { position: relative; margin-top: 26px; }
 .mcp__perms { position: relative; margin-top: 10px; }
 .mcp__perm { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-top: 1.5px solid var(--nu-white-18); }
 .mcp__perm-txt { flex: 1; min-width: 0; }
 .mcp__perm-name { color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
-.mcp__perm-desc { color: var(--nu-blue-on-blue); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.45; margin-top: 2px; }
+.mcp__perm-desc { color: var(--nu-blue-on-blue); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); line-height: 1.45; margin-top: 2px; }
 
-.mcp__docs { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); margin-top: 14px; text-decoration: underline; text-underline-offset: 3px; }
-.mcp__docs:hover { color: var(--nu-white); }
-.mcp__docs-seta { transition: transform .2s; }
-.mcp__docs:hover .mcp__docs-seta { transform: translate(2px, -2px); }
+.mcp__docs { position: relative; margin: 24px 0 0; font-size: var(--nu-fs-sm); }
 
 /* o interruptor: trilho 50x30, o verde claro da marca ligado / branco translúcido desligado, botão 24 */
 .msw {
   position: relative; flex-shrink: 0; width: 50px; height: 30px; border: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); padding: 0; background: var(--nu-white-30); transition: background .2s;
+  border-radius: var(--nu-r-pill); padding: 0; background: var(--nu-white-30); transition: background var(--nu-dur-media) var(--nu-ease-cor);
 }
 /* o alvo de toque chega a 44px sem mexer no desenho */
 .msw::after { content: ''; position: absolute; inset: -7px 0; }
 .msw--on { background: var(--nu-green-soft); }
 .msw__knob {
   position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--nu-white);
-  box-shadow: 0 1px 3px var(--nu-ink-30); transition: transform .22s var(--nu-ease-cor);
+  box-shadow: 0 1px 3px var(--nu-ink-30); transition: transform var(--nu-dur-media) var(--nu-ease-cor);
 }
 .msw--on .msw__knob { transform: translateX(20px); }
 .msw:focus-visible { outline: 3px solid var(--nu-white); outline-offset: 2px; }
@@ -343,6 +324,6 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
   .mcp__gerar { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mcp__regen svg, .mcp__docs-seta { transition: none; }
+  .mcp__regen svg { transition: none; }
 }
 </style>

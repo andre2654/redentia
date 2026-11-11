@@ -39,13 +39,21 @@ const maskVal = (e: CarteiraMovementVM) => (hidden.value ? (e.valRaw < 0 ? '-R$ 
 const saldoMasked = computed(() => (hidden.value ? (props.movements.saldoDir === 'down' ? '-R$ ••' : '+R$ ••') : props.movements.saldo))
 
 const hasMore = computed(() => props.movements.allEvents.length > props.movements.monthEvents.length)
+
+// o filtro no trilho da base (NuTrilho, robustez 11/11): cada opção com a contagem do que ela mostra
+const opcoesDoFiltro = computed(() => TABS.map((t) => {
+  const want = BADGE_OF[t]
+  return { valor: t as string, rotulo: t, contagem: want ? pool.value.filter((e) => e.badge === want).length : pool.value.length }
+}))
+// o tipo de cada operação no selo da base: provento verde, compra azul, venda âmbar
+const TOM_DO_TIPO: Record<CarteiraMovementVM['badge'], 'verde' | 'azul' | 'ambar'> = { Provento: 'verde', Compra: 'azul', Venda: 'ambar' }
 </script>
 
 <template>
-  <section v-contexto-chat="{ id: 'carteira:movimentacoes', tipo: 'carteira', rotulo: 'Movimentações' }" class="cmv">
+  <section v-contexto-chat="{ id: 'carteira:movimentacoes', tipo: 'carteira', rotulo: 'Movimentações' }" v-revelar="{ alvo: 'filhos' }" class="cmv">
     <div class="cmv__head">
       <h2 class="cmv__title">Movimentações.</h2>
-      <NuFilterPills v-model="tab" :items="TABS" />
+      <NuTrilho v-model="tab" :opcoes="opcoesDoFiltro" rotulo="Filtrar as movimentações" largo="celular" class="cmv__filtro" />
     </div>
     <div class="cmv__sub">
       {{ periodLabel }} · {{ saldoLabel }}
@@ -64,8 +72,9 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
         <span class="cmv__main">
           <span class="cmv__ticker-row">
             <span class="cmv__ticker">{{ e.ticker }}</span>
-            <span class="cmv__badge" :class="`cmv__badge--${e.badge.toLowerCase()}`">{{ e.badge }}</span>
-            <span v-if="seloDe(e)" class="cmv__selo" :class="`cmv__selo--${seloDe(e)}`">{{ SELO[seloDe(e)!] }}</span>
+            <NuSelo :tom="TOM_DO_TIPO[e.badge]" tamanho="p">{{ e.badge }}</NuSelo>
+            <!-- o selo do imposto da venda: contorno, com o ponto na cor do selo (não briga com o tipo) -->
+            <NuSelo v-if="seloDe(e)" tom="contorno" tamanho="p" ponto class="cmv__selo" :class="`cmv__selo--${seloDe(e)}`">{{ SELO[seloDe(e)!] }}</NuSelo>
           </span>
           <span class="cmv__desc">{{ e.sub }}</span>
         </span>
@@ -81,24 +90,25 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
 .cmv {
   background: var(--nu-page);
   padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px));
-  animation: nu-fade .5s ease both;
 }
+/* o trilho do filtro sobre a página: um tom abaixo do creme, para o trilho não sumir */
+.cmv__filtro { --ntr-trilho: color-mix(in srgb, var(--nu-ink) 6%, var(--nu-page)); }
 .cmv__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .cmv__title {
   margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
-  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02;
 }
-.cmv__sub { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; margin-top: 14px; }
+.cmv__sub { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); margin-top: 14px; }
 .cmv__saldo--up { color: var(--nu-green-text); font-weight: var(--nu-w-forte); }
 .cmv__saldo--down { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 /* as operações num cartão quente, com fios de 1,5px */
 .cmv__list { margin-top: 26px; padding: clamp(6px, 1vw, 12px) clamp(18px, 2.4vw, 28px); border-radius: var(--nu-r-card); background: var(--nu-band); box-shadow: var(--nu-shadow-quente); }
-.cmv__cab { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 16px; margin: 0; padding: 14px 0 10px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
+.cmv__cab { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 16px; margin: 0; padding: 14px 0 10px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .cmv__cab span:first-child { text-align: center; }
 /* "Operação" começa onde começa o código do ativo (depois do quadrado do logo) */
 .cmv__cab span:nth-child(2) { padding-left: 64px; }
 .cmv__cab span:last-child { text-align: right; }
-.cmv__row { display: flex; align-items: center; gap: 16px; padding: 15px 10px; margin: 0 -10px; border-top: 1px solid var(--nu-line); border-radius: 0; transition: background .18s; }
+.cmv__row { display: flex; align-items: center; gap: 16px; padding: 15px 10px; margin: 0 -10px; border-top: 1px solid var(--nu-line); border-radius: 0; transition: background var(--nu-dur-media) var(--nu-ease-cor); }
 .cmv__row:hover { background: var(--nu-cream-2); }
 .cmv__date-tile {
   width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--nu-r-chip);
@@ -110,25 +120,17 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
 .cmv__main { flex: 1; min-width: 0; overflow: hidden; }
 .cmv__ticker-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; }
 .cmv__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); white-space: nowrap; }
-.cmv__badge {
-  display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
-  padding: 3px 9px; border-radius: var(--nu-r-tag); white-space: nowrap; flex-shrink: 0;
-}
-.cmv__badge--provento { background: var(--nu-green-bg); color: var(--nu-green-text); }
-.cmv__badge--compra { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
-.cmv__badge--venda { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
-/* o selo do imposto da venda: contorno, para não brigar com o tipo */
-.cmv__selo { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); white-space: nowrap; box-shadow: inset 0 0 0 1px currentColor; }
-.cmv__selo--isento { color: var(--nu-green-text); }
-.cmv__selo--pago { color: var(--nu-blue-text); }
-.cmv__selo--a_conferir, .cmv__selo--custo_desconhecido { color: var(--nu-amber-text); }
+/* o ponto do selo do imposto na cor de cada estado (a variável do NuSelo) */
+.cmv__selo--isento { --nsl-ponto: var(--nu-green); }
+.cmv__selo--pago { --nsl-ponto: var(--nu-blue); }
+.cmv__selo--a_conferir, .cmv__selo--custo_desconhecido { --nsl-ponto: var(--nu-amber); }
 .cmv__desc {
-  display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 3px;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); margin-top: 3px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cmv__val { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
 .cmv__val--pos { color: var(--nu-green-text); }
-.cmv__empty { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; padding: 22px 0; }
+.cmv__empty { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); padding: 22px 0; }
 .cmv__more { margin-top: 24px; }
 /* no celular (07/11/2026): com a data, a logo e o valor na mesma linha, sobravam
    59 px para o ticker em 375 (o GOLD11 saía cortado). O ticker e os selos ganham

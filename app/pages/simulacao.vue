@@ -735,7 +735,7 @@ const readingHtml = computed(() => {
     <!-- ============ LEITURA DA APORTOU: o painel azul da marca (gradiente
          cobalto, raio 40, o corte gigante a 8%); a anatomia segue a do "O dia
          no mercado" (pedido do dono, 25/08) ============ -->
-    <section v-if="phase === 'result' && result" class="sim__blue">
+    <section v-if="phase === 'result' && result" v-revelar class="sim__blue">
       <div class="sim__blue-painel">
       <MarcaCorte class="sim__blue-corte nu-corte-fundo" :largura="520" cor="var(--nu-white)" />
       <div class="sim__blue-body">
@@ -756,7 +756,7 @@ const readingHtml = computed(() => {
     </section>
 
     <!-- ============ QUEM SANGRA, QUEM SEGURA (faixa quente) ============ -->
-    <section v-if="phase === 'result' && result" class="sim__band sim__band--faixa">
+    <section v-if="phase === 'result' && result" v-revelar="{ alvo: 'filhos' }" class="sim__band sim__band--faixa">
       <NuSectionHeading eyebrow="O cenário, posição a posição">
         Quem sangra,<br>quem segura.
         <template #dek>Impacto estimado do cenário em cada posição, pelo mapa de fatores da carteira: peso × sensibilidade.</template>
@@ -783,7 +783,7 @@ const readingHtml = computed(() => {
     </section>
 
     <!-- ============ ANO A ANO (creme da página) ============ -->
-    <section v-if="phase === 'result' && result" class="sim__band sim__band--cream">
+    <section v-if="phase === 'result' && result" v-revelar="{ alvo: 'filhos' }" class="sim__band sim__band--cream">
       <NuSectionHeading eyebrow="A década, ano a ano">
         Cada ano é uma faixa,<br>não um número.
         <template #dek>O honesto em 10 anos é o intervalo: a caixa é o espaço entre o pessimista e o otimista; o traço azul, a mediana.</template>
@@ -890,8 +890,8 @@ const readingHtml = computed(() => {
   position: relative; overflow: hidden;
   background: var(--nu-page);
   padding: clamp(48px, 6.5vw, 84px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(48px, 6vw, 76px);
-  transition: background-color 0.9s ease;
-  animation: nu-fade 0.5s ease both;
+  transition: background-color var(--nu-dur-entrada) var(--nu-ease-cor);
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) backwards;
 }
 .sim__wiz--film {
   background: var(--nu-ink);
@@ -904,8 +904,8 @@ const readingHtml = computed(() => {
   left: 86%; top: 30%;
   transform: translate(-50%, -50%) scale(0.68);
   opacity: 0.95;
-  transition: left 1s cubic-bezier(0.22, 0.61, 0.36, 1), top 1s cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 1s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.6s ease;
+  transition: left var(--nu-dur-entrada) var(--nu-ease-troca), top var(--nu-dur-entrada) var(--nu-ease-troca),
+    transform var(--nu-dur-entrada) var(--nu-ease-troca), opacity var(--nu-dur-lenta) var(--nu-ease-saida);
 }
 /* passo 2: orb maior, no corredor DIREITO, com o centro vertical alinhado ao
    centro dos dial-cards (~470px do topo da seção — px porque a altura da seção
@@ -950,17 +950,17 @@ const readingHtml = computed(() => {
   transform: translate(-50%, -50%);
   width: 224px;
 }
-.nu-soft-enter-active { transition: opacity 0.6s ease 0.5s; }
-.nu-soft-leave-active { transition: opacity 0.25s ease; }
+.nu-soft-enter-active { transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida) 0.5s; }
+.nu-soft-leave-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .nu-soft-enter-from, .nu-soft-leave-to { opacity: 0; }
 @media (max-width: 1100px) { .sim__orbfeed { display: none; } }
 /* slide direcional SOBREPOSTO: o que sai fica absolute (sem colapsar a
    altura) e desliza por cima; o que entra já ocupa o fluxo com um delay
    mínimo — sem frame vazio, sem pulo de layout */
-.wstep-enter-active, .wstepb-enter-active { transition: opacity 0.5s ease 0.08s, transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) 0.08s; }
+.wstep-enter-active, .wstepb-enter-active { transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida) 0.08s, transform var(--nu-dur-lenta) var(--nu-ease-troca) 0.08s; }
 .wstep-leave-active, .wstepb-leave-active {
   position: absolute; top: 0; left: 0; width: 100%;
-  transition: opacity 0.32s ease, transform 0.32s ease;
+  transition: opacity var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
   pointer-events: none;
 }
 .wstep-enter-from { opacity: 0; transform: translateX(56px); }
@@ -975,7 +975,7 @@ const readingHtml = computed(() => {
   border: none; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
   background: var(--nu-white); color: var(--nu-ink);
   padding: 0 26px; font-size: 16.5px; font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
-  transition: background 0.2s, transform 0.15s var(--nu-ease-saida);
+  transition: background var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .sim__back:hover { background: var(--nu-row-hover); }
 .sim__back:active { transform: scale(.98); }
@@ -987,7 +987,7 @@ const readingHtml = computed(() => {
 .sim__dots { display: inline-flex; gap: 6px; }
 .sim__dot {
   width: 22px; height: 6px; border-radius: var(--nu-r-pill);
-  background: var(--nu-line); transition: background 0.3s ease;
+  background: var(--nu-line); transition: background var(--nu-dur-media) var(--nu-ease-cor);
 }
 .sim__dot--on { background: var(--nu-blue); }
 /* sobre a sálvia o corte e os pontos vão no carvão (o cobalto some ali) */
@@ -996,9 +996,9 @@ const readingHtml = computed(() => {
 .sim__wiz--shock .sim__dot--on { background: var(--nu-ink); }
 .sim__title {
   margin: 18px 0 26px; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
+  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02;
 }
-.sim__honest { margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.45; position: relative; z-index: 1; }
+.sim__honest { margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.45; position: relative; z-index: 1; }
 .sim__wiz--shock .sim__honest { color: var(--nu-gray-3); }
 
 /* builder + passo dos choques */
@@ -1012,14 +1012,14 @@ const readingHtml = computed(() => {
 .sim__result-head { display: flex; justify-content: space-between; gap: 26px; flex-wrap: wrap; align-items: flex-start; }
 .sim__navy-title {
   margin: 18px 0 0; color: var(--nu-white);
-  font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05;
+  font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.05;
 }
 /* o número-herói: o cobalto que lê sobre carvão */
 .sim__counter {
   display: inline-block; margin-top: 10px; color: var(--nu-blue-on-dark); font-variant-numeric: tabular-nums;
-  font-size: clamp(46px, 5.2vw, 68px); letter-spacing: -0.035em; line-height: 1;
+  font-size: clamp(46px, 5.2vw, 68px); letter-spacing: var(--nu-ls-display); line-height: 1;
 }
-.sim__unit { margin: 10px 0 0; font-size: 13.5px; font-weight: 600; color: var(--nu-on-dark-2); }
+.sim__unit { margin: 10px 0 0; font-size: 13.5px; font-weight: var(--nu-w-medio); color: var(--nu-on-dark-2); }
 /* o selo "atenção" sobre carvão */
 .sim__flag {
   margin: 14px 0 0; display: inline-flex; align-items: center;
@@ -1029,13 +1029,13 @@ const readingHtml = computed(() => {
 }
 .sim__flag--mock { background: color-mix(in srgb, var(--nu-red-soft) 22%, transparent); color: var(--nu-red-soft); }
 
-.sim__range { margin: 14px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-lg); font-weight: 500; max-width: 560px; }
+.sim__range { margin: 14px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); max-width: 560px; }
 .sim__range b { font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .sim__range-lo { color: var(--nu-red-soft); }
 .sim__range-hi { color: var(--nu-green-soft); }
 .sim__pills { display: flex; gap: 8px; flex-wrap: wrap; }
 .sim__chart { margin-top: 38px; height: clamp(300px, 42vw, 400px); }
-.sim__chart-legend { margin-top: 14px; display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 600; }
+.sim__chart-legend { margin-top: 14px; display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio); }
 .sim__chart-legend span { display: inline-flex; align-items: center; gap: 7px; }
 .sim__leg { width: 14px; height: 4px; border-radius: 999px; }
 .sim__leg--band { background: var(--nu-blue-soft-35); height: 10px; }
@@ -1048,12 +1048,12 @@ const readingHtml = computed(() => {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
   border: 1px solid var(--nu-dark-chip-line); border-radius: var(--nu-r-pill);
   background: var(--nu-dark-chip); color: var(--nu-on-dark-2);
-  padding: 0 16px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  padding: 0 16px; font-size: 14px; font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), border-color var(--nu-dur-media) var(--nu-ease-cor), background var(--nu-dur-media) var(--nu-ease-cor);
 }
 .sim__leg-check--on { color: var(--nu-white); border-color: var(--nu-on-dark-2); }
 .sim__leg-check:hover { background: var(--nu-navy-3); color: var(--nu-white); }
-.sim__leg-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid; transition: background 0.2s; }
+.sim__leg-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid; transition: background var(--nu-dur-media) var(--nu-ease-cor); }
 
 /* modais (what-if e resumo): o fundo surge, a folha sobe */
 .simw {
@@ -1062,24 +1062,24 @@ const readingHtml = computed(() => {
   padding: clamp(18px, 6vh, 64px) 18px 18px;
   background: var(--nu-day-backdrop);
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  animation: nu-surgir 0.2s ease both;
+  animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both;
 }
 .simw__card {
   width: min(940px, 100%); max-height: calc(100dvh - 36px); overflow-y: auto;
   background: var(--nu-page); border-radius: var(--nu-r-card-lg);
   padding: clamp(20px, 3vw, 30px) clamp(18px, 3vw, 30px) clamp(18px, 2.4vw, 24px); box-shadow: var(--nu-shadow-day-modal);
-  outline: none; animation: nu-subir 0.32s var(--nu-ease-saida) both;
+  outline: none; animation: nu-subir var(--nu-dur-lenta) var(--nu-ease-saida) backwards;
 }
 .simw__head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-.simw__title { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.1; }
+.simw__title { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.1; }
 .simw__close {
   width: 44px; height: 44px; flex-shrink: 0; border: none; border-radius: 50%;
   background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
-  transition: background 0.2s;
+  transition: background var(--nu-dur-media) var(--nu-ease-cor);
 }
 .simw__close:hover { background: var(--nu-line-2); }
-.simw__sub { margin: 6px 0 18px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
+.simw__sub { margin: 6px 0 18px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); }
 .simw__foot { margin-top: 20px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap; }
 .simw__card--summary { width: min(640px, 100%); }
 /* "Cancelar": discreto, sem contorno */
@@ -1087,10 +1087,10 @@ const readingHtml = computed(() => {
 .sim__back--modal:hover { background: var(--nu-cream-2); }
 
 /* ——— leitura da Aportou: o painel azul da marca, com o corte gigante ——— */
+/* a entrada ao rolar é o v-revelar (a seção nasce abaixo do resultado) */
 .sim__blue {
   background: var(--nu-page);
   padding: clamp(28px, 4vw, 56px) max(clamp(16px, 5.5vw, 80px), calc((100% - 1240px) / 2));
-  animation: nu-fade 0.5s ease both;
 }
 .sim__blue-painel {
   position: relative; overflow: hidden;
@@ -1104,11 +1104,11 @@ const readingHtml = computed(() => {
 .sim__blue-lead {
   margin: 0; color: var(--nu-white); text-align: center;
   font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display);
-  letter-spacing: -0.025em; line-height: 1.05; text-wrap: balance;
+  letter-spacing: var(--nu-ls-titulo); line-height: 1.05; text-wrap: balance;
 }
 .sim__blue-text {
   margin: 22px auto 0; color: var(--nu-blue-on-blue);
-  font-size: clamp(17px, 1.5vw, 19px); font-weight: 500; line-height: 1.6; max-width: 780px;
+  font-size: clamp(17px, 1.5vw, 19px); font-weight: var(--nu-w-texto); line-height: 1.6; max-width: 780px;
 }
 .sim__blue-text :deep(.sim__mark) {
   background: var(--nu-white-18); color: var(--nu-white);
@@ -1120,7 +1120,7 @@ const readingHtml = computed(() => {
   display: inline-flex; align-items: center; gap: 9px; min-height: 62px;
   background: transparent; color: var(--nu-white); border: 1.5px solid var(--nu-white-35);
   border-radius: var(--nu-r-pill); padding: 0 28px; font-size: 17px; font-weight: var(--nu-w-medio);
-  cursor: pointer; font-family: inherit; transition: background 0.2s, border-color 0.2s, transform 0.15s var(--nu-ease-saida);
+  cursor: pointer; font-family: inherit; transition: background var(--nu-dur-media) var(--nu-ease-cor), border-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .sim__blue-btn2:hover { background: var(--nu-white-14); border-color: var(--nu-white-60); }
 .sim__blue-btn2:active { transform: scale(.98); }
@@ -1128,18 +1128,18 @@ const readingHtml = computed(() => {
 /* blocos do resumo: cartão branco dentro da folha */
 .sims__block { margin-top: 16px; background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 18px 20px; box-shadow: var(--nu-shadow-quente); }
 .sims__block-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
-.sims__block-label { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
+.sims__block-label { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .sims__copy {
   min-height: 44px; border: none; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
   background: var(--nu-white); color: var(--nu-ink);
   padding: 0 18px; font-size: 14.5px; font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  transition: background var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor);
 }
 .sims__copy:hover { background: var(--nu-row-hover); }
 .sims__copy--ok { background: var(--nu-green-bg); color: var(--nu-green-text); box-shadow: none; }
 .sims__subject { margin: 0 0 6px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.sims__text { margin: 0; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.6; white-space: pre-line; }
-.sims__footer { margin: 16px 2px 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
+.sims__text { margin: 0; color: var(--nu-gray-3); font-size: 15px; font-weight: var(--nu-w-texto); line-height: 1.6; white-space: pre-line; }
+.sims__footer { margin: 16px 2px 0; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.5; }
 
 /* ——— GERAR PDF: no print, só o documento existe ——— */
 @media print {
@@ -1149,14 +1149,14 @@ const readingHtml = computed(() => {
 }
 
 /* ——— bandas claras: faixa quente e página, alternadas ——— */
-.sim__band { padding: clamp(64px, 7vw, 100px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)); animation: nu-fade 0.5s ease both; }
+.sim__band { padding: clamp(72px, 8vw, 128px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
 .sim__subsection { margin-top: clamp(64px, 8vw, 104px); }
 .sim__band--faixa { background: var(--nu-band); }
 .sim__band--cream { background: var(--nu-page); }
 .sim__block { margin-top: 38px; max-width: 900px; }
 .sim__block--full { max-width: none; }
 /* correlação sem dado: uma linha honesta no lugar da seção */
-.sim__corr-off { margin: 26px auto 0; max-width: 640px; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.sim__corr-off { margin: 26px auto 0; max-width: 640px; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 
 /* 422 do motor: a mensagem acionável, no lugar onde se corrige */
 .sim__run-error {
@@ -1167,10 +1167,10 @@ const readingHtml = computed(() => {
 
 /* painel de limites: o cartão quente, tipografia de nota — não compete com os blocos */
 .sim__limits { margin-top: 40px; padding: clamp(22px, 3vw, 34px); background: var(--nu-band); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); }
-.sim__limits-title { display: block; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
+.sim__limits-title { display: block; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 /* duas colunas no desktop (a linha tinha 170 caracteres de ponta a ponta) e o marcador cobalto da marca */
 .sim__limits-list { list-style: none; margin: 18px 0 0; padding: 0; columns: 2 420px; column-gap: clamp(28px, 4vw, 56px); }
-.sim__limits-list li { position: relative; break-inside: avoid; padding: 0 0 14px 20px; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.55; }
+.sim__limits-list li { position: relative; break-inside: avoid; padding: 0 0 14px 20px; color: var(--nu-gray-3); font-size: 15px; font-weight: var(--nu-w-texto); line-height: 1.55; }
 .sim__limits-list li:last-child { padding-bottom: 0; }
 .sim__limits-list li::before { content: ''; position: absolute; left: 0; top: .6em; width: 8px; height: 8px; border-radius: 3px; background: var(--nu-blue); }
 .sim__again { margin-top: 48px; }

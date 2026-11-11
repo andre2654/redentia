@@ -288,14 +288,14 @@ function agir(a: Aviso, acao: AcaoAviso) {
           <li v-for="a in todos" :id="`cav-${a.id}`" :key="a.id" class="cav__item" :class="[`cav__item--${a.gravidade}`, { 'cav__item--aberto': estaAberto(a) }]">
             <p class="cav__tipo">
               <i aria-hidden="true" />{{ ROTULO[a.gravidade] }}
-              <span v-if="a.estado === 'novo'" class="cav__novo">Novo</span>
+              <NuSelo v-if="a.estado === 'novo'" tom="azul" tamanho="p" class="cav__novo">Novo</NuSelo>
               <span v-if="a.prazo" class="cav__prazo">{{ a.prazo }}</span>
             </p>
             <h2 v-if="unico" :id="idTitulo" class="cav__h2 cav__h2--aviso"><FraseDestaque :texto="naTela(a.titulo)" /></h2>
             <button v-else type="button" class="cav__linha" :aria-expanded="estaAberto(a)" @click="alternar(a.id)">
               <span class="cav__t"><FraseDestaque :texto="naTela(a.titulo)" /></span>
               <span v-if="a.emJogo" class="cav__v">{{ semValor(a.emJogo) }}</span>
-              <svg class="cav__seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+              <NuMais :tamanho="28" :aberto="estaAberto(a)" class="cav__seta" />
             </button>
 
             <div v-if="estaAberto(a)" class="cav__det">
@@ -350,23 +350,27 @@ function agir(a: Aviso, acao: AcaoAviso) {
               </div>
               <!-- com um dado faltando, a ressalva fica à vista: é ela que diz que a conta não fechou -->
               <p v-if="a.ressalva && a.confianca === 'incompleto'" class="cav__ressalva">{{ a.ressalva }}</p>
-              <button type="button" class="cav__como" :aria-expanded="comoAberto.has(a.id)" @click="alternarProva(a.id)">
+              <!-- "Como calculei": o "+" da base (NuMais) que gira; a confiança e a fonte abrem com a altura animada e ficam no HTML -->
+              <button type="button" class="cav__como" :aria-expanded="comoAberto.has(a.id)" :aria-controls="`cav-como-${a.id}`" @click="alternarProva(a.id)">
                 Como calculei
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                <NuMais :tamanho="28" :aberto="comoAberto.has(a.id)" />
               </button>
-              <div v-if="comoAberto.has(a.id)" class="cav__notas-conta">
-                <p class="cav__conf" :class="`cav__conf--${a.confianca}`">{{ CONFIANCA[a.confianca] }}</p>
-                <p v-if="a.ressalva && a.confianca !== 'incompleto'">{{ a.ressalva }}</p>
-                <p>Fonte: {{ a.fonte }}</p>
+              <div :id="`cav-como-${a.id}`" class="cav__dobra-como" :class="{ 'cav__dobra-como--aberta': comoAberto.has(a.id) }" :inert="!comoAberto.has(a.id) || undefined">
+                <div class="cav__notas-conta">
+                  <p class="cav__conf" :class="`cav__conf--${a.confianca}`">{{ CONFIANCA[a.confianca] }}</p>
+                  <p v-if="a.ressalva && a.confianca !== 'incompleto'">{{ a.ressalva }}</p>
+                  <p>Fonte: {{ a.fonte }}</p>
+                </div>
               </div>
 
+              <!-- uma ação principal (o botão da base, NuBotaoSeta); as outras são links com seta; o "Já sei" é discreto -->
               <div class="cav__acoes">
-                <button
-                  v-for="(ac, i) in a.acoes" :key="ac.rotulo" type="button" class="cav__acao" :class="{ 'cav__acao--1': i === 0 }"
-                  @click="agir(a, ac)"
-                >{{ ac.rotulo }}</button>
+                <template v-for="(ac, i) in a.acoes" :key="ac.rotulo">
+                  <NuBotaoSeta v-if="i === 0" tamanho="m" class="cav__acao cav__acao--1" @click="agir(a, ac)">{{ ac.rotulo }}</NuBotaoSeta>
+                  <NuLinkSeta v-else tom="tinta" class="cav__acao cav__acao--link" @click="agir(a, ac)">{{ ac.rotulo }}</NuLinkSeta>
+                </template>
                 <!-- a conexão não se "já sabe": ela sai quando volta a atualizar -->
-                <button v-if="!a.detector.startsWith('conexao')" type="button" class="cav__acao cav__ja" @click="resolver(a.id)">Já sei</button>
+                <button v-if="!a.detector.startsWith('conexao')" type="button" class="cav__ja" @click="resolver(a.id)">Já sei</button>
               </div>
             </div>
             <p v-if="erroEstado?.id === a.id" class="cav__erro cav__erro--item" role="status">{{ erroEstado.texto }}</p>
@@ -393,7 +397,7 @@ function agir(a: Aviso, acao: AcaoAviso) {
           <summary>
             <span class="cav__dobra-t">Considerei e não sugeri</span>
             <span class="cav__dobra-s">{{ avisos.descartados.length }} movimentos barrados</span>
-            <svg class="cav__dobra-seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            <NuMais :tamanho="28" class="cav__dobra-seta" />
           </summary>
           <ul class="cav__desc">
             <li v-for="d in avisos.descartados" :key="d.id">
@@ -407,7 +411,7 @@ function agir(a: Aviso, acao: AcaoAviso) {
           <summary>
             <span class="cav__dobra-t">O que eu olhei</span>
             <span class="cav__dobra-s">{{ avisos.olhados.filter((o) => o.ok).length }} de {{ avisos.olhados.length }} sem nada a dizer</span>
-            <svg class="cav__dobra-seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            <NuMais :tamanho="28" class="cav__dobra-seta" />
           </summary>
           <ul class="cav__olhados">
             <li v-for="o in avisos.olhados" :key="o.rotulo" :class="{ 'cav__olhado--nao': !o.ok }">
@@ -459,58 +463,62 @@ function agir(a: Aviso, acao: AcaoAviso) {
 /* ——— o modal: o mesmo painel de CarteiraIdeias. Na Aportou (11/11): creme da página,
    o fundo surge (nu-surgir) e o cartão sobe (nu-subir); a folha do celular sobe de baixo ——— */
 .cav {
-  position: fixed; inset: 0; z-index: 9999; background: var(--nu-day-backdrop);
+  position: fixed; inset: 0; z-index: 9999; background: var(--nu-veu);
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center; padding: 32px; animation: nu-surgir .2s ease both;
+  display: flex; align-items: center; justify-content: center; padding: 32px; animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both;
 }
 .cav__card {
   position: relative; isolation: isolate; width: min(720px, 92vw); max-height: 86vh; overflow: auto; box-sizing: border-box; overscroll-behavior: contain;
-  background: var(--nu-page); border-radius: var(--nu-r-card-lg); padding: 32px 40px 28px; box-shadow: var(--nu-shadow-day-modal);
-  animation: nu-subir .32s var(--nu-ease-saida) both;
+  background: var(--nu-page); border-radius: var(--nu-r-card-lg); padding: 32px 40px; box-shadow: var(--nu-shadow-float);
+  animation: nu-subir var(--nu-dur-lenta) var(--nu-ease-saida) backwards;
 }
 .cav__card:focus { outline: none; }
 .cav__alca { display: none; }
 .cav__cab { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.cav__olhou { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
-.cav__fechar { flex: 0 0 auto; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer; transition: background .2s, transform .2s; }
-.cav__fechar:hover { background: var(--nu-line-2); transform: rotate(90deg); }
-.cav__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; text-wrap: balance; font-variant-numeric: tabular-nums; }
-.cav__h2--aviso { margin-top: 12px; font-size: var(--nu-fs-h2-sm); letter-spacing: -0.03em; line-height: 1.04; }
+.cav__olhou { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
+.cav__fechar { flex: 0 0 auto; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer; transition: background var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida); }
+.cav__fechar:hover { background: var(--nu-line-2); }
+.cav__fechar:active { transform: scale(.94); }
+.cav__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.05; text-wrap: balance; font-variant-numeric: tabular-nums; }
+.cav__h2--aviso { margin-top: 12px; font-size: var(--nu-fs-h2-sm); letter-spacing: var(--nu-ls-display); line-height: 1.04; }
 .cav__espera { padding: 18px 0 4px; border-top: 1px solid var(--nu-line); }
 .cav__lista--unico + .cav__espera { margin-top: 22px; }
 .cav__espera-esq { display: grid; gap: 8px; }
-.cav__retidos { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.cav__retidos { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
 .cav__lista { list-style: none; margin: 18px 0 0; padding: 0; }
 .cav__lista--unico { margin-top: 14px; }
 .cav__item { position: relative; padding: 18px 0 16px; border-top: 1px solid var(--nu-line); scroll-margin: 24px; }
 .cav__lista--unico .cav__item { padding-top: 0; border-top: 0; }
-.cav__tipo { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); letter-spacing: 0.14em; text-transform: uppercase; }
+.cav__tipo { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .cav__tipo i { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-gray); }
 .cav__item--alta .cav__tipo i { background: var(--nu-red-text); }
 .cav__item--media .cav__tipo i { background: var(--nu-amber); }
 .cav__item--info .cav__tipo i { background: var(--nu-blue); }
 .cav__item--bom .cav__tipo i { background: var(--nu-green); }
-.cav__prazo { color: var(--nu-gray); font-weight: 600; letter-spacing: 0; text-transform: none; }
+.cav__prazo { color: var(--nu-gray); font-weight: var(--nu-w-medio); letter-spacing: 0; text-transform: none; }
 .cav__linha { display: flex; align-items: baseline; gap: 16px; width: 100%; min-height: 44px; margin-top: 4px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .cav__linha:focus-visible { outline-offset: 3px; border-radius: 6px; }
-.cav__seta { flex-shrink: 0; align-self: center; color: var(--nu-gray); transition: transform .2s; }
-.cav__linha[aria-expanded='true'] .cav__seta { transform: rotate(180deg); }
-.cav__det { animation: nu-fade .25s ease both; }
-.cav__t { flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-medio); letter-spacing: -0.02em; line-height: 1.3; font-variant-numeric: tabular-nums; }
-.cav__v { flex-shrink: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.cav__x { margin: 12px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
+/* o "+" da linha (NuMais 28): gira ao abrir; sob o ponteiro, o título e o círculo vão ao cobalto */
+.cav__seta { align-self: center; }
+.cav__t { transition: color var(--nu-dur-media) var(--nu-ease-cor); }
+.cav__linha:hover .cav__t { color: var(--nu-blue-text); }
+.cav__linha:hover .cav__seta { background: var(--nu-blue); }
+.cav__det { animation: nu-fade var(--nu-dur-media) var(--nu-ease-saida) backwards; }
+.cav__t { flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-titulo); line-height: 1.3; font-variant-numeric: tabular-nums; }
+.cav__v { flex-shrink: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cav__x { margin: 12px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.55; font-variant-numeric: tabular-nums; }
 .cav__ajustes { list-style: none; margin: 14px 0 0; padding: 0; max-width: 64ch; display: grid; grid-template-columns: auto max-content minmax(0, 1fr); column-gap: 10px; row-gap: 6px; }
 .cav__aj { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; font-size: var(--nu-fs-md); line-height: 1.4; }
 .cav__aj-n { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; transform: translateY(-1px); }
 /* com troca, o valor e o de → para ocupam as duas colunas (subgrid); sem troca, a frase ocupa as duas */
-.cav__aj-t { grid-column: 2 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; min-width: 0; color: var(--nu-ink); font-weight: 600; }
+.cav__aj-t { grid-column: 2 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; min-width: 0; color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .cav__aj-t:not(:has(.cav__aj-v)) { display: block; }
 .cav__aj-v { font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cav__aj-d { min-width: 0; color: var(--nu-ink); }
 .cav__aj-seta { color: var(--nu-gray); }
 .cav__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.cav__ressalva { margin: 14px 0 0; max-width: 62ch; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.cav__ressalva { margin: 14px 0 0; max-width: 62ch; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
 /* ——— o placar da ideia (08/11): as notas, uma célula por pilar com a barra do relatório (.vrl__barra), e os indicadores que mudam ——— */
 .cav__placar { display: flex; flex-direction: column; gap: 12px; margin: 14px 0 0; max-width: 64ch; font-size: var(--nu-fs-md); }
@@ -520,7 +528,7 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__nota-v { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 5px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); line-height: 1.15; font-variant-numeric: tabular-nums; }
 .cav__nota-v b { font-weight: var(--nu-w-forte); }
 .cav__nota-a { color: var(--nu-gray-2); font-weight: var(--nu-w-medio); }
-.cav__nota-seta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.cav__nota-seta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 .cav__nota-d, .cav__nota-igual { margin-left: 3px; font-size: var(--nu-fs-xs); }
 .cav__nota-d { color: var(--nu-green-text); font-weight: var(--nu-w-forte); }
 .cav__nota-d--cai { color: var(--nu-red-text); }
@@ -528,11 +536,11 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__nota-b { position: relative; display: block; height: 8px; border-radius: var(--nu-r-pill); background: var(--nu-line-2); overflow: hidden; }
 .cav__nota-b i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--nu-blue); }
 /* o que muda: o mesmo azul, mais claro (o vermelho, se cair), 2 px depois do que já está */
-.cav__nota-b .cav__nota-f { background: color-mix(in srgb, var(--nu-blue) 45%, var(--nu-white)); transform-origin: left; animation: cavnota .6s var(--nu-ease-saida) .3s both; }
+.cav__nota-b .cav__nota-f { background: color-mix(in srgb, var(--nu-blue) 45%, var(--nu-white)); transform-origin: left; animation: cavnota var(--nu-dur-lenta) var(--nu-ease-saida) .3s both; }
 .cav__nota-b .cav__nota-f--cai { background: color-mix(in srgb, var(--nu-red) 45%, var(--nu-white)); }
 @keyframes cavnota { from { transform: scaleX(0); } }
 /* os indicadores que mudam: a linha quebra entre eles, nunca no meio de um; a cor é só a do texto */
-.cav__inds { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.cav__inds { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); line-height: 1.5; font-variant-numeric: tabular-nums; }
 .cav__ind { white-space: nowrap; }
 .cav__ind:not(:last-child)::after { content: '·'; margin-left: 8px; color: var(--nu-gray); }
 .cav__ind-n { color: var(--nu-gray-3); font-weight: var(--nu-w-medio); }
@@ -541,44 +549,50 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__ind-d--piora { color: var(--nu-red-text); }
 .cav__ind-mais { padding: 0; border: 0; background: none; color: var(--nu-blue-text); font: inherit; font-weight: var(--nu-w-medio); white-space: nowrap; cursor: pointer; }
 .cav__ind-mais:focus-visible { border-radius: 4px; }
-.cav__novo { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0; text-transform: none; }
+.cav__novo { text-transform: none; }
 .cav__conf { display: flex; align-items: center; gap: 6px; font-weight: var(--nu-w-medio); }
 .cav__conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--nu-green); }
 .cav__conf--estimativa::before { background: var(--nu-blue); }
 .cav__conf--incompleto::before { background: var(--nu-amber); }
-.cav__como { display: inline-flex; align-items: center; gap: 4px; margin: 14px 0 0; padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-gray-2); font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; }
-.cav__como:hover { color: var(--nu-ink); }
-.cav__notas-conta { display: grid; gap: 6px; margin: 10px 0 0; max-width: 62ch; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; animation: cavfade .2s ease; }
+/* "Como calculei": o rótulo e o "+" (NuMais 28) num botão de 44px; sob o ponteiro vão ao cobalto, como no NuAcordeao */
+.cav__como {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 8px 0 0; padding: 0; border: 0; border-radius: var(--nu-r-tag);
+  background: none; cursor: pointer; color: var(--nu-gray-3); font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
+  transition: color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.cav__como:hover { color: var(--nu-blue-text); }
+.cav__como:hover .nmx { background: var(--nu-blue); }
+/* a confiança e a fonte: a altura anima de 0 ao conteúdo (o gesto do NuAcordeao) */
+.cav__dobra-como { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-lenta) var(--nu-ease-troca); }
+.cav__dobra-como--aberta { grid-template-rows: 1fr; opacity: 1; }
+.cav__dobra-como > .cav__notas-conta { min-height: 0; overflow: hidden; }
+.cav__notas-conta { display: grid; align-content: start; gap: 8px; max-width: 62ch; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
 .cav__notas-conta p { margin: 0; }
-.cav__como[aria-expanded='true'] svg { transform: rotate(180deg); }
-.cav__como svg { transition: transform .2s; }
-.cav__como:focus-visible { border-radius: 4px; }
-.cav__prova { margin: 18px 0 0; border-top: 1px solid var(--nu-line); border-bottom: 1px solid var(--nu-line); animation: cavfade .2s ease; }
+.cav__notas-conta > :first-child { margin-top: 8px; }
+.cav__prova { margin: 18px 0 0; border-top: 1px solid var(--nu-line); border-bottom: 1px solid var(--nu-line); animation: cavfade var(--nu-dur-media) var(--nu-ease-cor); }
 .cav__prova dl { margin: 0; }
 .cav__prova-l { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 12px 0; border-top: 1px solid var(--nu-line); font-size: var(--nu-fs-md); }
 .cav__prova-l:first-child { border-top: 0; }
-.cav__prova-l dt { color: var(--nu-gray-2); font-weight: 500; }
-.cav__prova-l dd { margin: 0; color: var(--nu-ink); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.cav__prova-l dt { color: var(--nu-gray-2); font-weight: var(--nu-w-texto); }
+.cav__prova-l dd { margin: 0; color: var(--nu-ink); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; text-align: right; }
 /* o valor curto não quebra ('R$ 387,91' partia em duas linhas no celular); o de frase quebra à vontade */
 .cav__prova-l:not(.cav__prova-l--frase) dd { flex-shrink: 0; white-space: nowrap; }
 /* a última linha da conta curta é o total: o número que a frase destacou */
 .cav__prova-l:last-child:not(:first-child):not(.cav__prova-l--frase) dt { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .cav__prova-l:last-child:not(:first-child):not(.cav__prova-l--frase) dd { font-weight: var(--nu-w-forte); }
 .cav__prova-l--frase { flex-direction: column; gap: 2px; }
-.cav__prova-l--frase dd { text-align: left; font-weight: 600; }
-.cav__acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; }
-.cav__acao {
-  height: 52px; padding: 0 26px; border-radius: var(--nu-r-pill); border: 0; background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
-  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s, transform .15s var(--nu-ease-saida);
+.cav__prova-l--frase dd { text-align: left; font-weight: var(--nu-w-medio); }
+/* a ação principal é o NuBotaoSeta azul; as outras, NuLinkSeta; o "Já sei" é discreto (só texto, o fundo creme no hover) */
+.cav__acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 24px; margin: 24px 0 0; }
+.cav__acao--link { font-size: var(--nu-fs-md); }
+.cav__ja {
+  min-height: 44px; padding: 0 16px; margin-left: -8px; border: 0; border-radius: var(--nu-r-pill); background: none; cursor: pointer;
+  color: var(--nu-gray); font: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
+  transition: background var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
-.cav__acao:hover { background: var(--nu-row-hover); }
-.cav__acao:active { transform: scale(.98); }
-/* a ação principal é azul; o "Já sei" é discreto: só texto, sem contorno */
-.cav__acao--1 { background: var(--nu-blue); color: var(--nu-white); box-shadow: none; }
-.cav__acao--1:hover { background: var(--nu-blue-hover); }
-.cav__ja { background: none; box-shadow: none; padding: 0 14px; color: var(--nu-gray); font-weight: 600; }
 .cav__ja:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
-.cav__resolvidos { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.cav__ja:active { transform: scale(.98); }
+.cav__resolvidos { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 .cav__desfazer { padding: 0; border: 0; background: none; color: var(--nu-blue-text); font: inherit; font-weight: var(--nu-w-medio); cursor: pointer; }
 
 .cav__dobra { margin-top: 18px; border-top: 1px solid var(--nu-line); }
@@ -586,21 +600,24 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__dobra summary::-webkit-details-marker { display: none; }
 .cav__dobra summary:focus-visible { border-radius: 4px; }
 .cav__dobra-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.cav__dobra-s { margin-left: auto; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; text-align: right; }
-.cav__dobra-seta { flex-shrink: 0; color: var(--nu-gray); transition: transform .2s; }
-.cav__dobra[open] .cav__dobra-seta { transform: rotate(180deg); }
+.cav__dobra-s { margin-left: auto; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); text-align: right; }
+/* o "+" do <details> (NuMais 28) gira sozinho quando abre; o conteúdo chega com o fade curto */
+.cav__dobra-t { transition: color var(--nu-dur-media) var(--nu-ease-cor); }
+.cav__dobra summary:hover .cav__dobra-t { color: var(--nu-blue-text); }
+.cav__dobra summary:hover .cav__dobra-seta { background: var(--nu-blue); }
+.cav__dobra[open] > :not(summary) { animation: nu-fade var(--nu-dur-media) var(--nu-ease-saida) backwards; }
 .cav__desc { list-style: none; margin: 4px 0 0; padding: 0; }
 .cav__desc li { padding: 10px 0; border-top: 1px solid var(--nu-line); }
 .cav__desc li:first-child { border-top: 0; }
 .cav__desc-m { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); text-decoration: line-through; text-decoration-color: var(--nu-gray-2); text-decoration-thickness: 1px; }
-.cav__desc-v { margin: 4px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.cav__desc-v { margin: 4px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
 .cav__olhados { list-style: none; margin: 0 0 8px; padding: 0; }
 .cav__olhados li { display: grid; grid-template-columns: 20px minmax(110px, 200px) minmax(0, 1fr); align-items: baseline; gap: 10px; padding: 7px 0; font-size: var(--nu-fs-sm); }
 .cav__check { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--nu-green-bg, var(--nu-cream)); color: var(--nu-green-text, var(--nu-green)); transform: translateY(3px); font-weight: var(--nu-w-forte); font-size: 11px; }
 .cav__olhado--nao .cav__check { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .cav__olhado-r { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
-.cav__olhado-v { color: var(--nu-gray-3); font-weight: 500; font-variant-numeric: tabular-nums; }
-.cav__erro { margin: 12px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5; }
+.cav__olhado-v { color: var(--nu-gray-3); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
+.cav__erro { margin: 12px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; }
 .cav__erro--item { margin: 8px 0 0; }
 .cav__erro--canal { flex-basis: 100%; margin: 0; }
 
@@ -614,27 +631,28 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__canal-op { display: inline-flex; padding: 4px; border-radius: var(--nu-r-pill); background: var(--nu-cream-2); }
 .cav__op {
   height: 40px; padding: 0 16px; border: 0; border-radius: var(--nu-r-pill); background: transparent; white-space: nowrap;
-  color: var(--nu-gray-3); font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s, color .2s;
+  color: var(--nu-gray-3); font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer; transition: background var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .cav__op:hover:not(:disabled) { color: var(--nu-ink); }
 .cav__op[aria-pressed='true'] { background: var(--nu-ink); color: var(--nu-white); }
 .cav__op:disabled { color: var(--nu-gray); opacity: .55; cursor: not-allowed; }
-.cav__canais-dica { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
+.cav__canais-dica { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
-.cav__pe { margin: 22px 0 0; padding-top: 16px; border-top: 1px solid var(--nu-line); color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
+.cav__pe { margin: 22px 0 0; padding-top: 16px; border-top: 1px solid var(--nu-line); color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
 @keyframes cavfade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cavsobe { from { transform: translateY(100%); } to { transform: none; } }
 @media (max-width: 640px) {
   .cav { padding: 0; align-items: flex-end; }
-  .cav__card { width: 100%; max-height: 90vh; max-height: 90dvh; border-radius: var(--nu-r-card-lg) var(--nu-r-card-lg) 0 0; padding: 12px 20px calc(20px + env(safe-area-inset-bottom)); animation: cavsobe .32s var(--nu-ease-saida); }
+  .cav__card { width: 100%; max-height: 90vh; max-height: 90dvh; border-radius: var(--nu-r-card-lg) var(--nu-r-card-lg) 0 0; padding: 12px 20px calc(20px + env(safe-area-inset-bottom)); animation: cavsobe var(--nu-dur-lenta) var(--nu-ease-saida); }
   .cav__alca { display: block; width: 40px; height: 4px; margin: 0 auto 14px; border-radius: 2px; background: var(--nu-line); }
   .cav__h2 { margin-top: 16px; font-size: var(--nu-fs-2xl); }
   .cav__h2--aviso { font-size: var(--nu-fs-h3); }
   .cav__linha { flex-wrap: wrap; gap: 2px 12px; }
-  .cav__t { flex-basis: calc(100% - 34px); font-size: var(--nu-fs-lg); }
+  .cav__t { flex-basis: calc(100% - 44px); font-size: var(--nu-fs-lg); }
   .cav__v { order: 3; flex-basis: 100%; }
-  .cav__acoes { flex-direction: column; align-items: stretch; }
+  .cav__acoes { flex-direction: column; align-items: stretch; gap: 8px; }
+  .cav__acao--link, .cav__ja { justify-content: center; margin-left: 0; }
   .cav__dobra summary { flex-wrap: wrap; gap: 2px 12px; }
   .cav__dobra-t { flex: 1; }
   .cav__dobra-s { order: 3; flex-basis: 100%; margin-left: 0; text-align: left; }
@@ -650,7 +668,8 @@ function agir(a: Aviso, acao: AcaoAviso) {
 }
 @media (prefers-reduced-motion: reduce) {
   .cav, .cav__card, .cav__prova, .cav__det, .cav__nota-b .cav__nota-f { animation: none; }
-  .cav__seta, .cav__dobra-seta { transition: none; }
+  .cav__dobra-como { transition: none; }
+  .cav__dobra[open] > :not(summary) { animation: none; }
   .cav__op { transition: none; }
 }
 </style>

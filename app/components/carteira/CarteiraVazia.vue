@@ -178,10 +178,10 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
 .cvz {
   background: var(--nu-page);
   padding: clamp(56px, 8vw, 112px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(44px, 6vw, 80px);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) backwards;
 }
-.cvz__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero-xl); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 0.96; }
-.cvz__linha { margin: clamp(18px, 2vw, 26px) 0 0; max-width: 640px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
+.cvz__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero-xl); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 0.96; }
+.cvz__linha { margin: clamp(18px, 2vw, 26px) 0 0; max-width: 640px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; }
 
 .cvz__bancos { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); }
 /* os círculos se encostam sem que o anel de um cubra o logo do vizinho: o logo de fundo cheio (Inter, XP) saía cortado */
@@ -189,7 +189,7 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
 .cvz__logo {
   display: grid; place-items: center; width: 44px; height: 44px; margin-left: -5px;
   border-radius: 50%; overflow: hidden; background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-page), var(--nu-shadow-pos-nav);
-  transition: transform .2s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida);
 }
 .cvz__logo :deep(.cil) { border: 0; border-radius: 7px; }
 @media (max-width: 420px) {
@@ -198,14 +198,14 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
   .cvz__logo :deep(.cil) { width: 22px !important; height: 22px !important; border-radius: 6px; }
 }
 .cvz__logo:hover { transform: translateY(-3px); }
-.cvz__bancos-txt { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
+.cvz__bancos-txt { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.45; }
 @media (prefers-reduced-motion: reduce) { .cvz__logo { transition: none; } }
 
 .cvz__acao { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; margin-top: clamp(28px, 4vw, 40px); }
-.cvz__seguro { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.cvz__seguro { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 .cvz__seguro svg { color: var(--nu-green); flex-shrink: 0; }
 
-.cvz__titulo--lendo { font-size: var(--nu-fs-hero); letter-spacing: -0.035em; line-height: 0.98; }
+.cvz__titulo--lendo { font-size: var(--nu-fs-hero); letter-spacing: var(--nu-ls-display); line-height: 0.98; }
 .cvz__esqueleto {
   display: flex; flex-direction: column; gap: 14px; max-width: 560px; margin-top: clamp(28px, 4vw, 44px);
   padding: 26px; border-radius: var(--nu-r-card); background: var(--nu-band); box-shadow: var(--nu-shadow-quente);
@@ -227,14 +227,14 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
   list-style: none; margin: clamp(48px, 6vw, 80px) 0 0; padding: 0;
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: clamp(24px, 3vw, 40px);
 }
-.cvz__passo { display: flex; flex-direction: column; gap: 6px; animation: nu-fade .5s ease both; }
+.cvz__passo { display: flex; flex-direction: column; gap: 6px; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) backwards; }
 .cvz__passo:nth-child(2) { animation-delay: 60ms; }
 .cvz__passo:nth-child(3) { animation-delay: 120ms; }
 .cvz__num {
   padding-bottom: 10px; margin-bottom: 10px; border-bottom: 3px solid var(--nu-ink);
-  color: var(--nu-blue); font-size: clamp(64px, 7vw, 88px); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: .9; font-variant-numeric: tabular-nums;
+  color: var(--nu-blue); font-size: clamp(64px, 7vw, 88px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .9; font-variant-numeric: tabular-nums;
 }
-.cvz__passo-t { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
-.cvz__passo-d { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+.cvz__passo-t { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+.cvz__passo-d { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; }
 @media (prefers-reduced-motion: reduce) { .cvz__passo { animation: none; } }
 </style>

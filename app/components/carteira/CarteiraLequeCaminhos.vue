@@ -1036,7 +1036,7 @@ onBeforeUnmount(() => {
 
 .clc__eixo { position: absolute; left: 0; right: 0; height: 20px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .clc__eixo-hoje { position: absolute; left: 0; white-space: nowrap; }
-.clc__eixo-ano { position: absolute; transform: translateX(-50%); white-space: nowrap; color: var(--nu-cream-text-35); font-weight: 500; }
+.clc__eixo-ano { position: absolute; transform: translateX(-50%); white-space: nowrap; color: var(--nu-cream-text-35); font-weight: var(--nu-w-texto); }
 .clc__eixo-fim { position: absolute; transform: translateX(-50%); white-space: nowrap; }
 
 .clc__rotulos { position: absolute; top: 0; right: 0; bottom: 0; pointer-events: none; }
@@ -1052,7 +1052,7 @@ onBeforeUnmount(() => {
 .clc__rotulo--mal-acima .clc__valor { color: var(--nu-cream-text-85); }
 .clc__contador {
   position: absolute; top: 4px; pointer-events: none; white-space: nowrap;
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 .clc__contador b { color: var(--nu-cream-text); font-weight: var(--nu-w-medio); }
 .clc__hoje {
@@ -1062,17 +1062,17 @@ onBeforeUnmount(() => {
 .clc__valor--hover { font-size: var(--nu-fs-lg); }
 /* no hover, os finais parados dão lugar aos dos três caminhos acesos (o
    seletor forte vence o da abertura, que tem atraso) */
-.clc.clc--lendo .clc__rotulo:not(.clc__rotulo--hover) { opacity: 0; transition: opacity .15s ease; }
+.clc.clc--lendo .clc__rotulo:not(.clc__rotulo--hover) { opacity: 0; transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor); }
 .clc.clc--lendo .clc__rotulo.clc__rotulo--hover { opacity: 1; transform: translate(0, -50%); transition: none; }
 
 /* os rótulos e o eixo chegam depois da luz, uma vez */
 .clc--armado .clc__rotulo { opacity: 0; transform: translate(-6px, -50%); }
 .clc--armado.clc--visivel .clc__rotulo {
   opacity: 1; transform: translate(0, -50%);
-  transition: opacity .5s ease 1.2s, transform .5s ease 1.2s;
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida) 1.2s, transform var(--nu-dur-lenta) var(--nu-ease-saida) 1.2s;
 }
 .clc--armado .clc__eixo { opacity: 0; }
-.clc--armado.clc--visivel .clc__eixo { opacity: 1; transition: opacity .5s ease .8s; }
+.clc--armado.clc--visivel .clc__eixo { opacity: 1; transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida) .8s; }
 
 @media (max-width: 600px) {
   .clc__valor, .clc__valor--hover { font-size: var(--nu-fs-md); }

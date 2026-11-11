@@ -22,6 +22,7 @@
 import AcaoCadeiaDetalhe from '~/components/acao/AcaoCadeiaDetalhe.vue'
 import type { AcaoCadeiaDetalheVM } from '~/types/acao'
 import type { CarteiraPosicaoMundo } from '~/types/carteira'
+import { palavrasComDestaque } from '~/utils/fraseDestaque'
 import { contextoDaCadeiaDaCarteira, detalheDaLigacao } from '~/utils/cadeiaDaCarteira'
 
 const props = defineProps<{ posicoes: CarteiraPosicaoMundo[] }>()
@@ -62,7 +63,8 @@ function abrir(id: string) {
 
 /* ————— a frase que surge (o mesmo gesto do "No mundo") ————— */
 
-const palavras = computed(() => vm.value.frase.split(' ').filter(Boolean))
+// palavra a palavra, com o número que importa em cobalto (a linha "A frase" da /carteira)
+const palavras = computed(() => palavrasComDestaque(vm.value.frase))
 type ModoPalavras = 'parado' | 'esperando' | 'revelando'
 const modo = ref<ModoPalavras>('parado')
 const cabeca = ref<HTMLElement | null>(null)
@@ -98,7 +100,7 @@ const contexto = computed(() => ({
     <div ref="cabeca" class="cca__cabeca">
       <span class="cca__eyebrow">Na cadeia</span>
       <h2 v-if="pronto" id="cca-titulo" class="cca__frase" :class="`cca__frase--${modo}`" :aria-label="vm.frase">
-        <template v-for="(p, i) in palavras" :key="`${i}-${p}`"><span class="cca__palavra" :style="{ '--i': i }" aria-hidden="true">{{ p }}</span>{{ ' ' }}</template>
+        <template v-for="(p, i) in palavras" :key="`${i}-${p.antes}${p.destaque}${p.depois}`"><span class="cca__palavra" :style="{ '--i': i }" aria-hidden="true">{{ p.antes }}<b v-if="p.destaque" class="cca__realce">{{ p.destaque }}</b>{{ p.depois }}</span>{{ ' ' }}</template>
       </h2>
       <template v-else>
         <h2 id="cca-titulo" class="cca__sr">Ligações entre as suas empresas</h2>
@@ -151,19 +153,20 @@ const contexto = computed(() => ({
 .cca__eyebrow { display: block; color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.2em; text-transform: uppercase; }
 .cca__frase {
   margin: 18px 0 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04;
+  font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.04;
   font-variant-numeric: tabular-nums; text-wrap: balance;
 }
 .cca__palavra { display: inline-block; }
+.cca__realce { color: var(--nu-blue); font-weight: inherit; }
 .cca__frase--esperando .cca__palavra { opacity: 0; }
 .cca__frase--revelando .cca__palavra {
-  animation: cca-palavra 520ms var(--nu-ease-saida) both;
+  animation: cca-palavra var(--nu-dur-lenta) var(--nu-ease-saida) both;
   animation-delay: min(calc(var(--i) * 38ms), 900ms);
 }
 @keyframes cca-palavra { from { opacity: 0; filter: blur(8px); transform: translateY(6px); } }
 .cca__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .cca__esq-frase { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
-.cca__nota { margin: 16px 0 0; max-width: 620px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+.cca__nota { margin: 16px 0 0; max-width: 620px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
 .cca__corpo { margin-top: clamp(28px, 4vw, 52px); }
 
@@ -177,12 +180,12 @@ const contexto = computed(() => ({
 
 .cca__pe { max-width: 860px; margin: clamp(28px, 3.4vw, 40px) auto 0; display: flex; flex-direction: column; gap: 12px; }
 .cca__quietas { display: flex; flex-direction: column; gap: 10px; }
-.cca__pe-rot { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
+.cca__pe-rot { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .cca__chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .cca__chip {
   display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: 4px 12px 4px 5px; border-radius: var(--nu-r-tag);
   background: var(--nu-page); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); letter-spacing: 0.02em; box-shadow: var(--nu-shadow-quente);
-  transition: background .2s, transform .25s var(--nu-ease-saida);
+  transition: background var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
 .cca__chip:hover { background: var(--nu-white); transform: translateY(-2px); color: var(--nu-ink); }
 

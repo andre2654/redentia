@@ -121,8 +121,8 @@ const bandPath = computed(() => {
   .spd__head-txt { padding-left: 14px; border-left: 1px solid var(--nu-line); }
   .spd__head-txt { display: flex; flex-direction: column; line-height: 1.25; }
   .spd__head-txt b { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
-  .spd__head-txt span { font-size: var(--nu-fs-xs); color: var(--nu-gray); font-weight: 500; }
-  .spd__title { margin: 0 0 8px; font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
+  .spd__head-txt span { font-size: var(--nu-fs-xs); color: var(--nu-gray); font-weight: var(--nu-w-texto); }
+  .spd__title { margin: 0 0 8px; font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
   .spd__lead { margin: 0 0 14px; font-size: var(--nu-fs-dense); line-height: 1.55; color: var(--nu-gray-3); max-width: 640px; }
   .spd__lead b { font-weight: var(--nu-w-forte); }
   .spd__chart { width: 100%; height: 170px; }
@@ -131,8 +131,8 @@ const bandPath = computed(() => {
   background: var(--nu-amber-bg); color: var(--nu-amber-text);
   border-radius: var(--nu-r-tag); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
 }
-.spd__fxnote { margin: 0 0 10px; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 500; }
-.spd__chart-legend { margin: 4px 0 16px; font-size: 10px; color: var(--nu-gray); font-weight: 500; }
+.spd__fxnote { margin: 0 0 10px; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
+.spd__chart-legend { margin: 4px 0 16px; font-size: 10px; color: var(--nu-gray); font-weight: var(--nu-w-texto); }
   .spd__table { width: 100%; border-collapse: collapse; font-size: var(--nu-fs-xs); }
   .spd__table th {
     text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--nu-ink);

@@ -78,7 +78,7 @@ const moodStyle = computed(() => {
 }
 .orb__mood {
   position: absolute; inset: 0; border-radius: 50%;
-  transition: opacity 0.6s ease, background 0.6s ease;
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida), background var(--nu-dur-lenta) var(--nu-ease-cor);
   pointer-events: none;
 }
 .orb__grain {

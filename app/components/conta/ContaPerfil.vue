@@ -113,11 +113,11 @@ function relativeTimePt(iso: string): string {
 
 <style scoped>
 .pf__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(18px, 2.5vw, 26px); }
-.pf__err { margin: 18px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 600; }
+.pf__err { margin: 18px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .pf__actions { display: flex; align-items: center; gap: 14px 18px; flex-wrap: wrap; margin-top: clamp(24px, 3vw, 34px); }
 /* a pílula da marca (NuPillButton) é de largura cheia: aqui ela tem a largura do rótulo */
 .pf__save { display: inline-block; min-width: 230px; }
-.pf__meta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.pf__meta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 
 @media (max-width: 620px) {
   .pf__grid { grid-template-columns: 1fr; }

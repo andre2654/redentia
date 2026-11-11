@@ -12,6 +12,7 @@ import type { CarteiraPosicaoMundo } from '~/types/carteira'
 import { nomeCurto } from '~/utils/carteiraVisao'
 import VisaoLenteAtivos from './VisaoLenteAtivos.vue'
 import VisaoLenteRiscos from './VisaoLenteRiscos.vue'
+import { REVELACAO } from '~/utils/revelar'
 
 const props = defineProps<{ visao: CarteiraVisao }>()
 
@@ -40,17 +41,31 @@ function paraOMundo(p: PosicaoVisao): CarteiraPosicaoMundo {
   return { ticker: p.ticker, classe: p.classe, valor: p.valor, nome: p.classe === 'TREASURY' ? nomeCurto(p.nome) : p.nome }
 }
 const posicoesMundo = computed<CarteiraPosicaoMundo[]>(() => props.visao.posicoes.map(paraOMundo))
+
+/* A troca de lente (robustez, 11/11/2026): a lente nova entra com um fade curto
+   e 8px de subida (280ms, a curva de saída), no mesmo lugar, sem pulo de altura
+   (a caixa é a mesma; só o conteúdo de dentro troca). Movimento reduzido: troca seca. */
+const lenteRef = ref<HTMLElement | null>(null)
+watch(lente, () => {
+  if (import.meta.server) return
+  const el = lenteRef.value
+  if (!el || typeof el.animate !== 'function' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  nextTick(() => el.animate(
+    [{ opacity: 0, translate: '0 8px' }, { opacity: 1, translate: '0 0' }],
+    { duration: 280, easing: REVELACAO.curva, fill: 'backwards' },
+  ))
+})
 </script>
 
 <template>
   <section class="voe" aria-labelledby="voe-titulo" data-clarity-mask="true">
-    <div class="voe__cab">
+    <div v-revelar class="voe__cab">
       <NuEyebrow id="voe-titulo" como="h2">Onde está o meu dinheiro?</NuEyebrow>
       <!-- as abas: o trilho da base (setas e Home/End andam; a pílula desliza até a lente nova) -->
       <NuTrilho v-model="lente" :opcoes="ABAS" papel="tablist" id-base="voe-aba" largo="celular" class="voe__abas" aria-labelledby="voe-titulo" />
     </div>
 
-    <div :id="`voe-lente-${lente}`" class="voe__lente" role="tabpanel" :aria-labelledby="`voe-aba-${lente}`">
+    <div :id="`voe-lente-${lente}`" ref="lenteRef" v-revelar class="voe__lente" role="tabpanel" :aria-labelledby="`voe-aba-${lente}`">
       <KeepAlive>
         <VisaoLenteAtivos v-if="lente === 'ativos'" :visao="visao" />
         <CarteiraMundo v-else-if="lente === 'mundo'" :posicoes="posicoesMundo" />
@@ -73,7 +88,8 @@ const posicoesMundo = computed<CarteiraPosicaoMundo[]>(() => props.visao.posicoe
 .voe__cab { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 24px; }
 /* as abas: o NuTrilho, com o trilho um tom abaixo da faixa quente (o creme dele some no --nu-band) */
 .voe__abas { --ntr-trilho: color-mix(in srgb, var(--nu-ink) 8%, var(--nu-band)); }
-.voe__lente { margin-top: clamp(18px, 2.4vw, 28px); min-height: 420px; animation: nu-fade .4s var(--nu-ease-saida) both; }
+/* a entrada ao rolar é o v-revelar; a troca de lente, a animação curta do script */
+.voe__lente { margin-top: clamp(24px, 2.8vw, 32px); min-height: 420px; }
 
 /* Mundo e Cadeia sem a moldura deles: a seção é esta */
 .voe__lente :deep(.cmu), .voe__lente :deep(.cca) { padding: 0; background: transparent; overflow: visible; }
@@ -84,7 +100,5 @@ const posicoesMundo = computed<CarteiraPosicaoMundo[]>(() => props.visao.posicoe
   /* no celular as abas descem para baixo do título e esticam (largo="celular") */
   .voe__cab { flex-direction: column; align-items: flex-start; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .voe__lente { animation: none; }
-}
+
 </style>

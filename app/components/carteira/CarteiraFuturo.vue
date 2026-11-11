@@ -102,7 +102,7 @@ const apoio = computed(() => {
 </script>
 
 <template>
-  <section v-if="estado !== 'vazio' && estado !== 'bloqueado'" ref="raiz" class="cfu" aria-labelledby="cfu-titulo" data-clarity-mask="true">
+  <section v-if="estado !== 'vazio' && estado !== 'bloqueado'" ref="raiz" v-revelar class="cfu" aria-labelledby="cfu-titulo" data-clarity-mask="true">
     <NuFaixaMarca :rotulo="`E daqui a ${vm?.horizonte ?? 5} anos?`" como="p" :raio="32" class="cfu__cartao">
     <div class="cfu__miolo">
     <template v-if="estado === 'pronto' && vm && dados">
@@ -183,7 +183,7 @@ const apoio = computed(() => {
       <template v-else>
         <p class="cfu__erro-frase">O motor de cenários não respondeu agora.</p>
         <p class="cfu__erro-sub">Costuma voltar em alguns minutos. Nada mudou na sua carteira.</p>
-        <button type="button" class="cfu__tentar" @click="carregar">Tentar de novo</button>
+        <NuBotaoSeta variante="creme" tamanho="m" @click="carregar">Tentar de novo</NuBotaoSeta>
       </template>
     </div>
     </div>
@@ -196,7 +196,6 @@ const apoio = computed(() => {
 .cfu {
   background: var(--nu-page);
   padding: clamp(8px, 2vw, 24px) var(--cvi-g, clamp(20px, 5.5vw, 80px)) clamp(56px, 7.5vw, 96px);
-  animation: nu-fade .5s ease both;
   scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
 }
 .cfu__miolo { padding: clamp(24px, 3.4vw, 44px) clamp(18px, 4vw, 56px) clamp(28px, 4vw, 52px); }
@@ -204,27 +203,27 @@ const apoio = computed(() => {
 .cfu__texto { min-width: 0; max-width: 860px; }
 .cfu__frase {
   margin: 0; color: var(--nu-white);
-  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
+  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02;
   font-variant-numeric: tabular-nums; text-wrap: balance;
 }
 .cfu__frase b { color: var(--nu-blue-on-dark); font-weight: inherit; white-space: nowrap; }
-.cfu__sub { margin: 18px 0 0; color: var(--nu-on-dark); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
+.cfu__sub { margin: 18px 0 0; color: var(--nu-on-dark); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; }
 /* a chamada: a pílula creme com a seta (NuBotaoSeta); no celular o texto quebra em vez de vazar */
 .cfu__perguntar { margin-top: clamp(22px, 3vw, 32px); max-width: 100%; white-space: normal; text-align: left; }
 .cfu__grafico { margin-top: clamp(32px, 4vw, 52px); }
 .cfu__teste { margin-top: clamp(28px, 3.4vw, 44px); }
-.cfu__teste-t { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.5; }
-.cfu__teste-dica { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 500; letter-spacing: 0; text-transform: none; }
+.cfu__teste-t { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; line-height: 1.5; }
+.cfu__teste-dica { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); letter-spacing: 0; text-transform: none; }
 .cfu__fatos { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 clamp(20px, 3vw, 44px); margin: 10px 0 0; padding: 0; }
 .cfu__fato {
   display: flex; flex-direction: column; gap: 6px; width: 100%; height: 100%; padding: 16px 0 6px; border: 0; border-top: 1px solid var(--nu-dark-chip-line);
-  background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: opacity .25s, border-color .25s;
+  background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: opacity var(--nu-dur-media) var(--nu-ease-cor), border-color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.cfu__fato-n { color: var(--nu-on-dark-2); font-size: var(--nu-fs-md); font-weight: 600; font-variant-numeric: tabular-nums; }
-.cfu__fato-n b { color: var(--nu-white); font-size: clamp(34px, 3.6vw, 48px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1; }
+.cfu__fato-n { color: var(--nu-on-dark-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
+.cfu__fato-n b { color: var(--nu-white); font-size: clamp(34px, 3.6vw, 48px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1; }
 .cfu__fato--verde .cfu__fato-n b { color: var(--nu-green-soft); }
 .cfu__fato--vermelho .cfu__fato-n b { color: var(--nu-red-soft); }
-.cfu__fato-t { color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
+.cfu__fato-t { color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.45; }
 .cfu__fato--on { border-top-color: var(--nu-white); }
 .cfu__fato--verde.cfu__fato--on { border-top-color: var(--nu-green-soft); }
 .cfu__fato--vermelho.cfu__fato--on { border-top-color: var(--nu-red-soft); }
@@ -233,7 +232,7 @@ const apoio = computed(() => {
 .cfu__nota {
   margin: clamp(22px, 3vw, 32px) 0 0; max-width: 760px;
   display: flex; flex-direction: column; gap: 4px;
-  color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 500; line-height: 1.55;
+  color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.55;
 }
 .cfu__cobertura { color: var(--nu-on-dark); }
 
@@ -242,14 +241,6 @@ const apoio = computed(() => {
 .cfu__esq-leque { margin-top: clamp(20px, 3vw, 36px); }
 
 .cfu__erro { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
-.cfu__erro-frase { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.08; max-width: 640px; }
-.cfu__erro-sub { margin: 0; max-width: 620px; color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
-.cfu__tentar {
-  border: none; cursor: pointer; background: var(--nu-creme); color: var(--nu-ink);
-  border-radius: var(--nu-r-pill); min-height: 48px; padding: 0 24px; font: inherit; font-size: 15px; font-weight: var(--nu-w-medio);
-  transition: background .2s, transform .15s;
-}
-.cfu__tentar:hover { background: var(--nu-white); }
-.cfu__tentar:active { transform: scale(.98); }
-.cfu__tentar:focus-visible { outline-color: var(--nu-blue-on-dark); }
+.cfu__erro-frase { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.08; max-width: 640px; }
+.cfu__erro-sub { margin: 0; max-width: 620px; color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.55; }
 </style>

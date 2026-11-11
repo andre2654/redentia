@@ -51,15 +51,15 @@ const apps = [
   justify-content: space-between; gap: clamp(20px, 3vw, 44px); flex-wrap: wrap;
   border-radius: var(--nu-r-card-lg); padding: clamp(24px, 3vw, 34px) clamp(24px, 3.4vw, 44px);
   background: var(--nu-grad-cobalto); color: var(--nu-white);
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .cmb__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); color: var(--nu-white); }
 .cmb__card:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .cmb__corte { position: absolute; top: -40px; right: -70px; opacity: .08; pointer-events: none; }
 
 .cmb__txt { position: relative; max-width: 640px; }
-.cmb__title { margin: 14px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; }
-.cmb__sub { margin: 10px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
+.cmb__title { margin: 14px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.05; }
+.cmb__sub { margin: 10px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; text-wrap: pretty; }
 
 .cmb__side { position: relative; display: flex; align-items: center; gap: clamp(16px, 2vw, 26px); flex-wrap: wrap; }
 /* chips dos apps (logo real + nome) — mesmos do card MCP de /conta */
@@ -80,11 +80,11 @@ const apps = [
   display: inline-flex; align-items: center; gap: 14px; min-height: 52px;
   background: var(--nu-creme); color: var(--nu-ink);
   border-radius: var(--nu-r-pill); padding: 0 7px 0 24px; font-size: 16.5px; font-weight: var(--nu-w-medio);
-  white-space: nowrap; transition: background .2s;
+  white-space: nowrap; transition: background var(--nu-dur-media) var(--nu-ease-cor);
 }
 .cmb__bola { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; overflow: hidden; background: var(--nu-ink); color: var(--nu-creme); }
 .cmb__card:hover .cmb__cta { background: var(--nu-white); }
-.cmb__card:hover .cmb__bola svg { animation: nu-seta .45s var(--nu-ease-cor); }
+.cmb__card:hover .cmb__bola svg { animation: nu-seta var(--nu-dur-lenta) var(--nu-ease-cor); }
 .cmb__card:active { transform: scale(.99); }
 
 @media (max-width: 520px) {

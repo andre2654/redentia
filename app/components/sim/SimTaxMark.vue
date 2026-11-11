@@ -21,7 +21,7 @@ defineProps<{ text: string }>()
 .stm {
   position: relative; display: inline-flex; align-items: center; flex-shrink: 0;
   color: var(--nu-gray); outline: none; cursor: help;
-  transition: color 0.15s;
+  transition: color var(--nu-dur-rapida) var(--nu-ease-cor);
 }
 .stm:hover, .stm:focus { color: var(--nu-ink); }
 .stm__bag { display: block; }
@@ -32,7 +32,7 @@ defineProps<{ text: string }>()
   padding: 7px 11px; border-radius: var(--nu-r-tag);
   box-shadow: var(--nu-shadow-card);
   opacity: 0; pointer-events: none;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
   z-index: 30;
 }
 .stm:hover .stm__tip, .stm:focus .stm__tip { opacity: 1; transform: translate(-50%, 0); }

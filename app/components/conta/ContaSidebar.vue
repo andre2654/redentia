@@ -83,12 +83,12 @@ function go(e: MouseEvent, id: string) {
   display: flex; align-items: center; gap: 13px; min-height: 48px;
   padding: 0 18px; border-radius: var(--nu-r-pill);
   color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
-  transition: background .2s, color .2s;
+  transition: background var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .csb__item:hover { color: var(--nu-ink); background: var(--nu-cream-2); }
 .csb__item--active,
 .csb__item--active:hover { background: var(--nu-ink); color: var(--nu-white); }
-.csb__icon { flex-shrink: 0; color: var(--nu-gray); transition: color .2s, transform .2s; }
+.csb__icon { flex-shrink: 0; color: var(--nu-gray); transition: color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida); }
 .csb__item:hover .csb__icon { color: var(--nu-blue); transform: translateX(2px); }
 .csb__item--active .csb__icon,
 .csb__item--active:hover .csb__icon { color: var(--nu-blue-on-dark); transform: none; }

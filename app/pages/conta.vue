@@ -77,22 +77,22 @@ usePageSeo({
       <ContaSidebar class="conta__nav" />
 
       <div class="conta__panel">
-        <section id="perfil" class="conta__sec">
+        <section id="perfil" v-revelar class="conta__sec">
           <ContaPerfil />
         </section>
-        <section id="assinatura" class="conta__sec">
+        <section id="assinatura" v-revelar class="conta__sec">
           <ContaAssinatura />
         </section>
-        <section id="notificacoes" class="conta__sec">
+        <section id="notificacoes" v-revelar class="conta__sec">
           <ContaNotificacoes />
         </section>
-        <section id="open-finance" class="conta__sec">
+        <section id="open-finance" v-revelar class="conta__sec">
           <ContaOpenFinance />
         </section>
-        <section id="mcp" class="conta__sec">
+        <section id="mcp" v-revelar class="conta__sec">
           <ContaMcp />
         </section>
-        <section id="seguranca" class="conta__sec">
+        <section id="seguranca" v-revelar class="conta__sec">
           <ContaSeguranca />
         </section>
       </div>
@@ -106,9 +106,10 @@ usePageSeo({
 .conta {
   background: var(--nu-page);
   min-height: 100vh;
-  padding: clamp(28px, 5vw, 64px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(60px, 8vw, 110px);
-  animation: nu-fade .5s ease both;
+  padding: clamp(32px, 5vw, 64px) var(--nu-coluna) clamp(64px, 8vw, 112px);
 }
+/* o topo chega com a entrada curta; as seções de baixo, ao rolar (v-revelar) */
+.conta__top { animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) backwards; }
 .conta__top { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
 .conta__id { display: flex; align-items: center; gap: clamp(16px, 2vw, 24px); min-width: 0; }
 .conta__avatar {
@@ -121,21 +122,21 @@ usePageSeo({
 .conta__eyebrow { margin-bottom: 10px; }
 .conta__name {
   margin: 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -.035em; line-height: 1.02;
+  font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02;
   overflow-wrap: anywhere;
 }
-.conta__email { display: block; margin-top: 6px; color: var(--nu-gray); font-size: clamp(14px, 1.5vw, 17px); font-weight: 500; overflow-wrap: anywhere; }
+.conta__email { display: block; margin-top: 6px; color: var(--nu-gray); font-size: clamp(14px, 1.5vw, 17px); font-weight: var(--nu-w-texto); overflow-wrap: anywhere; }
 .conta__logout {
   flex-shrink: 0; display: inline-flex; align-items: center; gap: 9px; min-height: 48px;
   background: var(--nu-white); color: var(--nu-ink); border: none; cursor: pointer;
   box-shadow: inset 0 0 0 1.5px var(--nu-ink);
   border-radius: var(--nu-r-pill); padding: 0 22px;
   font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
-  transition: background .2s, transform .15s var(--nu-ease-saida);
+  transition: background var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .conta__logout:hover { background: var(--nu-row-hover); }
 .conta__logout:active { transform: scale(.98); }
-.conta__logout svg { transition: transform .2s; }
+.conta__logout svg { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .conta__logout:hover svg { transform: translateX(3px); }
 
 .conta__cols { display: flex; gap: clamp(20px, 3vw, 40px); align-items: flex-start; margin-top: clamp(28px, 4vw, 48px); }
@@ -143,10 +144,7 @@ usePageSeo({
 .conta__nav { flex: 0 0 clamp(210px, 22vw, 264px); position: sticky; top: 124px; }
 .conta__panel { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: clamp(18px, 2.6vw, 28px); }
 /* âncora do scrollspy: compensa o header + faixa "Mercado agora" sticky */
-.conta__sec { scroll-margin-top: 124px; animation: nu-fade .5s ease both; }
-.conta__sec:nth-child(2) { animation-delay: 60ms; }
-.conta__sec:nth-child(3) { animation-delay: 120ms; }
-.conta__sec:nth-child(n+4) { animation-delay: 180ms; }
+.conta__sec { scroll-margin-top: 124px; }
 
 @media (max-width: 860px) {
   .conta__cols { flex-direction: column; }
@@ -169,5 +167,6 @@ usePageSeo({
 }
 @media (prefers-reduced-motion: reduce) {
   .conta__logout svg { transition: none; }
+  .conta__top { animation: none; }
 }
 </style>

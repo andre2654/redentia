@@ -30,6 +30,8 @@ const NOMES: Record<PeriodoDesempenho, [curto: string, longo: string]> = {
 }
 const series = computed(() => props.relatorio?.series ?? null)
 const opcoes = computed<PeriodoDesempenho[]>(() => (series.value ? periodosDoDesempenho(series.value.carteira) : []))
+/** o seletor do período (NuTrilho escuro): '12M' à vista, '12 meses' para o leitor de tela */
+const opcoesDoTrilho = computed(() => opcoes.value.map((p) => ({ valor: p, rotulo: NOMES[p][0], extenso: NOMES[p][1] })))
 const periodo = ref<PeriodoDesempenho>('tudo')
 watch(opcoes, (o) => {
   if (o.length && !o.includes(periodo.value)) periodo.value = o[o.length - 1]!
@@ -57,18 +59,14 @@ const contexto = computed(() => ({
 </script>
 
 <template>
-  <section v-if="pronto" v-contexto-chat="contexto" class="vds" aria-labelledby="vds-titulo">
+  <section v-if="pronto" v-contexto-chat="contexto" v-revelar="{ alvo: 'filhos' }" class="vds" aria-labelledby="vds-titulo">
     <div class="vds__cab">
       <div class="vds__textos">
         <h2 id="vds-titulo" class="vds__titulo">{{ titulo }}</h2>
         <p class="vds__sub">A rentabilidade sem o efeito dos aportes (TWR), contra o benchmark das classes da sua carteira.</p>
       </div>
-      <div v-if="opcoes.length > 1" class="vds__periodos" role="radiogroup" aria-label="Período do desempenho">
-        <button
-          v-for="p in opcoes" :key="p" type="button" role="radio" class="vds__periodo" :class="{ 'vds__periodo--on': periodo === p }"
-          :aria-checked="periodo === p" :aria-label="NOMES[p][1]" @click="periodo = p"
-        >{{ NOMES[p][0] }}</button>
-      </div>
+      <!-- o período: o trilho da base, escuro (a escolhida desliza; setas do teclado) -->
+      <NuTrilho v-if="opcoes.length > 1" v-model="periodo" :opcoes="opcoesDoTrilho" tom="escuro" rotulo="Período do desempenho" class="vds__periodos" />
     </div>
 
     <!-- o traço diz qual linha o número descreve; o CDI e o IBOV não são desenhados -->
@@ -104,31 +102,22 @@ const contexto = computed(() => ({
 .vds {
   background: var(--nu-ink);
   padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px));
-  animation: nu-fade .5s ease both;
 }
 .vds__cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px 22px; flex-wrap: wrap; }
 .vds__textos { min-width: 0; max-width: 760px; }
 .vds__titulo {
   margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2);
-  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance;
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; text-wrap: balance;
 }
-.vds__sub { margin: 16px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; }
-.vds__periodos { display: flex; gap: 4px; flex-shrink: 0; padding: 4px; border-radius: var(--nu-r-pill); background: var(--nu-dark-chip); }
-.vds__periodo {
-  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-on-dark); font: inherit; font-size: 15px; font-weight: var(--nu-w-medio); cursor: pointer;
-  transition: color .2s, background .2s;
-}
-.vds__periodo:hover { color: var(--nu-white); }
-.vds__periodo:focus-visible { outline-color: var(--nu-blue-on-dark); }
-.vds__periodo--on, .vds__periodo--on:hover { background: var(--nu-creme); color: var(--nu-ink); }
+.vds__sub { margin: 16px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); line-height: 1.5; }
+.vds__periodos { flex-shrink: 0; }
 
 .vds__legenda { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px 26px; margin: 24px 0 0; }
 .vds__leg { display: inline-flex; align-items: center; gap: 9px; }
 .vds__traco { align-self: center; width: 16px; height: 3px; border-radius: 2px; background: var(--nu-blue-on-dark); }
 .vds__traco--bench { height: 2px; background: repeating-linear-gradient(90deg, var(--nu-on-dark-2) 0 3px, transparent 3px 7px); }
 .vds__leg-r { color: var(--nu-on-dark-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.vds__leg-v { color: var(--nu-white); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.vds__leg-v { color: var(--nu-white); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums; }
 .vds__leg-v--voce { color: var(--nu-blue-on-dark); }
 
 /* a caixa do gráfico: as marcas ('+10%') moram na faixa da esquerda, fora da
@@ -144,10 +133,8 @@ const contexto = computed(() => ({
   .vds__grafico { --agr-esq: 40px; }
   .vds__legenda { gap: 8px 20px; }
   .vds__leg-v { font-size: var(--nu-fs-xl); }
-  .vds__periodo { padding: 0 14px; }
-}
+  }
 @media (prefers-reduced-motion: reduce) {
   .vds { animation: none; }
-  .vds__periodo { transition: none; }
-}
+  }
 </style>

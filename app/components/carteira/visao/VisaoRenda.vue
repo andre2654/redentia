@@ -262,6 +262,8 @@ function simular() {
 
 <template>
   <section class="vrd" :class="{ 'vrd--foco': emFoco, 'vrd--palco': noPalco }" aria-labelledby="vrd-titulo" data-clarity-mask="true">
+    <!-- a pergunta, a frase e a linha de apoio entram juntas ao rolar, em cascata (v-revelar) -->
+    <div v-revelar="{ alvo: 'filhos' }" class="vrd__cab">
     <NuEyebrow class="vrd__eyebrow">Quanto ele me paga?</NuEyebrow>
     <h2 id="vrd-titulo" class="vrd__frase"><FraseDestaque :texto="frase" /></h2>
     <p v-if="cob != null" class="vrd__sub">
@@ -271,9 +273,10 @@ function simular() {
     <p v-else-if="rendeuSemGasto != null" class="vrd__sub" :title="r.rendeuFonte">
       Mais uns {{ mask(brl0(rendeuSemGasto)) }} renderam na renda fixa, sem cair na conta.
     </p>
+    </div>
 
     <!-- a régua: a vida inteira de largura -->
-    <div v-if="regua" class="vrd__regua">
+    <div v-if="regua" v-revelar class="vrd__regua">
       <div class="vrd__trilho" role="img" :aria-label="`Caiu na conta: ${pctTxt(regua.caiu)} dos gastos; rendeu e ficou investido: mais ${pctTxt(regua.rendeu)}`">
         <span class="vrd__caiu" :style="{ width: `${regua.caiu}%` }" />
         <span class="vrd__rendeu" :style="{ width: `${regua.rendeu}%` }" />
@@ -288,12 +291,13 @@ function simular() {
         <template v-if="r.rendeu > 0">O que rendeu: {{ r.rendeuFonte.replace(/^Estimativa: /, 'estimativa com ') }}</template>
       </p>
     </div>
-    <div v-else-if="!bancoDoGasto" class="vrd__convite">
+    <div v-else-if="!bancoDoGasto" v-revelar class="vrd__convite">
       <p class="vrd__convite-t">Conecte o cartão e a conta do dia a dia, e eu digo quanto da sua vida os investimentos já pagam.</p>
       <NuBotaoSeta to="/conta#open-finance" tamanho="m">Conectar</NuBotaoSeta>
     </div>
 
-    <div class="vrd__grade" :class="{ 'vrd__grade--lado': !temFuturo }">
+    <!-- as colunas entram ao rolar, em cascata (v-revelar) -->
+    <div v-revelar="{ alvo: 'filhos' }" class="vrd__grade" :class="{ 'vrd__grade--lado': !temFuturo }">
       <!-- mês a mês e o mês corrente (sem os 5 anos, lado a lado) -->
       <div class="vrd__col">
         <!-- as duas partes em caixas próprias (08/11): o lado a lado era um grid que
@@ -347,7 +351,7 @@ function simular() {
             </li>
           </ul>
           <p v-else-if="mesSel.porClasse" class="vrd__prox">FIIs {{ mask(brl0(mesSel.porClasse.fii)) }} · Ações {{ mask(brl0(mesSel.porClasse.acoes)) }}</p>
-          <button type="button" class="vrd__ver vrd__ver--volta" @click="mesFixo = null">Voltar para {{ mesMarcado }}</button>
+          <NuLinkSeta tom="claro" class="vrd__ver--volta" @click="mesFixo = null">Voltar para {{ mesMarcado }}</NuLinkSeta>
         </template>
         <template v-else>
 
@@ -356,7 +360,7 @@ function simular() {
         <p v-if="futuro != null" class="vrd__marc-total"><b>{{ mask(brl0(marcadosTotal)) }}</b> a cair</p>
         <p v-if="futuro != null && proximo && !verMarcados" class="vrd__prox">
           Próximo: <b>{{ fmtDia(proximo.data) }}</b>, {{ mask(brl0(proximo.valor)) }} de {{ proximo.tickers.join(' e ') }}.
-          <button v-if="r.marcados.length > 1" type="button" class="vrd__ver" @click="verMarcados = true">Ver os {{ r.marcados.length }}</button>
+          <NuLinkSeta v-if="r.marcados.length > 1" tom="claro" class="vrd__ver" @click="verMarcados = true">Ver os {{ r.marcados.length }}</NuLinkSeta>
         </p>
         <ul v-if="futuro == null || verMarcados" class="vrd__agenda">
           <li v-for="m in r.marcados" :key="m.data">
@@ -411,7 +415,7 @@ function simular() {
           <span class="vrd__x vrd__x--ini">hoje</span><span class="vrd__x vrd__x--fim">{{ anoFim }}</span>
         </div>
         <p class="vrd__nota">A faixa cobre 8 de cada 10 dos 2.000 cenários simulados. É simulação, não promessa nem recomendação.</p>
-        <button type="button" class="vrd__simular" @click="simular">Simular outro caminho</button>
+        <NuBotaoSeta variante="contorno" tamanho="m" class="vrd__simular" @click="simular">Simular outro caminho</NuBotaoSeta>
       </div>
     </div>
 
@@ -424,40 +428,39 @@ function simular() {
 
 <style scoped>
 .vrd { background: var(--nu-page); padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px)); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
-.vrd__frase { margin: 18px 0 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04; font-variant-numeric: tabular-nums; text-wrap: balance; }
-.vrd__sub { margin: 16px 0 0; max-width: 760px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.vrd__frase { margin: 18px 0 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.04; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.vrd__sub { margin: 16px 0 0; max-width: 760px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; font-variant-numeric: tabular-nums; }
 
 .vrd__regua { margin-top: clamp(26px, 3.4vw, 40px); max-width: 1100px; }
 .vrd__trilho { display: flex; gap: 4px; height: 28px; padding: 0; border-radius: 15px; background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line); overflow: hidden; }
-.vrd__caiu { background: var(--nu-blue); border-radius: 15px 6px 6px 15px; transform-origin: left; animation: vrd-cresce .9s var(--nu-ease-saida) .1s both; }
-.vrd__rendeu { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--nu-blue) 45%, transparent) 0 3px, color-mix(in srgb, var(--nu-blue) 18%, transparent) 3px 7px); border-radius: 6px; transform-origin: left; animation: vrd-cresce .9s var(--nu-ease-saida) .35s both; }
+.vrd__caiu { background: var(--nu-blue); border-radius: 15px 6px 6px 15px; transform-origin: left; animation: vrd-cresce var(--nu-dur-entrada) var(--nu-ease-saida) .1s both; }
+.vrd__rendeu { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--nu-blue) 45%, transparent) 0 3px, color-mix(in srgb, var(--nu-blue) 18%, transparent) 3px 7px); border-radius: 6px; transform-origin: left; animation: vrd-cresce var(--nu-dur-entrada) var(--nu-ease-saida) .35s both; }
 @keyframes vrd-cresce { from { transform: scaleX(0); } }
 .vrd__legenda { display: flex; flex-wrap: wrap; gap: 10px 36px; margin: 14px 0 0; }
 .vrd__legenda div { display: flex; flex-direction: column; gap: 2px; }
-.vrd__legenda dt { display: flex; align-items: center; gap: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 600; }
-.vrd__legenda dd { margin: 0 0 0 20px; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.vrd__legenda dt { display: flex; align-items: center; gap: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.vrd__legenda dd { margin: 0 0 0 20px; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums; }
 .vrd__k { width: 12px; height: 12px; border-radius: 50%; }
 .vrd__k--caiu { background: var(--nu-blue); }
 .vrd__k--rendeu { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--nu-blue) 55%, transparent) 0 2px, color-mix(in srgb, var(--nu-blue) 20%, transparent) 2px 4px); }
 .vrd__k--falta { background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line); }
-.vrd__fonte { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+.vrd__fonte { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
 .vrd__convite { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 24px; margin-top: clamp(24px, 3vw, 36px); max-width: 1100px; padding: clamp(20px, 2.4vw, 28px); border-radius: var(--nu-r-card); background: var(--nu-band); box-shadow: var(--nu-shadow-quente); }
 .vrd__convite-t { margin: 0; max-width: 60ch; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); line-height: 1.45; }
 
 .vrd__grade { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 32px clamp(32px, 5vw, 80px); margin-top: clamp(40px, 5vw, 64px); max-width: 1240px; }
-.vrd__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; }
+.vrd__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
 .vrd__h3--2 { margin-top: 0; }
 /* as duas partes vestidas (11/11): o mês a mês no cartão quente; o que já está marcado, no painel cobalto da marca */
 .vrd__parte { padding: clamp(20px, 2.6vw, 30px); border-radius: var(--nu-r-card); }
 .vrd__parte--meses { background: var(--nu-band); box-shadow: var(--nu-shadow-quente); }
 .vrd__parte--marcados { margin-top: clamp(14px, 1.6vw, 20px); background: var(--nu-grad-cobalto); color: var(--nu-white); }
-.vrd__parte--marcados .vrd__h3 { color: var(--nu-white); font-size: 15px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.4; }
+.vrd__parte--marcados .vrd__h3 { color: var(--nu-white); font-size: 15px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; line-height: 1.4; }
 .vrd__marc-total { margin: 14px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
-.vrd__marc-total b { margin-right: 6px; color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1; }
+.vrd__marc-total b { margin-right: 6px; color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1; }
 .vrd__parte--marcados { position: relative; overflow: hidden; }
 .vrd__parte--marcados .vrd__prox { margin-top: 18px; padding: 16px 18px; border-radius: var(--nu-r-tile); background: var(--nu-white-14); color: var(--nu-blue-on-blue); font-size: var(--nu-fs-md); }
 .vrd__parte--marcados .vrd__prox b { color: var(--nu-white); font-weight: var(--nu-w-forte); }
-.vrd__parte--marcados .vrd__ver { color: var(--nu-white); }
 .vrd__parte--marcados .vrd__agenda li { border-top-color: var(--nu-white-18); }
 .vrd__parte--marcados :is(.vrd__ag-t, .vrd__ag-v) { color: var(--nu-white); }
 .vrd__parte--marcados :is(.vrd__ag-d, .vrd__ag-total) { color: var(--nu-blue-on-blue-2); }
@@ -471,21 +474,21 @@ function simular() {
 .vrd__mes { position: relative; }
 /* o foco no mês a cair: ele e os pagamentos dele ficam; o resto da seção escurece por uns segundos e volta */
 .vrd__parte--meses { scroll-margin-top: calc(var(--nuh-h, 76px) + 76px); }
-.vrd__eyebrow, .vrd__frase, .vrd__sub, .vrd__regua, .vrd__convite, .vrd__h3, .vrd__classes, .vrd__mes, .vrd__futuro, .vrd__espera { transition: opacity .5s ease; }
+.vrd__eyebrow, .vrd__frase, .vrd__sub, .vrd__regua, .vrd__convite, .vrd__h3, .vrd__classes, .vrd__mes, .vrd__futuro, .vrd__espera { transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida); }
 .vrd--foco :is(.vrd__eyebrow, .vrd__frase, .vrd__sub, .vrd__regua, .vrd__convite, .vrd__classes, .vrd__futuro, .vrd__espera),
 .vrd--foco .vrd__parte--meses .vrd__h3,
 .vrd--foco .vrd__mes:not(.vrd__mes--futuro) { opacity: .25; }
 .vrd--foco .vrd__mes--futuro .vrd__pilha i { opacity: .8; }
 .vrd--foco .vrd__mes--futuro .vrd__mes-n { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 /* o palco: os outros meses somem, o mês a cair vai para o centro e a frase entra em cima e embaixo dele */
-.vrd__palco { position: relative; transition: margin-bottom .7s var(--nu-ease-saida); }
+.vrd__palco { position: relative; transition: margin-bottom var(--nu-dur-entrada) var(--nu-ease-saida); }
 /* a frase de baixo mora num respiro que só existe com o palco de pé: a lista do mês se afasta e depois volta */
 .vrd--palco .vrd__palco { margin-bottom: 76px; }
-.vrd__mes { transform-origin: 50% 100%; transition: opacity .5s ease, transform .9s var(--nu-ease-saida); }
+.vrd__mes { transform-origin: 50% 100%; transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida), transform var(--nu-dur-entrada) var(--nu-ease-saida); }
 .vrd--palco .vrd__mes:not(.vrd__mes--futuro) { opacity: 0; pointer-events: none; }
 .vrd--palco .vrd__parte--meses :is(.vrd__h3, .vrd__classes) { opacity: 0; }
 .vrd--palco .vrd__mes--futuro { z-index: 1; transform: translateX(var(--vrd-dx, 0px)) scale(1.14); }
-.vrd__mes-v { display: block; transform-origin: 50% 100%; transition: transform .9s var(--nu-ease-saida); }
+.vrd__mes-v { display: block; transform-origin: 50% 100%; transition: transform var(--nu-dur-entrada) var(--nu-ease-saida); }
 .vrd--palco .vrd__mes--futuro .vrd__mes-v { transform: translateY(var(--vrd-dy, 0px)) scale(1.6); }
 /* no palco o valor é o herói: volta o "R$ " que o gráfico estreito esconde, e ele fica centrado mesmo mais largo que a coluna */
 .vrd--palco .vrd__mes--futuro .vrd__mes-v { justify-self: center; width: max-content; }
@@ -493,13 +496,13 @@ function simular() {
 .vrd--palco .vrd__mes--futuro .vrd__pilha i { opacity: 1; }
 .vrd__palco-t {
   position: absolute; left: 50%; margin: 0; white-space: nowrap; text-align: center; pointer-events: none;
-  color: var(--nu-gray-2); font-weight: 500; line-height: 1.2; font-variant-numeric: tabular-nums;
-  opacity: 0; filter: blur(8px); transition: opacity .35s ease, filter .35s ease, transform .35s ease;
+  color: var(--nu-gray-2); font-weight: var(--nu-w-texto); line-height: 1.2; font-variant-numeric: tabular-nums;
+  opacity: 0; filter: blur(8px); transition: opacity var(--nu-dur-media) var(--nu-ease-cor), filter var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
-.vrd__palco-t b { color: var(--nu-ink); font-weight: 600; }
-.vrd__palco-t--cima { top: calc(var(--vrd-topo, 0px) - 14px); font-size: var(--nu-fs-xl); letter-spacing: -0.02em; transform: translate(-50%, calc(-100% + 8px)); }
+.vrd__palco-t b { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
+.vrd__palco-t--cima { top: calc(var(--vrd-topo, 0px) - 14px); font-size: var(--nu-fs-xl); letter-spacing: var(--nu-ls-titulo); transform: translate(-50%, calc(-100% + 8px)); }
 .vrd__palco-t--baixo { top: calc(100% + 20px); font-size: var(--nu-fs-md); transform: translate(-50%, -8px); }
-.vrd--palco .vrd__palco-t { opacity: 1; filter: none; transition: opacity .55s ease .5s, filter .55s ease .5s, transform .7s var(--nu-ease-saida) .5s; }
+.vrd--palco .vrd__palco-t { opacity: 1; filter: none; transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida) .5s, filter var(--nu-dur-lenta) var(--nu-ease-saida) .5s, transform var(--nu-dur-entrada) var(--nu-ease-saida) .5s; }
 .vrd--palco .vrd__palco-t--cima { transform: translate(-50%, -100%); }
 .vrd--palco .vrd__palco-t--baixo { transform: translate(-50%, 0); transition-delay: .7s; }
 @media (max-width: 640px) {
@@ -512,7 +515,7 @@ function simular() {
 .vrd__mes--on .vrd__mes-n { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .vrd__dica-mes {
   position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); z-index: 6; display: grid; gap: 3px;
-  padding: 9px 11px; border-radius: var(--nu-r-chip); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 500;
+  padding: 9px 11px; border-radius: var(--nu-r-chip); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto);
   white-space: nowrap; box-shadow: 0 8px 24px var(--nu-ink-14); pointer-events: none; font-variant-numeric: tabular-nums;
 }
 .vrd__dica-mes b { font-size: var(--nu-fs-sm); }
@@ -522,77 +525,75 @@ function simular() {
 .vrd__dica-mes--esq { left: 0; transform: none; }
 .vrd__dica-mes--dir { left: auto; right: 0; transform: none; }
 .vrd__k--inline { display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 2px; vertical-align: middle; }
-.vrd__ver--volta { display: inline-block; margin: 10px 0 0; }
+.vrd__ver--volta { margin-top: 12px; }
 .vrd__mes-v { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .vrd__mes-b { display: flex; align-items: flex-end; justify-content: center; }
 /* a barra é uma pilha: um pedaço por classe (ou um só, sem o porClasse) */
-.vrd__pilha { display: flex; flex-direction: column-reverse; gap: 2px; width: min(56px, 76%); border-radius: 8px 8px 3px 3px; overflow: hidden; opacity: .6; transition: opacity .2s; }
+.vrd__pilha { display: flex; flex-direction: column-reverse; gap: 2px; width: min(56px, 76%); border-radius: 8px 8px 3px 3px; overflow: hidden; opacity: .6; transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .vrd__pilha i { display: block; min-height: 2px; }
 .vrd__p--todos { background: var(--nu-blue); }
 .vrd__p--fii, .vrd__k--fii { background: var(--nu-alloc-fii); }
 .vrd__p--acoes, .vrd__k--acoes { background: var(--nu-alloc-stock); }
 .vrd__mes--ultimo .vrd__pilha { opacity: 1; }
-.vrd__classes { display: flex; gap: 6px 16px; flex-wrap: wrap; list-style: none; margin: 8px 0 0; padding: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 600; }
+.vrd__classes { display: flex; gap: 6px 16px; flex-wrap: wrap; list-style: none; margin: 8px 0 0; padding: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 .vrd__classes li { display: inline-flex; align-items: center; gap: 6px; }
 .vrd__classes .vrd__k { display: inline-block; width: 9px; height: 9px; border-radius: 3px; }
-.vrd__prox { margin: 10px 0 0; color: var(--nu-ink-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.vrd__prox { margin: 10px 0 0; color: var(--nu-ink-75); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; font-variant-numeric: tabular-nums; }
 .vrd__prox b { color: var(--nu-ink); }
-.vrd__ver { margin-left: 6px; padding: 0; border: 0; background: none; color: var(--nu-blue-text); font: inherit; font-size: 15px; font-weight: var(--nu-w-medio); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.vrd__ver { margin-left: 8px; }
 .vrd__mes--ultimo .vrd__mes-v { color: var(--nu-ink); }
 /* o mês corrente: o que já está marcado para cair, tracejado */
 .vrd__mes--futuro .vrd__pilha { opacity: 1; }
 .vrd__mes--futuro .vrd__pilha i { opacity: .45; background-image: repeating-linear-gradient(135deg, var(--nu-white-60) 0 4px, transparent 4px 8px); }
 .vrd__mes--futuro .vrd__mes-v { color: var(--nu-blue-text); }
-.vrd__espera { display: flex; align-items: center; gap: 8px; margin: clamp(28px, 3.4vw, 40px) 0 0; max-width: 1100px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
+.vrd__espera { display: flex; align-items: center; gap: 8px; margin: clamp(28px, 3.4vw, 40px) 0 0; max-width: 1100px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.45; }
 .vrd__espera svg { flex: 0 0 auto; color: var(--nu-gray); }
-.vrd__mes-n { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; border-top: 1px solid var(--nu-line); padding-top: 6px; }
+.vrd__mes-n { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); border-top: 1px solid var(--nu-line); padding-top: 6px; }
 .vrd__agenda { list-style: none; margin: 10px 0 0; padding: 0; }
 .vrd__agenda li { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; padding: 11px 0; border-top: 1px solid var(--nu-line); font-size: var(--nu-fs-md); }
 .vrd__agenda li:first-child { border-top: 0; }
 .vrd__ag-d { color: var(--nu-gray); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .vrd__ag-t { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .vrd__ag-v { color: var(--nu-ink); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; text-align: right; }
-.vrd__ag-total { color: var(--nu-gray-3); font-weight: 600; }
+.vrd__ag-total { color: var(--nu-gray-3); font-weight: var(--nu-w-medio); }
 .vrd__ag-total .vrd__ag-v { font-weight: var(--nu-w-forte); }
 
 .vrd__caminhos { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
 .vrd__cam {
   display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: start; gap: 12px; padding: 14px 16px; border: 0; border-radius: 14px;
-  background: transparent; text-align: left; font: inherit; cursor: pointer; transition: background .2s, box-shadow .2s;
+  background: transparent; text-align: left; font: inherit; cursor: pointer; transition: background var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor);
 }
 .vrd__cam:hover { background: color-mix(in srgb, var(--nu-white) 60%, transparent); }
 .vrd__cam--on { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
-.vrd__cam-radio { width: 18px; height: 18px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--nu-gray-2); margin-top: 1px; transition: box-shadow .2s; }
+.vrd__cam-radio { width: 18px; height: 18px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--nu-gray-2); margin-top: 1px; transition: box-shadow var(--nu-dur-media) var(--nu-ease-cor); }
 .vrd__cam--on .vrd__cam-radio { box-shadow: inset 0 0 0 5px var(--nu-blue); }
 .vrd__cam-txt { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .vrd__cam-n { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); line-height: 1.35; }
-.vrd__cam-d { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.vrd__cam-c { color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5; }
+.vrd__cam-d { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
+.vrd__cam-c { color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; }
 .vrd__cam-r { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .vrd__cam:not(.vrd__cam--on) .vrd__cam-r { color: var(--nu-gray-3); font-weight: var(--nu-w-medio); }
 
 .vrd__graf { position: relative; height: 220px; margin: 24px 54px 30px 34px; touch-action: pan-y; cursor: crosshair; }
 .vrd__gl { position: absolute; left: 0; right: 0; height: 0; border-top: 1px solid var(--nu-line-2); }
-.vrd__gl span { position: absolute; left: -34px; top: -8px; width: 28px; text-align: right; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; font-variant-numeric: tabular-nums; }
+.vrd__gl span { position: absolute; left: -34px; top: -8px; width: 28px; text-align: right; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .vrd__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.vrd__banda { fill: color-mix(in srgb, var(--nu-blue) 14%, transparent); transition: d .5s var(--nu-ease-saida); }
+.vrd__banda { fill: color-mix(in srgb, var(--nu-blue) 14%, transparent); transition: d var(--nu-dur-lenta) var(--nu-ease-saida); }
 .vrd__fantasma { fill: none; stroke: var(--nu-gray-2); stroke-width: 1.5; stroke-dasharray: 3 4; opacity: .55; }
-.vrd__med { fill: none; stroke: var(--nu-blue); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; transition: d .5s var(--nu-ease-saida); }
-.vrd__fim { position: absolute; left: 100%; transform: translate(8px, 50%); color: var(--nu-gray-3); font-size: var(--nu-fs-xs); font-weight: 600; white-space: nowrap; transition: bottom .5s var(--nu-ease-saida); }
+.vrd__med { fill: none; stroke: var(--nu-blue); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; transition: d var(--nu-dur-lenta) var(--nu-ease-saida); }
+.vrd__fim { position: absolute; left: 100%; transform: translate(8px, 50%); color: var(--nu-gray-3); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); white-space: nowrap; transition: bottom var(--nu-dur-lenta) var(--nu-ease-saida); }
 .vrd__fim b { display: block; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); }
-.vrd__x { position: absolute; top: calc(100% + 8px); color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; }
+.vrd__x { position: absolute; top: calc(100% + 8px); color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 .vrd__x--ini { left: 0; }
 .vrd__x--fim { right: 0; }
 .vrd__mira { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dashed var(--nu-gray-2); pointer-events: none; }
 .vrd__mira-p { position: absolute; width: 10px; height: 10px; margin: 0 0 -5px -5px; border-radius: 50%; background: var(--nu-blue); box-shadow: 0 0 0 3px var(--nu-white); pointer-events: none; }
-.vrd__dica { position: absolute; top: -6px; transform: translate(10px, -100%); padding: 8px 10px; border-radius: var(--nu-r-chip); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 600; line-height: 1.45; white-space: nowrap; pointer-events: none; font-variant-numeric: tabular-nums; }
+.vrd__dica { position: absolute; top: -6px; transform: translate(10px, -100%); padding: 8px 10px; border-radius: var(--nu-r-chip); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); line-height: 1.45; white-space: nowrap; pointer-events: none; font-variant-numeric: tabular-nums; }
 .vrd__dica--esq { transform: translate(calc(-100% - 10px), -100%); }
 .vrd__dica b { font-weight: var(--nu-w-forte); }
-.vrd__dica span { color: var(--nu-on-dark); font-weight: 500; }
-.vrd__nota { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
-.vrd__simular { margin-top: 14px; height: 48px; padding: 0 22px; border: 0; border-radius: var(--nu-r-pill); background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink); font: inherit; font-size: 15px; font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s, transform .15s; }
-.vrd__simular:hover { background: var(--nu-row-hover); }
-.vrd__simular:active { transform: scale(.98); }
+.vrd__dica span { color: var(--nu-on-dark); font-weight: var(--nu-w-texto); }
+.vrd__nota { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); line-height: 1.5; }
+.vrd__simular { margin-top: 16px; }
 
 /* sem os 5 anos: o mês a mês e o mês corrente lado a lado (a coluna da direita ficava vazia) */
 .vrd__grade--lado { grid-template-columns: minmax(0, 1fr); max-width: 1240px; }

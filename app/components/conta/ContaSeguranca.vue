@@ -139,11 +139,11 @@ function relativeTimePt(iso: string): string {
 
 <style scoped>
 .sg-block__head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.sg-block__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.02em; }
-.sg-block__meta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.sg-block__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+.sg-block__meta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 .sg-form { margin-top: 18px; display: flex; flex-direction: column; gap: clamp(16px, 2.2vw, 22px); }
 .sg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(16px, 2.2vw, 22px); }
-.sg-err { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 600; }
+.sg-err { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .sg-actions { display: flex; }
 /* a pílula da marca (NuPillButton) é de largura cheia: aqui ela tem a largura do rótulo */
 .sg-save { display: inline-block; min-width: 210px; }
@@ -159,7 +159,7 @@ function relativeTimePt(iso: string): string {
 }
 .sg-session__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .sg-session__dev { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
-.sg-session__sub { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.sg-session__sub { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 .sg-session__sub::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); box-shadow: 0 0 0 3px var(--nu-green-tint); }
 
 @media (max-width: 620px) {

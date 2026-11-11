@@ -218,7 +218,7 @@ onBeforeUnmount(() => { io?.disconnect(); ro?.disconnect() })
 .clq__svg { display: block; overflow: visible; }
 .clq__eixo { position: absolute; left: 0; right: 0; height: 20px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .clq__eixo-hoje { position: absolute; left: 0; white-space: nowrap; }
-.clq__eixo-ano { position: absolute; transform: translateX(-50%); white-space: nowrap; color: var(--nu-cream-text-35); font-weight: 500; }
+.clq__eixo-ano { position: absolute; transform: translateX(-50%); white-space: nowrap; color: var(--nu-cream-text-35); font-weight: var(--nu-w-texto); }
 .clq__eixo-fim { position: absolute; transform: translateX(-50%); white-space: nowrap; }
 
 /* abre da esquerda para a direita, uma vez */
@@ -232,10 +232,10 @@ onBeforeUnmount(() => { io?.disconnect(); ro?.disconnect() })
 .clq--armado .clq__rotulo { opacity: 0; transform: translate(-6px, -50%); }
 .clq--armado.clq--visivel .clq__rotulo {
   opacity: 1; transform: translate(0, -50%);
-  transition: opacity .5s ease 1.25s, transform .5s ease 1.25s;
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida) 1.25s, transform var(--nu-dur-lenta) var(--nu-ease-saida) 1.25s;
 }
 .clq--armado .clq__eixo { opacity: 0; }
-.clq--armado.clq--visivel .clq__eixo { opacity: 1; transition: opacity .5s ease .9s; }
+.clq--armado.clq--visivel .clq__eixo { opacity: 1; transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida) .9s; }
 
 .clq__stop-creme { stop-color: var(--nu-cream-text); }
 /* a máscara lê luminância: branco = mostra */
