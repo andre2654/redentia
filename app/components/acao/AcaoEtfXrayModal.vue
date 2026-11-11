@@ -5,7 +5,14 @@
 // NuDayModal (Teleport, backdrop com blur, Escape/click fecham, scroll-lock,
 // useModalA11y) — não reusa o componente em si porque aquele é um modal de
 // TEXTO (blocos <p v-html>) e este carrega listas e tabela.
-import type { AcaoEtfXrayVM, EtfXrayMatrix } from '~/types/acao'
+// Robustez (11/11/2026): o véu da base (--nu-veu) e a sombra de flutuar; entra
+// com o fundo surgindo e o cartão subindo (tempos e curvas dos tokens) e SAI
+// com o inverso, rápido; o fechar é o círculo de 44px com o X desenhado (não o
+// caractere); as duas escolhas (Consolidada/Árvore, 12 meses/90 dias) são o
+// NuTrilho, com a pílula que desliza; as leituras são o NuSelo; a linha que
+// leva ao ativo ganha a seta discreta no lugar do círculo azul.
+import type { AcaoEtfXrayVM, AcaoTag, EtfXrayMatrix } from '~/types/acao'
+import type { OpcaoDoTrilho } from '~/components/nu/NuTrilho.vue'
 
 const props = defineProps<{
   open: boolean
@@ -42,6 +49,9 @@ onBeforeUnmount(() => {
 })
 
 const period = ref<'12m' | '90d'>('12m')
+const PERIODOS: OpcaoDoTrilho<'12m' | '90d'>[] = [{ valor: '12m', rotulo: '12 meses' }, { valor: '90d', rotulo: '90 dias' }]
+const VISTAS: OpcaoDoTrilho<'consolidada' | 'arvore'>[] = [{ valor: 'consolidada', rotulo: 'Consolidada' }, { valor: 'arvore', rotulo: 'Árvore' }]
+const tomDoSelo = (v: AcaoTag['variant']) => (v === 'green' ? 'verde' : v === 'amber' ? 'ambar' : 'neutro')
 const corrRows = computed(() => (period.value === '12m' ? props.modal.rows12 : props.modal.rows90))
 const matrix = computed<EtfXrayMatrix | null>(() =>
   (period.value === '12m' ? props.modal.matrix12 : props.modal.matrix90),
@@ -81,6 +91,7 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
 
 <template>
   <Teleport to="body">
+    <Transition name="axm">
     <div v-if="open" class="axm" @click="emit('close')">
       <div ref="cardRef" class="axm__card" role="dialog" aria-modal="true" :aria-labelledby="titleId" tabindex="-1" @click.stop>
         <div class="axm__head">
@@ -89,7 +100,9 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
             <h4 :id="titleId" class="axm__title">{{ ticker }} por dentro</h4>
             <div class="axm__date">{{ asOfLabel }}</div>
           </div>
-          <button type="button" class="axm__close" aria-label="Fechar" @click="emit('close')">✕</button>
+          <button type="button" class="axm__close" aria-label="Fechar" @click="emit('close')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
         </div>
 
         <div v-if="modal.warnings.length" class="axm__warnings">
@@ -101,10 +114,7 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
         <div v-if="modal.sectorBar.length || modal.assetsAll.length" class="axm__block">
           <div class="axm__corr-head">
             <div class="axm__lbl">No fim, onde seu dinheiro está</div>
-            <div v-if="hasTree" class="axm__toggle">
-              <button type="button" class="axm__toggle-btn" :class="{ 'axm__toggle-btn--on': view === 'consolidada' }" @click="view = 'consolidada'">Consolidada</button>
-              <button type="button" class="axm__toggle-btn" :class="{ 'axm__toggle-btn--on': view === 'arvore' }" @click="view = 'arvore'">Árvore</button>
-            </div>
+            <NuTrilho v-if="hasTree" v-model="view" :opcoes="VISTAS" tamanho="p" rotulo="Como ver a exposição" />
           </div>
           <template v-if="modal.sectorBar.length">
             <div class="axm__bar">
@@ -137,7 +147,7 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
                 <span class="axm__row-bar"><span class="axm__row-fill axm__row-fill--exp" :style="{ width: `${(a.pct / maxAssetPct) * 100}%` }" /></span>
                 <span class="axm__row-pct">{{ a.pctLabel }}</span>
                 <span v-if="a.ticker" class="axm__go" aria-hidden="true">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg>
                 </span>
               </component>
             </div>
@@ -154,10 +164,7 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
         <div v-if="corrRows.length || matrix" class="axm__block">
           <div class="axm__corr-head">
             <div class="axm__lbl">Com o que ele se move</div>
-            <div class="axm__toggle">
-              <button type="button" class="axm__toggle-btn" :class="{ 'axm__toggle-btn--on': period === '12m' }" @click="period = '12m'">12 meses</button>
-              <button type="button" class="axm__toggle-btn" :class="{ 'axm__toggle-btn--on': period === '90d' }" @click="period = '90d'">90 dias</button>
-            </div>
+            <NuTrilho v-model="period" :opcoes="PERIODOS" tamanho="p" rotulo="Período da correlação" />
           </div>
           <div v-if="corrRows.length" class="axm__corr">
             <div v-for="r in corrRows" :key="r.symbol" class="axm__corr-row">
@@ -167,7 +174,7 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
                 <span class="axm__corr-fill" :class="{ 'axm__corr-fill--neg': r.neg }" :style="r.neg ? { right: '50%', width: `${r.magPct / 2}%` } : { left: '50%', width: `${r.magPct / 2}%` }" />
               </span>
               <span class="axm__corr-val" :class="{ 'axm__corr-val--neg': r.neg }">{{ r.corrLabel }}</span>
-              <NuTagPill :tag="r.tag" />
+              <NuSelo :tom="tomDoSelo(r.tag.variant)" tamanho="p" class="axm__corr-selo">{{ r.tag.text }}</NuSelo>
             </div>
           </div>
           <div v-if="matrix" class="axm__matrix-scroll">
@@ -198,63 +205,77 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
         </div>
       </div>
     </div>
+    </Transition>
   </Teleport>
 </template>
 
 <style scoped>
 .axm {
   position: fixed; inset: 0; z-index: 9999;
-  background: var(--nu-day-backdrop);
+  background: var(--nu-veu);
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
   padding: 32px;
-  animation: nu-surgir .2s ease;
+  animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor);
 }
 .axm__card {
-  width: min(760px, 94vw); max-height: 88vh; overflow: auto;
+  width: min(760px, 94vw); max-height: 88vh; overflow: auto; overscroll-behavior: contain;
   background: var(--nu-page); border-radius: var(--nu-r-card-lg);
-  padding: 40px 42px 38px; box-shadow: var(--nu-shadow-day-modal);
-  animation: nu-subir .32s var(--nu-ease-saida);
+  padding: 40px; box-shadow: var(--nu-shadow-float);
+  animation: nu-subir var(--nu-dur-lenta) var(--nu-ease-saida);
 }
+/* fechar: o inverso, rápido */
+.axm-leave-active, .axm-leave-active .axm__card { transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-cor); }
+.axm-leave-to { opacity: 0; }
+.axm-leave-to .axm__card { opacity: 0; transform: translateY(8px) scale(.985); }
 .axm__card:focus { outline: none; }
-.axm__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
-.axm__eyebrow { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .2em; text-transform: uppercase; }
-.axm__title { margin: 9px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; }
-.axm__date { margin-top: 7px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.axm__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.axm__eyebrow { color: var(--nu-ink); font-size: 13px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
+.axm__title { margin: 8px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.05; }
+.axm__date { margin-top: 8px; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); }
 .axm__close {
   flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; border: none;
-  background: var(--nu-cream-2); color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte);
-  cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s;
+  background: var(--nu-cream-2); color: var(--nu-ink);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .axm__close:hover { background: var(--nu-line-2); }
-.axm__divider { height: 1.5px; background: var(--nu-line-2); margin: 24px 0; }
+.axm__close:active { transform: scale(.92); }
+.axm__divider { height: 1px; background: var(--nu-line-2); margin: 24px 0; }
 
 .axm__warnings { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
 .axm__warning {
   background: var(--nu-amber-bg); color: var(--nu-amber-text);
-  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; padding: 11px 16px; border-radius: var(--nu-r-chip);
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; padding: 12px 16px; border-radius: var(--nu-r-chip);
 }
 
-.axm__block { margin-top: 26px; }
-.axm__lbl { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
+.axm__block { margin-top: 32px; }
+.axm__lbl { color: var(--nu-ink); font-size: 13px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 
 .axm__bar { display: flex; height: 26px; border-radius: 15px; overflow: hidden; gap: 4px; margin-top: 14px; }
 .axm__bar-seg { height: 100%; border-radius: 5px; }
 .axm__legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; }
-.axm__legend-item { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
+.axm__legend-item { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 .axm__legend-item b { color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .axm__legend-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
 
 .axm__rows { margin-top: 10px; }
-.axm__viewsub { margin-top: 8px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
+.axm__viewsub { margin-top: 8px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); line-height: 1.5; }
 /* Lista longa rola dentro do próprio bloco — o card do modal não vira um poço. */
-.axm__scroll { max-height: 420px; overflow-y: auto; padding-right: 6px; margin-top: 10px; }
-.axm__row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--nu-line-2); text-decoration: none; }
+.axm__scroll { position: relative; isolation: isolate; max-height: 420px; overflow-y: auto; overscroll-behavior: contain; padding: 0 10px 0 8px; margin: 12px -8px 0; }
+.axm__row { position: relative; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 0; border-top: 1px solid var(--nu-line-2); text-decoration: none; }
+.axm__row--link::before {
+  content: ''; position: absolute; inset: 2px -8px; z-index: -1; border-radius: var(--nu-r-tag); background: var(--nu-cream-2);
+  opacity: 0; transition: opacity var(--nu-dur-media) var(--nu-ease-cor);
+}
+.axm__row--link:hover::before, .axm__row--link:focus-visible::before { opacity: 1; }
+.axm__row--link:focus-visible { outline: none; }
+.axm__row--link:focus-visible::before { box-shadow: 0 0 0 3px var(--nu-blue); }
 .axm__row--link:hover .axm__row-name b { color: var(--nu-blue-text); }
 .axm__row-rank { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); width: 24px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
 .axm__row-name { flex: 1.3; min-width: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.axm__row-name b { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); transition: color .15s; }
-.axm__row-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.axm__row-name b { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); transition: color var(--nu-dur-media) var(--nu-ease-cor); }
+.axm__row-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 .axm__via {
   background: var(--nu-sand-2); color: var(--nu-gray-tag); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   padding: 2px 8px; border-radius: var(--nu-r-tag); white-space: nowrap;
@@ -264,24 +285,19 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
 .axm__row-fill { display: block; height: 100%; background: var(--nu-blue); border-radius: var(--nu-r-pill); }
 .axm__row-fill--exp { background: var(--nu-alloc-fixed); }
 .axm__row-pct { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); min-width: 58px; text-align: right; font-variant-numeric: tabular-nums; }
-/* botão azul da Redentia (mesmo dos movers da home): a linha leva pro ativo */
+/* a seta discreta: a linha leva ao ativo (fica cobalto e anda no hover) */
 .axm__go {
-  width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; background: var(--nu-blue); color: var(--nu-white);
-  display: flex; align-items: center; justify-content: center; transition: background .16s;
+  width: 24px; height: 24px; flex-shrink: 0; color: var(--nu-gray);
+  display: flex; align-items: center; justify-content: center;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
-.axm__row--link:hover .axm__go { background: var(--nu-blue-hover); }
+.axm__row--link:hover .axm__go, .axm__row--link:focus-visible .axm__go { color: var(--nu-blue-text); transform: translateX(3px); }
 
 .axm__corr-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-/* abas do modal */
-.axm__toggle { display: inline-flex; background: var(--nu-cream-2); border-radius: var(--nu-r-pill); padding: 3px; }
-.axm__toggle-btn {
-  border: none; font-family: inherit; background: transparent; color: var(--nu-gray);
-  font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); padding: 7px 14px; border-radius: var(--nu-r-pill); cursor: pointer;
-}
-.axm__toggle-btn--on { background: var(--nu-ink); color: var(--nu-white); }
 
 .axm__corr { margin-top: 12px; }
-.axm__corr-row { display: flex; align-items: center; gap: 13px; padding: 9px 0; border-top: 1px solid var(--nu-line-2); }
+.axm__corr-row { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 0; border-top: 1px solid var(--nu-line-2); }
+.axm__corr-selo { flex: none; min-width: 104px; justify-content: center; }
 .axm__corr-sym { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); width: 68px; flex-shrink: 0; }
 .axm__corr-track { position: relative; flex: 1; height: 8px; background: var(--nu-sand-2); border-radius: var(--nu-r-pill); }
 .axm__corr-mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px; background: var(--nu-sand); border-radius: 1px; }
@@ -302,7 +318,8 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
 .axm__foot { display: flex; justify-content: flex-end; margin-top: 28px; }
 .axm__done {
   background: var(--nu-ink); color: var(--nu-white); border: none; border-radius: var(--nu-r-pill);
-  min-height: 48px; padding: 0 24px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s, transform .15s var(--nu-ease-saida);
+  min-height: 48px; padding: 0 24px; font: inherit; font-size: 15.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); cursor: pointer;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .axm__done:hover { background: var(--nu-ink-hover); }
 .axm__done:active { transform: scale(.98); }
@@ -310,7 +327,13 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
 
 @media (max-width: 760px) {
   .axm { padding: 16px; }
-  .axm__card { padding: 28px 22px 26px; }
+  .axm__card { padding: 32px 24px 24px; }
   .axm__row-type { display: none; }
+  .axm__corr-selo { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .axm, .axm__card { animation: none; }
+  .axm__row--link::before, .axm__go, .axm__close, .axm__done { transition: none; }
+  .axm__row--link:hover .axm__go { transform: none; }
 }
 </style>

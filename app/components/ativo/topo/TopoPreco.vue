@@ -24,7 +24,8 @@ const casas = computed(() => [...props.valor].map((c, i) => ({ c, k: `${i}-${c}`
 .tpr__casa { position: relative; display: inline-block; overflow: hidden; }
 .tpr__c { display: inline-block; }
 .tpr__c--ponto { transform: scale(.55); margin: 0 -.09em; opacity: .85; }
-.tpr-enter-active, .tpr-leave-active { transition: transform .22s var(--nu-ease-saida), opacity .22s ease; }
+/* a casa que troca: sobe e esmaece no tempo de hover dos tokens (o preço acompanha a mira) */
+.tpr-enter-active, .tpr-leave-active { transition: transform var(--nu-dur-media) var(--nu-ease-saida), opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .tpr-leave-active { position: absolute; left: 0; top: 0; }
 .tpr-enter-from { transform: translateY(40%); opacity: 0; }
 .tpr-leave-to { transform: translateY(-40%); opacity: 0; }

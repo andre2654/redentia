@@ -4,6 +4,9 @@
 // h2 + subtítulo + NuStatList light, direita com NuDividendBars (reuso).
 // Aqui NÃO tem pill de posição (landing 100% pública) e o CTA aponta pra
 // calculadora de dividend yield com deep-link do ticker.
+// Robustez (11/11/2026): as duas colunas entram ao chegar perto da tela
+// (v-revelar), no lugar do nu-fade que rodava no mount, fora da vista; o
+// respiro no ritmo de 8px e o título no tracking de exibição.
 import type { AcaoDividendBar, AcaoStatRow } from '~/types/acao'
 
 defineProps<{
@@ -25,7 +28,7 @@ const sobre = useSobreDoContexto()
 <template>
   <section v-contexto-chat="{ id: `dividendos-resumo:${sobre}`, tipo: 'proventos', rotulo: rotuloComSobre('Proventos', sobre) }" class="dvr">
     <div class="dvr__cols">
-      <div class="dvr__left">
+      <div v-revelar class="dvr__left">
         <NuEyebrow como="p">{{ isFii ? 'Rendimentos' : 'Proventos' }}</NuEyebrow>
         <h2 class="dvr__title">{{ heading[0] }}<br>{{ heading[1] }}</h2>
         <div class="dvr__sub">{{ subtitle }}</div>
@@ -37,7 +40,7 @@ const sobre = useSobreDoContexto()
           <NuBotaoSeta :to="`/calculadora/dividend-yield?ticker=${ticker}`" variante="carvao" tamanho="m">Calcular o DY de {{ ticker }}</NuBotaoSeta>
         </div>
       </div>
-      <div class="dvr__right">
+      <div v-revelar class="dvr__right">
         <NuDividendBars
           v-if="bars.length"
           :bars="bars"
@@ -52,22 +55,21 @@ const sobre = useSobreDoContexto()
 .dvr {
   /* Aportou: sem faixa branca de ponta a ponta; a banda é o creme da página */
   background: var(--nu-page);
-  padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
-  animation: nu-fade .5s ease both;
+  padding: clamp(72px, 8vw, 128px) var(--nu-coluna);
 }
-.dvr__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
+.dvr__cols { display: flex; gap: clamp(32px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .dvr__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .dvr__title {
-  margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
-  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
+  margin: 16px 0 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02;
 }
-.dvr__sub { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.5; margin-top: 22px; }
-.dvr__stats { margin-top: 26px; }
+.dvr__sub { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; margin-top: 20px; }
+.dvr__stats { margin-top: 32px; }
 .dvr__fonte {
-  margin: 14px 0 0; color: var(--nu-gray); font-size: 13.5px;
-  font-weight: 500; line-height: 1.5; max-width: 46ch;
+  margin: 16px 0 0; color: var(--nu-gray); font-size: 13px;
+  font-weight: var(--nu-w-texto); line-height: 1.5; max-width: 46ch;
 }
-.dvr__cta-row { margin-top: 28px; }
+.dvr__cta-row { margin-top: 32px; }
 /* as barras no tom do /asset: creme de fio as passadas, cobalto a corrente */
 .dvr__right { flex: 1.6 1 460px; min-width: min(320px, 100%); --nu-bar-inactive: var(--nu-line); }
 .dvr__right :deep(.ndb__bar) { max-width: 132px; border-radius: 12px 12px 4px 4px; }

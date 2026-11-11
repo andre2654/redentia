@@ -19,6 +19,12 @@
 // da página e a faixa quente (--nu-band) no lugar do branco e do creme; cada
 // seção abre com o eyebrow da marca e o título em 800, alinhados à esquerda.
 // A ordem das seções, os títulos, os textos e os links são os mesmos.
+// Robustez (11/11/2026, docs/aportou/robustez.md): os títulos de seção (e os
+// da prosa "Sobre") no peso de exibição; o respiro no ritmo de 8px; a entrada
+// ao rolar é o v-revelar (no cabeçalho de cada seção e, nos componentes, nas
+// grades em cascata), no lugar do observador próprio com nu-fade; e na barra
+// que gruda, a seção atual é UMA pílula carvão que desliza até a próxima
+// (520ms, --nu-ease-troca), como o indicador do NuTrilho.
 import type { AtivoDirecaoVM } from '~/composables/useAtivoDirecao'
 import AcaoEtfXray from '~/components/acao/AcaoEtfXray.vue'
 import AcaoFundInfo from '~/components/acao/AcaoFundInfo.vue'
@@ -73,6 +79,45 @@ watch(atual, (id) => {
   ul.scrollTo({ left: Math.max(0, alvo), behavior: calmo ? 'auto' : 'smooth' })
 })
 
+// A pílula da seção atual: um indicador só, que desliza da seção de antes até a
+// nova (o mesmo gesto do NuTrilho). Ele mora no ::before da fileira (rola junto
+// com ela) e lê a posição do chip pelas variáveis --px/--py/--pw/--ph. No HTML do
+// servidor, e até o JS medir, quem pinta a seção atual é o fundo do próprio chip,
+// no mesmo lugar: nada pula. Mudou o tamanho (a fonte chegou, a barra compactou,
+// a tela girou): o indicador vai para o lugar novo sem animar.
+const pilula = ref<{ x: number; y: number; w: number; h: number } | null>(null)
+const pilulaQuieta = ref(true)
+let medindo = 0
+async function medirPilula(animar: boolean) {
+  const vez = ++medindo
+  await nextTick()
+  const ul = fileira.value
+  const id = atual.value
+  const chip = id ? ul?.querySelector<HTMLElement>(`a[href="#${id}"]`) : null
+  if (!ul || !chip || !chip.offsetWidth) { pilula.value = null; return }
+  const nova = { x: chip.offsetLeft, y: chip.offsetTop, w: chip.offsetWidth, h: chip.offsetHeight }
+  const parada = !animar || !pilula.value
+  if (parada) pilulaQuieta.value = true
+  pilula.value = nova
+  if (!parada) return
+  await nextTick()
+  void ul.offsetWidth // o navegador fixa o lugar novo com a transição desligada
+  requestAnimationFrame(() => { if (vez === medindo) pilulaQuieta.value = false })
+}
+const estiloFileira = computed(() => (pilula.value
+  ? { '--px': `${pilula.value.x}px`, '--py': `${pilula.value.y}px`, '--pw': `${pilula.value.w}px`, '--ph': `${pilula.value.h}px` }
+  : undefined))
+watch(atual, () => { void medirPilula(true) })
+let obsFileira: ResizeObserver | null = null
+onMounted(() => {
+  const ul = fileira.value
+  if (!ul) return
+  obsFileira = new ResizeObserver(() => { void medirPilula(false) })
+  obsFileira.observe(ul)
+  document.fonts?.ready.then(() => { void medirPilula(false) }).catch(() => {})
+})
+onBeforeUnmount(() => obsFileira?.disconnect())
+
 const heroi = ref<HTMLElement | null>(null)
 const compacta = ref(false)
 let obsHeroi: IntersectionObserver | null = null
@@ -83,32 +128,17 @@ onMounted(() => {
   obsHeroi.observe(heroi.value)
 })
 onBeforeUnmount(() => obsHeroi?.disconnect())
-
-// A entrada das seções (contrato da Aportou, seção 5): o cabeçalho e o conteúdo
-// sobem 10px com fade quando a seção chega perto da tela. Só embeleza: a classe
-// só entra em seção que montou FORA da tela, com a aba visível e sem pedido de
-// menos movimento; se o observador nunca disparar, o conteúdo já está lá.
-const raiz = ref<HTMLElement | null>(null)
-let obsSecoes: IntersectionObserver | null = null
-onMounted(() => {
-  const el = raiz.value
-  if (!el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  obsSecoes = new IntersectionObserver((entradas) => {
-    for (const e of entradas) {
-      if (!e.isIntersecting) continue
-      e.target.classList.add('an--entra')
-      obsSecoes?.unobserve(e.target)
-    }
-  }, { rootMargin: '0px 0px 12% 0px' })
-  el.querySelectorAll<HTMLElement>(':scope > .an__sec, :scope > .an__embutida').forEach((sec) => {
-    if (sec.getBoundingClientRect().top >= window.innerHeight) obsSecoes!.observe(sec)
-  })
+// a barra compactou ou abriu: os chips andaram de lugar, o indicador vai junto (sem deslizar)
+watch(compacta, () => { void medirPilula(false) })
+// a variação do dia sem o "R$": "-1,28%" (o que cabe na barra compacta)
+const varDoDia = computed(() => {
+  const pct = a.value.hero.changeLine?.match(/\(([^)]+)\)/)?.[1] ?? ''
+  return pct ? `${a.value.hero.dir === 'down' ? '-' : '+'}${pct}` : ''
 })
-onBeforeUnmount(() => obsSecoes?.disconnect())
 </script>
 
 <template>
-  <div ref="raiz" class="an">
+  <div class="an">
     <div id="cotacao" class="an__ativo">
       <!-- ============ o topo: o papel, o preço e a linha de luz ============ -->
       <div ref="heroi">
@@ -134,11 +164,11 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
            entram aqui, como o título grande do iOS que vira pequeno. Só no
            cliente e dentro da altura que a barra já tem: não empurra nada. -->
       <div v-if="compacta" class="an__ident">
-        <b class="an__ident-t">{{ t }}</b>
+        <NuSelo tom="carvao" como="b" class="an__ident-t">{{ t }}</NuSelo>
         <span class="an__ident-p">{{ a.hero.priceFmt }}</span>
-        <span v-if="a.hero.changeLine" class="an__ident-v" :class="`an__ident-v--${a.hero.dir}`">{{ a.hero.dir === 'down' ? '-' : '+' }}{{ a.hero.changeLine.match(/\(([^)]+)\)/)?.[1] ?? '' }}</span>
+        <NuSelo v-if="varDoDia" :tom="a.hero.dir === 'down' ? 'vermelho' : 'verde'" tamanho="p" class="an__ident-v">{{ varDoDia }}</NuSelo>
       </div>
-      <ul ref="fileira" class="an__chips">
+      <ul ref="fileira" class="an__chips" :class="{ 'an__chips--pilula': pilula, 'an__chips--quieta': pilulaQuieta }" :style="estiloFileira">
         <li v-for="s in secoes" :key="s.id">
           <a
             :href="`#${s.id}`" class="an__chip" :class="{ 'an__chip--on': atual === s.id, 'an__chip--ativo': s.id === 'cotacao' }"
@@ -149,7 +179,7 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
     </nav>
 
     <section v-if="cartoes.length" id="indicadores" v-contexto-chat="{ id: `fundamentos:${t}`, tipo: 'grafico', rotulo: rotuloComSobre('Fundamentos', t) }" class="an__sec" :class="tom('indicadores')">
-      <header class="an__cab">
+      <header v-revelar class="an__cab">
         <NuEyebrow como="p" class="an__tipo">{{ rotulo('indicadores') }}</NuEyebrow>
         <h2 class="an__h2">{{ a.fundHeading[0] }} {{ a.fundHeading[1] }}</h2>
         <p class="an__q">{{ a.fundSub }}</p>
@@ -158,12 +188,12 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
     </section>
 
     <section v-if="a.etfXray || a.fundInfo" id="carteira" class="an__embutida" :class="{ 'an__embutida--inverte': tons.carteira === 'creme' }">
-      <AcaoEtfXray v-if="a.etfXray" :ticker="t" :xray="a.etfXray" />
-      <AcaoFundInfo v-else-if="a.fundInfo" :info="a.fundInfo" />
+      <AcaoEtfXray v-if="a.etfXray" :ticker="t" :xray="a.etfXray" :eyebrow="rotulo('carteira')" />
+      <AcaoFundInfo v-else-if="a.fundInfo" :info="a.fundInfo" :eyebrow="rotulo('carteira')" />
     </section>
 
     <section v-if="a.dividends" id="dividendos" class="an__sec" :class="tom('dividendos')">
-      <header class="an__cab">
+      <header v-revelar class="an__cab">
         <NuEyebrow como="p" class="an__tipo">{{ rotulo('dividendos') }}</NuEyebrow>
         <h2 class="an__h2">{{ a.dividends.heading[0] }} {{ a.dividends.heading[1] }}</h2>
       </header>
@@ -176,7 +206,7 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
     </section>
 
     <section v-if="a.ai" id="analise" v-contexto-chat="{ id: `analise:${t}`, tipo: 'grafico', rotulo: `O que a Aportou vê · ${t}` }" class="an__sec" :class="tom('analise')">
-      <header class="an__cab">
+      <header v-revelar class="an__cab">
         <NuEyebrow como="p" class="an__tipo">{{ rotulo('analise') }}</NuEyebrow>
         <h2 class="an__h2">O que a Aportou vê.</h2>
       </header>
@@ -184,14 +214,14 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
     </section>
 
     <section v-if="a.editorial?.sections.length" id="sobre" class="an__sec" :class="tom('sobre')">
-      <header class="an__cab an__cab--estreito">
+      <header v-revelar class="an__cab an__cab--estreito">
         <NuEyebrow como="p" class="an__tipo">{{ rotulo('sobre') }}</NuEyebrow>
       </header>
       <div class="an__estreito"><AtivoProsa :ticker="t" :secoes="a.editorial.sections" /></div>
     </section>
 
     <section v-if="a.theses.length" id="teses" v-contexto-chat="{ id: `teses:${t}`, tipo: 'tese', rotulo: `Teses com ${t}`, texto: `${tesesTitulo}\n${a.theses.map((x) => `${x.title}: ${x.roleStrong}${x.roleRest}`).join('\n')}` }" class="an__sec" :class="tom('teses')">
-      <header class="an__cab an__cab--estreito">
+      <header v-revelar class="an__cab an__cab--estreito">
         <NuEyebrow como="p" class="an__tipo">Teses da Aportou</NuEyebrow>
         <h2 class="an__h2">{{ tesesTitulo }}</h2>
       </header>
@@ -199,7 +229,7 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
     </section>
 
     <section v-if="a.news" id="noticias" v-contexto-chat="{ id: `noticias:${t}`, tipo: 'noticia', rotulo: `Notícias de ${t}` }" class="an__sec" :class="tom('noticias')">
-      <header class="an__cab an__cab--estreito">
+      <header v-revelar class="an__cab an__cab--estreito">
         <NuEyebrow como="p" class="an__tipo">{{ rotulo('noticias') }}</NuEyebrow>
         <h2 class="an__h2">{{ t }} no noticiário.</h2>
         <p class="an__q">O que saiu sobre {{ t }}, com a variação do papel no dia de cada notícia.</p>
@@ -213,7 +243,7 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
     </section>
 
     <section v-if="a.pares" id="setor" class="an__sec" :class="tom('setor')">
-      <header class="an__cab">
+      <header v-revelar class="an__cab">
         <NuEyebrow como="p" class="an__tipo">{{ rotulo('setor') }}</NuEyebrow>
         <h2 class="an__h2">Outras empresas do setor {{ a.pares.setor.nome.toLowerCase() }}.</h2>
       </header>
@@ -224,7 +254,7 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
     <section id="perguntas" class="an__sec an__sec--fim an__sec--faq" :class="tom('perguntas')">
       <div class="an__faq">
         <AtivoPerguntas :ticker="t" :editorial="a.editorial" :resumo="a.resumo" @perguntar="abrirCom()" />
-        <div class="an__faq-pe">
+        <div v-revelar class="an__faq-pe">
           <SeguirGancho v-if="v.seguivel" :atual="t" :surface="tons.perguntas === 'creme' ? 'cream' : 'white'" class="an__gancho" />
           <AtivoVejaTambem :links="links" class="an__veja" />
         </div>
@@ -241,7 +271,8 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
   --cola: calc(var(--nuh-h, 72px) + var(--nut-h, 0px));
   --barra-h: 61px;
   --mola: var(--nu-ease-saida);
-  --a-h2: var(--nu-fs-h3); --a-h2-peso: 800;
+  /* a prosa "Sobre" (AtivoProsa): título no peso de exibição, como os das seções */
+  --a-h2: var(--nu-fs-h3); --a-h2-peso: var(--nu-w-display);
   /* a margem da coluna de 1240px (a do topo): a barra e as seções alinham nela */
   --lado: max(var(--g), calc((100% - 1240px) / 2));
   background: var(--nu-page);
@@ -253,74 +284,81 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
   background: color-mix(in srgb, var(--nu-page) 94%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px);
   border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2);
-  /* o mesmo passo da régua e do header quando o header encolhe */
+  /* o mesmo passo da régua e do header quando o header encolhe (NuMarketTicker: .32s) */
   transition: top .32s var(--nu-ease-saida);
   /* compacta: o papel à esquerda, as seções à direita */
   display: flex; align-items: center;
 }
 .an__barra .an__chips { flex: 1; min-width: 0; }
-.an__ident { display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-left: var(--lado); animation: an-ident .22s ease both; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.an__ident { display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-left: var(--lado); animation: an-ident var(--nu-dur-media) var(--nu-ease-saida) both; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @keyframes an-ident { from { opacity: 0; transform: translateY(4px); } }
-/* o papel na barra: a etiqueta carvão da marca */
-.an__ident-t { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); letter-spacing: 0.04em; }
-.an__ident-p { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
-.an__ident-v { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
-.an__ident-v--up { color: var(--nu-green-text); }
-.an__ident-v--down { color: var(--nu-red-text); }
+/* o papel na barra: o selo carvão da marca (NuSelo), o preço tabular e a variação num selo pequeno */
+.an__ident-p { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto); }
 .an__barra--compacta .an__chip--ativo { display: none; }
 /* compacta, a fileira que rola some num degradê junto do papel (não corta seco) */
 .an__barra--compacta .an__chips { padding-left: 16px; -webkit-mask-image: linear-gradient(90deg, transparent 6px, var(--nu-ink) 22px); mask-image: linear-gradient(90deg, transparent 6px, var(--nu-ink) 22px); }
-.an__chips { list-style: none; margin: 0; padding: 8px var(--lado); display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; }
-.an__chips::-webkit-scrollbar { display: none; }
-.an__chip {
-  display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: var(--nu-r-pill); white-space: nowrap;
-  background: transparent; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 600;
-  transition: background .2s ease, color .2s ease, transform .15s var(--mola);
+.an__chips {
+  position: relative; isolation: isolate; list-style: none; margin: 0; padding: 8px var(--lado);
+  display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none;
 }
-.an__chip--ativo { font-weight: var(--nu-w-forte); }
+.an__chips::-webkit-scrollbar { display: none; }
+/* o indicador da seção atual: uma pílula só, que desliza de um chip ao outro */
+.an__chips::before {
+  content: ''; position: absolute; z-index: 0; top: 0; left: 0;
+  width: var(--pw, 0px); height: var(--ph, 0px); transform: translate(var(--px, 0px), var(--py, 0px));
+  border-radius: var(--nu-r-pill); background: var(--nu-ink); opacity: 0; pointer-events: none;
+  transition: transform var(--nu-dur-lenta) var(--nu-ease-troca), width var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-media) var(--nu-ease-cor);
+}
+.an__chips--pilula::before { opacity: 1; }
+.an__chips--quieta::before { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.an__chip {
+  position: relative; z-index: 1; display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: var(--nu-r-pill); white-space: nowrap;
+  background: transparent; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
+}
 .an__chip:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
 .an__chip:active { transform: scale(.97); }
-.an__chip--on, .an__chip--on:hover { background: var(--nu-ink); color: var(--nu-white); font-weight: var(--nu-w-medio); }
+/* antes do JS medir (o HTML do servidor): o chip atual pinta o próprio fundo, no lugar exato do indicador */
+.an__chip--on, .an__chip--on:hover { background: var(--nu-ink); color: var(--nu-white); }
+/* medido: o fundo é o do indicador que desliza. A letra acompanha o passo dele: a
+   de quem perde a pílula escurece logo; a de quem ganha clareia quando ela já chegou */
+.an__chips--pilula .an__chip { transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida); }
+.an__chips--pilula .an__chip--on { transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor) var(--nu-dur-rapida), transform var(--nu-dur-rapida) var(--nu-ease-saida); }
+.an__chips--pilula .an__chip--on, .an__chips--pilula .an__chip--on:hover { background: transparent; }
+.an__chip:focus-visible { outline-offset: -3px; }
 
 /* ——— cada seção: o eyebrow e o título à esquerda, o conteúdo embaixo ——— */
-.an__sec { scroll-margin-top: calc(var(--cola) + var(--barra-h)); padding: clamp(64px, 7vw, 100px) var(--g); }
+.an__sec { scroll-margin-top: calc(var(--cola) + var(--barra-h)); padding: clamp(72px, 8vw, 128px) var(--g); }
 #cotacao { scroll-margin-top: var(--cola); }
-/* a entrada: o cabeçalho e, 60ms depois, o conteúdo (só com a classe do observador) */
-.an__sec.an--entra > *, .an__embutida.an--entra > * { animation: nu-fade .5s ease backwards; }
-.an__sec.an--entra > :nth-child(2) { animation-delay: 60ms; }
 /* a segunda cor da alternância: a faixa quente (era o creme sobre o branco) */
 .an__sec--creme { background: var(--nu-band); }
 /* o resumo mora logo abaixo do topo, na mesma coluna dele */
-.an__sec--resumo { padding: 0 clamp(20px, 4vw, 56px) clamp(36px, 4.4vw, 56px); }
+.an__sec--resumo { padding: 0 clamp(20px, 4vw, 56px) clamp(40px, 4.4vw, 56px); }
 .an__sec--fim { padding-bottom: clamp(40px, 5vw, 64px); }
 .an__cab { display: flex; flex-direction: column; align-items: flex-start; max-width: 1240px; margin: 0 auto; }
 .an__cab--estreito { max-width: 760px; }
-.an__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
-.an__q { margin: 14px 0 0; max-width: 60ch; color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5; }
-.an__estreito { max-width: 760px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
-.an__largo { max-width: 1240px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
+.an__h2 { margin: 16px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.04; text-wrap: balance; }
+.an__q { margin: 16px 0 0; max-width: 60ch; color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; }
+.an__estreito { max-width: 760px; margin: clamp(32px, 3.4vw, 48px) auto 0; }
+.an__largo { max-width: 1240px; margin: clamp(32px, 3.4vw, 48px) auto 0; }
 /* sem título, só o eyebrow (a prosa "Sobre" traz os próprios H2): menos respiro */
-.an__cab:not(:has(.an__h2)) + .an__estreito { margin-top: 22px; }
-.an__sec--creme .an__ind :deep(.ain__dim) { background: var(--nu-white); }
+.an__cab:not(:has(.an__h2)) + .an__estreito { margin-top: 24px; }
 .an__sec--creme :deep(.avt__lista a) { background: var(--nu-white); }
 
 /* AcaoEtfXray e AcaoFundInfo vêm prontos (as bandas deles); aqui o título no
-   peso da página, a cor na alternância e o cartão que sobe. A cadeia
-   (CadeiaRazao) já recebe o tom da alternância. */
+   peso da página e a cor na alternância. A cadeia (CadeiaRazao) já recebe o
+   tom da alternância. Os cartões de custo do ETF não são clicáveis: não sobem. */
 .an__embutida { scroll-margin-top: calc(var(--cola) + var(--barra-h) - 20px); }
-.an__embutida :deep(.axb__title), .an__embutida :deep(.afi__title) { font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; }
+.an__embutida :deep(.axb__title), .an__embutida :deep(.afi__title) { font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); }
 .an__embutida--inverte :deep(.axb--white), .an__embutida--inverte :deep(.afi) { background: var(--nu-band); }
 .an__embutida--inverte :deep(.axb--cream) { background: var(--nu-page); }
-.an__embutida :deep(.axb__row) { transition: background .2s ease; border-radius: 8px; }
-.an__embutida :deep(.axb__row--link:hover) { background: var(--nu-cream-2); }
-.an__embutida :deep(.axb__card) { transition: transform .25s var(--mola), box-shadow .25s var(--mola); }
-.an__embutida :deep(.axb__card:hover) { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 
 /* a faixa do FAQ: a largura do /teses (sem o miolo de 760px), o gancho e o
    "veja também" embaixo das duas colunas */
-.an__sec--faq { padding-top: clamp(64px, 8.5vw, 110px); }
+.an__sec--faq { padding-top: clamp(72px, 8.5vw, 112px); }
 .an__faq { max-width: 1240px; margin: 0 auto; }
-.an__faq-pe { margin-top: clamp(48px, 6vw, 80px); }
+.an__faq-pe { margin-top: clamp(56px, 6vw, 80px); }
 /* colada numa banda da mesma cor (a conta pintaria as perguntas da cor da
    página): um fio no lugar do segundo respiro */
 .an__sec--creme + .an__sec--faq, .an__embutida:has(.crz--creme) + .an__sec--faq { padding-top: 0; }
@@ -333,13 +371,10 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
   /* no celular o papel encolhe, mas o preço fica: ticker, preço e variação */
   .an__ident { gap: 6px; }
   .an__ident-p { font-size: var(--nu-fs-sm); }
-  .an__ident-v { font-size: var(--nu-fs-xs); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .an__ident, .an__sec.an--entra > *, .an__embutida.an--entra > * { animation: none; }
-  .an__chip, .an__barra,
-  .an__embutida :deep(.axb__card) { transition: none; }
-  .an__chip:active,
-  .an__embutida :deep(.axb__card:hover) { transform: none; }
+  .an__ident { animation: none; }
+  .an__chip, .an__barra, .an__chips::before, .an__chips--pilula .an__chip { transition: none; }
+  .an__chip:active { transform: none; }
 }
 </style>

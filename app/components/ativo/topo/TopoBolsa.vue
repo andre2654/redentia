@@ -19,10 +19,17 @@
 // A linha se desenhando é Web Animations, uma vez no mount, só com a aba
 // visível, o gráfico na tela e sem pedido de menos movimento (a lição do
 // /benchmark-ia: nada espera o observador para existir).
+// Robustez (11/11/2026): o código, a bolsa, a posição e a variação do dia são
+// o NuSelo da base (a variação no tamanho do herói); o topo entra em cascata
+// de 60ms na curva e no tempo dos tokens; o número grande e o maior da legenda
+// no peso de exibição; os números do gráfico em fileiras de rótulo em cima e
+// valor embaixo (o rótulo não quebra mais ao lado do valor); e o simulador é
+// o link com seta (NuLinkSeta). A linha se desenha no tempo dos tokens.
 import type { AcaoPayload, AcaoRange, AcaoSeriesPair, AcaoStatRow } from '~/types/acao'
 import type { AcaoPosition } from '~/composables/useAcao'
 import type { LeituraDoGrafico, LegendaItem } from '~/utils/ativoDirecoes'
 import type { OpcaoDoTrilho } from '~/components/nu/NuTrilho.vue'
+import type { ValorContextoChat } from '~/utils/contexto-chat-registro'
 import { ROTULO_PERIODO } from '~/composables/useAtivoDirecao'
 import TopoAcoes from './TopoAcoes.vue'
 import TopoPreco from './TopoPreco.vue'
@@ -40,8 +47,9 @@ const props = defineProps<{
   legenda: LegendaItem[]
   linhas: AcaoStatRow[]
   perguntas: string[]
-  contexto: Record<string, unknown>
-  contextoGrafico: Record<string, unknown>
+  /** o ativo e o gráfico como contexto do chat (v-contexto-chat) */
+  contexto: ValorContextoChat
+  contextoGrafico: ValorContextoChat
 }>()
 const emit = defineEmits<{ periodo: [AcaoRange]; perguntar: [string]; abrir: [] }>()
 // o seletor do período (NuTrilho): '12M' à vista, '12 meses' para o leitor de tela. 5 anos:
@@ -61,6 +69,8 @@ const partes = computed(() => {
 const nome = computed(() => props.a.hero.companyLine.replace(` · ${props.t}`, ''))
 // o rótulo da faixa da marca: o título do gráfico sem o ponto final (vai em caixa alta)
 const rotuloFaixa = computed(() => props.tituloGrafico.replace(/\.$/, ''))
+// o tom do selo pela direção (sem direção, o selo neutro)
+const tomDe = (dir: string | null | undefined) => (dir === 'down' ? 'vermelho' : dir === 'up' ? 'verde' : 'neutro')
 
 const palco = ref<HTMLElement | null>(null)
 onMounted(() => {
@@ -68,9 +78,13 @@ onMounted(() => {
   if (!el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   const r = el.getBoundingClientRect()
   if (r.top >= window.innerHeight || r.bottom <= 0) return
-  const curva = 'cubic-bezier(.2, .8, .2, 1)'
-  el.querySelector('.agr__svg')?.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 1400, delay: 150, easing: curva, fill: 'backwards' })
-  el.querySelectorAll('.agr__fim, .agr__hoje').forEach((x) => x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 1350, easing: 'ease', fill: 'backwards' }))
+  // a curva e os tempos vêm dos tokens (var() não vale numa Web Animation: lê o valor calculado)
+  const css = getComputedStyle(document.documentElement)
+  const ms = (nome: string, padrao: number) => parseFloat(css.getPropertyValue(nome)) || padrao
+  const curva = css.getPropertyValue('--nu-ease-saida').trim() || 'ease-out'
+  const desenho = ms('--nu-dur-entrada', 720) * 2
+  el.querySelector('.agr__svg')?.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: desenho, delay: 120, easing: curva, fill: 'backwards' })
+  el.querySelectorAll('.agr__fim, .agr__hoje').forEach((x) => x.animate([{ opacity: 0, translate: '0 4px' }, { opacity: 1, translate: '0 0' }], { duration: ms('--nu-dur-lenta', 520), delay: desenho - 160, easing: curva, fill: 'backwards' }))
 })
 </script>
 
@@ -83,12 +97,12 @@ onMounted(() => {
         <div class="tbo__quem">
           <p class="tbo__empresa">
             <span class="tbo__nome">{{ nome }}</span>
-            <span class="tbo__ticker">{{ t }}</span>
-            <span class="tbo__bolsa">{{ a.hero.exchangeLabel || 'B3' }}</span>
+            <NuSelo tom="carvao">{{ t }}</NuSelo>
+            <NuSelo tom="contorno">{{ a.hero.exchangeLabel || 'B3' }}</NuSelo>
           </p>
           <h1 v-if="a.resumo" id="tbo-h1" class="tbo__h1">{{ a.resumo.h1 }}</h1>
         </div>
-        <span v-if="position" class="tbo__posicao">Na sua carteira · {{ nf0.format(position.qty) }} {{ position.qty === 1 ? 'cota' : 'cotas' }}</span>
+        <NuSelo v-if="position" tom="azul" ponto>Na sua carteira · {{ nf0.format(position.qty) }} {{ position.qty === 1 ? 'cota' : 'cotas' }}</NuSelo>
       </div>
 
       <div class="tbo__preco-linha">
@@ -97,13 +111,13 @@ onMounted(() => {
         </p>
         <p class="tbo__dia">
           <template v-if="leitura">
-            <span class="tbo__selo" :class="`tbo__selo--${leitura.dir}`">{{ leitura.medida ? `${leitura.delta} (${leitura.var})` : leitura.var }}</span>
+            <NuSelo :tom="tomDe(leitura.dir)" class="tbo__selo">{{ leitura.medida ? `${leitura.delta} (${leitura.var})` : leitura.var }}</NuSelo>
             <span class="tbo__meta">{{ leitura.medida ? `de ${leitura.de} a ${leitura.data}` : `em ${leitura.data}, desde o início do período` }}</span>
           </template>
           <template v-else>
-            <span v-if="a.hero.changeLine" class="tbo__selo" :class="`tbo__selo--${a.hero.dir}`">
+            <NuSelo v-if="a.hero.changeLine" :tom="tomDe(a.hero.dir)" class="tbo__selo" :class="{ 'tbo__selo--queda': a.hero.dir === 'down' }">
               <svg class="tbo__seta" width="11" height="10" viewBox="0 0 11 10" aria-hidden="true"><path d="M5.5 0 11 10H0Z" /></svg>{{ a.hero.changeLine }}
-            </span>
+            </NuSelo>
             <span v-if="a.hero.metaLine" class="tbo__meta">{{ a.hero.metaLine }}</span>
           </template>
         </p>
@@ -138,8 +152,8 @@ onMounted(() => {
       <div class="tbo__pe">
         <AtivoPerguntaChips :perguntas="perguntas" tom="claro" :rotulo="null" @perguntar="emit('perguntar', $event)" />
         <p v-if="a.simuladorHref" class="tbo__sim">
-          <NuxtLink :to="a.simuladorHref" class="tbo__sim-l">Simulador de ações</NuxtLink>
-          <span>Quanto {{ t }} teria rendido com dividendos reinvestidos, no histórico real da B3.</span>
+          <NuLinkSeta :to="a.simuladorHref" tom="tinta">Simulador de ações</NuLinkSeta>
+          <span class="tbo__sim-t">Quanto {{ t }} teria rendido com dividendos reinvestidos, no histórico real da B3.</span>
         </p>
       </div>
     </div>
@@ -154,53 +168,50 @@ onMounted(() => {
   padding: clamp(28px, 3.4vw, 48px) var(--g) clamp(28px, 3.4vw, 48px);
   background: var(--nu-page); color: var(--nu-ink);
 }
-.tbo__trocou { max-width: 1240px; margin: 0 auto 14px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
+.tbo__trocou { max-width: 1240px; margin: 0 auto 16px; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
 .tbo__grade {
   max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr);
   grid-template-areas: "id" "preco" "acoes" "palco" "nums" "pe"; row-gap: clamp(20px, 2.4vw, 28px);
 }
-.tbo__id { grid-area: id; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; min-width: 0; animation: nu-fade .5s ease both; }
-.tbo__logo { width: 40px; height: 40px; border-radius: var(--nu-r-chip); background: var(--nu-white); object-fit: cover; box-shadow: var(--nu-shadow-quente); }
+/* a entrada do topo: cada bloco sobe com fade, em cascata de 60ms (tokens de entrada) */
+.tbo__id, .tbo__preco-linha, .tbo__acoes, .tbo__palco, .tbo__nums, .tbo__pe { animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+.tbo__id { grid-area: id; display: flex; align-items: center; gap: 12px 14px; flex-wrap: wrap; min-width: 0; }
+.tbo__logo { width: 40px; height: 40px; border-radius: var(--nu-r-chip); background: var(--nu-white); object-fit: cover; box-shadow: var(--nu-shadow-branco); }
 .tbo__quem { min-width: 0; }
-.tbo__empresa { margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.tbo__nome { font-size: clamp(24px, 2.6vw, 34px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1.1; }
-/* as etiquetas: o código em carvão, a bolsa em creme (selos de raio 8) */
-.tbo__ticker, .tbo__bolsa { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); letter-spacing: 0.04em; }
-.tbo__ticker { background: var(--nu-ink); color: var(--nu-white); }
-.tbo__bolsa { background: var(--nu-cream-2); color: var(--nu-ink); }
-.tbo__h1 { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; letter-spacing: 0; line-height: 1.4; }
-.tbo__posicao { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.tbo__empresa { margin: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tbo__nome { margin-right: 4px; font-size: clamp(24px, 2.6vw, 34px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.1; }
+.tbo__h1 { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.4; }
 
 /* a cotação: o número-herói da marca, com a moeda pequena e elevada */
-.tbo__preco-linha { grid-area: preco; animation: nu-fade .5s ease .06s both; }
-.tbo__preco { margin: 0; display: flex; align-items: flex-start; gap: .08em; font-size: clamp(64px, 17vw, 132px); font-weight: var(--nu-w-display); letter-spacing: -0.045em; line-height: .92; }
+.tbo__preco-linha { grid-area: preco; animation-delay: var(--nu-passo-cascata); }
+.tbo__preco { margin: 0; display: flex; align-items: flex-start; gap: .08em; font-size: clamp(64px, 17vw, 132px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .92; }
 .tbo__preco--longo { font-size: clamp(44px, 11.5vw, 92px); }
 /* cada casa do TopoPreco corta o que sai da caixa (é o que esconde o dígito que troca); com a
    letra apertada do número-herói o desenho passa da caixa: a folga volta por dentro */
 .tbo__preco :deep(.tpr__casa) { padding: .1em .05em; margin: -.1em -.05em; }
-.tbo__moeda { margin-top: .16em; font-size: .36em; letter-spacing: -0.02em; line-height: 1; }
-.tbo__dia { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; min-height: 38px; margin: clamp(14px, 1.6vw, 20px) 0 0; font-variant-numeric: tabular-nums; }
-.tbo__selo { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 6px 14px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); }
-.tbo__selo--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
-.tbo__selo--down { background: var(--nu-red-bg); color: var(--nu-red-text); }
+.tbo__moeda { margin-top: .16em; font-size: .36em; letter-spacing: var(--nu-ls-titulo); line-height: 1; }
+.tbo__dia { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; min-height: 36px; margin: 16px 0 0; font-variant-numeric: tabular-nums; }
+/* a variação do dia: o NuSelo verde ou vermelho no tamanho do herói (a classe vence a caixa do selo) */
+.tbo__selo { height: 36px; padding: 0 12px; gap: 8px; font-size: var(--nu-fs-md); }
 .tbo__seta { flex: none; fill: currentColor; }
-.tbo__selo--down .tbo__seta { transform: rotate(180deg); }
-.tbo__meta { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; }
+.tbo__selo--queda .tbo__seta { transform: rotate(180deg); }
+.tbo__meta { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); }
 
-.tbo__acoes { grid-area: acoes; animation: nu-fade .5s ease .12s both; }
+.tbo__acoes { grid-area: acoes; animation-delay: calc(var(--nu-passo-cascata) * 2); }
 
 /* o cartão do gráfico: carvão, com a faixa da marca e o período à direita dela */
-.tbo__palco { grid-area: palco; min-width: 0; animation: nu-fade .5s ease .1s both; }
+.tbo__palco { grid-area: palco; min-width: 0; animation-delay: calc(var(--nu-passo-cascata) * 2); }
 .tbo__cartao { --pad: clamp(18px, 2.2vw, 30px); padding-bottom: clamp(16px, 2vw, 24px); }
 /* o período (NuTrilho escuro, a pílula creme que desliza) centrado na altura da aba de 56px */
 .tbo__cartao :deep(.nfm__acoes) { padding: 6px 10px 0 0; }
 .tbo__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(18px, 2vw, 26px) var(--pad) 0; }
 .tbo__leg { display: inline-flex; align-items: baseline; gap: 10px; }
-.tbo__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.tbo__leg--1 b { font-size: clamp(38px, 4.4vw, 58px); letter-spacing: -0.04em; line-height: 1; }
+.tbo__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums; }
+/* o número grande da legenda é número-herói: peso de exibição */
+.tbo__leg--1 b { font-size: clamp(38px, 4.4vw, 58px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1; }
 .tbo__leg b.tbo__leg--up { color: var(--nu-green-soft); }
 .tbo__leg b.tbo__leg--down { color: var(--nu-red-soft); }
-.tbo__leg-r { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 600; }
+.tbo__leg-r { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
 .tbo__traco { width: 14px; height: 2px; border-radius: 1px; background: var(--nu-blue-on-dark); }
 .tbo__traco--ibov { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
 /* o gráfico vai de beira a beira do cartão; o ponto de hoje, o halo e o rótulo
@@ -212,25 +223,27 @@ onMounted(() => {
 }
 /* no celular o período desce para baixo do gráfico, largo */
 .tbo__periodo { display: none; margin: 16px var(--pad) 0; }
-.tbo__uso { margin: 12px var(--pad) 0; color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 500; }
+.tbo__uso { margin: 12px var(--pad) 0; color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); }
 @media (hover: none) { .tbo__uso { display: none; } }
 
-/* os números do gráfico: o cartão creme de dados, com fios de 1,5px */
+/* os números do gráfico: o cartão creme de dados, com fios de 1px. Cada número
+   é uma fileira de rótulo pequeno em cima e valor embaixo (como no celular):
+   em duas colunas, o rótulo comprido ("Valor de Mercado") não quebra mais ao
+   lado do valor */
 .tbo__nums {
-  grid-area: nums; margin: 0; padding: 0 clamp(18px, 2vw, 24px); border-radius: var(--nu-r-panel); overflow: hidden;
+  grid-area: nums; margin: 0; padding: 0 24px; border-radius: var(--nu-r-panel); overflow: hidden;
   background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); column-gap: clamp(20px, 2.6vw, 32px);
-  animation: nu-fade .5s ease .16s both;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); column-gap: 32px;
+  animation-delay: calc(var(--nu-passo-cascata) * 3);
 }
-/* o fio fica em cima de cada linha; o da primeira fileira some no corte do cartão */
-.tbo__num { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: -1.5px; padding: 15px 0 14px; border-top: 1px solid var(--nu-line-2); }
-.tbo__num dt { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.3; }
-.tbo__num dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+/* o fio fica em cima de cada fileira; o da primeira some no corte do cartão */
+.tbo__num { display: flex; flex-direction: column; gap: 4px; min-width: 0; margin-top: -1px; padding: 14px 0 15px; border-top: 1px solid var(--nu-line-2); }
+.tbo__num dt { color: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.3; }
+.tbo__num dd { margin: 0; color: var(--nu-ink); font-size: 17px; font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.25; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-.tbo__pe { grid-area: pe; display: flex; justify-content: space-between; align-items: center; gap: 16px 32px; flex-wrap: wrap; }
-.tbo__sim { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.tbo__sim-l { margin-right: 8px; color: var(--nu-ink); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line); transition: text-decoration-color .2s ease, color .2s ease; }
-.tbo__sim-l:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
+.tbo__pe { grid-area: pe; display: flex; justify-content: space-between; align-items: center; gap: 16px 32px; flex-wrap: wrap; animation-delay: calc(var(--nu-passo-cascata) * 4); }
+.tbo__sim { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
+.tbo__sim-t { margin-left: 10px; }
 
 /* duas colunas: o papel e o preço à esquerda, o cartão do gráfico à direita */
 @media (min-width: 1080px) {
@@ -240,7 +253,9 @@ onMounted(() => {
   }
   .tbo__preco { font-size: clamp(84px, 8.4vw, 132px); }
   .tbo__preco--longo { font-size: clamp(52px, 5.2vw, 84px); }
-  .tbo__nums { align-self: end; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* três colunas: o cartão fica baixo e termina junto com o do gráfico; com quatro números, duas */
+  .tbo__nums { align-self: end; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 24px; }
+  .tbo__nums:has(> :nth-child(4):last-child), .tbo__nums:not(:has(> :nth-child(3))) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tbo__grafico { height: clamp(260px, 25vw, 372px); }
 }
 @media (max-width: 760px) {
@@ -249,11 +264,9 @@ onMounted(() => {
   .tbo__periodo { display: flex; }
 }
 @media (max-width: 480px) {
-  .tbo__nums { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
-  .tbo__num { flex-direction: column; gap: 2px; }
-  .tbo__num dd { text-align: left; }
+  .tbo__nums { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 16px; padding: 0 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tbo__id, .tbo__preco-linha, .tbo__acoes, .tbo__palco, .tbo__nums { animation: none; }
+  .tbo__id, .tbo__preco-linha, .tbo__acoes, .tbo__palco, .tbo__nums, .tbo__pe { animation: none; }
 }
 </style>

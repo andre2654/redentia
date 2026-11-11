@@ -5,6 +5,8 @@
 // (o dividend yield, quando existe) é o número-herói; os demais ficam embaixo,
 // cada um com a sua fonte. São os MESMOS itens de antes, com os mesmos valores
 // e as mesmas fontes; o accent verde é o do próximo pagamento anunciado.
+// Robustez (11/11/2026): entra 60ms depois do texto do topo, no tempo e na
+// curva dos tokens; rótulo, valor e fonte no texto pequeno da base.
 import type { AcaoStatRow } from '~/types/acao'
 
 const props = defineProps<{ items: AcaoStatRow[] }>()
@@ -33,26 +35,26 @@ const contexto = (s: AcaoStatRow) => ({ id: `dividendos:${sobre.value}:${s.l}`, 
 </template>
 
 <style scoped>
-.dvs { --pad: clamp(20px, 2.4vw, 32px); overflow: hidden; animation: nu-fade .5s ease .1s both; }
-.dvs__heroi { display: flex; flex-direction: column; gap: 6px; padding: clamp(22px, 2.6vw, 32px) var(--pad) clamp(20px, 2.4vw, 28px); }
+.dvs { --pad: clamp(20px, 2.4vw, 32px); overflow: hidden; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) var(--nu-passo-cascata) both; }
+.dvs__heroi { display: flex; flex-direction: column; gap: 8px; padding: clamp(24px, 2.6vw, 32px) var(--pad) clamp(20px, 2.4vw, 28px); }
 .dvs__heroi-v {
   color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display);
-  letter-spacing: -.035em; font-variant-numeric: tabular-nums; line-height: 1; overflow-wrap: anywhere;
+  letter-spacing: var(--nu-ls-display); font-variant-numeric: tabular-nums; line-height: 1; overflow-wrap: anywhere;
 }
-.dvs__heroi-l { margin-top: 4px; color: var(--nu-on-dark); font-size: 14.5px; font-weight: var(--nu-w-medio); }
+.dvs__heroi-l { margin-top: 4px; color: var(--nu-on-dark); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
 .dvs__grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 20px 24px;
-  margin: 0 var(--pad); padding: clamp(18px, 2vw, 24px) 0 clamp(22px, 2.6vw, 30px); border-top: 1px solid var(--nu-dark-line);
+  margin: 0 var(--pad); padding: clamp(20px, 2vw, 24px) 0 clamp(24px, 2.6vw, 32px); border-top: 1px solid var(--nu-dark-line);
 }
 .dvs__card { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.dvs__label { color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 600; }
+.dvs__label { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
 .dvs__value {
   color: var(--nu-white); font-size: clamp(20px, 2vw, 25px); font-weight: var(--nu-w-forte);
-  letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1.2;
+  letter-spacing: var(--nu-ls-display); font-variant-numeric: tabular-nums; line-height: 1.2;
   overflow-wrap: anywhere;
 }
 .dvs__value--green { color: var(--nu-green-soft); }
-.dvs__fonte { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.4; }
+.dvs__fonte { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); line-height: 1.4; }
 @media (max-width: 480px) { .dvs__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: reduce) { .dvs { animation: none; } }
 </style>

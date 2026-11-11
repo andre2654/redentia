@@ -22,6 +22,13 @@
 // Código TROCADO (EMBR3 → EMBJ3) responde 301 pro /dividendos do código novo
 // com `?de=`, mesma regra do /asset. A estrela "Seguir" do hero é client-only
 // (o HTML cacheado é o mesmo pra logado e anônimo).
+//
+// Robustez (11/11/2026, docs/aportou/robustez.md): o topo entra em cascata nos
+// tokens e a sombra do cartão carvão não é mais cortada pela banda de baixo; o
+// "Próximo pagamento" deixou de ser quatro caixas (é um cartão só, com as datas
+// e o valor separados por fios); o "Perguntar à IA" do FAQ é a pílula carvão,
+// como no /asset; os cartões de "Continue a análise" sobem e afundam nos
+// tokens, com o foco de 3px; o que está abaixo da dobra entra com o v-revelar.
 
 const TICKER_RE = /^[A-Z][A-Z0-9]{3}\d{1,2}$/
 
@@ -162,18 +169,18 @@ const painel = useChatPainel()
       <template #dek>
         <p>Cada {{ div.isFii ? 'rendimento' : 'provento' }} de {{ ticker }} registrado na B3, com data com, data de pagamento, tipo e valor por {{ div.isFii ? 'cota' : 'ação' }}. A data ex é o pregão seguinte à data com.</p>
       </template>
-      <div v-if="div.proximo" class="dvt__next">
+      <div v-if="div.proximo" v-revelar class="dvt__next">
         <h3 class="dvt__next-title">Próximo pagamento</h3>
-        <div class="dvt__next-grid">
-          <div class="dvt__next-card" :class="{ 'dvt__next-card--white': histTone === 'cream' }">
+        <div class="dvt__next-grid" :class="{ 'dvt__next-grid--white': histTone === 'cream' }">
+          <div class="dvt__next-card">
             <span class="dvt__next-label">Data com</span>
             <span class="dvt__next-value">{{ div.proximo.com }}</span>
           </div>
-          <div class="dvt__next-card" :class="{ 'dvt__next-card--white': histTone === 'cream' }">
+          <div class="dvt__next-card">
             <span class="dvt__next-label">Data ex</span>
             <span class="dvt__next-value">{{ div.proximo.ex }}</span>
           </div>
-          <div class="dvt__next-card" :class="{ 'dvt__next-card--white': histTone === 'cream' }">
+          <div class="dvt__next-card">
             <span class="dvt__next-label">Data de pagamento</span>
             <span class="dvt__next-value">{{ div.proximo.pagamento }}</span>
           </div>
@@ -181,7 +188,6 @@ const painel = useChatPainel()
             v-for="(linha, i) in div.proximo.linhas"
             :key="`${linha.tipo}-${i}`"
             class="dvt__next-card"
-            :class="{ 'dvt__next-card--white': histTone === 'cream' }"
           >
             <span class="dvt__next-label">{{ linha.tipo }}</span>
             <span class="dvt__next-value">{{ linha.valor }}</span>
@@ -189,7 +195,7 @@ const painel = useChatPainel()
         </div>
         <p class="dvt__fonte">{{ div.proximo.fonte }}</p>
       </div>
-      <div class="dvt__band-body">
+      <div v-revelar class="dvt__band-body">
         <CalcTableCard
           v-if="div.history"
           :columns="div.history.columns"
@@ -208,7 +214,7 @@ const painel = useChatPainel()
     <!-- ============ Seções educacionais (adaptadas por tipo, dados reais) ============ -->
     <CalcSplit v-for="(s, i) in div.edu" :key="s.title" :tone="eduTones[i]">
       <template #title>{{ s.title }}</template>
-      <div class="dvt__prose">
+      <div v-revelar class="dvt__prose">
         <p v-for="p in s.paragraphs" :key="p">{{ p }}</p>
       </div>
     </CalcSplit>
@@ -217,14 +223,14 @@ const painel = useChatPainel()
     <CalcSplit :tone="faqTone" wide>
       <template #title>Dúvidas sobre os {{ div.isFii ? 'rendimentos' : 'dividendos' }} de {{ ticker }}.</template>
       <template #left>
-        <NuBotaoSeta variante="azul" tamanho="m" class="dvt__pill" @click="painel.abrir()">Perguntar à IA</NuBotaoSeta>
+        <NuBotaoSeta variante="carvao" tamanho="m" class="dvt__pill" @click="painel.abrir()">Perguntar à IA</NuBotaoSeta>
       </template>
       <NuFaqAccordion :items="div.faq" :surface="faqTone === 'cream' ? 'white' : undefined" />
     </CalcSplit>
 
     <!-- ============ Cross-links: simulador + calculadora (deep-links), ranking, /asset ============ -->
     <CalcBand :tone="crossTone" title="Continue a análise.">
-      <div class="dvt__grid-cards">
+      <div v-revelar="{ alvo: 'filhos' }" class="dvt__grid-cards">
         <!-- Âncora "Simulador de dividendos" pra DONA do cluster, a
              /calculadora/acoes (bloco DONO DO CLUSTER em
              pages/calculadora/acoes.vue). Vem primeiro de propósito. O card de
@@ -250,7 +256,7 @@ const painel = useChatPainel()
           <span class="dvt__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
       </div>
-      <div class="dvt__cta">
+      <div v-revelar class="dvt__cta">
         <NuCtaBanner
           :title="`A análise completa de ${ticker}`"
           subtitle="Cotação, gráfico de 12 meses, fundamentos, score e a leitura da IA da Aportou"
@@ -263,61 +269,64 @@ const painel = useChatPainel()
 
 <style scoped>
 /* ——— o topo em duas colunas (2ª rodada da Aportou): como o topo do /asset ——— */
+/* o topo fica por cima da banda de baixo: a sombra do cartão carvão desce sem ser cortada */
 .dvt__topo {
+  position: relative; z-index: 1;
   background: var(--nu-page); color: var(--nu-ink);
-  padding: clamp(36px, 4.6vw, 68px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 4.6vw, 64px);
+  padding: clamp(40px, 4.6vw, 72px) var(--nu-coluna) clamp(40px, 4.6vw, 64px);
 }
-.dvt__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(28px, 3.4vw, 40px); }
-.dvt__topo-texto { min-width: 0; animation: nu-fade .5s ease both; }
-.dvt__h1 { margin: 20px 0 0; font-size: clamp(40px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
-.dvt__lead { margin: 20px 0 0; max-width: 46ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
+.dvt__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(32px, 3.4vw, 40px); }
+.dvt__topo-texto { min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+.dvt__h1 { margin: 16px 0 0; font-size: clamp(40px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance; }
+.dvt__lead { margin: 20px 0 0; max-width: 46ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; text-wrap: pretty; }
 @media (min-width: 1080px) {
   .dvt__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(36px, 4.4vw, 72px); align-items: center; }
   .dvt__topo--so .dvt__topo-grade { grid-template-columns: minmax(0, 1fr); }
 }
 
-.dvt__band-body { margin-top: clamp(30px, 4vw, 48px); }
+.dvt__band-body { margin-top: clamp(32px, 4vw, 48px); }
 
-.dvt__next { max-width: 1080px; margin: clamp(28px, 4vw, 40px) auto 0; }
+.dvt__next { max-width: 1080px; margin: clamp(32px, 4vw, 40px) auto 0; }
 .dvt__next-title {
-  margin: 0 0 14px; color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px);
-  font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.1;
+  margin: 0 0 16px; color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.1;
 }
+/* um cartão só, com as datas e o valor separados por fios (fio, não caixa) */
 .dvt__next-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(168px, 100%), 1fr));
-  gap: 12px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(176px, 100%), 1fr));
+  border-radius: var(--nu-r-tile); overflow: hidden;
+  background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
 }
+.dvt__next-grid--white { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
+/* o fio do lado de cada célula e o de cima de cada fileira; os da borda somem no corte do cartão */
 .dvt__next-card {
-  background: var(--nu-card);
-  box-shadow: var(--nu-shadow-quente);
-  border-radius: var(--nu-r-tile);
-  padding: 16px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
+  display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  padding: 20px 24px; margin: -1px 0 0 -1px;
+  border-top: 1px solid var(--nu-line-2); border-left: 1px solid var(--nu-line-2);
 }
-.dvt__next-card--white { background: var(--nu-white); }
-.dvt__next-label { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; line-height: 1.35; }
+.dvt__next-label { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.35; }
 .dvt__next-value {
   color: var(--nu-ink); font-size: clamp(17px, 2vw, 22px); font-weight: var(--nu-w-forte);
-  letter-spacing: -0.02em; line-height: 1.25; overflow-wrap: anywhere;
+  letter-spacing: var(--nu-ls-titulo); line-height: 1.25; overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
 }
 .dvt__fonte {
-  margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm);
-  font-weight: 500; line-height: 1.5; max-width: 72ch;
+  margin: 16px 0 0; color: var(--nu-gray); font-size: 13px;
+  font-weight: var(--nu-w-texto); line-height: 1.5; max-width: 72ch;
+}
+@media (max-width: 480px) {
+  .dvt__next-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dvt__next-card { padding: 16px 20px; }
 }
 
 /* hero: faixa do código trocado + fileira do "Seguir" (a linha de retorno do
    SeguirAtivo quebra pra baixo do botão via flex-basis 100%) */
 .dvt__renamed {
-  display: flex; width: fit-content; max-width: 100%; margin: 20px 0 0; padding: 7px 14px;
+  display: flex; width: fit-content; max-width: 100%; margin: 20px 0 0; padding: 8px 12px;
   border-radius: var(--nu-r-tag); background: var(--nu-cream-2); color: var(--nu-gray-3);
   font-size: 13.5px; font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
-.dvt__follow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 26px; }
+.dvt__follow { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 32px; }
 
 /* aviso honesto no lugar da tabela (histórico vazio ou indisponível) */
 .dvt__notice {
@@ -329,7 +338,7 @@ const painel = useChatPainel()
   margin: 0 auto;
   color: var(--nu-gray-3);
   font-size: var(--nu-fs-md);
-  font-weight: 500;
+  font-weight: var(--nu-w-texto);
   line-height: 1.65;
   text-align: center;
 }
@@ -337,42 +346,45 @@ const painel = useChatPainel()
 
 /* prosa das bandas educacionais (mesma escala da calculadora de DY) */
 .dvt__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
-  line-height: 1.6;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
+  letter-spacing: var(--nu-ls-texto); line-height: 1.6;
 }
 .dvt__prose p:last-child { margin-bottom: 0; }
 
-.dvt__pill { margin-top: 28px; }
+.dvt__pill { margin-top: 32px; }
 
 /* cards-link de cross-link (anatomia da calculadora de DY) */
 .dvt__grid-cards {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  gap: 16px; margin-top: clamp(32px, 4vw, 48px);
   /* 1080 cabe os 3 cards (3 × 320 + gaps) numa linha só */
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
+/* o cartão inteiro é o clique: sobe 2px e a sombra cresce no hover, afunda ao apertar, anel de 3px no foco */
 .dvt__card-link {
-  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-quente);
-  display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px; box-shadow: var(--nu-shadow-quente);
+  display: flex; flex-direction: column; gap: 8px;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.dvt__card-link--white { background: var(--nu-white); }
+.dvt__card-link--white { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
 .dvt__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.dvt__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; transition: color .2s ease; }
+.dvt__card-link:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.dvt__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+.dvt__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); transition: color var(--nu-dur-media) var(--nu-ease-cor); }
 .dvt__card-link:hover .dvt__card-link-title { color: var(--nu-blue-text); }
-.dvt__card-p { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
-.dvt__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); }
-.dvt__card-link-ir svg { transition: transform .2s ease; }
+.dvt__card-p { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
+.dvt__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 12px; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.dvt__card-link-ir svg { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .dvt__card-link:hover .dvt__card-link-ir svg { transform: translateX(3px); }
 
-.dvt__cta { max-width: 1080px; margin: clamp(24px, 3vw, 36px) auto 0; }
+.dvt__cta { max-width: 1080px; margin: clamp(24px, 3vw, 40px) auto 0; }
 
 @media (max-width: 760px) {
   .dvt__card-link { padding: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .dvt__card-link, .dvt__card-link-ir svg { transition: none; }
-  .dvt__card-link:hover, .dvt__card-link:hover .dvt__card-link-ir svg { transform: none; }
+  .dvt__card-link, .dvt__card-link-ir svg, .dvt__card-link-title { transition: none; }
+  .dvt__card-link:hover, .dvt__card-link:active, .dvt__card-link:hover .dvt__card-link-ir svg { transform: none; }
   .dvt__topo-texto { animation: none; }
 }
 </style>

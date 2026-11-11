@@ -1,6 +1,9 @@
 <script setup lang="ts">
 // O seletor de período do gráfico (1M · 6M · 12M · 5A) do /asset: o
 // segmentado da /teses. Desabilita enquanto a série nova chega.
+// Hoje só o topo escuro da /carteira (CarteiraAgora) usa este seletor; o /asset
+// passou ao NuTrilho. Robustez (11/11/2026): peso, tempo e curva por token e o
+// anel de foco de 3px; o desenho é o mesmo.
 import type { AcaoRange } from '~/types/acao'
 
 // `opcoes` deixa só os períodos que a série cobre (a curva da /carteira começa
@@ -31,10 +34,11 @@ const ABAS = computed(() => (props.opcoes ? TODAS.filter((a) => props.opcoes!.in
 .ape { display: inline-flex; padding: 3px; border-radius: var(--nu-r-pill); flex-shrink: 0; }
 .ape__b {
   height: 32px; min-width: 48px; padding: 0 14px; border: 0; border-radius: var(--nu-r-pill); background: transparent;
-  font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; cursor: pointer; transition: background .2s, color .2s, box-shadow .2s;
+  font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor);
 }
 .ape__b:disabled { cursor: progress; }
-.ape__b:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.ape__b:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .ape--claro { background: var(--nu-cream); }
 .ape--claro .ape__b { color: var(--nu-gray-2); }
 .ape--claro .ape__b:hover { color: var(--nu-ink); }

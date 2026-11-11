@@ -19,6 +19,10 @@
 // o miolo volta ao HTML puro: fechar e abrir de novo mostra o texto direto.
 // Movimento reduzido: texto direto sempre.
 // Os `paragrafos` (o texto corrido) seguem para o chat, por AtivoNoite.
+// Robustez (11/11/2026): o "+" é o NuMais da base (gira 45° sozinho com o
+// <details>, fica cobalto sob o ponteiro, como em todo acordeão do site); onde o
+// navegador sabe animar o <details> (::details-content), a altura abre e fecha
+// em 520ms na curva de troca, e as palavras surgem por cima.
 import { resumoHtml, type AcaoResumoVM } from '~/utils/assetResumo'
 import { agendarPalavras, contarPalavras, envolverPalavras } from '~/utils/revelar-palavras'
 
@@ -63,9 +67,7 @@ onBeforeUnmount(() => clearTimeout(fim))
     <details v-if="base" :key="ticker" class="ars2__mais" @toggle="aoAlternar">
       <summary class="ars2__sum" @click="aoClicar">
         <h2 class="ars2__h2">{{ resumo.fatos.titulo }}</h2>
-        <span class="ars2__chev" aria-hidden="true">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
-        </span>
+        <NuMais :tamanho="36" class="ars2__chev" />
       </summary>
       <!-- eslint-disable-next-line vue/no-v-html — resumoHtml escapa tudo antes -->
       <div class="ars2__corpo" v-html="miolo" />
@@ -77,47 +79,53 @@ onBeforeUnmount(() => clearTimeout(fim))
 /* Aportou (11/11/2026): a faixa branca de ponta a ponta virou um cartão creme
    na coluna do topo (não existe faixa branca na marca), no padrão do FAQ: a
    pergunta em 700 e o "+" num círculo carvão que gira 45 graus ao abrir. */
-.ars2 { --ars2-m: clamp(18px, 2.4vw, 28px); max-width: 1240px; margin: 0 auto; }
+.ars2 { --ars2-m: clamp(20px, 2.4vw, 28px); max-width: 1240px; margin: 0 auto; interpolate-size: allow-keywords; }
 .ars2__mais { border-radius: var(--nu-r-panel); background: var(--nu-card); box-shadow: var(--nu-shadow-quente); overflow: hidden; }
 .ars2__sum {
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
-  min-height: 68px; padding: 14px var(--ars2-m); cursor: pointer; list-style: none;
+  min-height: 72px; padding: 16px var(--ars2-m); cursor: pointer; list-style: none;
   color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-medio); line-height: 1.3;
-  transition: background .2s ease;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor);
 }
 .ars2__sum::-webkit-details-marker { display: none; }
-.ars2__h2 { margin: 0; font: inherit; color: inherit; letter-spacing: -0.015em; }
+.ars2__h2 { margin: 0; font: inherit; color: inherit; letter-spacing: var(--nu-ls-titulo); transition: color var(--nu-dur-media) var(--nu-ease-cor); }
 .ars2__sum:hover { background: var(--nu-band); }
+.ars2__sum:active { background: var(--nu-cream-2); transition-duration: var(--nu-dur-rapida); }
+.ars2__sum:hover .ars2__h2 { color: var(--nu-blue-text); }
+/* sob o ponteiro o "+" fica cobalto, como no NuAcordeao */
+.ars2__sum:hover .ars2__chev { background: var(--nu-blue); }
 .ars2__sum:focus-visible { outline-offset: -3px; border-radius: var(--nu-r-panel); }
-.ars2__chev {
-  display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
-  background: var(--nu-ink); color: var(--nu-white);
-  transition: transform .3s var(--nu-ease-saida), background .2s ease;
+.ars2__mais[open] .ars2__sum { box-shadow: inset 0 -1px 0 var(--nu-line-2); }
+/* a altura anima onde o navegador sabe (o conteúdo segue inteiro no HTML do servidor) */
+@supports selector(::details-content) {
+  .ars2__mais::details-content {
+    block-size: 0; overflow-y: clip;
+    transition: block-size var(--nu-dur-lenta) var(--nu-ease-troca), content-visibility var(--nu-dur-lenta) allow-discrete;
+  }
+  .ars2__mais[open]::details-content { block-size: auto; }
 }
-.ars2__sum:hover .ars2__chev { background: var(--nu-ink-hover); }
-.ars2__mais[open] .ars2__chev { transform: rotate(45deg); }
-.ars2__mais[open] .ars2__sum { border-bottom: 1px solid var(--nu-line-2); }
 
 /* dentro: a largura toda, nas mesmas margens da barra */
 .ars2__corpo { padding: 20px var(--ars2-m) 26px; }
-.ars2__corpo :deep(.ars2__frase) { margin: 0 0 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; font-variant-numeric: tabular-nums; }
+.ars2__corpo :deep(.ars2__frase) { margin: 0 0 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6; font-variant-numeric: tabular-nums; }
 .ars2__corpo :deep(b) { color: var(--nu-ink); font-weight: var(--nu-w-medio); white-space: nowrap; }
 /* a lista corre em fileiras na largura toda (uma coluna no celular): segue lista simples */
-.ars2__corpo :deep(.ars2__ind) { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 40px; margin: 18px 0 0; padding: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.75; font-variant-numeric: tabular-nums; }
+.ars2__corpo :deep(.ars2__ind) { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 40px; margin: 18px 0 0; padding: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.75; font-variant-numeric: tabular-nums; }
 .ars2__corpo :deep(.ars2__ind li) { margin-left: 18px; }
 .ars2__corpo :deep(.ars2__ind li::marker) { color: var(--nu-gray); }
-.ars2__corpo :deep(.ars2__nota) { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
+.ars2__corpo :deep(.ars2__nota) { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); line-height: 1.5; }
 .ars2__corpo :deep(.ars2__prov) { margin-top: 20px; }
 .ars2__corpo :deep(.ars2__anos) { display: flex; flex-wrap: wrap; margin: 12px 0 0; border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2); font-variant-numeric: tabular-nums; }
 .ars2__corpo :deep(.ars2__ano) { display: flex; flex-direction: column; gap: 2px; padding: 10px 18px 10px 0; margin-right: 18px; }
-.ars2__corpo :deep(.ars2__ano dt) { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; }
-.ars2__corpo :deep(.ars2__ano dd) { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600; }
+.ars2__corpo :deep(.ars2__ano dt) { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
+.ars2__corpo :deep(.ars2__ano dd) { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .ars2__corpo :deep(.ars2__ano--atual dt) { color: var(--nu-blue-text); }
 .ars2__corpo :deep(.ars2__ano--doze) { padding-left: 18px; border-left: 1px solid var(--nu-line-2); }
-.ars2__corpo :deep(.ars2__fontes) { margin: 20px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.ars2__corpo :deep(.ars2__fontes) { margin: 20px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; }
 
 /* a palavra surgindo do desfoque, como no chat (ChatMensagem) */
-.ars2__corpo :deep(.rp) { display: inline-block; animation: nu-palavra .52s var(--nu-ease-saida) backwards; }
+.ars2__corpo :deep(.rp) { display: inline-block; animation: nu-palavra var(--nu-dur-lenta) var(--nu-ease-saida) backwards; }
 .ars2__corpo :deep(.rp--ja) { animation: none; }
 
 @media (max-width: 560px) {
@@ -126,7 +134,8 @@ onBeforeUnmount(() => clearTimeout(fim))
   .ars2__corpo :deep(.ars2__ano--doze) { flex-basis: 100%; margin-right: 0; padding-left: 0; border-left: 0; border-top: 1px solid var(--nu-line-2); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ars2__sum, .ars2__chev { transition: none; }
+  .ars2__sum, .ars2__h2 { transition: none; }
+  .ars2__mais::details-content { transition: none; }
   .ars2__corpo :deep(.rp) { animation: none; }
 }
 </style>

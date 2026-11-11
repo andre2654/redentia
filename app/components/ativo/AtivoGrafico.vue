@@ -32,6 +32,12 @@
 // marcas dizem a variação desde o início ('+10%'), a dica e a medida mostram
 // só a variação, e a tracejada leva o nome de `comparacao`. Sem essas props,
 // tudo como antes.
+// Robustez (11/11/2026): a grade discreta (fio de 1px quase apagado) com os
+// rótulos das marcas em 12px/500, tabulares; a dica e a medida flutuam com a
+// sombra de flutuar (--nu-shadow-float) e entram com 4px e fade no tempo dos
+// tokens; a mira e o ponto chegam junto; o anel de foco é o de 3px do site; e
+// o período que troca esmaece a linha velha na curva de cor. As props e as
+// variáveis --agr-* (o topo do /asset, a /carteira, a home) não mudaram.
 // viewBox literal: o :viewBox vira prop do DOM e o Vue reclama (NuFooterLinha).
 import type { SeriesPoint } from '~/types/acao'
 import type { LeituraDoGrafico } from '~/utils/ativoDirecoes'
@@ -424,9 +430,11 @@ function aoTeclar(e: KeyboardEvent) {
   position: relative; width: 100%; height: 100%; cursor: crosshair; outline: none; border-radius: 6px;
   /* a rolagem vertical é da página; o arrasto de lado é do gráfico */
   touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
-  transition: opacity .25s ease;
+  transition: opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
-.agr:focus-visible { box-shadow: 0 0 0 2px var(--nu-blue-soft); }
+/* o anel de foco do site (3px), por dentro: o gráfico vai de beira a beira do cartão */
+.agr:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: -3px; }
+.agr--escuro:focus-visible, .agr--luz:focus-visible { outline-color: var(--nu-blue-on-dark); }
 .agr--carregando { opacity: .45; }
 .agr__plot { position: absolute; top: 0; bottom: 0; left: var(--agr-esq, 0px); right: var(--agr-dir, 0px); pointer-events: none; }
 .agr__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
@@ -452,8 +460,8 @@ function aoTeclar(e: KeyboardEvent) {
 .agr__marca { position: absolute; left: 0; right: 0; height: 0; border-top: 1px solid; pointer-events: none; }
 /* o rótulo fica em cima do fio, à esquerda, recuado da beira */
 .agr__marca-t {
-  position: absolute; left: var(--agr-rotulo-esq, 0px); bottom: 3px; white-space: nowrap;
-  font-size: var(--nu-fs-xs); font-weight: 600; font-variant-numeric: tabular-nums;
+  position: absolute; left: var(--agr-rotulo-esq, 0px); bottom: 4px; white-space: nowrap;
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); font-variant-numeric: tabular-nums;
 }
 .agr--claro .agr__marca { border-color: var(--nu-ink-04); }
 .agr--claro .agr__marca-t { color: var(--nu-gray); }
@@ -472,13 +480,13 @@ function aoTeclar(e: KeyboardEvent) {
    rótulo alinha com o ponto */
 .agr__hoje {
   position: absolute; right: max(0px, calc(18px - var(--agr-dir, 0px))); transform: translateY(calc(-100% - 14px)); pointer-events: none;
-  display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 7px 11px; border-radius: var(--nu-r-chip);
-  font-variant-numeric: tabular-nums; white-space: nowrap; transition: opacity .2s ease;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 8px 12px; border-radius: var(--nu-r-chip);
+  font-variant-numeric: tabular-nums; white-space: nowrap; transition: opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
 .agr--lendo .agr__hoje { opacity: 0; }
 .agr__hoje--baixo { transform: translateY(14px); }
-.agr__hoje-r { font-size: var(--nu-fs-xs); font-weight: 600; }
-.agr__hoje-v { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.agr__hoje-r { font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
+.agr__hoje-v { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
 .agr--claro .agr__hoje { background: var(--nu-white); color: var(--nu-ink); box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); }
 .agr--claro .agr__hoje-r { color: var(--nu-gray); }
 /* quem hospeda o gráfico pode vestir o rótulo de hoje (--agr-hoje-*): no cartão
@@ -486,10 +494,12 @@ function aoTeclar(e: KeyboardEvent) {
 .agr--escuro .agr__hoje, .agr--luz .agr__hoje { background: var(--agr-hoje-bg, var(--nu-navy-2)); color: var(--agr-hoje-fg, var(--nu-cream-text)); box-shadow: 0 0 0 1px var(--nu-cream-text-12); }
 .agr--escuro .agr__hoje-r, .agr--luz .agr__hoje-r { color: var(--agr-hoje-sub, var(--nu-cream-text-55)); }
 
-/* a mira e a medida */
-.agr__mira { position: absolute; top: 0; bottom: 0; width: 1px; transform: translateX(-.5px); pointer-events: none; background: var(--nu-ink-14); }
+/* a mira e a medida: chegam com um fade curto (a dica sobe 4px), depois só andam */
+.agr__mira { position: absolute; top: 0; bottom: 0; width: 1px; transform: translateX(-.5px); pointer-events: none; background: var(--nu-ink-14); animation: agr-chega var(--nu-dur-media) var(--nu-ease-cor) both; }
 .agr--escuro .agr__mira, .agr--luz .agr__mira { background: var(--nu-cream-text-45); }
-.agr__faixa { position: absolute; top: 0; bottom: 0; pointer-events: none; border-radius: 2px; }
+.agr__faixa { position: absolute; top: 0; bottom: 0; pointer-events: none; border-radius: 2px; animation: agr-chega var(--nu-dur-media) var(--nu-ease-cor) both; }
+@keyframes agr-chega { from { opacity: 0; } }
+@keyframes agr-dica { from { opacity: 0; translate: 0 4px; } }
 .agr__faixa--up { background: color-mix(in srgb, var(--nu-green-soft) 14%, transparent); }
 .agr__faixa--down { background: color-mix(in srgb, var(--nu-red-soft) 14%, transparent); }
 .agr--claro .agr__faixa--up { background: var(--nu-green-tint); }
@@ -497,23 +507,29 @@ function aoTeclar(e: KeyboardEvent) {
 .agr__ponto {
   position: absolute; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none;
   background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-blue), 0 0 0 7px var(--nu-blue-28);
+  animation: agr-chega var(--nu-dur-media) var(--nu-ease-cor) both;
 }
+/* a dica: o cartãozinho carvão que flutua (fio de 1px + a sombra de flutuar), raio concêntrico ao do cartão */
 .agr__dica {
-  position: absolute; top: 0; transform: translate(var(--agr-dica-x, -50%), calc(-100% - 10px)); pointer-events: none; z-index: 2;
-  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 12px; border-radius: var(--nu-r-chip); white-space: nowrap;
+  position: absolute; top: 0; transform: translate(var(--agr-dica-x, -50%), calc(-100% - 12px)); pointer-events: none; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 12px; border-radius: var(--nu-r-chip); white-space: nowrap;
   background: var(--nu-navy-2); color: var(--nu-cream-text); font-variant-numeric: tabular-nums;
-  box-shadow: 0 0 0 1px var(--nu-cream-text-12), var(--nu-shadow-chart-tip);
+  box-shadow: 0 0 0 1px var(--nu-cream-text-12), var(--nu-shadow-float);
+  animation: agr-dica var(--nu-dur-media) var(--nu-ease-saida) both;
 }
-.agr--claro .agr__dica { background: var(--nu-navy); }
-.agr__dica-d { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 600; }
+.agr--claro .agr__dica { background: var(--nu-ink); }
+.agr__dica-d { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); }
 .agr__dica-l { display: flex; align-items: baseline; gap: 8px; }
-.agr__dica-p { font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
+.agr__dica-p { font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-titulo); }
 .agr__dica-v { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .agr__dica-v--up { color: var(--nu-green-soft); }
 .agr__dica-v--down { color: var(--nu-red-soft); }
-.agr__dica-i { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 600; }
+.agr__dica-i { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
 /* em %, a variação é o número da dica */
 .agr--pct .agr__dica-v { font-size: var(--nu-fs-md); }
 .agr__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-@media (prefers-reduced-motion: reduce) { .agr, .agr__hoje { transition: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .agr, .agr__hoje { transition: none; }
+  .agr__mira, .agr__faixa, .agr__ponto, .agr__dica { animation: none; }
+}
 </style>

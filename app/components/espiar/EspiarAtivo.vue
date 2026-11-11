@@ -29,6 +29,14 @@
 // Maximizar: o cartão cresce até a tela inteira e escurece até o céu do
 // herói da página de ativo, segura o ticker e o preço enquanto a página
 // carrega, e se desfaz sobre ela. Sem movimento: navega direto.
+// Robustez (11/11/2026): o topo do /asset é creme desde a Aportou, então a capa
+// do maximizar é o creme da página, com o nome e o preço no lugar e no tamanho
+// do topo (a capa some sobre a página sem salto, e sem o clarão escuro de
+// antes); o código é o NuSelo carvão e a variação, o selo pequeno; o cartão
+// flutua com a sombra de flutuar; uma ação cheia só (Perguntar) e o resto é o
+// link da base (NuLinkSeta; no erro, "Tentar de novo" sem seta); os tempos e
+// as curvas são os dos tokens; o clique do maximizar vem na captura, antes do
+// RouterLink (uma navegação só, a do fim do crescimento).
 import { barraVisivel } from '~/utils/chat-painel'
 import { direitaDoCartao, LINHA_ALTURA, LINHA_LARGURA } from '~/utils/espiarAtivo'
 import type { ContextoDoChat } from '~/composables/useChatPainel'
@@ -59,6 +67,7 @@ const contexto = computed<ContextoDoChat | null>(() => (vm.value && t.value
 
 const pagina = computed(() => `/asset/${t.value ?? ''}`)
 const triangulo = computed(() => (vm.value?.dir === 'down' ? 'esp__tri--baixo' : ''))
+const tomDaVariacao = computed(() => (vm.value?.dir === 'down' ? 'vermelho' : vm.value?.dir === 'up' ? 'verde' : 'neutro'))
 const pontoHoje = computed(() => (vm.value?.linha
   ? { top: `${(vm.value.linha.y / LINHA_ALTURA) * 100}%` }
   : {}))
@@ -136,7 +145,7 @@ function carteira() {
 
 /* ——— maximizar: o cartão vira a página ——— */
 let crescendo = false
-const capa = ref<{ ticker: string; nome: string; preco: string | null } | null>(null)
+const capa = ref<{ ticker: string; nome: string; preco: string | null; topo: number } | null>(null)
 const capaEl = ref<HTMLElement | null>(null)
 
 async function maximizar(e?: Event) {
@@ -147,22 +156,27 @@ async function maximizar(e?: Event) {
   if (!el || calmo()) { espiar.fechar(false); await navigateTo(alvo); return }
   crescendo = true
   const r = el.getBoundingClientRect()
-  capa.value = { ticker: t.value, nome: vm.value?.nome ?? '', preco: vm.value?.precoFmt ?? null }
+  // cresce até o corpo da página: o header e a faixa do mercado ficam (eles não mudam de uma página para a outra)
+  const topo = topoLivre()
+  capa.value = { ticker: t.value, nome: vm.value?.nome ?? '', preco: vm.value?.precoFmt ?? null, topo }
   await nextTick()
   const c = capaEl.value
   if (!c) { crescendo = false; capa.value = null; espiar.fechar(false); await navigateTo(alvo); return }
-  // cresce até o corpo da página: o header e a faixa do mercado ficam (eles não mudam de uma página para a outra)
-  const topo = topoLivre()
   const raio = celular.value ? '26px 26px 0 0' : '24px'
   const de = `inset(${r.top}px ${window.innerWidth - r.right}px ${Math.max(0, window.innerHeight - r.bottom)}px ${r.left}px round ${raio})`
-  const curva = 'cubic-bezier(.2, .8, .2, 1)'
+  // a curva e os tempos dos tokens (var() não vale numa Web Animation: lê o valor calculado)
+  const css = getComputedStyle(document.documentElement)
+  const ms = (nome: string, padrao: number) => parseFloat(css.getPropertyValue(nome)) || padrao
+  const troca = css.getPropertyValue('--nu-ease-troca').trim() || 'ease-in-out'
+  const saida = css.getPropertyValue('--nu-ease-saida').trim() || 'ease-out'
+  const lenta = ms('--nu-dur-lenta', 520)
   const cresce = c.animate(
     [{ clipPath: de }, { clipPath: `inset(${topo}px 0px 0px 0px round 0px)` }],
-    { duration: 560, easing: curva, fill: 'forwards' },
+    { duration: lenta, easing: troca, fill: 'forwards' },
   )
-  // o branco do cartão se apaga no céu do herói da página
-  c.querySelector('.esp-capa__branco')?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 480, easing: 'ease', fill: 'forwards' })
-  c.querySelector('.esp-capa__miolo')?.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 360, delay: 220, easing: curva, fill: 'backwards' })
+  // o branco do cartão se apaga no creme da página (o topo do ativo)
+  c.querySelector('.esp-capa__branco')?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: lenta, easing: css.getPropertyValue('--nu-ease-cor').trim() || 'ease', fill: 'forwards' })
+  c.querySelector('.esp-capa__miolo')?.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: lenta, delay: 160, easing: saida, fill: 'backwards' })
   espiar.fechar(false)
   // a página nova pronta (o useAsyncData dela resolvido), com um teto para nunca prender a tela
   const pronta = new Promise<void>((ok) => {
@@ -172,7 +186,7 @@ async function maximizar(e?: Event) {
   const nav = navigateTo(alvo)
   await Promise.all([cresce.finished.catch(() => null), pronta, Promise.resolve(nav).catch(() => null)])
   await nextTick()
-  await c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, easing: 'ease', fill: 'forwards' }).finished.catch(() => null)
+  await c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms('--nu-dur-media', 280), easing: css.getPropertyValue('--nu-ease-cor').trim() || 'ease', fill: 'forwards' }).finished.catch(() => null)
   capa.value = null
   crescendo = false
 }
@@ -250,14 +264,14 @@ onBeforeUnmount(() => {
           :size="40" :radius="12"
         />
         <div class="esp__id">
-          <h2 :id="idTitulo" class="esp__ticker">{{ t }}</h2>
+          <NuSelo :id="idTitulo" como="h2" tom="carvao" class="esp__ticker">{{ t }}</NuSelo>
           <p v-if="vm" class="esp__nome">{{ vm.nome }} · {{ vm.classeRotulo }}<template v-if="vm.bolsa !== 'B3'"> · {{ vm.bolsa }}</template></p>
           <NuSkeleton v-else-if="estado === 'carregando'" variant="line" width="132px" height="12px" radius="pill" class="esp__sk-nome" />
         </div>
         <span class="esp__acoes">
           <NuxtLink
             :to="pagina" data-sem-espiar class="esp__icone" :aria-label="`Abrir a página de ${t}`" title="Abrir a página"
-            @click="maximizar"
+            @click.capture="maximizar"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" /></svg>
           </NuxtLink>
@@ -284,32 +298,32 @@ onBeforeUnmount(() => {
           <NuSkeleton variant="text" :lines="2" last-width="62%" class="esp__sk-texto" />
           <div class="esp__botoes">
             <NuSkeleton variant="pill" width="104px" height="40px" />
-            <NuSkeleton variant="pill" width="164px" height="40px" />
+            <NuSkeleton variant="line" width="148px" height="14px" radius="pill" />
           </div>
-          <NuSkeleton variant="pill" width="100%" height="52px" class="esp__sk-perguntar" />
+          <NuSkeleton variant="pill" width="100%" height="48px" class="esp__sk-perguntar" />
         </div>
 
         <div v-else-if="estado === 'erro'" key="erro" class="esp__corpo">
           <p class="esp__aviso" role="alert">Não conseguimos carregar {{ t }} agora. Tente de novo em instantes, ou abra a página do ativo.</p>
           <div class="esp__botoes">
-            <button type="button" class="esp__secundario" @click="espiar.recarregar()">Tentar de novo</button>
-            <NuxtLink :to="pagina" data-sem-espiar class="esp__secundario" @click="maximizar">Abrir a página</NuxtLink>
+            <NuLinkSeta seta="nenhuma" @click="espiar.recarregar()">Tentar de novo</NuLinkSeta>
+            <NuLinkSeta :to="pagina" data-sem-espiar tom="tinta" @click.capture="maximizar">Abrir a página</NuLinkSeta>
           </div>
         </div>
 
         <div v-else-if="estado === 'saiu'" key="saiu" class="esp__corpo">
           <p class="esp__aviso">{{ espiar.mensagem.value }}</p>
           <div class="esp__botoes">
-            <NuxtLink :to="pagina" data-sem-espiar class="esp__secundario" @click="maximizar">Ver o histórico de {{ t }}</NuxtLink>
+            <NuLinkSeta :to="pagina" data-sem-espiar tom="tinta" @click.capture="maximizar">Ver o histórico de {{ t }}</NuLinkSeta>
           </div>
         </div>
 
         <div v-else-if="vm" :key="`vm:${vm.ticker}`" class="esp__corpo">
           <p v-if="vm.precoFmt" class="esp__preco-linha">
             <span class="esp__preco">{{ vm.precoFmt }}</span>
-            <span v-if="vm.variacaoFmt" class="esp__var" :class="`esp__var--${vm.dir}`">
+            <NuSelo v-if="vm.variacaoFmt" :tom="tomDaVariacao" tamanho="p" class="esp__var">
               <svg width="9" height="9" viewBox="0 0 10 10" :class="triangulo" aria-hidden="true"><path d="M5 1.5l3.5 6H1.5z" fill="currentColor" /></svg>{{ vm.variacaoFmt }}
-            </span>
+            </NuSelo>
             <span v-if="vm.quando" class="esp__quando">{{ vm.quando }}</span>
           </p>
 
@@ -341,7 +355,7 @@ onBeforeUnmount(() => {
 
           <div class="esp__botoes">
             <SeguirAtivo :ticker="vm.ticker" :path="`/asset/${vm.ticker}`" />
-            <button type="button" class="esp__secundario" @click="carteira">Adicionar à carteira</button>
+            <NuLinkSeta tom="tinta" @click="carteira">Adicionar à carteira</NuLinkSeta>
           </div>
           <NuBotaoSeta class="esp__perguntar" variante="carvao" tamanho="m" largo @click="perguntar">Perguntar sobre {{ vm.ticker }}</NuBotaoSeta>
         </div>
@@ -350,12 +364,16 @@ onBeforeUnmount(() => {
   </Transition>
 
   <!-- o maximizar: o cartão crescendo até virar a página -->
-  <div v-if="capa" ref="capaEl" class="esp-capa" aria-hidden="true">
-    <div class="esp-capa__luz" />
+  <div v-if="capa" ref="capaEl" class="esp-capa" :style="{ '--capa-topo': `${capa.topo}px` }" aria-hidden="true">
     <div class="esp-capa__branco" />
     <div class="esp-capa__miolo">
-      <p class="esp-capa__empresa">{{ capa.nome ? `${capa.nome} · ` : '' }}{{ capa.ticker }}</p>
-      <p v-if="capa.preco" class="esp-capa__preco">{{ capa.preco }}</p>
+      <div class="esp-capa__id">
+        <p class="esp-capa__empresa"><span v-if="capa.nome" class="esp-capa__nome">{{ capa.nome }}</span><NuSelo tom="carvao">{{ capa.ticker }}</NuSelo></p>
+        <p v-if="capa.preco" class="esp-capa__preco">{{ capa.preco }}</p>
+        <NuSkeleton v-else variant="block" radius="tile" class="esp-capa__preco-sk" />
+      </div>
+      <!-- enquanto a página chega: o esqueleto do cartão do gráfico, no lugar dele -->
+      <NuSkeleton variant="card" tone="navy" radius="card" class="esp-capa__palco" />
     </div>
   </div>
 </template>
@@ -368,39 +386,40 @@ onBeforeUnmount(() => {
   width: min(384px, calc(100vw - 32px)); max-height: calc(100dvh - 32px);
   display: flex; flex-direction: column; overflow: hidden;
   background: var(--nu-white); color: var(--nu-ink); border-radius: var(--nu-r-card);
-  box-shadow: var(--nu-chat-sombra-painel);
-  transition: right .38s var(--entra), bottom .38s var(--entra);
+  box-shadow: var(--nu-shadow-float);
+  /* com o painel do chat abrindo, a janelinha muda de lugar: a curva de troca */
+  transition: right var(--nu-dur-lenta) var(--nu-ease-troca), bottom var(--nu-dur-lenta) var(--nu-ease-troca);
   outline: none;
 }
-.esp:focus-visible { box-shadow: var(--nu-chat-sombra-painel), 0 0 0 3px var(--nu-blue-30); }
+.esp:focus-visible { box-shadow: var(--nu-shadow-float), 0 0 0 3px var(--nu-blue-30); }
 
-.esp-enter-active { transition: opacity .3s ease, transform .42s var(--entra); }
-.esp-leave-active { transition: opacity .18s ease, transform .22s ease; }
+/* chegar: sobe 16px com fade (o que chega); sair: o inverso, rápido */
+.esp-enter-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-lenta) var(--entra); }
+.esp-leave-active { transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-cor); }
 .esp-enter-from { opacity: 0; transform: translateY(16px) scale(.98); }
 .esp-leave-to { opacity: 0; transform: translateY(8px); }
 
-.esp-troca-enter-active, .esp-troca-leave-active { transition: opacity .16s ease; }
+/* a troca entre esqueleto, erro e dado: um fade curto, sem pulo */
+.esp-troca-enter-active, .esp-troca-leave-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.esp-troca-leave-active { transition-duration: var(--nu-dur-rapida); }
 .esp-troca-enter-from, .esp-troca-leave-to { opacity: 0; }
 
 /* ——— topo ——— */
-.esp__topo { position: relative; display: flex; align-items: center; gap: 12px; padding: 18px 14px 0 18px; }
+.esp__topo { position: relative; display: flex; align-items: center; gap: 12px; padding: 20px 16px 0 20px; }
 .esp__alca { display: none; }
 .esp__id { flex: 1; min-width: 0; }
-/* o ticker no selo da marca: carvão, letra branca em 800, raio 8 */
-.esp__ticker {
-  display: inline-block; margin: 0; padding: 3px 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white);
-  font-size: 15px; font-weight: var(--nu-w-forte); letter-spacing: 0.04em; line-height: 1.3;
-}
+/* o ticker é o NuSelo carvão (como H2 do diálogo) */
+.esp__ticker { margin: 0; height: 26px; font-size: 14px; }
 .esp__nome {
-  margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
+  margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.esp__sk-nome { margin-top: 6px; }
-.esp__acoes { display: flex; gap: 2px; align-self: flex-start; }
+.esp__sk-nome { margin-top: 8px; }
+.esp__acoes { display: flex; gap: 4px; align-self: flex-start; }
 .esp__icone {
   position: relative; width: 36px; height: 36px; border: 0; border-radius: 50%; padding: 0; display: grid; place-items: center;
   background: transparent; color: var(--nu-gray-3); cursor: pointer;
-  transition: background .2s ease, color .2s ease, transform .4s var(--mola);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--mola);
 }
 /* o alvo de toque tem 44px; o círculo, 36 */
 .esp__icone::after { content: ''; position: absolute; inset: -4px; }
@@ -409,77 +428,67 @@ onBeforeUnmount(() => {
 .esp__icone:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 1px; }
 
 /* ——— corpo ——— */
-.esp__corpo { padding: 14px 18px 18px; overflow-y: auto; overscroll-behavior: contain; }
-.esp__preco-linha { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin: 0; }
-.esp__preco { font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.esp__var { display: inline-flex; align-items: center; gap: 5px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.esp__var--up { color: var(--nu-green-text); }
-.esp__var--down { color: var(--nu-red-text); }
+.esp__corpo { padding: 16px 20px 20px; overflow-y: auto; overscroll-behavior: contain; }
+.esp__preco-linha { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; margin: 0; }
+.esp__preco { font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .esp__tri--baixo { transform: rotate(180deg); }
-.esp__quando { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.esp__quando { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
-.esp__linha { margin: 14px 0 0; }
+.esp__linha { margin: 16px 0 0; }
 .esp__linha-palco { position: relative; height: 64px; color: var(--nu-blue); }
 .esp__linha-svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .esp__hoje {
   position: absolute; right: 0; width: 8px; height: 8px; margin: -4px -4px 0 0; border-radius: 50%;
   background: var(--nu-blue); box-shadow: 0 0 0 4px var(--nu-blue-tint), 0 0 0 1.5px var(--nu-white) inset;
 }
+/* a legenda da linha: texto pequeno em caixa normal (caixa alta é só do eyebrow e do cabeçalho de tabela) */
 .esp__linha-leg {
   display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 8px;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--nu-gray); font-size: 12.5px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto);
 }
-.esp__linha-leg b { font-size: var(--nu-fs-dense); letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
+.esp__linha-leg b { font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .esp__leg--up { color: var(--nu-green-text); }
 .esp__leg--down { color: var(--nu-red-text); }
-.esp__sk-linha { margin-top: 14px; }
+.esp__sk-linha { margin-top: 16px; }
 
 .esp__nums {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px;
-  margin: 16px 0 0; padding: 14px 0 0; border-top: 1px solid var(--nu-line-2);
+  margin: 16px 0 0; padding: 16px 0 0; border-top: 1px solid var(--nu-line-2);
 }
 .esp__num { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.esp__num dt { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; line-height: 1.3; }
-.esp__num dd { margin: 0; font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -0.01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.esp__num dt { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); line-height: 1.3; }
+.esp__num dd { margin: 0; font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-.esp__porque { margin-top: 16px; padding: 12px 14px; border-radius: var(--nu-r-tile); background: var(--nu-page); }
-.esp__rotulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
-.esp__porque-texto { margin: 6px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
-.esp__fonte { display: flex; align-items: center; gap: 7px; margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; }
-.esp__sk-texto { margin-top: 18px; }
+.esp__porque { margin-top: 16px; padding: 12px 16px; border-radius: var(--nu-r-tile); background: var(--nu-page); }
+.esp__rotulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
+.esp__porque-texto { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; font-variant-numeric: tabular-nums; }
+.esp__fonte { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
+.esp__sk-texto { margin-top: 16px; }
 
-.esp__aviso { margin: 4px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.esp__aviso { margin: 4px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; }
 
-/* ——— botões: mola no toque ——— */
-.esp__botoes { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+/* ——— botões: o Seguir (estado), o link com seta e a pílula cheia; mola só no toque ——— */
+.esp__botoes { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; margin-top: 16px; font-size: var(--nu-fs-sm); }
 /* o Seguir é a mesma pílula de contorno da base (NuFollowButton), na altura deste cartão */
 .esp__botoes :deep(.nfb) {
   height: 40px; min-height: 40px; padding: 0 16px; gap: 8px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
   background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
-  transition: background .2s ease, transform .45s var(--mola);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--mola);
 }
 .esp__botoes :deep(.nfb:hover) { background: var(--nu-row-hover); transform: translateY(-1px); }
-.esp__botoes :deep(.nfb:active) { transform: scale(.96); }
+.esp__botoes :deep(.nfb:active) { transform: scale(.96); transition-duration: var(--nu-dur-rapida); }
 .esp__botoes :deep(.nfb--on), .esp__botoes :deep(.nfb--on:hover) { background: var(--nu-blue-bg); color: var(--nu-blue-text); box-shadow: none; }
 .esp__botoes :deep(.sga__msg--on) { font-size: var(--nu-fs-dense); }
-.esp__secundario {
-  display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink);
-  font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer; text-decoration: none;
-  transition: background .2s ease, box-shadow .2s ease, transform .45s var(--mola);
-}
-.esp__secundario:hover { background: var(--nu-row-hover); transform: translateY(-1px); }
-.esp__secundario:active { transform: scale(.96); }
-.esp__perguntar { margin-top: 10px; }
-.esp__secundario:focus-visible, .esp__botoes :deep(.nfb:focus-visible) { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
-.esp__sk-perguntar { margin-top: 10px; }
+.esp__perguntar { margin-top: 12px; }
+.esp__botoes :deep(.nfb:focus-visible) { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
+.esp__sk-perguntar { margin-top: 12px; }
 
 /* ——— celular: a folha que sobe do pé ——— */
 @media (max-width: 640px) {
   .esp {
     left: 0; right: 0 !important; bottom: 0 !important; width: 100%; max-height: 84dvh;
     border-radius: var(--nu-r-card-lg) var(--nu-r-card-lg) 0 0; padding-bottom: env(safe-area-inset-bottom);
-    transition: transform .42s var(--mola);
+    transition: transform var(--nu-dur-lenta) var(--mola);
   }
   .esp--arrastando { transition: none; }
   .esp__topo { padding-top: 22px; touch-action: none; cursor: grab; }
@@ -488,30 +497,39 @@ onBeforeUnmount(() => {
     border-radius: var(--nu-r-pill); background: var(--nu-line);
   }
   .esp-enter-from, .esp-leave-to { opacity: 1; transform: translateY(100%); }
-  .esp-enter-active { transition: transform .42s var(--entra); }
-  .esp-leave-active { transition: transform .26s ease; }
+  .esp-enter-active { transition: transform var(--nu-dur-lenta) var(--entra); }
+  .esp-leave-active { transition: transform var(--nu-dur-media) var(--nu-ease-cor); }
 }
 
-/* ——— a capa do maximizar ——— */
+/* ——— a capa do maximizar: vira o topo do /asset (creme), com o nome e o preço no lugar dele ——— */
 .esp-capa {
-  position: fixed; inset: 0; z-index: 60; isolation: isolate; display: flex; justify-content: center; pointer-events: none;
-  background: var(--nu-agora-bg); color: var(--nu-agora-texto);
-}
-/* o céu do herói da página de ativo (AtivoNoite .an__luz), para a capa se desfazer sobre ele sem salto */
-.esp-capa__luz {
-  position: absolute; inset: 0; z-index: -2;
-  background:
-    radial-gradient(60% 38% at 50% 0%, color-mix(in srgb, var(--nu-blue) 16%, transparent), transparent),
-    linear-gradient(180deg, var(--nu-navy) 0%, color-mix(in srgb, var(--nu-navy) 55%, var(--nu-agora-bg)) 46%, var(--nu-agora-bg) 80%);
+  position: fixed; inset: 0; z-index: 60; isolation: isolate; pointer-events: none;
+  background: var(--nu-page); color: var(--nu-ink);
 }
 .esp-capa__branco { position: absolute; inset: 0; z-index: -1; background: var(--nu-white); }
-.esp-capa__miolo { padding-top: clamp(200px, 28vh, 260px); text-align: center; }
-.esp-capa__empresa { margin: 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 600; }
-.esp-capa__preco { margin: 14px 0 0; font-size: clamp(44px, 6.4vw, 88px); font-weight: 500; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+/* a coluna e o respiro do topo (TopoBolsa): o nome e o preço caem onde a página vai desenhá-los */
+.esp-capa__miolo {
+  max-width: 1240px; margin: 0 auto; box-sizing: content-box;
+  padding: calc(var(--capa-topo, 0px) + clamp(28px, 3.4vw, 48px)) clamp(20px, 4vw, 56px) 0;
+}
+.esp-capa__preco-sk { width: min(360px, 70%); height: clamp(64px, 8vw, 112px); margin-top: clamp(48px, 5vw, 64px); }
+.esp-capa__palco { display: none; }
+/* no desktop, as duas colunas do topo: o cartão do gráfico à direita, em esqueleto */
+@media (min-width: 1080px) {
+  .esp-capa__miolo { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); column-gap: clamp(36px, 4.4vw, 72px); align-items: start; }
+  .esp-capa__palco { display: block; height: calc(clamp(260px, 25vw, 372px) + 200px); }
+}
+.esp-capa__empresa { display: flex; align-items: center; gap: 8px; margin: 0; }
+.esp-capa__nome { margin-right: 4px; font-size: clamp(24px, 2.6vw, 34px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.1; }
+.esp-capa__preco {
+  margin: clamp(48px, 5vw, 64px) 0 0; font-size: clamp(64px, 17vw, 132px); font-weight: var(--nu-w-display);
+  letter-spacing: var(--nu-ls-display); line-height: .92; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+@media (min-width: 1080px) { .esp-capa__preco { font-size: clamp(84px, 8.4vw, 132px); } }
 
 @media (prefers-reduced-motion: reduce) {
   .esp, .esp-enter-active, .esp-leave-active, .esp-troca-enter-active, .esp-troca-leave-active,
-  .esp__icone, .esp__secundario, .esp__botoes :deep(.nfb) { transition: none; }
+  .esp__icone, .esp__botoes :deep(.nfb) { transition: none; }
   .esp-enter-from, .esp-leave-to { transform: none; }
 }
 </style>

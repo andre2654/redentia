@@ -2,6 +2,8 @@
 // /quanto-rende/tesouro/{slug} — a taxa que /tesouro já mostra, aplicada a um
 // valor. Bruto e, quando a conta fecha, líquido de IR pela tabela regressiva
 // já descrita no site. Sem inflação futura inventada e sem líquido de cupom.
+// Robustez (11/11/2026): os cartões de "Continue a leitura" entram com o
+// v-revelar e sobem e afundam nos tokens, com o anel de 3px no foco.
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,80}$/
 
@@ -167,7 +169,7 @@ if (data.value) {
     </CalcSplit>
 
     <CalcBand tone="white" title="Continue a leitura.">
-      <div class="qrt__links">
+      <div v-revelar="{ alvo: 'filhos' }" class="qrt__links">
         <NuxtLink :to="`/tesouro/${slug}`" class="qrt__link">
           <h3>{{ titulo.nome }}</h3>
           <p>Taxa, preço de compra e de venda, e o histórico do título.</p>
@@ -185,34 +187,41 @@ if (data.value) {
 
 <style scoped>
 .qrt__lei {
-  margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500;
+  margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto);
   line-height: 1.55; max-width: 72ch; overflow-wrap: anywhere;
 }
-.qrt__lei a { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+.qrt__lei a {
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.qrt__lei a:hover { text-decoration-color: currentColor; }
 .qrt__nota {
-  margin: 0 0 16px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
+  margin: 0 0 16px; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.5;
 }
 .qrt__links {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-  gap: 16px; margin-top: clamp(28px, 4vw, 40px); max-width: 880px; margin-left: auto; margin-right: auto;
+  gap: 16px; margin-top: clamp(32px, 4vw, 40px); max-width: 880px; margin-left: auto; margin-right: auto;
 }
+/* o cartão inteiro é o clique: sobe 2px e a sombra cresce no hover, afunda ao apertar, anel de 3px no foco */
 .qrt__link {
-  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 22px 24px; box-shadow: var(--nu-shadow-quente);
-  display: flex; flex-direction: column; gap: 6px; min-width: 0;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px; box-shadow: var(--nu-shadow-quente);
+  display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .qrt__link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .qrt__link:hover h3 { color: var(--nu-blue-text); }
-@media (prefers-reduced-motion: reduce) { .qrt__link { transition: none; } .qrt__link:hover { transform: none; } }
+.qrt__link:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.qrt__link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .qrt__link { transition: none; } .qrt__link:hover, .qrt__link:active { transform: none; } }
 .qrt__link h3 {
-  margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em;
-  overflow-wrap: anywhere; transition: color .2s ease;
+  margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo);
+  overflow-wrap: anywhere; transition: color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .qrt__link p {
-  margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5;
+  margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5;
 }
-.qrt__link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); }
-.qrt__link-ir svg { transition: transform .2s ease; }
+.qrt__link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 12px; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.qrt__link-ir svg { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .qrt__link:hover .qrt__link-ir svg { transform: translateX(3px); }
-@media (prefers-reduced-motion: reduce) { .qrt__link-ir svg { transition: none; } .qrt__link:hover .qrt__link-ir svg { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .qrt__link-ir svg, .qrt__link h3 { transition: none; } .qrt__link:hover .qrt__link-ir svg { transform: none; } }
 </style>

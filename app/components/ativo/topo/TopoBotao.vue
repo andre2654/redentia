@@ -6,6 +6,9 @@
 // vira link; sem, botão. Mola só no toque.
 // `tom="claro"` (Aportou, 11/11/2026) é o mesmo botão sobre o creme da página
 // do ativo: círculo creme, ícone carvão; ligado, carvão com o ícone branco.
+// Robustez (11/11/2026): os tempos e as curvas dos tokens (hover 280ms, apertar
+// 160ms, cor na curva de cor), o anel de foco de 3px nos dois tons e o rótulo
+// que acende junto com o círculo.
 const props = withDefaults(defineProps<{ rotulo: string; to?: string; on?: boolean; tom?: 'escuro' | 'claro' }>(), { to: undefined, on: false, tom: 'escuro' })
 const Link = resolveComponent('NuxtLink')
 </script>
@@ -24,14 +27,14 @@ const Link = resolveComponent('NuxtLink')
   font: inherit; color: inherit; cursor: pointer; text-align: center;
 }
 .tac__b:focus-visible { outline: none; }
-.tac__b:focus-visible .tac__c { box-shadow: 0 0 0 2px var(--nu-blue-soft); }
+.tac__b:focus-visible .tac__c { box-shadow: 0 0 0 3px var(--nu-blue-on-dark); }
 .tac__c {
   display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
-  transition: background .2s ease, color .2s ease, transform .45s var(--mola), box-shadow .2s ease;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--mola), box-shadow var(--nu-dur-media) var(--nu-ease-cor);
 }
 .tac__b:hover .tac__c { transform: translateY(-2px); }
-.tac__b:active .tac__c { transform: scale(.92); }
-.tac__r { font-size: var(--nu-fs-xs); font-weight: 600; line-height: 1.25; }
+.tac__b:active .tac__c { transform: scale(.92); transition-duration: var(--nu-dur-rapida); }
+.tac__r { font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.25; transition: color var(--nu-dur-media) var(--nu-ease-cor); }
 .tac__c { background: var(--nu-agora-pilula); color: var(--nu-agora-texto); box-shadow: inset 0 0 0 1px var(--nu-agora-linha); }
 .tac__b:hover .tac__c { background: var(--nu-white-18); }
 .tac__r { color: var(--nu-agora-sub); }
@@ -42,9 +45,10 @@ const Link = resolveComponent('NuxtLink')
 .tac__b--claro .tac__c { background: var(--nu-cream-2); color: var(--nu-ink); box-shadow: none; }
 .tac__b--claro:hover .tac__c { background: var(--nu-line-2); }
 .tac__b--claro .tac__r { color: var(--nu-gray-3); }
+.tac__b--claro:hover .tac__r { color: var(--nu-ink); }
 .tac__b--claro.tac__b--on .tac__c { background: var(--nu-ink); color: var(--nu-white); }
 @media (prefers-reduced-motion: reduce) {
-  .tac__c { transition: none; }
+  .tac__c, .tac__r { transition: none; }
   .tac__b:hover .tac__c, .tac__b:active .tac__c { transform: none; }
 }
 </style>

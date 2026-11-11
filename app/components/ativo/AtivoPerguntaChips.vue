@@ -22,21 +22,26 @@ const emit = defineEmits<{ perguntar: [string] }>()
 </template>
 
 <style scoped>
-/* o chip de sugestão da Aportou: o corte azul + a pergunta, 44px de toque */
-.apc__r { margin: 0 0 10px; font-size: var(--nu-fs-sm); font-weight: 600; }
+/* o chip de sugestão da Aportou: o corte azul + a pergunta, 44px de toque.
+   Robustez (11/11/2026): tempos e curvas dos tokens; o corte anda 2px quando o
+   ponteiro chega (o chip diz "clique aqui" sem mudar de cor demais). */
+.apc__r { margin: 0 0 12px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .apc--claro .apc__r { color: var(--nu-gray); }
 .apc--escuro .apc__r { color: var(--nu-agora-sub); }
 .apc__lista { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .apc__q {
   display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 18px 8px 14px; border: 0; border-radius: var(--nu-r-pill);
-  font: inherit; font-size: 14.5px; font-weight: 600; text-align: left; cursor: pointer; font-variant-numeric: tabular-nums;
-  transition: background .2s ease, box-shadow .2s ease, transform .15s var(--nu-ease-saida);
+  font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); text-align: left; cursor: pointer; font-variant-numeric: tabular-nums;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .apc__q:active { transform: scale(.98); }
-.apc__logo { flex-shrink: 0; }
-.apc--claro .apc__q { background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-quente); }
-.apc--claro .apc__q:hover { background: var(--nu-cream-2); }
+.apc__logo { flex-shrink: 0; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+.apc__q:hover .apc__logo { transform: translateX(2px); }
+.apc--claro .apc__q { background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-branco); }
+.apc--claro .apc__q:hover { background: var(--nu-cream-2); box-shadow: var(--nu-shadow-quente); }
 .apc--escuro .apc__q { background: var(--nu-agora-pilula); color: var(--nu-agora-texto); box-shadow: inset 0 0 0 1px var(--nu-agora-linha); }
 .apc--escuro .apc__q:hover { background: var(--nu-white-18); }
-@media (prefers-reduced-motion: reduce) { .apc__q { transition: none; } .apc__q:active { transform: none; } }
+.apc--escuro .apc__q:focus-visible { outline-color: var(--nu-blue-on-dark); }
+@media (prefers-reduced-motion: reduce) { .apc__q, .apc__logo { transition: none; } .apc__q:active, .apc__q:hover .apc__logo { transform: none; } }
 </style>

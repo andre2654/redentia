@@ -2,6 +2,8 @@
 // /quanto-rende/{TICKER} — proventos dos últimos 12 meses aplicados a um valor.
 // Mesmas fontes de /dividendos. Sem renda em 12 meses: 404 (noindex no error.vue).
 // O valor padrão é R$ 1.000; o campo recalcula no cliente. Canonical sem query.
+// Robustez (11/11/2026): a prosa e os cartões de "Continue a leitura" entram com
+// o v-revelar; os cartões sobem e afundam nos tokens, com o anel de 3px no foco.
 
 const TICKER_RE = /^[A-Z][A-Z0-9]{3}\d{1,2}$/
 
@@ -153,7 +155,7 @@ if (data.value) {
     </CalcBand>
 
     <CalcBand tone="cream" title="Como a conta é feita.">
-      <div class="qr-page__prose">
+      <div v-revelar class="qr-page__prose">
         <p>
           Entram só proventos de renda com data com entre {{ diaCurto(qr.hoje) }} e um ano antes, as duas pontas inclusas. Foram {{ qr.count12 }} {{ qr.isFii ? (qr.count12 === 1 ? 'rendimento' : 'rendimentos') : qr.count12 === 1 ? 'provento' : 'proventos' }} no período, {{ dinheiroFmt(qr.proventoPorUnidade) }} por {{ qr.unidade }}. {{ qr.fonteProventos }}
         </p>
@@ -186,7 +188,7 @@ if (data.value) {
     </CalcSplit>
 
     <CalcBand tone="cream" title="Continue a leitura.">
-      <div class="qr-page__links">
+      <div v-revelar="{ alvo: 'filhos' }" class="qr-page__links">
         <NuxtLink :to="`/dividendos/${ticker}`" class="qr-page__link">
           <h3>Dividendos de {{ ticker }}</h3>
           <p>Histórico, datas e o dividend yield na página de proventos.</p>
@@ -204,40 +206,47 @@ if (data.value) {
 
 <style scoped>
 .qr-page__renamed {
-  display: flex; width: fit-content; max-width: 100%; margin: 0 0 18px; padding: 7px 14px;
+  display: flex; width: fit-content; max-width: 100%; margin: 0 0 16px; padding: 8px 12px;
   border-radius: var(--nu-r-tag); background: var(--nu-cream-2); color: var(--nu-gray-3);
   font-size: 13.5px; font-weight: var(--nu-w-medio);
 }
 .qr-page__prose { max-width: 72ch; margin: clamp(24px, 3vw, 36px) auto 0; }
 .qr-page__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.6;
 }
 .qr-page__prose p:last-child { margin-bottom: 0; }
-.qr-page__prose a { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+.qr-page__prose a {
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.qr-page__prose a:hover { text-decoration-color: currentColor; }
 .qr-page__faq-nota {
-  margin: 0 0 16px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
+  margin: 0 0 16px; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.5;
 }
 .qr-page__links {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-  gap: 16px; margin-top: clamp(28px, 4vw, 40px); max-width: 880px; margin-left: auto; margin-right: auto;
+  gap: 16px; margin-top: clamp(32px, 4vw, 40px); max-width: 880px; margin-left: auto; margin-right: auto;
 }
+/* o cartão inteiro é o clique: sobe 2px e a sombra cresce no hover, afunda ao apertar, anel de 3px no foco */
 .qr-page__link {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 22px 24px; box-shadow: var(--nu-shadow-branco);
-  display: flex; flex-direction: column; gap: 6px; min-width: 0;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px; box-shadow: var(--nu-shadow-branco);
+  display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .qr-page__link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .qr-page__link:hover h3 { color: var(--nu-blue-text); }
-@media (prefers-reduced-motion: reduce) { .qr-page__link { transition: none; } .qr-page__link:hover { transform: none; } }
+.qr-page__link:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.qr-page__link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .qr-page__link { transition: none; } .qr-page__link:hover, .qr-page__link:active { transform: none; } }
 .qr-page__link h3 {
-  margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em;
-  overflow-wrap: anywhere; transition: color .2s ease;
+  margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo);
+  overflow-wrap: anywhere; transition: color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .qr-page__link p {
-  margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5;
+  margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5;
 }
-.qr-page__link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); }
-.qr-page__link-ir svg { transition: transform .2s ease; }
+.qr-page__link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 12px; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.qr-page__link-ir svg { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .qr-page__link:hover .qr-page__link-ir svg { transform: translateX(3px); }
-@media (prefers-reduced-motion: reduce) { .qr-page__link-ir svg { transition: none; } .qr-page__link:hover .qr-page__link-ir svg { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .qr-page__link-ir svg, .qr-page__link h3 { transition: none; } .qr-page__link:hover .qr-page__link-ir svg { transform: none; } }
 </style>
