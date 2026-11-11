@@ -5,6 +5,11 @@
 // + dek + extras (pill, prosa); direita = conteúdo (card creme de fórmula,
 // accordion de FAQ, parágrafos…). titleTag preserva a hierarquia do SEO
 // antigo; size="sm" pra títulos h3 de sub-seção (escala menor).
+// Aportou (11/11/2026): não existe mais faixa branca de ponta a ponta. O tom
+// 'white' é o creme da página (--nu-page) e o 'cream' é o creme de faixa
+// (--nu-band). Dentro da faixa no creme da página, o cartão "creme" de quem
+// ocupa o slot (var(--nu-cream), quase igual ao fundo novo) passa a ser o
+// creme de faixa: é o cartão do quadro Home, sem tocar em cada página.
 defineProps<{
   tone?: 'cream' | 'white'
   titleTag?: 'h2' | 'h3'
@@ -31,22 +36,24 @@ defineProps<{
 
 <style scoped>
 .csp {
-  background: var(--nu-white);
+  background: var(--nu-page);
   padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
-.csp--cream { background: var(--nu-cream); }
+.csp--cream { background: var(--nu-band); }
+/* o cartão "creme" do slot vira o creme de faixa sobre o creme da página */
+.csp:not(.csp--cream) { --nu-cream: var(--nu-band); }
 .csp__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .csp__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .csp__title {
   margin: 0; color: var(--nu-ink);
   font-size: var(--nu-fs-h2); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1.02;
+  letter-spacing: -0.03em; line-height: 1.02;
 }
 .csp__title--sm { font-size: var(--nu-fs-h2-sm); }
 .csp__dek {
-  color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500;
-  line-height: 1.65; margin-top: 22px; max-width: 420px;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  line-height: 1.55; margin-top: 22px; max-width: 420px;
 }
 .csp__dek :deep(p) { margin: 0 0 14px; }
 .csp__dek :deep(p:last-child) { margin-bottom: 0; }

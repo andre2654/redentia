@@ -5,6 +5,11 @@
 // conteúdo abaixo (card branco/creme, grid de tiles, tabela…) via slot.
 // titleTag configurável pra preservar a hierarquia semântica do texto SEO
 // antigo (um h3 do conteúdo pode ser título visual de banda sem virar h2).
+// Aportou (11/11/2026): não existe mais faixa branca de ponta a ponta. O tom
+// 'white' é o creme da página (--nu-page) e o 'cream' é o creme de faixa
+// (--nu-band). Dentro da faixa no creme da página, o cartão "creme" de quem
+// ocupa o slot (var(--nu-cream), quase igual ao fundo novo) passa a ser o
+// creme de faixa: é o cartão do quadro Home, sem tocar em cada página.
 defineProps<{
   tone?: 'cream' | 'white'
   title?: string
@@ -20,7 +25,7 @@ defineProps<{
 
 <template>
   <section class="cbd" :class="{ 'cbd--cream': tone === 'cream', 'cbd--tight': tight }">
-    <p v-if="kicker" class="cbd__kicker">{{ kicker }}</p>
+    <p v-if="kicker" class="cbd__kicker nu-eyebrow"><MarcaCorte /><span>{{ kicker }}</span></p>
     <component :is="titleTag ?? 'h2'" v-if="title || $slots.title" class="cbd__title">
       <slot name="title">{{ title }}</slot>
     </component>
@@ -31,25 +36,23 @@ defineProps<{
 
 <style scoped>
 .cbd {
-  background: var(--nu-white);
+  background: var(--nu-page);
   padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
-.cbd--cream { background: var(--nu-cream); }
+.cbd--cream { background: var(--nu-band); }
+/* o cartão "creme" do slot vira o creme de faixa sobre o creme da página */
+.cbd:not(.cbd--cream) { --nu-cream: var(--nu-band); }
 .cbd--tight { padding-top: clamp(36px, 5vw, 60px); padding-bottom: clamp(36px, 5vw, 60px); }
-.cbd__kicker {
-  margin: 0 auto 14px; max-width: 980px; text-align: center;
-  color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: .14em;
-}
+.cbd__kicker { margin: 0 auto 18px; max-width: 980px; justify-content: center; }
 .cbd__title {
   margin: 0 auto; max-width: 980px;
   color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1.06; text-align: center;
+  letter-spacing: -0.03em; line-height: 1.04; text-align: center;
 }
 .cbd__dek {
   margin: 18px auto 0; max-width: 680px; text-align: center;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.65;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.55;
 }
 .cbd__dek :deep(p) { margin: 0; }
 </style>

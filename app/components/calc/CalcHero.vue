@@ -24,22 +24,22 @@ defineProps<{
 
 <style scoped>
 .chr {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   padding: clamp(40px, 5.5vw, 72px) clamp(22px, 5.5vw, 80px) clamp(34px, 4.5vw, 56px);
   animation: nu-fade .5s ease both;
 }
 .chr__back {
   display: inline-flex; align-items: center; gap: 9px;
-  background: var(--nu-white); color: var(--nu-ink);
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-line);
   border-radius: var(--nu-r-pill); padding: 11px 20px;
   font-size: var(--nu-fs-sm); font-weight: 700;
   transition: transform .18s, box-shadow .2s;
 }
-.chr__back:hover { transform: translateY(-1px); box-shadow: var(--nu-shadow-card); color: var(--nu-ink); }
+.chr__back:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink); }
 .chr__h1 {
   margin: clamp(22px, 3vw, 34px) 0 0; color: var(--nu-ink);
   font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
+  letter-spacing: -0.035em; line-height: 1.04; max-width: 1080px;
 }
 .chr__h1 :deep(em) { font-style: italic; }
 .chr__desc {

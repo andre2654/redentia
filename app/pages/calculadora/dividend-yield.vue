@@ -165,7 +165,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: 'Calculadora de Dividend Yield Redentia',
+      name: `Calculadora de Dividend Yield ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
@@ -219,7 +219,7 @@ usePageSeo({
     <CalcFaixaCta
       compacta
       titulo="Veja como essa conta se adapta à sua vida."
-      texto="Com a conta grátis da Redentia, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
+      texto="Com a conta grátis da Aportou, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
     />
@@ -371,7 +371,7 @@ usePageSeo({
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas Frequentes sobre Dividend Yield</template>
       <template #left>
-        <NuxtLink to="/busca" class="dy__pill">Perguntar à Redentia AI</NuxtLink>
+        <CalcPerguntarIa />
       </template>
       <NuFaqAccordion :items="faqItems" surface="white" />
     </CalcSplit>
@@ -419,7 +419,7 @@ usePageSeo({
       </div>
 
       <aside class="dy__eeat">
-        <p class="dy__eeat-title">Metodologia revisada pela equipe de análise da Redentia</p>
+        <p class="dy__eeat-title">Metodologia revisada pela equipe de análise da Aportou</p>
         <p class="dy__eeat-p">
           Cálculos baseados nas fórmulas clássicas de avaliação por dividendos (DY = Dividendos ÷ Preço, DY on cost = Dividendos ÷ Preço de Compra) e referenciam a metodologia de Décio Bazin e Luiz Barsi para análise de pagadoras de dividendos no mercado brasileiro. Os tickers exibidos vêm da B3 em tempo real via API oficial.
         </p>
@@ -471,7 +471,7 @@ usePageSeo({
 .dy__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .dy__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .dy__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
@@ -479,8 +479,8 @@ usePageSeo({
 
 /* ——— tiles (cards do conteúdo; creme em banda branca, branco em banda creme) ——— */
 .dy__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-:global(.cbd--cream) .dy__tile,
-:global(.csp--cream) .dy__tile { background: var(--nu-white); }
+.cbd--cream .dy__tile,
+.csp--cream .dy__tile { background: var(--nu-white); }
 .dy__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .dy__card-p--mt { margin-top: 12px; }
 .dy__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
@@ -504,19 +504,13 @@ usePageSeo({
 .dy__card-link {
   background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-:global(.cbd--cream) .dy__card-link { background: var(--nu-white); }
+.cbd--cream .dy__card-link { background: var(--nu-white); }
 .dy__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .dy__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
-.dy__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.dy__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .dy__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;

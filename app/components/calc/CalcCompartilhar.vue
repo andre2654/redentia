@@ -47,12 +47,14 @@ onBeforeUnmount(() => { if (volta) clearTimeout(volta) })
 .ccp {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; padding: 0 22px;
   border: 0; border-radius: 999px; cursor: pointer; white-space: nowrap;
-  background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 2px var(--nu-cream-2);
-  font: inherit; font-size: var(--nu-fs-md); font-weight: 700; transition: box-shadow .18s ease, color .18s ease;
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
+  font: inherit; font-size: 16.5px; font-weight: 700;
+  transition: background .2s, box-shadow .18s ease, color .18s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.ccp:hover { box-shadow: inset 0 0 0 2px var(--nu-gray); }
-.ccp--feito { color: var(--nu-green-text); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--nu-green) 35%, transparent); }
-.ccp:focus-visible { outline: 3px solid color-mix(in srgb, var(--nu-blue) 45%, transparent); outline-offset: 2px; }
+.ccp:hover { background: var(--nu-row-hover); }
+.ccp:active { transform: scale(.98); }
+.ccp--feito { color: var(--nu-green-text); box-shadow: inset 0 0 0 1.5px var(--nu-green-text); }
+.ccp:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 /* na barra do celular, só o ícone ao lado do salvar */
 @media (max-width: 900px) {
   .ccp { flex: none; width: 52px; padding: 0; }

@@ -186,7 +186,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: 'Calculadora de Aporte Mensal Redentia',
+      name: `Calculadora de Aporte Mensal ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       applicationSubCategory: 'Planejamento financeiro',
       operatingSystem: 'Web',
@@ -241,7 +241,7 @@ usePageSeo({
     <CalcFaixaCta
       compacta
       titulo="Veja como essa conta se adapta à sua vida."
-      texto="Com a conta grátis da Redentia, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
+      texto="Com a conta grátis da Aportou, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
     />
@@ -418,7 +418,7 @@ usePageSeo({
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas Frequentes sobre Aporte Mensal</template>
       <template #left>
-        <NuxtLink to="/busca" class="qi__pill">Perguntar à Redentia AI</NuxtLink>
+        <CalcPerguntarIa />
       </template>
       <NuFaqAccordion :items="faqItems" surface="white" />
     </CalcSplit>
@@ -459,7 +459,7 @@ usePageSeo({
       </div>
 
       <aside class="qi__eeat">
-        <p class="qi__eeat-title">Metodologia revisada pela equipe de análise da Redentia</p>
+        <p class="qi__eeat-title">Metodologia revisada pela equipe de análise da Aportou</p>
         <p class="qi__eeat-p">
           Cálculos baseados na fórmula de anuidade dos juros compostos invertida (PMT = (FV − PV(1+i)ⁿ) ÷ [((1+i)ⁿ − 1)÷i]) e em médias históricas do mercado brasileiro (CDI, Ibovespa, IPCA). Resultados assumem aportes mensais constantes e capitalização mensal dos rendimentos.
         </p>
@@ -473,7 +473,7 @@ usePageSeo({
 
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta
-      titulo="Acompanhe suas metas na Redentia"
+      titulo="Acompanhe suas metas na Aportou"
       texto="Monitore o progresso das suas metas financeiras com gráficos e análises em tempo real."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
@@ -509,7 +509,7 @@ usePageSeo({
 .qi__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .qi__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .qi__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
@@ -522,7 +522,7 @@ usePageSeo({
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .qi__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-:global(.cbd--cream) .qi__tile { background: var(--nu-white); }
+.cbd--cream .qi__tile { background: var(--nu-white); }
 .qi__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .qi__card-note { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
@@ -558,19 +558,13 @@ usePageSeo({
 .qi__card-link {
   background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .qi__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .qi__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .qi__card-link .qi__card-p { margin: 0; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
-.qi__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.qi__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .qi__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;

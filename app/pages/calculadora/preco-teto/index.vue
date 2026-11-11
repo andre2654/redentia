@@ -429,7 +429,7 @@ const examplePetr = {
 }
 
 const howToSteps = [
-  { title: 'Reúna os dados da ação', html: 'Use a própria página do ativo aqui na Redentia ou o site de RI da empresa. Você precisa de: LPA, VPA, dividendos dos últimos 12 meses e P/L médio do setor.' },
+  { title: 'Reúna os dados da ação', html: 'Use a própria página do ativo aqui na Aportou ou o site de RI da empresa. Você precisa de: LPA, VPA, dividendos dos últimos 12 meses e P/L médio do setor.' },
   { title: 'Preencha os campos', html: 'Insira ticker, preço atual e os indicadores. Use valores dos últimos 12 meses (TTM - Trailing Twelve Months) para maior precisão.' },
   { title: 'Analise as 4 metodologias', html: 'Cada método tem seus pontos fortes. Graham é conservador, Bazin foca dividendos, P/L setorial contextualiza, e VPA é bom para empresas com ativos.' },
   { title: 'Veja o consenso', html: 'A média das metodologias com número é o consenso. Se a maioria ficar abaixo do preço de tela, há margem em relação a essas réguas. Isso não diz se a pessoa deve comprar.' },
@@ -471,7 +471,7 @@ const faqItems: NuFaqItem[] = [
   { q: 'A calculadora serve para FIIs (Fundos Imobiliários)?', a: 'Parcialmente. Para FIIs use principalmente o Método Bazin (Dividendo ÷ Yield mínimo) e a análise de P/VP. Um bom FII costuma ter P/VP abaixo de 1,0, DY acima de 8% e vacância baixa. A fórmula de Graham não se aplica bem porque FIIs não têm "lucro" tradicional.' },
   { q: 'E para empresas de crescimento como Magazine Luiza?', a: 'As fórmulas tradicionais de preço teto não capturam bem growth stocks. Empresas que reinvestem todo o lucro têm LPA baixo ou negativo, mas podem ter um futuro excelente. Para essas, prefira múltiplos de receita (P/S ou EV/Sales), fluxo de caixa descontado (DCF) ou comparação com pares de mercado.' },
   { q: 'Com que frequência devo recalcular o preço teto?', a: 'Recalcule trimestralmente, após cada balanço da empresa. LPA, VPA e dividendos mudam a cada trimestre. Se você acompanha a empresa de perto, revise a cada 3 meses. Para investidores de longo prazo, uma vez por ano pode bastar, desde que não haja eventos materiais no meio do caminho.' },
-  { q: 'De onde vêm os dados da calculadora?', a: 'A Redentia utiliza dados públicos da B3 (Bolsa brasileira), Comissão de Valores Mobiliários (CVM) e demonstrações financeiras oficiais das empresas, atualizados automaticamente após cada pregão e divulgação de balanço.' },
+  { q: 'De onde vêm os dados da calculadora?', a: 'A Aportou utiliza dados públicos da B3 (Bolsa brasileira), Comissão de Valores Mobiliários (CVM) e demonstrações financeiras oficiais das empresas, atualizados automaticamente após cada pregão e divulgação de balanço.' },
   { q: 'Vale usar preço teto para small caps?', a: 'Sim, com cautela. Small caps tendem a ter P/L mais alto porque o mercado paga pelo crescimento futuro. Use P/L setorial ajustado para small caps (15-20), exija margem de segurança maior (30-40%) e diversifique, já que esses papéis têm volatilidade e risco de liquidez maiores.' },
   { q: 'O que fazer se as 4 metodologias derem resultados muito diferentes?', a: 'É normal. Cada método olha a empresa por um ângulo. Se Graham, Bazin, P/L e VPA divergem bastante, dê mais peso ao método que faz mais sentido para aquela empresa: bancos tendem a responder bem a VPA e P/L, pagadoras de dividendos ao Bazin, industriais a Graham. Use a média ponderada como consenso.' },
 ]
@@ -489,7 +489,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: 'Calculadora de Preço Teto Redentia',
+      name: `Calculadora de Preço Teto ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
@@ -924,7 +924,7 @@ usePageSeo({
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas frequentes</template>
       <template #left>
-        <NuxtLink to="/busca" class="pt__pill">Perguntar à Redentia AI</NuxtLink>
+        <NuxtLink to="/busca" class="pt__pill">Perguntar à IA</NuxtLink>
       </template>
       <NuFaqAccordion :items="faqItems" surface="white" />
     </CalcSplit>
@@ -995,7 +995,7 @@ usePageSeo({
       </div>
 
       <div class="pt__cta">
-        <h2 class="pt__cta-title">Analise Ações na Redentia</h2>
+        <h2 class="pt__cta-title">Analise Ações na Aportou</h2>
         <p class="pt__cta-sub">Acesse dados fundamentalistas em tempo real, compare indicadores e receba análises com IA.</p>
         <div class="pt__cta-actions">
           <NuxtLink to="/login" class="pt__pill pt__pill--light">Criar conta grátis</NuxtLink>
@@ -1162,9 +1162,9 @@ usePageSeo({
   max-width: none; margin-top: 0;
 }
 .pt__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-:global(.cbd--cream) .pt__tile { background: var(--nu-white); }
-/* Limitações moram numa banda creme: card branco explícito (o :global acima
-   não vence o escopo do card) e o sinal é um traço vermelho curto sobre o
+.cbd--cream .pt__tile { background: var(--nu-white); }
+/* Limitações moram numa banda creme: card branco explícito (a regra acima era
+   um :global que não vencia o escopo do card) e o sinal é um traço vermelho curto sobre o
    título, não fundo rosa nem filete que dobra no raio do canto. */
 .pt__tile--negative { background: var(--nu-white); }
 .pt__tile--negative::before {
@@ -1214,7 +1214,9 @@ usePageSeo({
   display: flex; flex-direction: column; gap: 8px;
   transition: transform .18s, box-shadow .2s;
 }
-:global(.cbd--cream) .pt__card-link { background: var(--nu-white); }
+/* Aportou (11/11/2026), só contraste: o :global engolia o resto do seletor e o
+   cartão ficava creme sobre a faixa creme (sumia). Agora é branco na faixa. */
+.cbd--cream .pt__card-link { background: var(--nu-white); }
 .pt__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .pt__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 

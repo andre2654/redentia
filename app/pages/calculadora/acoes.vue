@@ -138,7 +138,7 @@ const faqItems = [
   { q: 'O simulador considera custos e impostos?', a: 'O simulador não desconta corretagem, custódia ou imposto sobre ganho de capital (15% acima de R$ 20 mil/mês em vendas). Dividendos são isentos de IR para pessoa física, mas JCP tem 15% retido na fonte. Para resultados mais precisos, considere que seus ganhos reais serão cerca de 2-5% menores devido a esses custos, especialmente se você fizer muitas operações pequenas.' },
   { q: 'Devo investir em ações de alto dividend yield?', a: 'Não necessariamente. Dividend Yield alto pode indicar: 1) Empresa madura pagando bem os acionistas (bom), 2) Preço da ação caiu muito (cuidado), ou 3) Empresa distribuindo mais do que deveria. Avalie payout (% do lucro distribuído, ideal 40-60%), histórico de pagamentos consistentes, saúde financeira e potencial de crescimento. Empresas com DY médio mas crescimento forte podem ser melhores no longo prazo.' },
   { q: 'Ações ou FIIs, qual é melhor para dividendos?', a: 'Depende do objetivo. FIIs pagam dividendos mensais e maiores (DY de 8-12%), mas têm menor potencial de valorização. Ações pagam menos em dividendos (DY de 3-8%) mas podem valorizar mais no longo prazo. O ideal é ter ambos: FIIs para renda passiva mensal estável, ações para crescimento de capital e proteção contra inflação. Carteira balanceada pode ter 40-60% ações e 40-60% FIIs, dependendo do perfil.' },
-  { q: 'Como escolher boas ações para investir?', a: 'Analise: 1) Fundamentos: lucro consistente, baixo endividamento, boa geração de caixa, 2) Dividendos: histórico de pagamentos, payout sustentável, 3) Setor: defensivos ou com boas perspectivas, 4) Preço: não pagar caro (P/L, P/VP razoáveis), 5) Gestão: empresa bem administrada, 6) Vantagem competitiva: diferenciação, marca forte. Use o simulador para ver como a ação performou no passado e leia análises na Redentia.' },
+  { q: 'Como escolher boas ações para investir?', a: 'Analise: 1) Fundamentos: lucro consistente, baixo endividamento, boa geração de caixa, 2) Dividendos: histórico de pagamentos, payout sustentável, 3) Setor: defensivos ou com boas perspectivas, 4) Preço: não pagar caro (P/L, P/VP razoáveis), 5) Gestão: empresa bem administrada, 6) Vantagem competitiva: diferenciação, marca forte. Use o simulador para ver como a ação performou no passado e leia análises na Aportou.' },
   { q: 'Qual o melhor período para simular?', a: 'Teste diferentes períodos. 5 anos mostra ciclos recentes. 10 anos inclui crises e recuperações. 15-20 anos mostra o verdadeiro poder do longo prazo, mas nem todas as ações têm histórico tão longo. Períodos que incluem crises (2008, 2015-2016, 2020) são especialmente educativos para entender volatilidade e recuperação. Pense sempre no longo prazo, ações são investimentos de 10+ anos.' },
   { q: 'Como funciona o reinvestimento automático de dividendos no simulador?', a: 'Cada vez que a ação simulada paga dividendo ou JCP, o simulador soma o valor recebido e usa para comprar mais ações no preço de mercado da data do pagamento (frações de ação são permitidas no cálculo). Isso reflete o comportamento real de quem usa DRIP (Dividend Reinvestment Plan). O efeito é exponencial: mais ações geram mais dividendos no próximo ciclo, e assim por diante.' },
   { q: 'Posso compartilhar uma simulação específica?', a: 'Sim. A URL da página guarda os parâmetros: https://redentia.com.br/calculadora/acoes?initial=10000&monthly=500&years=10&reinvest=1&tickers=ITUB4,VALE3 já abre o simulador preenchido e calcula automaticamente o histórico. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a tese de carteira nos favoritos.' },
@@ -191,7 +191,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: 'Simulador de Ações e Dividendos Redentia',
+      name: `Simulador de Ações e Dividendos ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       applicationSubCategory: 'Simulador histórico de ações e dividendos',
       operatingSystem: 'Web',
@@ -249,7 +249,7 @@ usePageSeo({
     <CalcFaixaCta
       compacta
       titulo="Veja como essa conta se adapta à sua vida."
-      texto="Com a conta grátis da Redentia, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
+      texto="Com a conta grátis da Aportou, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
     />
@@ -414,7 +414,7 @@ usePageSeo({
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas Frequentes</template>
       <template #left>
-        <NuxtLink to="/busca" class="sa__pill">Perguntar à Redentia AI</NuxtLink>
+        <CalcPerguntarIa />
       </template>
       <NuFaqAccordion :items="faqItems" surface="white" />
     </CalcSplit>
@@ -494,7 +494,7 @@ usePageSeo({
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta
       titulo="Descubra as melhores ações para investir"
-      texto="Use a Redentia para analisar ações em tempo real, receber recomendações com IA e acompanhar sua carteira."
+      texto="Use a Aportou para analisar ações em tempo real, tirar dúvidas com a IA e acompanhar sua carteira."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver ações em alta', to: '/' }"
     />
@@ -533,7 +533,7 @@ usePageSeo({
 .sa__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .sa__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .sa__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
@@ -550,7 +550,7 @@ usePageSeo({
   max-width: none; margin-top: 0;
 }
 .sa__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-:global(.cbd--cream) .sa__tile { background: var(--nu-white); }
+.cbd--cream .sa__tile { background: var(--nu-white); }
 .sa__tile--positive { background: color-mix(in srgb, var(--nu-green-bg) 45%, var(--nu-white)); }
 .sa__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .sa__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
@@ -584,17 +584,10 @@ usePageSeo({
 .sa__card-link {
   background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-:global(.cbd--cream) .sa__card-link { background: var(--nu-white); }
+.cbd--cream .sa__card-link { background: var(--nu-white); }
 .sa__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .sa__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 
-/* ——— pills / CTA ——— */
-.sa__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.sa__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 </style>

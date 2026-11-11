@@ -9,7 +9,7 @@
 </template>
 
 <style scoped>
-.cfr { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 700; letter-spacing: -0.02em; line-height: 1.55; text-wrap: pretty; }
+.cfr { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.55; text-wrap: pretty; }
 @media (max-width: 640px) {
   .cfr { line-height: 1.7; }
 }

@@ -8,6 +8,10 @@
 // calculadora entra com uma animação de transform que prende o position: fixed
 // da folha do celular e fazia a página rolar até o pé da seção. No computador
 // ele fica embaixo do valor, pela posição medida na hora de abrir.
+// Aportou (11/11/2026): o valor é o selo azul da marca (--nu-blue-bg com a
+// letra em --nu-blue-text); o número exato é um campo dos quadros (56px, borda
+// 1,5px, raio 16, anel cobalto no foco); − e + são círculos de 44px; a folha
+// do celular entra com nu-subir.
 const props = defineProps<{
   modelValue: number
   /** o nome do campo, no topo do painel e para o leitor de tela */
@@ -178,38 +182,41 @@ const campoAberto = shallowRef<symbol | null>(null)
 .cfc__valor {
   display: inline; margin: 0; padding: 0 0.32em 0.08em; border: 0; border-radius: 0.36em; cursor: pointer;
   font: inherit; letter-spacing: inherit; color: var(--nu-blue-text);
-  background: color-mix(in srgb, var(--nu-blue) 9%, var(--nu-white));
-  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--nu-blue) 55%, transparent);
+  background: var(--nu-blue-bg);
+  box-shadow: inset 0 -2px 0 var(--nu-blue);
   transition: background .18s ease, color .18s ease, box-shadow .18s ease;
 }
-.cfc__valor:hover { background: color-mix(in srgb, var(--nu-blue) 15%, var(--nu-white)); }
+.cfc__valor:hover { background: color-mix(in srgb, var(--nu-blue) 18%, var(--nu-white)); }
 .cfc__valor--on, .cfc__valor--on:hover { color: var(--nu-white); background: var(--nu-blue); box-shadow: none; }
-.cfc__valor:focus-visible { outline: 3px solid color-mix(in srgb, var(--nu-blue) 45%, transparent); outline-offset: 2px; }
+.cfc__valor:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 
 .cfc__painel {
   position: absolute; left: var(--cfc-esquerda, 12px); top: var(--cfc-topo, 12px); z-index: 90;
   display: flex; flex-direction: column; gap: 12px; width: 300px; padding: 18px 18px 16px;
   white-space: normal; text-align: left;
-  background: var(--nu-white); border-radius: 22px;
-  box-shadow: 0 24px 60px -18px rgba(10, 10, 12, 0.38), 0 0 0 1px rgba(10, 10, 12, 0.05);
+  background: var(--nu-white); border-radius: var(--nu-r-panel);
+  box-shadow: var(--nu-shadow-float), 0 0 0 1.5px var(--nu-line-2);
   font-size: var(--nu-fs-md); font-weight: 500; letter-spacing: 0; line-height: 1.4; color: var(--nu-ink);
   animation: cfc-abre .22s cubic-bezier(.2, .8, .2, 1) both;
 }
 @keyframes cfc-abre { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
-.cfc__rotulo { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cfc__rotulo { color: var(--nu-ink); font-size: 15px; font-weight: 700; }
 .cfc__linha { display: flex; align-items: center; gap: 10px; }
 .cfc__passo {
-  flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; cursor: pointer;
-  display: grid; place-items: center; background: var(--nu-cream); color: var(--nu-ink);
+  flex: none; width: 44px; height: 44px; border: 0; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center; background: var(--nu-cream-2); color: var(--nu-ink);
   font: inherit; font-size: var(--nu-fs-xl); font-weight: 700;
+  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.cfc__passo:hover:not(:disabled) { background: var(--nu-cream-2); }
+.cfc__passo:active:not(:disabled) { transform: scale(.94); }
+.cfc__passo:hover:not(:disabled) { background: var(--nu-line-2); }
 .cfc__passo:disabled { opacity: .4; cursor: default; }
 .cfc__exato {
-  flex: 1; min-width: 0; display: flex; align-items: baseline; justify-content: center; gap: 6px;
-  padding: 6px 10px; border-radius: 14px; box-shadow: inset 0 0 0 1.5px var(--nu-cream-2); cursor: text;
+  flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px;
+  height: 56px; padding: 0 12px; border-radius: var(--nu-r-input); border: 1.5px solid var(--nu-borda-campo);
+  background: var(--nu-white); cursor: text;
 }
-.cfc__exato:focus-within { box-shadow: inset 0 0 0 2px var(--nu-blue); }
+.cfc__exato:focus-within { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .cfc__unidade { flex: none; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .cfc__campo {
   width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; text-align: center;
@@ -228,7 +235,7 @@ const campoAberto = shallowRef<symbol | null>(null)
 .cfc__trilho::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--nu-blue); }
 .cfc__trilho::-webkit-slider-thumb {
   -webkit-appearance: none; width: 22px; height: 22px; margin-top: -8px; border-radius: 50%;
-  background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-blue), 0 2px 6px rgba(10, 10, 12, 0.2);
+  background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-blue), var(--nu-shadow-slider-thumb);
 }
 .cfc__trilho::-moz-range-thumb {
   width: 22px; height: 22px; border: 0; border-radius: 50%;
@@ -238,24 +245,29 @@ const campoAberto = shallowRef<symbol | null>(null)
 .cfc__trilho:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--nu-blue), 0 0 0 7px color-mix(in srgb, var(--nu-blue) 25%, transparent); }
 .cfc__atalhos { display: flex; flex-wrap: wrap; gap: 6px; }
 .cfc__atalho {
-  padding: 6px 12px; border: 0; border-radius: 999px; cursor: pointer;
-  background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-cream-2);
-  font: inherit; font-size: var(--nu-fs-dense); font-weight: 700; color: var(--nu-gray-3);
+  min-height: 36px; padding: 0 13px; border: 0; border-radius: var(--nu-r-pill); cursor: pointer;
+  background: var(--nu-cream-2);
+  font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; color: var(--nu-gray-3);
+  transition: background .2s, color .2s;
 }
-.cfc__atalho:hover { box-shadow: inset 0 0 0 1.5px var(--nu-gray); }
-.cfc__atalho--on { background: var(--nu-ink); color: var(--nu-white); box-shadow: none; }
+.cfc__atalho:hover { background: var(--nu-line-2); color: var(--nu-ink); }
+.cfc__atalho--on, .cfc__atalho--on:hover { background: var(--nu-ink); color: var(--nu-white); }
 .cfc__pronto {
-  align-self: flex-end; padding: 8px 16px; border: 0; border-radius: 999px; cursor: pointer;
-  background: var(--nu-blue); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
+  align-self: flex-end; min-height: 44px; padding: 0 22px; border: 0; border-radius: var(--nu-r-pill); cursor: pointer;
+  background: var(--nu-blue); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-md); font-weight: 700;
+  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
+.cfc__pronto:hover { background: var(--nu-blue-hover); }
+.cfc__pronto:active { transform: scale(.98); }
 
 /* no celular o painel sobe do pé da tela */
 @media (max-width: 640px) {
   .cfc__painel {
     position: fixed; left: 12px; right: 12px; top: auto; bottom: calc(12px + env(safe-area-inset-bottom));
-    width: auto; z-index: 80; animation-name: cfc-sobe;
+    width: auto; z-index: 80; border-radius: var(--nu-r-card);
+    animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both;
   }
-  @keyframes cfc-sobe { from { opacity: 0; transform: translateY(16px); } }
+  .cfc__atalho { min-height: 44px; padding: 0 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cfc__painel { animation: none; }

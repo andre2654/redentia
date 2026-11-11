@@ -165,56 +165,59 @@ onBeforeUnmount(() => {
 .cfa__valor {
   display: inline; margin: 0; padding: 0 0.32em 0.08em; border: 0; border-radius: 0.36em; cursor: pointer;
   font: inherit; letter-spacing: inherit; color: var(--nu-blue-text);
-  background: color-mix(in srgb, var(--nu-blue) 9%, var(--nu-white));
-  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--nu-blue) 55%, transparent);
+  background: var(--nu-blue-bg);
+  box-shadow: inset 0 -2px 0 var(--nu-blue);
   transition: background .18s ease, color .18s ease, box-shadow .18s ease;
 }
-.cfa__valor:hover { background: color-mix(in srgb, var(--nu-blue) 15%, var(--nu-white)); }
+.cfa__valor:hover { background: color-mix(in srgb, var(--nu-blue) 18%, var(--nu-white)); }
 .cfa__valor--vazio { color: var(--nu-gray-2); }
 .cfa__valor--on, .cfa__valor--on:hover { color: var(--nu-white); background: var(--nu-blue); box-shadow: none; }
-.cfa__valor:focus-visible { outline: 3px solid color-mix(in srgb, var(--nu-blue) 45%, transparent); outline-offset: 2px; }
+.cfa__valor:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 
 .cfa__painel {
   position: absolute; left: var(--cfa-esquerda, 12px); top: var(--cfa-topo, 12px); z-index: 90;
   display: flex; flex-direction: column; gap: 12px; width: 340px; padding: 18px 18px 16px;
-  background: var(--nu-white); border-radius: 22px;
-  box-shadow: 0 24px 60px -18px rgba(10, 10, 12, 0.38), 0 0 0 1px rgba(10, 10, 12, 0.05);
+  background: var(--nu-white); border-radius: var(--nu-r-panel);
+  box-shadow: var(--nu-shadow-float), 0 0 0 1.5px var(--nu-line-2);
   font-size: var(--nu-fs-md); font-weight: 500; letter-spacing: 0; line-height: 1.4; color: var(--nu-ink); text-align: left;
   animation: cfa-abre .22s cubic-bezier(.2, .8, .2, 1) both;
 }
 @keyframes cfa-abre { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
-.cfa__rotulo { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cfa__rotulo { color: var(--nu-ink); font-size: 15px; font-weight: 700; }
 .cfa__escolhidos { display: flex; flex-wrap: wrap; gap: 6px; }
 .cfa__escolhido {
-  display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 12px; border-radius: 999px;
-  background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-dense); font-weight: 700;
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 5px 5px 11px; border-radius: var(--nu-r-tag);
+  background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 800; letter-spacing: 0.04em;
 }
 .cfa__tirar {
-  display: grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 6px; cursor: pointer;
   background: var(--nu-white-18); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-sm); line-height: 1;
 }
 .cfa__tirar:hover { background: var(--nu-white-35); }
 .cfa__busca {
-  width: 100%; padding: 11px 14px; border: 0; border-radius: 14px; outline: 0;
-  box-shadow: inset 0 0 0 1.5px var(--nu-cream-2); background: var(--nu-white);
-  font: inherit; font-size: var(--nu-fs-md); font-weight: 700; color: var(--nu-ink);
+  width: 100%; height: 56px; padding: 0 16px; border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input); outline: 0;
+  background: var(--nu-white);
+  font: inherit; font-size: 17px; font-weight: 600; color: var(--nu-ink);
 }
-.cfa__busca:focus { box-shadow: inset 0 0 0 2px var(--nu-blue); }
+.cfa__busca:focus { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .cfa__busca::placeholder { color: var(--nu-placeholder); font-weight: 500; }
 .cfa__lista { display: flex; flex-direction: column; max-height: 264px; overflow-y: auto; margin: 0 -6px; }
 .cfa__item {
-  display: flex; align-items: baseline; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 12px; cursor: pointer;
-  background: transparent; text-align: left; font: inherit; color: var(--nu-ink);
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 6px 10px; border: 0; border-radius: var(--nu-r-chip); cursor: pointer;
+  background: transparent; text-align: left; font: inherit; color: var(--nu-ink); transition: background .15s;
 }
-.cfa__item:hover:not(:disabled), .cfa__item:focus-visible { background: var(--nu-cream); outline: none; }
+.cfa__item:hover:not(:disabled), .cfa__item:focus-visible { background: var(--nu-cream-2); outline: none; }
 .cfa__item:disabled { opacity: .45; cursor: default; }
 .cfa__item b { flex: none; font-size: var(--nu-fs-sm); font-weight: 800; }
 .cfa__nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--nu-gray); font-size: var(--nu-fs-dense); }
 .cfa__nota { margin: 0; padding: 4px 10px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .cfa__pronto {
-  align-self: flex-end; padding: 8px 16px; border: 0; border-radius: 999px; cursor: pointer;
-  background: var(--nu-blue); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
+  align-self: flex-end; min-height: 44px; padding: 0 22px; border: 0; border-radius: var(--nu-r-pill); cursor: pointer;
+  background: var(--nu-blue); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-md); font-weight: 700;
+  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
+.cfa__pronto:hover { background: var(--nu-blue-hover); }
+.cfa__pronto:active { transform: scale(.98); }
 
 /* no celular o painel fica no alto da tela: o teclado da busca cobriria o pé */
 @media (max-width: 640px) {

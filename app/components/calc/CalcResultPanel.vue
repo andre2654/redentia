@@ -40,7 +40,7 @@ defineProps<{
   color: var(--nu-ink);
   font-size: clamp(44px, 5vw, 76px);
   font-weight: 800;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.035em;
   line-height: 1;
   margin-top: 10px;
   font-variant-numeric: tabular-nums;

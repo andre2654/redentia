@@ -170,11 +170,13 @@ usePageSeo({
 .ptm__hero, .ptm__calc, .ptm__body, .ptm__faq, .ptm__outros {
   padding: clamp(48px, 6vw, 88px) clamp(22px, 5.5vw, 80px);
 }
-.ptm__hero { background: var(--nu-cream); }
-.ptm__calc { background: var(--nu-white); }
-.ptm__body { background: var(--nu-cream); }
-.ptm__faq { background: var(--nu-white); }
-.ptm__outros { background: var(--nu-cream); }
+/* Aportou (11/11/2026), só cor: sem faixa branca de ponta a ponta. O topo e a
+   conta ficam no creme da página; as faixas alternam com o creme de faixa. */
+.ptm__hero { background: var(--nu-page); padding-bottom: 0; }
+.ptm__calc { background: var(--nu-page); }
+.ptm__body { background: var(--nu-band); }
+.ptm__faq { background: var(--nu-page); }
+.ptm__outros { background: var(--nu-band); }
 
 .ptm__back { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; }
 .ptm__h1 {
@@ -187,7 +189,7 @@ usePageSeo({
 }
 .ptm__formula {
   display: inline-block; margin-top: 26px; padding: 14px 20px;
-  background: var(--nu-white); border-radius: var(--nu-r-card, 14px);
+  background: var(--nu-band); border-radius: var(--nu-r-tile);
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
 }
 .ptm__h2 {
@@ -201,11 +203,11 @@ usePageSeo({
 .ptm__field { display: flex; flex-direction: column; gap: 8px; }
 .ptm__field span { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .ptm__field input {
-  padding: 13px 15px; border: 2px solid var(--nu-cream); border-radius: 12px;
-  background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700;
+  padding: 13px 15px; border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input);
+  background: var(--nu-white); color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-.ptm__field input:focus { outline: 2px solid var(--nu-blue); outline-offset: 1px; }
+.ptm__field input:focus { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .ptm__out { margin-top: 32px; }
 .ptm__out-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .ptm__out-value {
@@ -216,9 +218,9 @@ usePageSeo({
   display: inline-block; margin-top: 18px; padding: 12px 18px; border-radius: 999px;
   font-size: var(--nu-fs-md); font-weight: 700;
 }
-.ptm__verdict--ok { background: var(--nu-green-soft, #e6f6ec); color: var(--nu-green, #147a3d); }
-.ptm__verdict--neutro { background: var(--nu-blue-tint, #eaf1ff); color: var(--nu-blue-text); }
-.ptm__verdict--alerta { background: #fdecec; color: #b3261e; }
+.ptm__verdict--ok { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.ptm__verdict--neutro { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
+.ptm__verdict--alerta { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .ptm__cross { margin: 28px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
 .ptm__cross a { color: var(--nu-blue-text); font-weight: 800; }
 
@@ -228,7 +230,7 @@ usePageSeo({
 .ptm__exemplo { max-width: 68ch; margin-top: clamp(44px, 5vw, 68px); }
 .ptm__exemplo-list {
   margin: 20px 0 0; padding: 22px 26px; list-style: none;
-  background: var(--nu-white); border-radius: var(--nu-r-card-lg, 18px);
+  background: var(--nu-white); border-radius: var(--nu-r-panel);
   display: flex; flex-direction: column; gap: 11px;
 }
 .ptm__exemplo-list li {
@@ -242,10 +244,10 @@ usePageSeo({
 }
 .ptm__card {
   display: flex; flex-direction: column; gap: 9px; padding: 22px;
-  background: var(--nu-white); border-radius: var(--nu-r-card-lg, 18px);
-  transition: transform .2s;
+  background: var(--nu-white); border-radius: var(--nu-r-panel);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-.ptm__card:hover { transform: translateY(-2px); }
+.ptm__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .ptm__card-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; line-height: 1.25; }
 .ptm__card-formula { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .ptm__updated { margin: clamp(36px, 4vw, 56px) 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; opacity: .8; }

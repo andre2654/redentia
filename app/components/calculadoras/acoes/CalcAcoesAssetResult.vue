@@ -136,20 +136,21 @@ const avgPerPayment = computed(() =>
 
 <style scoped>
 .car {
-  background: var(--nu-cream);
-  border-radius: var(--nu-r-card-lg);
+  background: var(--nu-band);
+  border-radius: var(--nu-r-card);
   padding: clamp(22px, 3vw, 32px);
 }
-.car--branco { background: var(--nu-white); }
-.car--branco .car__kpi { background: var(--nu-cream); }
-.car--branco .car__table-wrap { box-shadow: inset 0 0 0 1.5px var(--nu-cream-2); }
-.car__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.3px; }
+/* o cartão branco sobre o creme da página (Aportou, 11/11/2026) */
+.car--branco { background: var(--nu-white); box-shadow: var(--nu-shadow-quente); }
+.car--branco .car__kpi { background: var(--nu-band); }
+.car--branco .car__table-wrap { box-shadow: inset 0 0 0 1.5px var(--nu-line-2); }
+.car__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
 .car__name { margin: 3px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .car__eyebrow { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .car__value {
   margin-top: 4px; color: var(--nu-ink);
-  font-size: clamp(28px, 3vw, 38px); font-weight: 800;
-  letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-h3); font-weight: 800;
+  letter-spacing: -0.03em; line-height: 1.05; font-variant-numeric: tabular-nums;
 }
 .car__kpis {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -176,20 +177,20 @@ const avgPerPayment = computed(() =>
 .car__table th {
   position: sticky; top: 0; background: var(--nu-white); text-align: left;
   padding: 12px 14px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: .7px; text-transform: uppercase;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); white-space: nowrap;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  border-bottom: 1.5px solid var(--nu-line-2); white-space: nowrap;
 }
 .car__table td {
   padding: 11px 14px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); font-variant-numeric: tabular-nums;
+  border-bottom: 1.5px solid var(--nu-line-2); font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .car__table tbody tr:last-child td { border-bottom: none; }
 .car__muted { color: var(--nu-gray-2); }
 .car__badge {
-  display: inline-flex; border-radius: var(--nu-r-pill);
-  padding: 3px 10px; font-size: var(--nu-fs-xs); font-weight: 700;
+  display: inline-flex; border-radius: var(--nu-r-tag);
+  padding: 3px 8px; font-size: var(--nu-fs-xs); font-weight: 700;
 }
-.car__badge--success { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.car__badge--brand { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
+.car__badge--success { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.car__badge--brand { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 </style>

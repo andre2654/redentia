@@ -125,7 +125,7 @@ useConviteDaConta('juros-compostos', () => JSON.stringify(simParams.value), () =
         ref="salvar" variant="save" calculator="juros-compostos" :caminho="CAMINHO"
         :params="simParams" :label="simLabel" :result="simResult" :folha="folhaConta"
       >
-        <CalcCompartilhar :link="link" titulo="A minha conta de juros compostos, na Redentia" />
+        <CalcCompartilhar :link="link" titulo="A minha conta de juros compostos, na Aportou" />
       </CalcSimSaves>
     </template>
 

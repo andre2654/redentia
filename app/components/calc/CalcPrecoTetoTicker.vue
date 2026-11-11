@@ -154,8 +154,13 @@ const metodos = computed(() => {
 .ptt__hero, .ptt__nums, .ptt__table-sec, .ptt__passos, .ptt__texto, .ptt__faq {
   padding: clamp(48px, 6vw, 88px) clamp(22px, 5.5vw, 80px);
 }
-.ptt__hero, .ptt__table-sec, .ptt__texto { background: var(--nu-cream); }
-.ptt__nums, .ptt__passos, .ptt__faq { background: var(--nu-white); }
+/* Aportou (11/11/2026), só cor: sem faixa branca de ponta a ponta. O topo e os
+   números ficam no creme da página; as faixas alternam com o creme de faixa. */
+.ptt__hero, .ptt__nums, .ptt__passos, .ptt__faq { background: var(--nu-page); }
+.ptt__table-sec, .ptt__texto { background: var(--nu-band); }
+.ptt__hero { padding-bottom: 0; }
+/* o cartão do convite (var(--nu-cream)) lê melhor no creme de faixa sobre a página */
+.ptt__nums { --nu-cream: var(--nu-band); }
 
 .ptt__back { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; }
 .ptt__h1 {
@@ -202,14 +207,14 @@ const metodos = computed(() => {
 .ptt__caption { caption-side: bottom; padding-top: 10px; text-align: left; color: var(--nu-gray); font-size: var(--nu-fs-sm); }
 .ptt__table th, .ptt__table td {
   padding: 12px 16px; text-align: left; font-variant-numeric: tabular-nums;
-  border-bottom: 1px solid var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-md);
+  border-bottom: 1px solid var(--nu-line-2); color: var(--nu-ink); font-size: var(--nu-fs-md);
 }
 .ptt__table thead th { font-weight: 800; font-size: var(--nu-fs-sm); color: var(--nu-gray); }
 .ptt__table tbody th { font-weight: 700; }
-.ptt__row--bazin { background: var(--nu-blue-tint, #eaf1ff); }
+.ptt__row--bazin { background: var(--nu-blue-bg); }
 .ptt__tag {
-  margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: var(--nu-blue); color: white;
-  font-size: 12px; font-weight: 800; vertical-align: 1px;
+  margin-left: 8px; padding: 2px 8px; border-radius: var(--nu-r-tag); background: var(--nu-blue); color: var(--nu-white);
+  font-size: var(--nu-fs-xs); font-weight: 800; vertical-align: 1px;
 }
 
 .ptt__steps { margin: 26px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 22px; max-width: 68ch; }

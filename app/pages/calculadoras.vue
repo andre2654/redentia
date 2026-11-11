@@ -10,10 +10,18 @@
 // DECISÃO DE ARQUITETURA: as calculadoras individuais MANTÊM o path antigo
 // /calculadora/<slug> (preserva URL equity pra migração de domínio); só o hub
 // muda de /calculadora pra /calculadoras, com redirect 301 no nuxt.config.
+//
+// APORTOU (11/11/2026): mesma página, mesmo texto, mesma ordem. Muda a cara:
+// o eyebrow com o corte, o cartão do quadro Home (ícone cobalto de traço,
+// título 24px em 800, a chamada em azul com a seta que anda), o destaque no
+// painel azul com o corte gigante, e as faixas em creme (sem faixa branca).
+// O rótulo de cada cartão ("Simulação", "Valuation"…) e a chamada ("Usar
+// calculadora"…) ficam: são texto de âncora dos links internos.
 
 const calculators = [
   {
     to: '/calculadora/juros-compostos',
+    icon: ['M3 20c5 0 9-3 11-8s4-8 7-8', 'M3 20h18'],
     featured: true,
     eyebrow: 'Simulação',
     title: 'Juros Compostos',
@@ -22,6 +30,7 @@ const calculators = [
   },
   {
     to: '/calculadora/aposentadoria',
+    icon: ['M6 3h12M6 21h12', 'M7.5 3c0 5 4.5 6 4.5 9s-4.5 4-4.5 9', 'M16.5 3c0 5-4.5 6-4.5 9s4.5 4 4.5 9'],
     eyebrow: 'Long-term',
     title: 'Aposentadoria',
     body: 'Calcule quanto investir pra se aposentar. Considera INSS, inflação, expectativa de vida e a regra dos 4%.',
@@ -29,6 +38,7 @@ const calculators = [
   },
   {
     to: '/calculadora/quanto-investir',
+    icon: ['M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17z', 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z', 'M12 12v.01'],
     eyebrow: 'Aporte',
     title: 'Quanto Investir',
     body: 'Descubra quanto investir mensalmente pra atingir uma meta financeira. Aportes precisos, sem chute.',
@@ -36,6 +46,7 @@ const calculators = [
   },
   {
     to: '/calculadora/planejamento',
+    icon: ['M5 21V4', 'M5 4h12l-2.5 4 2.5 4H5'],
     eyebrow: 'Estratégia',
     title: 'Planejamento Patrimonial',
     body: 'Calcule quanto tempo e quanto investir pra atingir metas. Estratégias com dados reais da B3.',
@@ -43,6 +54,7 @@ const calculators = [
   },
   {
     to: '/calculadora/acoes',
+    icon: ['M3 17l5.5-5.5 4 3.5L20 7.5', 'M15 7h5.5v5.5', 'M3 21h18'],
     eyebrow: 'Backtest',
     // nome da ferramenta = title/H1 dela (bloco DONO DO CLUSTER em calculadora/acoes.vue)
     title: 'Simulador de Ações e Dividendos',
@@ -51,6 +63,7 @@ const calculators = [
   },
   {
     to: '/calculadora/preco-teto',
+    icon: ['M4 20V10M10 20V4M16 20v-7M21 20H3', 'M14 7h7'],
     eyebrow: 'Valuation',
     title: 'Preço Teto',
     body: 'Calcule o preço justo de ações usando Graham, Bazin, P/L setorial e valor patrimonial. Saiba se está barata ou cara.',
@@ -58,6 +71,7 @@ const calculators = [
   },
   {
     to: '/calculadora/imposto-renda',
+    icon: ['M6 3h12v18l-3-2-3 2-3-2-3 2z', 'M14.5 9l-5 6', 'M9.5 9.5v.01M14.5 14.5v.01'],
     eyebrow: 'Tributação',
     title: 'Imposto de Renda',
     body: 'Calcule IR sobre day trade e swing trade. Gera DARF automático, compensa prejuízos e fica em dia com a Receita.',
@@ -65,6 +79,7 @@ const calculators = [
   },
   {
     to: '/calculadora/dividend-yield',
+    icon: ['M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17z', 'M12 7v10M14.5 9.2c-.6-.8-1.5-1.2-2.5-1.2-1.4 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-1.9-.4-2.5-1.2'],
     eyebrow: 'Renda passiva',
     title: 'Dividend Yield',
     body: 'Calcule DY atual, projetado e histórico de ações e FIIs. Compare ativos e ache os melhores pagadores.',
@@ -157,36 +172,38 @@ usePageSeo({
   <div>
     <!-- Hero + grid de cards (design) — lead = texto SEO do hub antigo -->
     <section class="chb__hero">
-      <div class="chb__eyebrow">Ferramentas gratuitas</div>
+      <NuEyebrow como="div">Ferramentas gratuitas</NuEyebrow>
       <h1 class="chb__h1">Calculadoras<br>de investidor.</h1>
       <p class="chb__sub">Simule investimentos, analise histórico real de ações e planeje seu patrimônio. Decisões com dados da B3, sem misticismo.</p>
       <div class="chb__grid">
         <NuxtLink
-          v-for="c in calculators"
+          v-for="(c, i) in calculators"
           :key="c.to"
           :to="c.to"
           class="chb__card"
           :class="{ 'chb__card--blue': c.featured }"
+          :style="{ '--i': i }"
         >
-          <span v-if="c.featured" class="chb__badge">{{ c.eyebrow }}</span>
-          <span v-else class="chb__card-eyebrow">{{ c.eyebrow }}</span>
+          <MarcaCorte v-if="c.featured" class="chb__card-corte" :largura="230" cor="var(--nu-white)" />
+          <span class="chb__card-top">
+            <svg class="chb__card-icon" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path v-for="d in c.icon" :key="d" :d="d" /></svg>
+            <span class="chb__card-eyebrow">{{ c.eyebrow }}</span>
+          </span>
           <h2 class="chb__card-title">{{ c.title }}</h2>
           <p class="chb__card-body">{{ c.body }}</p>
-          <span class="chb__card-foot">
-            <span class="chb__card-cta">{{ c.cta }}</span>
-            <span class="chb__circle">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-            </span>
+          <span class="chb__card-cta">
+            {{ c.cta }}
+            <svg class="chb__card-seta" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15" /><path d="M13.5 6.5 19 12l-5.5 5.5" /></svg>
           </span>
         </NuxtLink>
       </div>
     </section>
 
     <!-- Por que usar (texto antigo verbatim) -->
-    <section class="chb__band chb__band--white">
+    <section class="chb__band chb__band--faixa">
       <NuSectionHeading eyebrow="Por que usar">O que separa essas calculadoras das genéricas</NuSectionHeading>
       <div class="chb__reasons">
-        <article v-for="r in reasons" :key="r.title" class="chb__reason">
+        <article v-for="(r, i) in reasons" :key="r.title" class="chb__reason" :style="{ '--i': i }">
           <h3 class="chb__h3">{{ r.title }}</h3>
           <p class="chb__p">{{ r.body }}</p>
         </article>
@@ -194,7 +211,7 @@ usePageSeo({
     </section>
 
     <!-- Qual calculadora usar (texto antigo verbatim) -->
-    <section class="chb__band chb__band--cream">
+    <section class="chb__band">
       <NuSectionHeading eyebrow="Guia">
         Qual calculadora usar
         <template #dek>Cada ferramenta resolve um tipo diferente de pergunta. Aqui o atalho pra acertar de primeira.</template>
@@ -206,17 +223,20 @@ usePageSeo({
             <h3 class="chb__h3">{{ g.title }}</h3>
           </div>
           <ul class="chb__points">
-            <li v-for="point in g.points" :key="point"><span class="chb__dot" /><span>{{ point }}</span></li>
+            <li v-for="point in g.points" :key="point">
+              <svg class="chb__check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+              <span>{{ point }}</span>
+            </li>
           </ul>
         </article>
       </div>
     </section>
 
     <!-- Boas práticas (texto antigo verbatim) -->
-    <section class="chb__band chb__band--white">
+    <section class="chb__band chb__band--faixa">
       <NuSectionHeading eyebrow="Boas práticas">Como tirar mais dessas ferramentas</NuSectionHeading>
       <div class="chb__tips">
-        <article v-for="tip in tips" :key="tip.title" class="chb__tip">
+        <article v-for="(tip, i) in tips" :key="tip.title" class="chb__tip" :style="{ '--i': i }">
           <span class="chb__tip-tag">Dica</span>
           <h3 class="chb__h3">{{ tip.title }}</h3>
           <p class="chb__p">{{ tip.body }}</p>
@@ -224,13 +244,14 @@ usePageSeo({
       </div>
     </section>
 
-    <!-- CTA final (texto antigo verbatim) -->
-    <section class="chb__band chb__band--cream">
+    <!-- CTA final (texto antigo verbatim, só a marca muda) -->
+    <section class="chb__band">
       <div class="chb__cta">
+        <MarcaCorte class="chb__cta-corte" :largura="520" cor="var(--nu-white)" />
         <h2 class="chb__cta-title">Pronto pra começar a investir?</h2>
-        <p class="chb__cta-sub">Cadastre-se na Redentia pra ter análises com IA, acompanhamento de carteira e mais.</p>
+        <p class="chb__cta-sub">Cadastre-se na Aportou pra ter análises com IA, acompanhamento de carteira e mais.</p>
         <div class="chb__cta-actions">
-          <NuxtLink to="/login" class="chb__pill chb__pill--light">Criar conta grátis</NuxtLink>
+          <NuBotaoSeta to="/login" variante="creme">Criar conta grátis</NuBotaoSeta>
           <NuxtLink to="/" class="chb__pill chb__pill--outline">Conhecer a plataforma</NuxtLink>
         </div>
       </div>
@@ -239,122 +260,132 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— hero (valores exatos do design) ——— */
+/* ——— hero: creme da página, eyebrow com o corte, H1 em 800 ——— */
 .chb__hero {
-  background: var(--nu-cream);
-  padding: clamp(56px, 8vw, 104px) clamp(22px, 5.5vw, 80px) clamp(52px, 7vw, 84px);
+  background: var(--nu-page);
+  padding: clamp(48px, 7vw, 92px) clamp(20px, 5.5vw, 80px) clamp(56px, 7vw, 92px);
   animation: nu-fade .5s ease both;
 }
-.chb__eyebrow { color: var(--nu-blue-text); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
 .chb__h1 {
-  margin: 14px 0 0; color: var(--nu-ink);
-  font-size: clamp(46px, 6.5vw, 88px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.0;
+  margin: 18px 0 0; color: var(--nu-ink);
+  font-size: var(--nu-fs-hero); font-weight: 800;
+  letter-spacing: -0.035em; line-height: .98;
 }
 .chb__sub {
-  color: var(--nu-gray); font-size: clamp(17px, 1.8vw, 21px); font-weight: 500;
-  line-height: 1.55; margin: 22px 0 0; max-width: 600px;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
+  line-height: 1.45; margin: 22px 0 0; max-width: 600px;
 }
 .chb__grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px; margin-top: 48px;
+  gap: 18px; margin-top: clamp(36px, 4vw, 48px);
 }
+/* o cartão do quadro Home: creme de faixa, raio 26, ícone cobalto de traço */
 .chb__card {
-  background: var(--nu-white); border-radius: var(--nu-r-card-lg); padding: 30px;
-  display: flex; flex-direction: column; min-height: 250px;
-  transition: background .2s, transform .18s;
+  position: relative; overflow: hidden; isolation: isolate;
+  background: var(--nu-band); color: var(--nu-ink); border-radius: 26px; padding: 26px;
+  display: flex; flex-direction: column; gap: 10px; min-height: 250px;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
 }
-.chb__card:hover { transform: translateY(-3px); }
-.chb__card--blue { background: var(--nu-blue); }
-.chb__card--blue:hover { background: var(--nu-blue-hover); }
-.chb__badge {
-  display: inline-flex; align-self: flex-start; align-items: center;
-  background: var(--nu-white-18); color: var(--nu-white);
-  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  padding: 6px 13px; border-radius: var(--nu-r-pill);
-}
+.chb__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); color: var(--nu-ink); }
+.chb__card:active { transform: scale(.99); }
+.chb__card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.chb__card-icon { flex: none; color: var(--nu-blue); }
 .chb__card-eyebrow {
-  color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase; text-align: right;
 }
 .chb__card-title {
-  margin: 22px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.3px;
+  margin: 6px 0 0; color: inherit; font-size: var(--nu-fs-2xl); font-weight: 800;
+  letter-spacing: -0.02em; line-height: 1.15;
 }
-.chb__card--blue .chb__card-title { color: var(--nu-white); }
 .chb__card-body {
-  margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500;
-  line-height: 1.55; padding-bottom: 20px;
+  margin: 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500; line-height: 1.5;
 }
-.chb__card--blue .chb__card-body { color: var(--nu-white-75); }
-.chb__card-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.chb__card-cta { color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.chb__card-cta {
+  margin-top: auto; padding-top: 10px; min-height: 44px;
+  display: flex; align-items: center; gap: 8px;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700;
+}
+.chb__card-seta { flex: none; transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.chb__card:hover .chb__card-seta { transform: translateX(3px); }
+
+/* o destaque: o painel azul da marca, com o corte gigante no canto */
+.chb__card--blue { background: var(--nu-grad-cobalto); color: var(--nu-white); }
+.chb__card--blue:hover { color: var(--nu-white); }
+.chb__card-corte { position: absolute; right: -28px; bottom: -64px; z-index: -1; opacity: .08; pointer-events: none; }
+.chb__card--blue .chb__card-icon,
 .chb__card--blue .chb__card-cta { color: var(--nu-white); }
-.chb__circle {
-  width: 46px; height: 46px; flex-shrink: 0; border-radius: 50%;
-  background: var(--nu-blue); color: var(--nu-white);
-  display: flex; align-items: center; justify-content: center;
-}
-.chb__card--blue .chb__circle { background: var(--nu-cream); color: var(--nu-blue-text); }
+.chb__card--blue .chb__card-eyebrow { color: var(--nu-blue-on-blue-2); }
+.chb__card--blue .chb__card-body { color: var(--nu-blue-on-blue); }
 
-/* ——— bandas de conteúdo ——— */
-.chb__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.chb__band--white { background: var(--nu-white); }
-.chb__band--cream { background: var(--nu-cream); }
-.chb__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
-.chb__p { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+/* ——— faixas de conteúdo: creme da página e creme de faixa, alternados ——— */
+.chb__band { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); }
+.chb__band--faixa { background: var(--nu-band); }
+.chb__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+.chb__p { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 
-.chb__reasons {
+.chb__reasons, .chb__tips {
+  /* 230px: as quatro cabem numa linha no desktop (280px deixava a 4ª órfã) */
   display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 16px; margin-top: clamp(28px, 4vw, 44px);
+  gap: 16px; margin-top: clamp(32px, 4vw, 40px);
 }
-.chb__reason { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
+/* cartão branco dentro da faixa creme */
+.chb__reason, .chb__tip {
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px;
+  box-shadow: var(--nu-shadow-quente);
+  animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
+}
+.chb__tip-tag {
+  display: inline-flex; align-self: flex-start; margin-bottom: 12px; padding: 4px 9px;
+  border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); color: var(--nu-blue-text);
+  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.04em;
+}
 
-.chb__guides { display: flex; flex-direction: column; gap: 14px; margin-top: clamp(28px, 4vw, 44px); }
+.chb__guides { display: flex; flex-direction: column; margin-top: clamp(32px, 4vw, 40px); border-bottom: 1.5px solid var(--nu-line); }
+/* linhas com fio de 1,5px, como o FAQ dos quadros */
 .chb__guide {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px 28px;
+  border-top: 1.5px solid var(--nu-line); padding: 26px 0;
   display: flex; gap: clamp(18px, 3vw, 44px); flex-wrap: wrap;
 }
-.chb__guide-head { flex: 0 0 260px; min-width: min(240px, 100%); }
+.chb__guide-head { flex: 0 0 300px; min-width: min(240px, 100%); }
 .chb__use-se {
-  display: block; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 8px;
 }
-.chb__points { list-style: none; margin: 0; padding: 0; flex: 1 1 280px; display: flex; flex-direction: column; gap: 8px; }
+.chb__points { list-style: none; margin: 0; padding: 0; flex: 1 1 280px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 28px; align-content: start; }
 .chb__points li {
   display: flex; align-items: flex-start; gap: 10px;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
+  color: var(--nu-gray-3); font-size: 15.5px; font-weight: 600; line-height: 1.4;
 }
-.chb__dot { width: 5px; height: 5px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; margin-top: 8px; }
+.chb__check { flex: none; margin-top: 2px; color: var(--nu-green-text); }
 
-.chb__tips {
-  /* 230px = mesmo mínimo do grid "Por que usar" — as 4 dicas cabem numa
-     linha no desktop (280px deixava a 4ª órfã numa 2ª linha). */
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 16px; margin-top: clamp(28px, 4vw, 44px);
-}
-.chb__tip { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-.chb__tip-tag {
-  display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 8px;
-}
-
-/* ——— CTA ——— */
+/* ——— CTA: o painel azul ——— */
 .chb__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center;
+  position: relative; overflow: hidden; isolation: isolate;
+  background: var(--nu-grad-cobalto); border-radius: var(--nu-r-secao);
+  padding: clamp(36px, 5vw, 64px) clamp(24px, 5vw, 64px);
 }
+.chb__cta-corte { position: absolute; right: -40px; bottom: -150px; z-index: -1; opacity: .08; pointer-events: none; }
 .chb__cta-title {
-  margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
+  margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; max-width: 820px;
 }
-.chb__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
-.chb__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
+.chb__cta-sub { margin: 18px 0 0; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; max-width: 560px; }
+.chb__cta-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-top: 30px; }
 .chb__pill {
-  display: inline-flex; align-items: center; border-radius: var(--nu-r-pill);
-  padding: 14px 26px; font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s, color .2s;
+  display: inline-flex; align-items: center; min-height: 62px; border-radius: var(--nu-r-pill);
+  padding: 0 28px; font-size: 19px; font-weight: 700; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.chb__pill--light { background: var(--nu-cream); color: var(--nu-blue-text); }
-.chb__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.chb__pill--outline { border: 2px solid var(--nu-white-35); color: var(--nu-white); }
+.chb__pill--outline { box-shadow: inset 0 0 0 1.5px var(--nu-white-60); color: var(--nu-white); }
 .chb__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
+.chb__pill--outline:active { transform: scale(.98); }
+
+@media (max-width: 640px) {
+  .chb__card { min-height: 0; }
+  .chb__points { grid-template-columns: minmax(0, 1fr); }
+  .chb__cta { border-radius: var(--nu-r-card-lg); }
+  .chb__cta-actions > * { flex: 1 1 100%; justify-content: space-between; }
+  .chb__pill { justify-content: center; font-size: 17px; }
+}
 </style>

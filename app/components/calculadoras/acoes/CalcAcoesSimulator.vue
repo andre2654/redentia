@@ -408,7 +408,7 @@ useConviteDaConta('acoes', () => JSON.stringify([simParams.value, simTextos.valu
         ref="salvar" variant="save" calculator="acoes" :caminho="CAMINHO"
         :params="simParams" :textos="simTextos" :label="simLabel" :result="simResult" :folha="folhaConta"
       >
-        <CalcCompartilhar :link="link" titulo="A minha simulação de ações, na Redentia" />
+        <CalcCompartilhar :link="link" titulo="A minha simulação de ações, na Aportou" />
       </CalcSimSaves>
     </template>
 
@@ -446,7 +446,7 @@ useConviteDaConta('acoes', () => JSON.stringify([simParams.value, simTextos.valu
 .cas__lendo-legenda { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
 .cas__esqueleto {
   display: block; width: min(320px, 80%); height: 56px; margin-top: 8px; border-radius: 16px;
-  background: linear-gradient(90deg, var(--nu-cream) 0%, var(--nu-cream-2) 50%, var(--nu-cream) 100%);
+  background: linear-gradient(90deg, var(--nu-cream-2) 0%, var(--nu-line-2) 50%, var(--nu-cream-2) 100%);
   background-size: 200% 100%; animation: cas-brilha 1.4s ease-in-out infinite;
 }
 .cas__lendo-texto { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
@@ -459,10 +459,12 @@ useConviteDaConta('acoes', () => JSON.stringify([simParams.value, simTextos.valu
 
 .cas__erro-texto { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .cas__de-novo {
-  margin-top: 14px; padding: 10px 18px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-ink);
+  margin-top: 14px; min-height: 44px; padding: 0 20px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-ink);
   background: var(--nu-white); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
+  transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
 .cas__de-novo:hover { background: var(--nu-ink); color: var(--nu-white); }
+.cas__de-novo:active { transform: scale(.98); }
 
 .cas__detalhes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 16px; max-width: 1180px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
 </style>

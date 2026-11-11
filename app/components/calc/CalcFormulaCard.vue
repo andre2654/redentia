@@ -35,7 +35,7 @@ defineProps<{
   color: var(--nu-ink);
   font-size: clamp(22px, 2.4vw, 32px);
   font-weight: 800;
-  letter-spacing: -.5px;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
@@ -43,12 +43,14 @@ defineProps<{
 .cfc__formula :deep(.cfc-frac) { display: inline-block; vertical-align: middle; text-align: center; margin: 0 4px; }
 .cfc__formula :deep(.cfc-frac-top) { display: block; border-bottom: 2.5px solid var(--nu-ink); padding: 0 8px 4px; }
 .cfc__formula :deep(.cfc-frac-bottom) { display: block; padding: 4px 8px 0; }
-.cfc__terms { margin-top: 26px; }
+/* três colunas alinhadas entre as linhas: a do símbolo cresce com o símbolo
+   mais longo ("Patrimônio", "DY médio"), que antes vazava por cima do texto */
+.cfc__terms { margin-top: 26px; display: grid; grid-template-columns: minmax(26px, max-content) auto minmax(0, 1fr); column-gap: 16px; }
 .cfc__term {
-  display: flex; align-items: baseline; gap: 16px;
-  padding: 12px 0; border-top: 1.5px solid var(--nu-cream-line-2);
+  display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: baseline;
+  padding: 12px 0; border-top: 1.5px solid var(--nu-line);
 }
-.cfc__sym { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; width: 26px; flex-shrink: 0; }
-.cfc__eq { color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; flex-shrink: 0; }
-.cfc__desc { color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
+.cfc__sym { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; }
+.cfc__eq { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; flex-shrink: 0; }
+.cfc__desc { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
 </style>

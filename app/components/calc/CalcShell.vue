@@ -4,6 +4,11 @@
 // max-width 460px; resultado flex:1.6 1 480px). Fundo alterna branco/creme
 // via prop (quando creme, o card de controles vira branco pra manter
 // contraste — mesma lógica de alternância dos designs Nu).
+// Aportou (11/11/2026): não existe mais faixa branca de ponta a ponta. O tom
+// 'white' é o creme da página (--nu-page) e o 'cream' é o creme de faixa
+// (--nu-band). Dentro da faixa no creme da página, o cartão "creme" de quem
+// ocupa o slot (var(--nu-cream), quase igual ao fundo novo) passa a ser o
+// creme de faixa: é o cartão do quadro Home, sem tocar em cada página.
 defineProps<{
   eyebrow?: string
   bg?: 'white' | 'cream'
@@ -34,16 +39,18 @@ defineProps<{
 
 <style scoped>
 .csh {
-  background: var(--nu-white);
+  background: var(--nu-page);
   padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
-.csh--cream { background: var(--nu-cream); }
+.csh--cream { background: var(--nu-band); }
+/* o cartão "creme" do slot vira o creme de faixa sobre o creme da página */
+.csh:not(.csh--cream) { --nu-cream: var(--nu-band); }
 .csh__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
 .csh__title {
   margin: 12px 0 0; color: var(--nu-ink);
   font-size: var(--nu-fs-h2); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1.02;
+  letter-spacing: -0.03em; line-height: 1.02;
 }
 .csh__lead {
   color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500;

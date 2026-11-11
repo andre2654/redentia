@@ -9,6 +9,13 @@
 // o que a conta dá. Tudo isso existe: contas guardadas, o resumo das 7h30, a
 // carteira pelo Open Finance (no /carteira) e o chat. A preço-teto segue com o
 // cartão dela (veto do dono).
+// Aportou (11/11/2026): a faixa virou o PAINEL AZUL da marca, o mesmo do fecho
+// da home: o gradiente cobalto, raio 40, pousado sobre o creme da página e
+// ocupando a largura inteira do conteúdo, com o corte gigante branco a 8% no
+// canto (no lugar das três luzes que andavam sem parar: a marca só tem
+// animação infinita no anel do input e no esqueleto), o título em 800, a
+// chamada principal na pílula com a seta no círculo e as cápsulas como chips
+// sobre o azul.
 // Ela aparece duas vezes nas calculadoras: compacta, logo depois da conta e das
 // tags ("coloque uma seção CTA abaixo dos cards das calculadoras, abaixo das
 // tags"), e inteira no fim da página.
@@ -47,26 +54,19 @@ const BENEFICIOS = [
   { texto: 'Contas guardadas', d: ['M6.5 3.5h11a1 1 0 0 1 1 1v16l-6.5-4-6.5 4v-16a1 1 0 0 1 1-1z'] },
   { texto: 'Resumo das 7h30', d: ['M12 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z', 'M12 7.5V12l3 2'] },
   { texto: 'Carteira conectada', d: ['M12 3.5a8.5 8.5 0 1 0 8.5 8.5H12z', 'M15 3.8A8.5 8.5 0 0 1 20.2 9H15z'] },
-  { texto: 'Pergunte à Redentia', d: ['M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.1A8 8 0 1 1 20 12z'] },
+  { texto: 'Pergunte à IA', d: ['M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.1A8 8 0 1 1 20 12z'] },
 ]
 </script>
 
 <template>
   <section ref="raiz" class="cft" :class="[entrada && `cft--${entrada}`, { 'cft--compacta': compacta }]">
-    <div class="cft__aurora" aria-hidden="true">
-      <span class="cft__luz cft__luz--azul" />
-      <span class="cft__luz cft__luz--violeta" />
-      <span class="cft__luz cft__luz--rosa" />
-    </div>
-    <span class="cft__fio" aria-hidden="true" />
+    <div class="cft__painel">
+    <MarcaCorte class="cft__corte" :largura="compacta ? 460 : 620" cor="var(--nu-white)" />
     <div class="cft__miolo">
       <h2 class="cft__titulo">{{ titulo }}</h2>
       <p class="cft__texto">{{ texto }}</p>
       <div class="cft__acoes">
-        <NuxtLink :to="primario.to" class="cft__pill cft__pill--claro">
-          {{ primario.label }}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </NuxtLink>
+        <NuBotaoSeta :to="primario.to" variante="creme">{{ primario.label }}</NuBotaoSeta>
         <NuxtLink :to="secundario.to" class="cft__pill cft__pill--contorno">{{ secundario.label }}</NuxtLink>
       </div>
       <ul class="cft__beneficios" aria-label="O que a conta dá">
@@ -76,93 +76,72 @@ const BENEFICIOS = [
         </li>
       </ul>
     </div>
+    </div>
   </section>
 </template>
 
 <style scoped>
-.cft {
+.cft { background: var(--nu-page); padding: clamp(28px, 4vw, 56px) clamp(12px, 5.5vw, 80px) clamp(56px, 7vw, 96px); }
+.cft--compacta { padding-top: 0; }
+/* o painel azul do contrato */
+.cft__painel {
   position: relative; isolation: isolate; overflow: hidden; text-align: center;
-  padding: clamp(72px, 9vw, 132px) clamp(22px, 5.5vw, 80px) clamp(64px, 8vw, 112px);
-  background: var(--nu-blue);
-  color: var(--nu-white);
+  padding: clamp(56px, 8vw, 112px) clamp(22px, 5vw, 64px) clamp(48px, 7vw, 96px);
+  border-radius: var(--nu-r-secao); background: var(--nu-grad-cobalto); color: var(--nu-white);
 }
 
 /* a do meio da página (logo depois da conta e das tags): menos alta, título um tom abaixo */
-.cft--compacta { padding: clamp(52px, 6vw, 84px) clamp(22px, 5.5vw, 80px) clamp(46px, 5.4vw, 76px); }
+.cft--compacta .cft__painel { padding: clamp(44px, 5.4vw, 76px) clamp(22px, 5vw, 64px) clamp(40px, 5vw, 68px); }
 .cft--compacta .cft__titulo { font-size: var(--nu-fs-h2-sm); }
 .cft--compacta .cft__beneficios { margin-top: 32px; }
 
-/* a luz: três manchas borradas, branca e azul-clara, que andam devagar atrás do título */
-.cft__aurora { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-.cft__luz { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .5; will-change: transform; }
-.cft__luz--azul { width: 520px; height: 360px; left: calc(50% - 470px); top: -120px; background: var(--nu-blue-soft); animation: cft-anda-1 18s ease-in-out infinite alternate; }
-.cft__luz--violeta { width: 460px; height: 340px; left: calc(50% - 120px); top: -150px; background: var(--nu-serie-5); opacity: .3; animation: cft-anda-2 22s ease-in-out infinite alternate; }
-.cft__luz--rosa { width: 360px; height: 280px; left: calc(50% + 160px); top: -90px; background: var(--nu-white); opacity: .28; animation: cft-anda-3 20s ease-in-out infinite alternate; }
-@keyframes cft-anda-1 { to { transform: translate(120px, 40px) scale(1.12); } }
-@keyframes cft-anda-2 { to { transform: translate(-140px, 60px) scale(.92); } }
-@keyframes cft-anda-3 { to { transform: translate(-90px, 30px) scale(1.18); } }
-/* o fio de luz no alto da faixa */
-.cft__fio {
-  position: absolute; left: 0; right: 0; top: 0; height: 1px; opacity: .7;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
-}
+/* o corte do "t" da marca, gigante e quase transparente, no canto de baixo */
+.cft__corte { position: absolute; right: -110px; bottom: -70px; z-index: -1; opacity: .08; pointer-events: none; }
+.cft--compacta .cft__corte { right: -80px; bottom: -60px; }
 
 .cft__miolo { position: relative; max-width: 980px; margin: 0 auto; }
 .cft__titulo {
   margin: 0 auto; max-width: 900px; color: var(--nu-white);
-  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.045em; line-height: 1.04; text-wrap: balance;
+  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance;
 }
 .cft__texto {
-  margin: 18px auto 0; max-width: 560px; color: var(--nu-white-75);
-  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.55; text-wrap: balance;
+  margin: 18px auto 0; max-width: 560px; color: var(--nu-blue-on-blue);
+  font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: balance;
 }
-.cft__acoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 34px; }
+.cft__acoes { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; margin-top: 34px; }
 .cft__pill {
-  display: inline-flex; align-items: center; gap: 10px; height: 56px; padding: 0 28px; border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-md); font-weight: 700; transition: transform .2s ease, box-shadow .25s ease, background .2s ease;
+  display: inline-flex; align-items: center; justify-content: center; min-height: 62px; padding: 0 28px; border-radius: var(--nu-r-pill);
+  font-size: 19px; font-weight: 700; transition: background .2s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.cft__pill--claro {
-  background: var(--nu-white); color: var(--nu-blue-text);
-  box-shadow: 0 14px 40px -12px rgba(10, 16, 48, 0.45);
-}
-.cft__pill--claro svg { transition: transform .2s ease; }
-.cft__pill--claro:hover { color: var(--nu-blue-hover); transform: translateY(-1px); box-shadow: 0 18px 48px -12px rgba(10, 16, 48, 0.55); }
-.cft__pill--claro:hover svg { transform: translateX(3px); }
-.cft__pill--contorno { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
+.cft__pill--contorno { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-white-60); color: var(--nu-white); }
 .cft__pill--contorno:hover { background: var(--nu-white-14); color: var(--nu-white); }
-.cft__pill:focus-visible { outline: 3px solid var(--nu-white); outline-offset: 3px; }
+.cft__pill--contorno:active { transform: scale(.98); }
+.cft__acoes :focus-visible { outline: 3px solid var(--nu-white); outline-offset: 3px; }
 
-/* o que a conta dá: cápsulas de vidro */
+/* o que a conta dá: chips sobre o azul */
 .cft__beneficios { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 44px 0 0; padding: 0; list-style: none; }
 .cft__beneficio {
-  display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: var(--nu-r-pill);
-  background: rgba(255, 255, 255, 0.12); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
-  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-  color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border-radius: var(--nu-r-pill);
+  background: var(--nu-white-14); box-shadow: inset 0 0 0 1px var(--nu-white-30);
+  color: var(--nu-white); font-size: 14.5px; font-weight: 600; white-space: nowrap;
 }
 .cft__beneficio svg { color: var(--nu-white); opacity: .9; }
 
 /* a entrada, quando a faixa aparece na tela */
-.cft--espera :is(.cft__titulo, .cft__texto, .cft__acoes, .cft__beneficio) { opacity: 0; transform: translateY(12px); }
-.cft--entra .cft__titulo { animation: cft-entra .9s cubic-bezier(.22, 1, .36, 1) both; }
-.cft--entra .cft__texto { animation: cft-entra .9s cubic-bezier(.22, 1, .36, 1) .08s both; }
-.cft--entra .cft__acoes { animation: cft-entra .9s cubic-bezier(.22, 1, .36, 1) .16s both; }
-.cft--entra .cft__beneficio { animation: cft-entra .8s cubic-bezier(.22, 1, .36, 1) both; animation-delay: calc(.3s + var(--i) * 80ms); }
-@keyframes cft-entra { from { opacity: 0; transform: translateY(12px); filter: blur(6px); } }
+.cft--espera :is(.cft__titulo, .cft__texto, .cft__acoes, .cft__beneficio) { opacity: 0; transform: translateY(10px); }
+.cft--entra .cft__titulo { animation: nu-fade .5s ease both; }
+.cft--entra .cft__texto { animation: nu-fade .5s ease .06s both; }
+.cft--entra .cft__acoes { animation: nu-fade .5s ease .12s both; }
+.cft--entra .cft__beneficio { animation: nu-fade .5s ease both; animation-delay: calc(.2s + var(--i) * 60ms); }
 
 @media (max-width: 640px) {
-  .cft { text-align: left; }
+  .cft__painel { text-align: left; border-radius: var(--nu-r-card); }
   .cft__titulo, .cft__texto { margin-left: 0; }
   .cft__acoes, .cft__beneficios { justify-content: flex-start; }
-  .cft__pill { flex: 1 1 auto; justify-content: center; }
+  .cft__acoes > * { flex: 1 1 100%; }
+  .cft__pill { font-size: 17px; }
   .cft__beneficios { gap: 8px; margin-top: 34px; }
-  .cft__beneficio { padding: 7px 12px; gap: 6px; font-size: var(--nu-fs-dense); }
-  .cft__luz { filter: blur(54px); }
-  .cft__luz--azul { width: 320px; height: 240px; left: -80px; }
-  .cft__luz--violeta { width: 300px; height: 220px; left: 90px; }
-  .cft__luz--rosa { width: 220px; height: 180px; left: 220px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .cft__luz { animation: none; }
+  .cft__beneficio { min-height: 36px; padding: 0 12px; gap: 6px; font-size: var(--nu-fs-dense); }
+  .cft__corte, .cft--compacta .cft__corte { right: -260px; }
 }
 </style>

@@ -116,7 +116,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: 'Calculadora de IR sobre Ações Redentia',
+      name: `Calculadora de IR sobre Ações ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
@@ -162,7 +162,7 @@ usePageSeo({
     <CalcFaixaCta
       compacta
       titulo="Veja como essa conta se adapta à sua vida."
-      texto="Com a conta grátis da Redentia, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
+      texto="Com a conta grátis da Aportou, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
     />
@@ -344,7 +344,7 @@ usePageSeo({
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas Frequentes sobre IR de Ações</template>
       <template #left>
-        <NuxtLink to="/busca" class="ir__pill">Perguntar à Redentia AI</NuxtLink>
+        <CalcPerguntarIa />
       </template>
       <NuFaqAccordion :items="faqItems" surface="white" />
     </CalcSplit>
@@ -385,7 +385,7 @@ usePageSeo({
       </div>
 
       <aside class="ir__eeat">
-        <p class="ir__eeat-title">Conteúdo revisado pela equipe de análise da Redentia</p>
+        <p class="ir__eeat-title">Conteúdo revisado pela equipe de análise da Aportou</p>
         <p class="ir__eeat-p">
           Cálculos baseados nas regras vigentes da Receita Federal do Brasil para tributação de ganhos em renda variável (Lei 11.033/2004 e IN RFB 1.585/2015): swing trade com alíquota de 15% e isenção de R$ 20 mil/mês em vendas, day trade com alíquota de 20% sem isenção, vencimento do DARF no último dia útil do mês subsequente.
         </p>
@@ -399,7 +399,7 @@ usePageSeo({
 
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta
-      titulo="Controle seus investimentos na Redentia"
+      titulo="Controle seus investimentos na Aportou"
       texto="Acompanhe sua carteira, receba alertas e tenha relatórios prontos para o IR."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
@@ -437,7 +437,7 @@ usePageSeo({
 .ir__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .ir__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .ir__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
@@ -458,8 +458,8 @@ usePageSeo({
   gap: 18px;
 }
 .ir__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-:global(.cbd--cream) .ir__tile { background: var(--nu-white); }
-:global(.csp--cream) .ir__tile { background: var(--nu-white); }
+.cbd--cream .ir__tile { background: var(--nu-white); }
+.csp--cream .ir__tile { background: var(--nu-white); }
 .ir__tile--danger { background: var(--nu-red-tint); }
 .ir__tile-title { margin: 0 0 8px; color: var(--nu-blue-text); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .ir__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
@@ -479,18 +479,12 @@ usePageSeo({
 .ir__card-link {
   background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .ir__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .ir__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
-.ir__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.ir__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .ir__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;

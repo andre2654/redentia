@@ -67,7 +67,7 @@ const grid = computed(() =>
         </defs>
         <path :d="areaMain" :fill="`url(#${gradId})`" />
         <path :d="lineMain" fill="none" stroke="var(--nu-blue)" stroke-width="3.4" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" />
-        <path v-if="lineSecondary" :d="lineSecondary" fill="none" stroke="var(--nu-navy)" stroke-width="2.4" stroke-dasharray="7 6" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" />
+        <path v-if="lineSecondary" :d="lineSecondary" fill="none" stroke="var(--nu-ink)" stroke-width="2.4" stroke-dasharray="7 6" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round" />
       </svg>
     </div>
     <div v-if="xLabels" class="cac__x">
@@ -81,7 +81,7 @@ const grid = computed(() =>
 <style scoped>
 .cac { position: relative; height: clamp(220px, 26vw, 320px); }
 .cac__svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.cac__line { position: absolute; left: 0; right: 0; height: 1px; background: var(--nu-navy-07); }
+.cac__line { position: absolute; left: 0; right: 0; height: 1.5px; background: var(--nu-line-2); }
 .cac__lbl {
   position: absolute; right: 2px; transform: translateY(-120%);
   color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;

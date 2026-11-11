@@ -162,7 +162,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: 'Calculadora de Juros Compostos Redentia',
+      name: `Calculadora de Juros Compostos ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
@@ -216,7 +216,7 @@ usePageSeo({
     <CalcFaixaCta
       compacta
       titulo="Veja como essa conta se adapta à sua vida."
-      texto="Com a conta grátis da Redentia, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
+      texto="Com a conta grátis da Aportou, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
     />
@@ -421,7 +421,7 @@ usePageSeo({
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas Frequentes sobre Juros Compostos</template>
       <template #left>
-        <NuxtLink to="/busca" class="jc__pill">Perguntar à Redentia AI</NuxtLink>
+        <CalcPerguntarIa />
       </template>
       <NuFaqAccordion :items="faqItems" surface="white" />
     </CalcSplit>
@@ -462,7 +462,7 @@ usePageSeo({
       </div>
 
       <aside class="jc__eeat">
-        <p class="jc__eeat-title">Metodologia revisada pela equipe de análise da Redentia</p>
+        <p class="jc__eeat-title">Metodologia revisada pela equipe de análise da Aportou</p>
         <p class="jc__eeat-p">
           Cálculos baseados nas fórmulas oficiais de matemática financeira (M = C × (1 + i)ⁿ) e em médias históricas do mercado brasileiro (CDI, Ibovespa, IPCA). As simulações assumem juros capitalizados mensalmente e reinvestimento integral dos rendimentos.
         </p>
@@ -477,7 +477,7 @@ usePageSeo({
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta
       titulo="Quer acompanhar seus investimentos reais?"
-      texto="Cadastre-se na Redentia e monitore sua carteira com análises em tempo real e IA."
+      texto="Cadastre-se na Aportou e monitore sua carteira com análises em tempo real e IA."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver mais guias', to: '/guias' }"
     />
@@ -516,7 +516,7 @@ usePageSeo({
 .jc__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .jc__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .jc__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
@@ -565,18 +565,11 @@ usePageSeo({
 .jc__card-link {
   background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .jc__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .jc__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 
-/* ——— pills / CTA ——— */
-.jc__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.jc__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .jc__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;

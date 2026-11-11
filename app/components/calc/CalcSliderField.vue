@@ -139,7 +139,7 @@ function cancel() {
       :value="modelValue"
       :aria-label="label"
       :aria-valuetext="valueText"
-      :style="{ background: `linear-gradient(to right, var(--nu-blue) 0% ${fillPct}%, var(--nu-sand-2) ${fillPct}% 100%)` }"
+      :style="{ background: `linear-gradient(to right, var(--nu-blue) 0% ${fillPct}%, var(--nu-line) ${fillPct}% 100%)` }"
       @input="onInput"
     >
     <div v-if="presets?.length" class="csf__chips">
@@ -157,7 +157,7 @@ function cancel() {
 
 <style scoped>
 .csf__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.csf__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.csf__label { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 700; }
 
 /* valor = campo editável: box levemente mais clara que o creme + arredondada,
    sinalizando "passe o mouse e troque". Idle = branco suave + lapiseira quieta;
@@ -235,10 +235,10 @@ button.csf__value:hover .csf__edit-ic, button.csf__value:focus-visible .csf__edi
   font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
-  border: 2px solid var(--nu-sand-border);
+  border: 1.5px solid var(--nu-line);
   background: var(--nu-white);
-  color: var(--nu-gray-2);
-  transition: all .2s;
+  color: var(--nu-gray-3);
+  transition: background .2s, border-color .2s, color .2s;
 }
 .csf__chip--active {
   border-color: var(--nu-ink);

@@ -264,7 +264,7 @@ useConviteDaConta('planejamento', () => JSON.stringify(simParams.value), () => {
         ref="salvar" variant="save" calculator="planejamento" :caminho="CAMINHO"
         :params="simParams" :label="simLabel" :result="simResult" :folha="folhaConta"
       >
-        <CalcCompartilhar :link="link" titulo="O meu planejamento, na Redentia" />
+        <CalcCompartilhar :link="link" titulo="O meu planejamento, na Aportou" />
       </CalcSimSaves>
     </template>
 
@@ -317,7 +317,7 @@ useConviteDaConta('planejamento', () => JSON.stringify(simParams.value), () => {
 .pcs__lendo-legenda { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
 .pcs__esqueleto {
   display: block; width: min(320px, 80%); height: 56px; margin-top: 8px; border-radius: 16px;
-  background: linear-gradient(90deg, var(--nu-cream) 0%, var(--nu-cream-2) 50%, var(--nu-cream) 100%);
+  background: linear-gradient(90deg, var(--nu-cream-2) 0%, var(--nu-line-2) 50%, var(--nu-cream-2) 100%);
   background-size: 200% 100%; animation: pcs-brilha 1.4s ease-in-out infinite;
 }
 .pcs__lendo-texto { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
@@ -330,14 +330,16 @@ useConviteDaConta('planejamento', () => JSON.stringify(simParams.value), () => {
 
 .pcs__erro-texto { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .pcs__de-novo {
-  margin-top: 14px; padding: 10px 18px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-ink);
+  margin-top: 14px; min-height: 44px; padding: 0 20px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-ink);
   background: var(--nu-white); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
+  transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
 .pcs__de-novo:hover { background: var(--nu-ink); color: var(--nu-white); }
+.pcs__de-novo:active { transform: scale(.98); }
 
 /* a carteira sugerida, embaixo das cápsulas */
 .pcs__carteira { max-width: 1080px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
-.pcs__carteira-titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; text-align: center; }
+.pcs__carteira-titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; text-align: center; }
 .pcs__carteira-desc { margin: 6px auto 0; max-width: 560px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; text-align: center; }
 .pcs__ativos {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 10px;
@@ -345,11 +347,12 @@ useConviteDaConta('planejamento', () => JSON.stringify(simParams.value), () => {
 }
 .pcs__ativo {
   display: grid; grid-template-columns: 1fr auto; grid-template-areas: "cat peso" "ticker peso" "ret ret";
-  row-gap: 2px; column-gap: 12px; height: 100%; padding: 16px 18px; border-radius: 20px;
-  background: var(--nu-white); color: inherit; transition: box-shadow .2s ease;
+  row-gap: 2px; column-gap: 12px; height: 100%; padding: 16px 18px; border-radius: var(--nu-r-tile);
+  background: var(--nu-white); color: inherit; box-shadow: var(--nu-shadow-quente);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-a.pcs__ativo:hover { box-shadow: 0 0 0 1.5px var(--nu-blue); }
-.pcs__ativo-cat { grid-area: cat; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+a.pcs__ativo:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.pcs__ativo-cat { grid-area: cat; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
 .pcs__ativo-ticker { grid-area: ticker; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
 .pcs__ativo-peso { grid-area: peso; align-self: center; color: var(--nu-blue-text); font-size: var(--nu-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
 .pcs__ativo-ret { grid-area: ret; margin-top: 8px; font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }

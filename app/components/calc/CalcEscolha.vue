@@ -30,12 +30,13 @@ const escolhida = defineModel<T>({ required: true })
 
 <style scoped>
 .ces { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.ces__rotulo { margin-right: 4px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.ces__rotulo { margin-right: 4px; color: var(--nu-ink); font-size: 15px; font-weight: 700; }
 .ces__opcao {
-  padding: 9px 16px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-cream-2);
-  background: var(--nu-white); color: var(--nu-gray-2); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
-  white-space: nowrap; cursor: pointer; transition: background .2s, border-color .2s, color .2s;
+  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-line);
+  background: var(--nu-white); color: var(--nu-gray-3); font-family: inherit; font-size: 14.5px; font-weight: 700;
+  white-space: nowrap; cursor: pointer; transition: background .2s, border-color .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
+.ces__opcao:active { transform: scale(.98); }
 .ces__opcao:hover { border-color: var(--nu-ink); color: var(--nu-ink); }
 .ces__opcao--on, .ces__opcao--on:hover { border-color: var(--nu-ink); background: var(--nu-ink); color: var(--nu-white); }
 .ces__opcao:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }

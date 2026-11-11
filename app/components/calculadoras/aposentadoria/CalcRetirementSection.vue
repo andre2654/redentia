@@ -328,7 +328,7 @@ const inssTxt = computed(() => brl(inss.value) + '/mês')
         ref="salvar" variant="save" calculator="aposentadoria" :caminho="CAMINHO"
         :params="simParams" :label="simLabel" :result="simResult" :folha="folhaConta"
       >
-        <CalcCompartilhar :link="link" titulo="A minha aposentadoria, na Redentia" />
+        <CalcCompartilhar :link="link" titulo="A minha aposentadoria, na Aportou" />
       </CalcSimSaves>
     </template>
 

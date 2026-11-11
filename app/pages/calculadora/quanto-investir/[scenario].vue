@@ -280,7 +280,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: `${scenario.title} - Redentia`,
+      name: `${scenario.title} - ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       applicationSubCategory: 'Planejamento financeiro',
       operatingSystem: 'Web',
@@ -310,7 +310,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
           Calculadora de Aporte Mensal
         </NuxtLink>
       </div>
-      <p class="qis__eyebrow">Cenário · Quanto Investir</p>
+      <p class="qis__eyebrow nu-eyebrow"><MarcaCorte /><span>Cenário · Quanto Investir</span></p>
       <h1 class="qis__h1">{{ scenario.h1 }}</h1>
       <p class="qis__lead">{{ scenario.answerFirst }}</p>
       <ul class="qis__chips">
@@ -359,18 +359,14 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas frequentes sobre este cenário</template>
       <template #left>
-        <NuxtLink to="/busca" class="qis__pill">Perguntar à Redentia AI</NuxtLink>
+        <CalcPerguntarIa />
       </template>
       <NuFaqAccordion :key="slug" :items="scenario.faq" surface="white" />
     </CalcSplit>
 
-    <!-- ============ CTA (texto verbatim) ============ -->
-    <CalcBand tone="white">
-    </CalcBand>
-
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta
-      titulo="Acompanhe sua meta na Redentia"
+      titulo="Acompanhe sua meta na Aportou"
       texto="Cadastre-se para monitorar o progresso da sua meta com gráficos e análises em tempo real."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Voltar para a calculadora', to: '/calculadora/quanto-investir' }"
@@ -380,8 +376,9 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
 
 <style scoped>
 /* ——— hero ——— */
+/* Aportou (11/11/2026): creme da página, eyebrow com o corte, selos de raio 8 */
 .qis__hero {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
   animation: nu-fade .5s ease both;
 }
@@ -393,27 +390,28 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
 .qis__live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); flex-shrink: 0; }
 .qis__back {
   display: inline-flex; align-items: center; gap: 9px;
-  background: var(--nu-white); color: var(--nu-ink);
-  border-radius: var(--nu-r-pill); padding: 11px 20px;
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-line);
+  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 20px;
   font-size: var(--nu-fs-sm); font-weight: 700;
-  transition: transform .18s, box-shadow .2s;
+  transition: box-shadow .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.qis__back:hover { transform: translateY(-1px); box-shadow: var(--nu-shadow-card); color: var(--nu-ink); }
-.qis__eyebrow { margin: 0; color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
+.qis__back:hover { box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink); }
+.qis__back:active { transform: scale(.98); }
+.qis__eyebrow { margin: 0; }
 .qis__h1 {
-  margin: 12px 0 0; color: var(--nu-ink);
+  margin: 18px 0 0; color: var(--nu-ink);
   font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
+  letter-spacing: -0.035em; line-height: 1.02; max-width: 1080px;
 }
 .qis__lead {
-  color: var(--nu-gray-2); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500;
-  line-height: 1.6; margin: 20px 0 0; max-width: 840px;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
+  line-height: 1.45; margin: 20px 0 0; max-width: 840px;
 }
 .qis__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
 .qis__chips li {
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
+  background: var(--nu-cream-2); border-radius: var(--nu-r-tag);
+  padding: 6px 11px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
 }
 .qis__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 
@@ -433,17 +431,10 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
 .qis__rel-card {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 20px 22px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
 .qis__rel-card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .qis__rel-title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; line-height: 1.35; }
 .qis__rel-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
 
-/* ——— pills / CTA ——— */
-.qis__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s, color .2s;
-}
-.qis__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 </style>

@@ -727,7 +727,7 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
         ref="salvar" variant="save" calculator="dividend-yield" :caminho="CAMINHO"
         :params="simParams" :label="simLabel" :result="simResult" :folha="folhaConta"
       >
-        <CalcCompartilhar :link="link" titulo="A minha conta de dividendos, na Redentia" />
+        <CalcCompartilhar :link="link" titulo="A minha conta de dividendos, na Aportou" />
       </CalcSimSaves>
     </template>
 
@@ -798,7 +798,7 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 .dys__regua-faixa { margin: 2px 0 0; font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; }
 .dys__regua-faixa--baixo { color: var(--nu-gray-2); }
 .dys__regua-faixa--bom, .dys__regua-faixa--otimo { color: var(--nu-blue-text); }
-.dys__regua-faixa--alto { color: var(--nu-serie-2); }
+.dys__regua-faixa--alto { color: var(--nu-amber-text); }
 .dys__trilho { position: relative; margin-top: 14px; padding: 54px 0 4px; }
 .dys__marcas { position: absolute; inset: 0; pointer-events: none; }
 .dys__marca {
@@ -808,7 +808,7 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 }
 .dys__marca::after { content: ''; width: 2px; height: 14px; margin-top: 4px; border-radius: 2px; background: var(--nu-blue); }
 .dys__marca-txt {
-  padding: 4px 10px; border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white);
+  padding: 4px 9px; border-radius: var(--nu-r-tag); background: var(--nu-blue); color: var(--nu-white);
   font-size: var(--nu-fs-sm); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums;
 }
 .dys__marca-txt small { margin-left: 4px; font-size: var(--nu-fs-xs); font-weight: 700; opacity: .85; }
@@ -816,14 +816,20 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 .dys__marca--hoje { top: 68px; height: auto; justify-content: flex-start; }
 .dys__marca--hoje::after { display: none; }
 .dys__marca--hoje::before { content: ''; width: 2px; height: 14px; margin-bottom: 4px; border-radius: 2px; background: var(--nu-gray); }
-.dys__marca--hoje .dys__marca-txt { background: var(--nu-cream); color: var(--nu-gray-2); }
+.dys__marca--hoje .dys__marca-txt { background: var(--nu-cream-2); color: var(--nu-gray-3); }
 .dys__regua--dupla .dys__nomes { margin-top: 56px; }
-.dys__faixas { display: flex; gap: 4px; height: 14px; }
-.dys__faixa { border-radius: 7px; background: var(--nu-cream-2); transition: background .25s ease; }
+.dys__faixas { display: flex; gap: 4px; height: 14px; transform-origin: left center; animation: dys-cresce .6s cubic-bezier(.2, .8, .2, 1) both; }
+/* a régua cresce da esquerda na entrada (microtransição da Aportou) */
+@keyframes dys-cresce { from { transform: scaleX(0); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .dys__faixas { animation: none; } }
+/* barras empilhadas dos quadros: pontas redondas só nos extremos */
+.dys__faixa { border-radius: 3px; background: var(--nu-cream-2); transition: background .25s ease; }
+.dys__faixa:first-child { border-radius: 7px 3px 3px 7px; }
+.dys__faixa:last-child { border-radius: 3px 7px 7px 3px; }
 .dys__faixa--on.dys__faixa--baixo { background: var(--nu-gray); }
 .dys__faixa--on.dys__faixa--bom { background: var(--nu-blue-soft); }
 .dys__faixa--on.dys__faixa--otimo { background: var(--nu-blue); }
-.dys__faixa--on.dys__faixa--alto { background: var(--nu-serie-2); }
+.dys__faixa--on.dys__faixa--alto { background: var(--nu-amber); }
 .dys__nomes { display: flex; gap: 4px; margin-top: 10px; }
 .dys__nomes > span { flex-basis: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
 .dys__nomes small { display: block; font-size: var(--nu-fs-xs); font-weight: 500; }

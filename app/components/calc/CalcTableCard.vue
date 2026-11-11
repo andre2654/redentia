@@ -63,13 +63,13 @@ const sobre = useSobreDoContexto()
 .ctc__scroll { overflow-x: auto; }
 .ctc__table { width: 100%; border-collapse: collapse; min-width: 520px; }
 .ctc__table th {
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: 1px; text-transform: uppercase; text-align: left;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase; text-align: left;
   padding: 10px 18px 12px 0; white-space: nowrap;
 }
 .ctc__table td {
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
-  padding: 14px 18px 14px 0; border-top: 1.5px solid var(--nu-cream-line-2);
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500;
+  padding: 14px 18px 14px 0; border-top: 1.5px solid var(--nu-line-2);
   font-variant-numeric: tabular-nums; line-height: 1.5;
 }
 .ctc__table td:first-child { color: var(--nu-ink); font-weight: 800; }
@@ -91,7 +91,7 @@ const sobre = useSobreDoContexto()
   }
   .ctc__card-kicker {
     display: block; margin-bottom: 2px; color: var(--nu-gray); font-size: var(--nu-fs-xs);
-    font-weight: 700; letter-spacing: 1px; text-transform: uppercase; line-height: 1.3;
+    font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.3;
   }
   .ctc__card-grid {
     display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin: 0;
@@ -99,10 +99,10 @@ const sobre = useSobreDoContexto()
   .ctc__card-item { min-width: 0; }
   .ctc__card-item dt {
     color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
-    letter-spacing: 1px; text-transform: uppercase; line-height: 1.3;
+    letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.3;
   }
   .ctc__card-item dd {
-    margin: 2px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md);
+    margin: 2px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md);
     font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1.4;
     overflow-wrap: anywhere;
   }

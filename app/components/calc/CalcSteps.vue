@@ -49,18 +49,18 @@ const nums = computed(() => props.steps.map((_, i) => String(i + 1).padStart(2, 
   margin: 0 auto;
 }
 .cst__rail { position: relative; padding-left: clamp(20px, 3vw, 36px); }
-.cst__track { position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px; background: var(--nu-ink-10); }
+.cst__track { position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--nu-line-2); }
 .cst__fill {
-  position: absolute; left: 0; top: 10px; height: 0; width: 2.5px;
+  position: absolute; left: 0; top: 10px; height: 0; width: 3px; border-radius: 3px;
   background: var(--nu-blue); transition: height .18s ease-out;
 }
 .cst__step { display: flex; align-items: flex-start; gap: clamp(22px, 4vw, 54px); padding: 16px 0; }
 .cst__num {
-  color: var(--nu-ink); font-size: clamp(23px, 2.2vw, 29px); font-weight: 800;
+  color: var(--nu-blue); font-size: clamp(23px, 2.2vw, 29px); font-weight: 800; letter-spacing: -0.02em;
   width: 52px; flex-shrink: 0; font-variant-numeric: tabular-nums;
 }
 .cst__body { max-width: 840px; padding-top: 3px; }
 .cst__title { margin: 0 0 4px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
-.cst__text { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65; }
+.cst__text { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 .cst__text :deep(strong) { font-weight: 800; color: var(--nu-ink); }
 </style>
