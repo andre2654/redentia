@@ -5,6 +5,9 @@
 // setor; o número-herói da métrica do ranking (verde ou vermelho claro quando a
 // métrica tem sinal) e a cotação. Embaixo, o 2º e o 3º da MESMA lista (`pódio`),
 // quando a página passa. Nenhum dado novo: são as três primeiras linhas da tabela.
+// Robustez (11/11/2026): o pódio fala como a tabela (a linha acende sob o
+// ponteiro e a seta aparece no fim), a legenda em 14px/500, o movimento e a
+// cor por token, e o foco no anel claro que lê sobre o carvão.
 import type { RankingColumnKey, RankingRowApi } from '~/types/rankings'
 
 const props = withDefaults(defineProps<{
@@ -60,6 +63,7 @@ const tone = computed(() => {
           <span class="rkl__linha-tk">{{ rankingTicker(r) }}</span>
           <span class="rkl__linha-nome">{{ rankingName(r) }}</span>
           <span class="rkl__linha-v">{{ col.format(r) }}</span>
+          <svg class="rkl__ir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg>
         </NuxtLink>
       </li>
     </ol>
@@ -69,37 +73,62 @@ const tone = computed(() => {
 <style scoped>
 .rkl { --pad: clamp(20px, 2.4vw, 32px); overflow: hidden; }
 .rkl__lider {
-  display: flex; align-items: flex-end; justify-content: space-between; gap: 20px 28px; flex-wrap: wrap;
-  padding: clamp(22px, 2.6vw, 32px) var(--pad) clamp(22px, 2.6vw, 30px); color: var(--nu-white);
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px 32px; flex-wrap: wrap;
+  padding: clamp(24px, 2.6vw, 32px) var(--pad); color: var(--nu-white);
 }
 .rkl__id { display: flex; align-items: center; gap: 16px; min-width: 0; }
-.rkl__who { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.rkl__ticker { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; transition: color .2s ease; }
-.rkl__lider:hover .rkl__ticker { color: var(--nu-blue-soft); }
-.rkl__name { color: var(--nu-on-dark); font-size: 14.5px; font-weight: 600; }
-.rkl__sector { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 500; }
-.rkl__metric { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; }
+.rkl__who { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.rkl__ticker { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; transition: color var(--nu-dur-rapida) var(--nu-ease-cor); }
+.rkl__name { color: var(--nu-on-dark); font-size: 14px; font-weight: var(--nu-w-medio); }
+.rkl__sector { color: var(--nu-on-dark-2); font-size: 13px; font-weight: var(--nu-w-texto); }
+.rkl__metric { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin-left: auto; }
 .rkl__value {
   color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display);
-  letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums;
+  letter-spacing: var(--nu-ls-display); line-height: 1; font-variant-numeric: tabular-nums;
 }
 .rkl__value--up { color: var(--nu-green-soft); }
 .rkl__value--down { color: var(--nu-red-soft); }
-.rkl__label { color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.rkl__label { color: var(--nu-on-dark-2); font-size: 14px; font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; text-align: right; }
 
-/* o 2º e o 3º: linhas com fio escuro */
-.rkl__podio { list-style: none; margin: 0; padding: 0 var(--pad) clamp(10px, 1.4vw, 16px); }
-.rkl__podio li { border-top: 1px solid var(--nu-dark-line); }
-.rkl__linha { display: flex; align-items: center; gap: 12px; min-height: 56px; color: var(--nu-white); font-variant-numeric: tabular-nums; }
-.rkl__pos { width: 16px; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: var(--nu-w-medio); }
-.rkl__linha-tk { font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: .04em; transition: color .2s ease; }
-.rkl__linha:hover .rkl__linha-tk { color: var(--nu-blue-soft); }
-.rkl__linha-nome { flex: 1; min-width: 0; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rkl__linha-v { font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
+/* o 2º e o 3º: linhas com fio escuro, que acendem como as da tabela. A lista
+   recua 12px de cada lado para a linha acesa ter respiro; o fio fica na
+   vertical do texto e some em volta da linha acesa */
+.rkl__podio { list-style: none; margin: 0; padding: 0 calc(var(--pad) - 12px) 12px; }
+.rkl__podio li { position: relative; }
+.rkl__podio li::before {
+  content: ''; position: absolute; left: 12px; right: 12px; top: 0; height: 1px; background: var(--nu-dark-line);
+  pointer-events: none; transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor);
+}
+.rkl__linha {
+  display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 12px; border-radius: var(--nu-r-chip);
+  color: var(--nu-white); font-variant-numeric: tabular-nums; -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor);
+}
+.rkl__pos { width: 16px; color: var(--nu-on-dark-2); font-size: 13px; font-weight: var(--nu-w-texto); }
+.rkl__linha-tk { font-size: 15px; font-weight: var(--nu-w-forte); letter-spacing: .04em; }
+.rkl__linha-nome { flex: 1; min-width: 0; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-texto); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rkl__linha-v { font-size: 15px; font-weight: var(--nu-w-forte); }
+.rkl__ir {
+  flex: none; width: 16px; height: 16px; color: var(--nu-white); opacity: 0; transform: translateX(-4px);
+  transition: opacity var(--nu-dur-media) var(--nu-ease-saida), transform var(--nu-dur-media) var(--nu-ease-saida);
+}
+@media (hover: hover) {
+  .rkl__lider:hover .rkl__ticker { color: var(--nu-blue-soft); }
+  /* um véu mais leve que o tile do logo (--nu-dark-chip): o tile continua a ler na linha acesa */
+  .rkl__linha:hover { background-color: color-mix(in srgb, var(--nu-dark-chip) 65%, transparent); }
+  .rkl__linha:hover .rkl__ir { opacity: 1; transform: none; }
+  .rkl__podio li:hover::before, .rkl__podio li:hover + li::before { opacity: 0; }
+}
+.rkl__linha:active { background-color: var(--nu-dark-chip); }
+/* o anel de foco que lê sobre o carvão */
+.rkl__lider:focus-visible, .rkl__linha:focus-visible { outline-color: var(--nu-blue-on-dark); }
+.rkl__lider:focus-visible { outline-offset: -6px; border-radius: var(--nu-r-card); }
+.rkl__linha:focus-visible { outline-offset: -3px; }
+.rkl__linha:focus-visible .rkl__ir { opacity: 1; transform: none; }
 
 @media (max-width: 560px) {
   .rkl__metric { align-items: flex-start; margin-left: 0; }
   .rkl__label { text-align: left; }
+  .rkl__ir { display: none; }
 }
-@media (prefers-reduced-motion: reduce) { .rkl__ticker, .rkl__linha-tk { transition: none; } }
 </style>

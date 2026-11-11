@@ -167,6 +167,12 @@ usePageSeo({
 // "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
 // mora no painel desde 02/11, e a /busca não é mais onde se conversa.
 const painel = useChatPainel()
+
+// ————— estados da lista (robustez, 11/11/2026) —————
+// o esqueleto só enquanto a lista chega (navegação no cliente; o servidor manda a tabela pronta)
+const chegando = computed(() => pending.value && !rows.value.length)
+/** erro: pede a lista de novo (o mesmo pedido do useSectorDetail, pela chave dele) */
+function tentarDeNovo() { void refreshNuxtData(`setor-${entry!.ptSlug}`) }
 </script>
 
 <template>
@@ -212,20 +218,22 @@ const painel = useChatPainel()
         </div>
       </header>
 
-      <!-- loading é sempre esqueleto (contrato da Aportou) -->
-      <div v-if="pending" class="sts__sk" aria-busy="true" aria-label="Carregando o setor">
-        <NuSkeleton v-for="i in 8" :key="i" variant="line" width="100%" height="44px" radius="chip" />
-      </div>
-      <div v-else-if="unavailable" class="sts__state">
-        Dados indisponíveis agora. Tente de novo em alguns minutos, o conteúdo abaixo continua valendo.
-      </div>
-      <div v-else-if="empty" class="sts__state">
-        Nenhum ativo com dados pra esse setor no momento. Veja os outros setores no <NuxtLink to="/setor" class="sts__inline-link">hub de setores</NuxtLink>.
-      </div>
-      <RankTable v-else :rows="rows" :columns="['change', 'marketCap']" primary="marketCap" />
+      <!-- a troca de estado entra num fade curto (o que sai, sai na hora) -->
+      <Transition name="sts-troca">
+        <!-- loading é sempre esqueleto (contrato da Aportou): a forma da tabela -->
+        <MercadoEsqueleto v-if="chegando" key="esqueleto" :colunas="3" rotulo="Carregando o setor" />
+        <MercadoEstado v-else-if="unavailable" key="erro" tipo="erro" titulo="Dados indisponíveis agora.">
+          O conteúdo abaixo continua valendo.
+          <template #acao><NuLinkSeta @click="tentarDeNovo">Tentar de novo</NuLinkSeta></template>
+        </MercadoEstado>
+        <MercadoEstado v-else-if="empty" key="vazio" titulo="Nenhum ativo com dados pra esse setor no momento.">
+          <template #acao><NuLinkSeta to="/setor">Ver os outros setores</NuLinkSeta></template>
+        </MercadoEstado>
+        <RankTable v-else key="tabela" :rows="rows" :columns="['change', 'marketCap']" primary="marketCap" />
+      </Transition>
 
       <!-- answer-first -->
-      <p v-if="!pending && rows.length" class="sts__answer">{{ answerFirst }}</p>
+      <p v-if="!pending && rows.length" v-revelar class="sts__answer">{{ answerFirst }}</p>
     </section>
 
     <!-- ============ Seção educacional ============ -->
@@ -249,11 +257,11 @@ const painel = useChatPainel()
 
     <!-- ============ Ferramentas relacionadas ============ -->
     <CalcBand tone="cream" title="Continue explorando">
-      <div class="sts__grid-cards">
+      <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="sts__grid-cards">
         <NuxtLink v-for="link in crossLinks" :key="link.href" :to="link.href" class="sts__card-link">
           <h3 class="sts__card-link-title">{{ link.title }}</h3>
           <p class="sts__card-link-desc">{{ link.desc }}</p>
-          <span class="sts__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+          <span class="sts__card-link-ir">Abrir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </NuxtLink>
       </div>
     </CalcBand>
@@ -283,43 +291,48 @@ const painel = useChatPainel()
 /* Aportou (11/11/2026): o corpo corre sobre o creme da página e a tabela é um
    cartão branco. 2ª rodada: o topo em duas colunas, com os números reais do
    setor no cartão carvão com a faixa da marca (como o topo do /asset). */
+/* Robustez (11/11/2026): a margem é a da coluna (--nu-coluna), os espaços no
+   ritmo de 8, o movimento e a cor por token; os rótulos dos números saem da
+   caixa alta (caixa alta é só do eyebrow e do cabeçalho de tabela); a lista
+   tem esqueleto com a forma dela, vazio e erro com o próximo passo. */
 .sts__topo {
   background: var(--nu-page); color: var(--nu-ink);
-  padding: clamp(36px, 4.6vw, 68px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(36px, 4.4vw, 60px);
+  padding: clamp(40px, 4.4vw, 64px) var(--nu-coluna) clamp(40px, 4vw, 56px);
 }
-.sts__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(28px, 3.4vw, 40px); }
-.sts__topo-texto { min-width: 0; animation: nu-fade .5s ease both; }
-.sts__topo-palco { min-width: 0; animation: nu-fade .5s ease .1s both; }
+.sts__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(32px, 3.4vw, 40px); }
+/* o topo chega em cascata: o texto, e 60ms depois o cartão dos números */
+.sts__topo-texto { min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+.sts__topo-palco { min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) 60ms both; }
 .sts__eyebrow { margin: 0; }
 .sts__volta {
   display: inline-block; padding: 14px 0; margin: -14px 0; color: inherit;
   text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
-  transition: text-decoration-color .2s ease, color .2s ease;
+  transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor);
 }
 .sts__volta:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
-.sts__h1 { margin: 20px 0 0; font-size: clamp(42px, 5vw, 72px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
-.sts__lead { margin: 20px 0 0; max-width: 44ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
+.sts__h1 { margin: 16px 0 0; font-size: clamp(42px, 5vw, 72px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance; }
+.sts__lead { margin: 20px 0 0; max-width: 44ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; text-wrap: pretty; }
 @media (min-width: 1080px) {
-  .sts__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(36px, 4.4vw, 72px); align-items: center; }
+  .sts__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(40px, 4.4vw, 72px); align-items: center; }
   .sts__topo--so .sts__topo-grade { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ——— o cartão dos agregados ——— */
 .sts__cartao { --pad: clamp(20px, 2.4vw, 32px); overflow: hidden; }
-.sts__heroi { display: flex; flex-direction: column; gap: 8px; padding: clamp(22px, 2.6vw, 32px) var(--pad) clamp(20px, 2.4vw, 28px); }
+.sts__heroi { display: flex; flex-direction: column; gap: 8px; padding: clamp(24px, 2.6vw, 32px) var(--pad) clamp(24px, 2.4vw, 32px); }
 .sts__heroi-v {
   color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display);
-  letter-spacing: -.035em; font-variant-numeric: tabular-nums; line-height: 1;
+  letter-spacing: var(--nu-ls-display); font-variant-numeric: tabular-nums; line-height: 1;
 }
 .sts__heroi-v--up { color: var(--nu-green-soft); }
 .sts__heroi-v--down { color: var(--nu-red-soft); }
-.sts__heroi-l { color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 600; }
+.sts__heroi-l { color: var(--nu-on-dark-2); font-size: 14px; font-weight: var(--nu-w-texto); }
 .sts__stats {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 18px 28px;
-  margin: 0 var(--pad); padding: clamp(18px, 2vw, 24px) 0 clamp(22px, 2.6vw, 30px); border-top: 1px solid var(--nu-dark-line);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 24px 32px;
+  margin: 0 var(--pad); padding: 24px 0 clamp(24px, 2.6vw, 32px); border-top: 1px solid var(--nu-dark-line);
 }
 .sts__stat { display: flex; flex-direction: column; gap: 8px; }
-.sts__stat-label { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: .16em; }
+.sts__stat-label { color: var(--nu-on-dark-2); font-size: 14px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
 .sts__stat-value {
   margin: 0; color: var(--nu-white); font-size: clamp(26px, 2.6vw, 34px); font-weight: var(--nu-w-forte);
   letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1;
@@ -327,57 +340,66 @@ const painel = useChatPainel()
 
 .sts__body {
   background: var(--nu-page);
-  padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
-  display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 28px);
-  animation: nu-fade .5s ease .15s both;
+  padding: 0 var(--nu-coluna) clamp(72px, 8vw, 128px);
+  display: flex; flex-direction: column; gap: 24px;
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) 120ms both;
 }
 
 .sts__toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .sts__toolbar-meta { display: flex; flex-direction: column; gap: 8px; }
 .sts__toolbar-count {
   margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte);
-  font-variant-numeric: tabular-nums; letter-spacing: -0.025em; line-height: 1.1;
+  font-variant-numeric: tabular-nums; letter-spacing: var(--nu-ls-titulo); line-height: 1.1;
 }
-.sts__sk { display: flex; flex-direction: column; gap: 10px; background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(18px, 2vw, 28px); }
-.sts__state {
-  background: var(--nu-card); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente);
-  padding: clamp(32px, 4vw, 48px); text-align: center;
-  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500;
-}
-.sts__inline-link { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+/* a troca de estado (esqueleto → tabela, erro → tabela) entra num fade curto */
+.sts-troca-enter-active { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor); }
 .sts__answer {
-  margin: clamp(8px, 1.5vw, 16px) 0 0; max-width: 76ch;
-  color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.6;
+  margin: 8px 0 0; max-width: 76ch;
+  color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: var(--nu-w-texto); line-height: 1.6;
 }
 
 /* ——— prosa educacional (família das calculadoras/rankings) ——— */
 .sts__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); line-height: 1.6;
 }
 .sts__prose p:last-child { margin-bottom: 0; }
-.sts__prose-link { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+.sts__prose-link {
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.sts__prose-link:hover { text-decoration-color: currentColor; }
 
-/* ——— ferramentas relacionadas ——— */
+/* ——— ferramentas relacionadas: o cartão inteiro é o clique ——— */
 .sts__grid-cards {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  gap: 16px; margin-top: clamp(32px, 4vw, 48px);
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .sts__card-link {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-branco);
-  display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px 24px 20px; box-shadow: var(--nu-shadow-branco);
+  display: flex; flex-direction: column; gap: 8px; -webkit-tap-highlight-color: transparent;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.sts__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.sts__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; transition: color .2s ease; }
-.sts__card-link:hover .sts__card-link-title { color: var(--nu-blue-text); }
-.sts__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
-
-.sts__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); }
-.sts__card-link-ir svg { transition: transform .2s ease; }
-.sts__card-link:hover .sts__card-link-ir svg { transform: translateX(3px); }
+.sts__card-link:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.sts__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+.sts__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); transition: color var(--nu-dur-rapida) var(--nu-ease-cor); }
+.sts__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 1.5; }
+/* o "Abrir →" fala como o NuLinkSeta (o cartão já é o link) */
+.sts__card-link-ir {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px;
+  color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
+}
+.sts__card-link-ir svg { width: 16px; height: 16px; flex: none; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+@media (hover: hover) {
+  .sts__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+  .sts__card-link:hover .sts__card-link-title { color: var(--nu-blue-text); }
+  .sts__card-link:hover .sts__card-link-ir svg { transform: translateX(3px); }
+}
 
 /* ——— a pílula da IA no FAQ ——— */
-.sts__pill { margin-top: 28px; }
-@media (prefers-reduced-motion: reduce) { .sts__card-link, .sts__card-link-ir svg { transition: none; } .sts__card-link:hover, .sts__card-link:hover .sts__card-link-ir svg { transform: none; } }
+.sts__pill { margin-top: 32px; }
+@media (prefers-reduced-motion: reduce) {
+  .sts__card-link:hover, .sts__card-link:active, .sts__card-link:hover .sts__card-link-ir svg { transform: none; }
+}
 </style>

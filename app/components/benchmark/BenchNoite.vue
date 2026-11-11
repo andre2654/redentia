@@ -10,6 +10,7 @@
 // No celular as colunas não cabem: o placar vira a lista com barras, ainda no
 // escuro. A entrada (as colunas subindo) só embeleza: ver o onMounted.
 import type { BenchPaginaVM } from '~/types/benchmark'
+import { REVELACAO } from '~/utils/revelar'
 
 const props = defineProps<{ vm: BenchPaginaVM }>()
 const { hover, fixo, foco, pick, metodo, INFO, go, manchete, ctx } = useBenchPagina(() => props.vm)
@@ -46,18 +47,22 @@ function escolherLongo(id: string) { longoSel.value = id; pick(id) }
    pedido de menos movimento. Em CSS puro ela recomeçava do zero a cada
    recálculo de estilo (um print de página inteira pegava as colunas no chão);
    sem JS, numa aba em segundo plano ou fora da tela, as colunas só estão lá. */
+// Robustez (11/11/2026): uma curva por papel. A subida usa a curva e o tempo
+// da entrada da casa (REVELACAO: --nu-ease-saida, --nu-dur-entrada), em cascata
+// de 60ms; o número e a margem de erro chegam quando a coluna assenta; o
+// horizonte acende devagar (o dobro da entrada), por baixo de tudo.
 const palco = ref<HTMLElement | null>(null)
 onMounted(() => {
   const el = palco.value
   if (!el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   const r = el.getBoundingClientRect()
   if (r.top >= window.innerHeight || r.bottom <= 0) return
-  const curva = 'cubic-bezier(.2, .8, .2, 1)'
+  const { curva, duracao, passo } = REVELACAO
   el.querySelectorAll<HTMLElement>('.bno__col').forEach((col, i) => {
-    col.querySelector('.bno__pilar')?.animate([{ transform: 'scaleY(0)' }, { transform: 'none' }], { duration: 1100, delay: 150 + i * 70, easing: curva, fill: 'backwards' })
-    col.querySelectorAll('.bno__ic, .bno__v').forEach((x) => x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: 900 + i * 70, easing: 'ease', fill: 'backwards' }))
+    col.querySelector('.bno__pilar')?.animate([{ transform: 'scaleY(0)' }, { transform: 'none' }], { duration: duracao, delay: 120 + i * passo, easing: curva, fill: 'backwards' })
+    col.querySelectorAll('.bno__ic, .bno__v').forEach((x) => x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: duracao / 2, delay: 120 + duracao * 0.6 + i * passo, easing: curva, fill: 'backwards' }))
   })
-  el.querySelector('.bno__horizonte')?.animate([{ opacity: 0.2, transform: 'scaleX(.5)' }, { opacity: 1, transform: 'none' }], { duration: 1400, easing: curva, fill: 'backwards' })
+  el.querySelector('.bno__horizonte')?.animate([{ opacity: 0.2, transform: 'scaleX(.5)' }, { opacity: 1, transform: 'none' }], { duration: duracao * 2, easing: curva, fill: 'backwards' })
 })
 </script>
 
@@ -70,7 +75,7 @@ onMounted(() => {
         <h1 id="bno-titulo" class="bno__titulo">Ranking de IAs em finanças</h1>
         <p class="bno__dek">
           Dez IAs, a mesma prova de finanças, corrigida por gabarito.
-          <a href="#metodologia" class="bno__link" @click.prevent="go('metodologia')">Como medimos</a>
+          <NuLinkSeta href="#metodologia" tom="claro" class="bno__link" @click.prevent="go('metodologia')">Como medimos</NuLinkSeta>
         </p>
         <p v-if="vm.fresh" class="bno__fresh">{{ vm.fresh }}</p>
       </div>
@@ -147,7 +152,7 @@ onMounted(() => {
 
     <!-- ============ os índices, um por vez ============ -->
     <div class="bno__corpo">
-    <section v-if="shown('inventa')" id="inventa" v-contexto-chat="ctx.inventa" class="bno__sec">
+    <section v-if="shown('inventa')" id="inventa" v-contexto-chat="ctx.inventa" v-revelar class="bno__sec">
       <header class="bno__cab">
         <NuEyebrow como="p" class="bno__tipo">Laboratório</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('inventa').name }}</h2>
@@ -162,7 +167,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <section v-if="shown('amem')" id="amem" v-contexto-chat="ctx.amem" class="bno__sec">
+    <section v-if="shown('amem')" id="amem" v-contexto-chat="ctx.amem" v-revelar class="bno__sec">
       <header class="bno__cab">
         <NuEyebrow como="p" class="bno__tipo">Laboratório</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('amem').name }}</h2>
@@ -177,7 +182,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <section v-if="shown('golpe')" id="golpe" v-contexto-chat="ctx.golpe" class="bno__sec">
+    <section v-if="shown('golpe')" id="golpe" v-contexto-chat="ctx.golpe" v-revelar class="bno__sec">
       <header class="bno__cab">
         <NuEyebrow como="p" class="bno__tipo">Laboratório</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('golpe').name }}</h2>
@@ -188,7 +193,7 @@ onMounted(() => {
       <div class="bno__graf"><BenchButterfly :rows="vm.golpe" /></div>
     </section>
 
-    <section v-if="shown('leao')" id="leao" v-contexto-chat="ctx.leao" class="bno__sec">
+    <section v-if="shown('leao')" id="leao" v-contexto-chat="ctx.leao" v-revelar class="bno__sec">
       <header class="bno__cab">
         <NuEyebrow como="p" class="bno__tipo">Laboratório</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('leao').name }}</h2>
@@ -199,7 +204,7 @@ onMounted(() => {
       <div class="bno__graf"><BenchTiles :topics="vm.leaoTopics" :short-topics="vm.leaoShort" :rows="vm.leao" /></div>
     </section>
 
-    <section v-if="shown('longo')" id="longo" v-contexto-chat="ctx.longo" class="bno__sec">
+    <section v-if="shown('longo')" id="longo" v-contexto-chat="ctx.longo" v-revelar class="bno__sec">
       <header class="bno__cab">
         <NuEyebrow como="p" class="bno__tipo">Arena ao vivo</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('longo').name }}</h2>
@@ -220,7 +225,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <section v-if="shown('curto')" id="curto" v-contexto-chat="ctx.curto" class="bno__sec">
+    <section v-if="shown('curto')" id="curto" v-contexto-chat="ctx.curto" v-revelar class="bno__sec">
       <header class="bno__cab">
         <NuEyebrow como="p" class="bno__tipo">Arena ao vivo</NuEyebrow>
         <h2 class="bno__h2">{{ metodo('curto').name }}</h2>
@@ -237,7 +242,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <section v-if="vm.custo" id="custo" v-contexto-chat="ctx.custo" class="bno__sec">
+    <section v-if="vm.custo" id="custo" v-contexto-chat="ctx.custo" v-revelar class="bno__sec">
       <header class="bno__cab">
         <NuEyebrow como="p" class="bno__tipo">Conta aberta</NuEyebrow>
         <h2 class="bno__h2">Custo por mil respostas</h2>
@@ -248,7 +253,7 @@ onMounted(() => {
       <div class="bno__graf"><BenchDirDispersao :points="vm.costPoints" :foco="foco" @hover="hover = $event" @pick="pick" /></div>
     </section>
 
-    <section v-if="vm.proximos.length" id="proximos" class="bno__sec">
+    <section v-if="vm.proximos.length" id="proximos" v-revelar class="bno__sec">
       <header class="bno__cab">
         <NuEyebrow como="p" class="bno__tipo">Em construção</NuEyebrow>
         <h2 class="bno__h2">Próximos índices</h2>
@@ -285,25 +290,25 @@ onMounted(() => {
   margin: 18px 0 0; max-width: 16ch; font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: .98; text-wrap: balance;
   color: var(--nu-white);
 }
-.bno__dek { margin: 20px 0 0; max-width: 52ch; color: var(--nu-on-dark); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: balance; }
-.bno__link { color: var(--nu-white); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-dark-chip-line); transition: text-decoration-color .2s ease; }
-.bno__link:hover { color: var(--nu-white); text-decoration-color: currentColor; }
-.bno__fresh { margin: 10px 0 0; color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
+.bno__dek { margin: 20px 0 0; max-width: 52ch; color: var(--nu-on-dark); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; text-wrap: balance; }
+/* "Como medimos →" é o NuLinkSeta claro: a seta anda e o sublinhado aparece no hover */
+.bno__link { margin-left: 4px; }
+.bno__fresh { margin: 10px 0 0; color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 
 /* ——— o palco: as colunas de luz sobre o horizonte ——— */
 .bno__palco { position: relative; width: min(1040px, 100%); margin-top: clamp(40px, 4.6vw, 64px); scroll-margin-top: var(--cola); }
 .bno__luzes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: clamp(6px, 1.2vw, 16px); }
-.bno__col { min-width: 0; transition: opacity .2s ease; }
+.bno__col { min-width: 0; transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .bno__col--recua { opacity: .45; }
 .bno__b { display: flex; flex-direction: column; width: 100%; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
 .bno__b:focus-visible { outline: none; }
-.bno__b:focus-visible .bno__tile { outline: 2px solid var(--nu-white); outline-offset: 3px; }
+.bno__b:focus-visible .bno__tile { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 3px; }
 /* a altura das colunas: fixa, para nada pular quando a página hidrata */
 .bno__area { position: relative; display: block; height: clamp(200px, 22vw, 290px); }
 .bno__pilar {
   position: absolute; left: 22%; right: 22%; bottom: 0; height: var(--h); border-radius: 10px 10px 0 0;
   background: var(--nu-dark-chip); box-shadow: inset 0 2px 0 var(--nu-dark-chip-line);
-  transform-origin: 50% 100%; transition: background .2s ease, box-shadow .2s ease;
+  transform-origin: 50% 100%; transition: background-color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor);
 }
 .bno__col--top .bno__pilar { background: var(--nu-blue); box-shadow: inset 0 2px 0 var(--nu-blue-soft), 0 0 42px -4px var(--nu-blue-28); }
 .bno__col--on .bno__pilar, .bno__b:hover .bno__pilar { background: var(--nu-blue-soft); box-shadow: inset 0 2px 0 var(--nu-white), 0 0 48px -2px var(--nu-blue-28); }
@@ -325,7 +330,7 @@ onMounted(() => {
 }
 .bno__tile img { width: 16px; height: 16px; display: block; object-fit: contain; }
 .bno__nome { color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); line-height: 1.25; text-wrap: balance; }
-.bno__pos { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; }
+.bno__pos { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 /* a linha de luz: o brilho da barra da Redentia, esticado no horizonte (o do herói da home) */
 .bno__horizonte {
   position: absolute; left: -12%; right: -12%; top: clamp(200px, 22vw, 290px); height: 2px; pointer-events: none;
@@ -334,15 +339,16 @@ onMounted(() => {
   border-radius: 50%;
 }
 .bno__lista { display: none; }
-.bno__leg { margin: 28px auto 0; max-width: 64ch; color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.55; }
+.bno__leg { margin: 28px auto 0; max-width: 64ch; color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); line-height: 1.55; }
 
 .bno__nums { list-style: none; margin: clamp(36px, 4vw, 52px) 0 0; padding: 0; width: min(960px, 100%); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 24px; text-align: left; }
 .bno__nums li { border-top: 1px solid var(--nu-dark-chip-line); }
 .bno__num { display: flex; flex-direction: column; gap: 6px; padding: 16px 0 4px; color: inherit; }
-.bno__num:focus-visible { outline: 2px solid var(--nu-white); outline-offset: 2px; border-radius: 4px; }
-.bno__num-v { display: inline-flex; align-items: center; gap: 10px; color: var(--nu-white); font-size: clamp(34px, 3.6vw, 48px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums; transition: color .2s; }
+.bno__num:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 4px; border-radius: 4px; }
+.bno__num-v { display: inline-flex; align-items: center; gap: 10px; color: var(--nu-white); font-size: clamp(34px, 3.6vw, 48px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums; transition: color var(--nu-dur-rapida) var(--nu-ease-cor); }
 .bno__num:hover .bno__num-v { color: var(--nu-blue-soft); }
-.bno__num-r { max-width: 30ch; color: var(--nu-on-dark); font-size: 14.5px; font-weight: 500; line-height: 1.45; }
+.bno__num:active { opacity: .72; }
+.bno__num-r { max-width: 30ch; color: var(--nu-on-dark); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 1.45; }
 .bno__ponto { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .bno__ponto--bad { background: var(--nu-red-soft); }
 .bno__ponto--good { background: var(--nu-blue-on-dark); }
@@ -356,37 +362,50 @@ onMounted(() => {
   border-bottom: 1px solid var(--nu-line-2);
 }
 .bno__barra-in { display: flex; align-items: center; gap: 14px; padding: 8px var(--g); }
-.bno__barra-r { flex-shrink: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
-.bno__chips { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+/* o rótulo do grupo: texto pequeno, sem caixa alta (ela é do eyebrow e do cabeçalho de tabela) */
+.bno__barra-r { flex-shrink: 0; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
+/* a fileira rola de lado: a ponta direita esmaece (o sinal de que há mais) e
+   a folga do fim deixa o último chip sair inteiro do esmaecido */
+.bno__chips {
+  display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; padding-right: 32px;
+  -webkit-mask-image: linear-gradient(90deg, var(--nu-ink) calc(100% - 40px), transparent);
+  mask-image: linear-gradient(90deg, var(--nu-ink) calc(100% - 40px), transparent);
+}
 .bno__chips::-webkit-scrollbar { display: none; }
 .bno__chip {
   display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; min-height: 44px; padding: 0 16px 0 8px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; white-space: nowrap; cursor: pointer;
-  transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
+  background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: var(--nu-w-medio); white-space: nowrap; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .bno__chip:hover { background: var(--nu-line-2); }
 .bno__chip:active { transform: scale(.98); }
 .bno__chip--on, .bno__chip--on:hover { background: var(--nu-ink); color: var(--nu-white); font-weight: var(--nu-w-medio); }
 .bno__chip-logo { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--nu-white); color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 .bno__chip-logo img { width: 14px; height: 14px; display: block; object-fit: contain; }
-.bno__limpar { flex-shrink: 0; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer; transition: background .2s; }
+.bno__limpar {
+  flex-shrink: 0; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer;
+  animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor);
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
+}
 .bno__limpar:hover { background: var(--nu-line-2); }
+.bno__limpar:active { transform: scale(.94); }
 .bno__limpar svg { width: 14px; height: 14px; }
 
 /* ——— cada índice: cabeçalho centrado, gráfico embaixo ——— */
-.bno__sec { scroll-margin-top: calc(var(--cola) + 62px); padding: clamp(64px, 7vw, 100px) var(--g) 0; }
-.bno__corpo { padding-bottom: clamp(64px, 7vw, 100px); }
+.bno__sec { scroll-margin-top: calc(var(--cola) + 62px); padding: clamp(72px, 8vw, 128px) var(--g) 0; }
+.bno__corpo { padding-bottom: clamp(72px, 8vw, 128px); }
 .bno__cab { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 720px; margin: 0 auto; }
 .bno__tipo { justify-content: center; }
 .bno__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
-.bno__q { margin: 14px 0 0; max-width: 46ch; color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5; text-wrap: balance; }
-.bno__man { margin: 22px 0 18px; max-width: 46ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; text-wrap: balance; }
+.bno__q { margin: 14px 0 0; max-width: 46ch; color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: var(--nu-w-texto); line-height: 1.5; text-wrap: balance; }
+.bno__man { margin: 22px 0 18px; max-width: 46ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; text-wrap: balance; }
 .bno__man b { color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .bno__cab > .bdi { margin-top: 20px; }
 .bno__man + .bdi { margin-top: 0; }
 .bno__graf { max-width: 920px; margin: clamp(28px, 3.4vw, 44px) auto 0; padding-bottom: clamp(8px, 2vw, 24px); }
 .bno__graf--largo { max-width: 1240px; }
-.bno__leg2 { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 18px; margin: 0 0 16px; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; }
+.bno__leg2 { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 18px; margin: 0 0 16px; color: var(--nu-gray-3); font-size: 14.5px; font-weight: var(--nu-w-texto); }
 .bno__leg2 span { display: inline-flex; align-items: center; gap: 7px; }
 .bno__leg2 b { color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .bno__leg2-n { color: var(--nu-gray); font-size: var(--nu-fs-xs); }
@@ -394,7 +413,7 @@ onMounted(() => {
 .bno__sw--bom { background: var(--nu-blue); }
 .bno__sw--meio { background: var(--nu-sand); }
 .bno__sw--ruim { background: var(--nu-red); }
-.bno__nota { margin: 16px auto 0; max-width: 70ch; text-align: center; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
+.bno__nota { margin: 16px auto 0; max-width: 70ch; text-align: center; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.6; }
 .bno__nota b { color: var(--nu-ink); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .bno__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -415,5 +434,6 @@ onMounted(() => {
 @media (max-width: 640px) { .bno { --cola: calc(var(--nuh-h, 58px) + 46px); } }
 @media (prefers-reduced-motion: reduce) {
   .bno__col, .bno__pilar, .bno__chip { transition: none; }
+  .bno__chip:active, .bno__limpar:active { transform: none; }
 }
 </style>

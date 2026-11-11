@@ -43,8 +43,9 @@ const blocosLeitura = computed<NuDayBlock[]>(() => (props.leitura
 .bdi { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .bdi__b {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer;
-  transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
+  background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: var(--nu-w-medio); cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .bdi__b--i { width: 44px; }
 .bdi__b--leitura { padding: 0 16px 0 12px; }

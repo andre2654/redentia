@@ -43,7 +43,7 @@ const sub = (r: BenchRankingRow) => r.extra ?? (r.hi > r.lo ? `de ${fmt(r.lo)} a
           <template v-else>{{ r.provider.charAt(0) }}</template>
         </span>
         <span class="brl__who">
-          <span class="brl__name">{{ r.name }}<span v-if="numbered && r.tied" class="brl__tie">empate</span></span>
+          <span class="brl__name">{{ r.name }}<NuSelo v-if="numbered && r.tied" tom="azul" tamanho="p">empate</NuSelo></span>
           <span class="brl__prov">por {{ r.provider }}</span>
         </span>
         <span class="brl__num">
@@ -68,7 +68,7 @@ const sub = (r: BenchRankingRow) => r.extra ?? (r.hi > r.lo ? `de ${fmt(r.lo)} a
 }
 .brl--plain .brl__row { grid-template-columns: 32px 1fr auto; }
 .brl__row + .brl__row { border-top: 1px solid var(--nu-line-2); }
-.brl__pos { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
+.brl__pos { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 .brl__tile {
   width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center;
   background: var(--nu-tile-blue-bg); color: var(--nu-blue-deep); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte);
@@ -78,24 +78,21 @@ const sub = (r: BenchRankingRow) => r.extra ?? (r.hi > r.lo ? `de ${fmt(r.lo)} a
   display: flex; align-items: center; gap: 6px; min-width: 0;
   color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px;
 }
-.brl__tie {
-  flex-shrink: 0; border-radius: var(--nu-r-tag); padding: 1px 7px;
-  background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0;
-}
-.brl__prov { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+.brl__prov { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
 .brl__num { display: flex; flex-direction: column; align-items: flex-end; }
 .brl__val { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 /* `pre`: não quebra sozinho, mas o \n do `extra` vira linha (Carteira própria: total e maior queda) */
-.brl__sub { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; white-space: pre; text-align: right; }
+.brl__sub { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; white-space: pre; text-align: right; }
 
 /* linha que conversa com o gráfico: realce no hover e selo azul no modelo em destaque */
 .brl--live .brl__row {
   margin: 0 -12px; padding: 10px 12px; border-radius: var(--nu-r-tile); cursor: pointer; outline: none;
-  transition: background .18s;
+  -webkit-tap-highlight-color: transparent; transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor);
 }
 .brl--live .brl__row:hover, .brl--live .brl__row:focus-visible { background: var(--b-surface, var(--nu-cream-2)); }
-.brl--live .brl__row:focus-visible { outline-offset: -3px; }
-.brl__tile { transition: background .18s, color .18s; }
+.brl--live .brl__row:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: -3px; }
+.brl--live .brl__row:active { background: var(--nu-line-2); }
+.brl__tile { transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor); }
 .brl__row--on .brl__tile { background: var(--nu-blue); color: var(--nu-white); }
 /* logo do modelo: fundo branco com fio, para a cor da marca não brigar com o azul da casa */
 .brl__tile--logo { background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line-2); }

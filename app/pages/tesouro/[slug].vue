@@ -160,7 +160,7 @@ const painel = useChatPainel()
 
     <!-- ============ Leituras determinísticas (regras, zero LLM) ============ -->
     <CalcBand tone="cream" kicker="Leitura do título" title="Como ler este título">
-      <div class="tsd__readings">
+      <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="tsd__readings">
         <article v-for="r in titulo.readings" :key="r.title" class="tsd__reading">
           <h3 class="tsd__reading-title">{{ r.title }}</h3>
           <p class="tsd__reading-body">{{ r.body }}</p>
@@ -170,21 +170,21 @@ const painel = useChatPainel()
 
     <!-- ============ Ferramentas relacionadas ============ -->
     <CalcBand tone="white" title="Continue a análise">
-      <div class="tsd__grid-cards">
+      <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="tsd__grid-cards">
         <NuxtLink to="/ranking/tesouro-direto" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Ranking do Tesouro Direto</h3>
           <p class="tsd__card-link-desc">Compare este título com os demais, ordenados pela maior taxa de hoje.</p>
-          <span class="tsd__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+          <span class="tsd__card-link-ir">Abrir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </NuxtLink>
         <NuxtLink v-if="quantoRendeHref" :to="quantoRendeHref" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Quanto rende um valor neste título</h3>
           <p class="tsd__card-link-desc">A taxa de hoje aplicada a um valor, com o bruto e o IR quando a conta fecha.</p>
-          <span class="tsd__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+          <span class="tsd__card-link-ir">Abrir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </NuxtLink>
         <NuxtLink :to="titulo.calcHref" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Simular na calculadora de juros compostos</h3>
           <p class="tsd__card-link-desc">Abre a simulação já preenchida com uma taxa nominal estimada pra este título.</p>
-          <span class="tsd__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+          <span class="tsd__card-link-ir">Abrir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </NuxtLink>
       </div>
     </CalcBand>
@@ -212,45 +212,59 @@ const painel = useChatPainel()
 
 <style scoped>
 /* ——— o topo em duas colunas (2ª rodada da Aportou): como o topo do /asset ——— */
+/* Robustez (11/11/2026): a margem é a da coluna (--nu-coluna), os espaços no
+   ritmo de 8 e o movimento e a cor por token. As leituras deixam a caixa: fio,
+   não caixa (cada uma é uma coluna sob o fio carvão, reto); os cartões de
+   "Continue a análise" sobem 2px e afundam ao apertar. */
 .tsd__topo {
   background: var(--nu-page);
-  padding: clamp(36px, 4.6vw, 68px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(44px, 5vw, 72px);
+  padding: clamp(40px, 4.4vw, 64px) var(--nu-coluna) clamp(48px, 5vw, 72px);
 }
-.tsd__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(28px, 3.4vw, 40px); }
+.tsd__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(32px, 3.4vw, 40px); }
 @media (min-width: 1080px) {
-  .tsd__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(36px, 4.4vw, 72px); align-items: center; }
+  .tsd__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(40px, 4.4vw, 72px); align-items: center; }
 }
 
-/* ——— leituras (cartões brancos na faixa, com o fio carvão dos passos da marca) ——— */
+/* ——— leituras: colunas sob o fio carvão (reto: o fio não acompanha o raio de um cartão) ——— */
 .tsd__readings {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  gap: 32px clamp(24px, 3vw, 40px); margin-top: clamp(32px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.tsd__reading { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-branco); border-top: 3px solid var(--nu-ink); }
-.tsd__reading-title { margin: 0 0 8px; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
-.tsd__reading-body { margin: 0; color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.5; }
+.tsd__reading { padding-top: 20px; border-top: 2px solid var(--nu-ink); }
+.tsd__reading-title { margin: 0 0 8px; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+.tsd__reading-body { margin: 0; color: var(--nu-gray-3); font-size: 15.5px; font-weight: var(--nu-w-texto); line-height: 1.55; }
 
-/* ——— ferramentas relacionadas ——— */
+/* ——— ferramentas relacionadas: o cartão inteiro é o clique ——— */
 .tsd__grid-cards {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  gap: 16px; margin-top: clamp(32px, 4vw, 48px);
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .tsd__card-link {
-  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-quente);
-  display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px 24px 20px; box-shadow: var(--nu-shadow-quente);
+  display: flex; flex-direction: column; gap: 8px; -webkit-tap-highlight-color: transparent;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.tsd__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; transition: color .2s ease; }
-.tsd__card-link:hover .tsd__card-link-title { color: var(--nu-blue-text); }
-.tsd__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
-.tsd__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); }
-.tsd__card-link-ir svg { transition: transform .2s ease; }
-.tsd__card-link:hover .tsd__card-link-ir svg { transform: translateX(3px); }
-@media (prefers-reduced-motion: reduce) { .tsd__card-link, .tsd__card-link-ir svg { transition: none; } .tsd__card-link:hover, .tsd__card-link:hover .tsd__card-link-ir svg { transform: none; } }
+.tsd__card-link:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.tsd__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+.tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); transition: color var(--nu-dur-rapida) var(--nu-ease-cor); }
+.tsd__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 1.5; }
+/* o "Abrir →" fala como o NuLinkSeta (o cartão já é o link) */
+.tsd__card-link-ir {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px;
+  color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
+}
+.tsd__card-link-ir svg { width: 16px; height: 16px; flex: none; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+@media (hover: hover) {
+  .tsd__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+  .tsd__card-link:hover .tsd__card-link-title { color: var(--nu-blue-text); }
+  .tsd__card-link:hover .tsd__card-link-ir svg { transform: translateX(3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tsd__card-link:hover, .tsd__card-link:active, .tsd__card-link:hover .tsd__card-link-ir svg { transform: none; }
+}
 
 /* ——— a pílula da IA no FAQ ——— */
-.tsd__pill { margin-top: 28px; }
+.tsd__pill { margin-top: 32px; }
 </style>

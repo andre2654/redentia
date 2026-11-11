@@ -121,6 +121,15 @@ usePageSeo({
 // "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
 // mora no painel desde 02/11, e a /busca não é mais onde se conversa.
 const painel = useChatPainel()
+
+// ————— estados da lista (robustez, 11/11/2026) —————
+// o esqueleto só na primeira chegada (navegação no cliente; o servidor manda a
+// tabela pronta); numa troca de tipo fica a lista de antes, esmaecida
+const chegando = computed(() => pending.value && !count.value)
+// as colunas de número do esqueleto: a métrica, a cotação, as demais e o detalhe do score
+const colunasDoEsqueleto = computed(() => (isTesouro ? 4 : columns.value.length + 1 + (isScore ? 1 : 0)))
+/** erro: pede a lista de novo (o mesmo pedido do useRanking, pela chave dele) */
+function tentarDeNovo() { void refreshNuxtData(`ranking-${slug}`) }
 </script>
 
 <template>
@@ -136,7 +145,7 @@ const painel = useChatPainel()
           <h1 class="rks__h1">{{ meta.h1 }}</h1>
           <p class="rks__lead">{{ meta.lead }}</p>
           <div v-if="meta.chips.length" class="rks__chips">
-            <span v-for="c in meta.chips" :key="c" class="rks__chip">{{ c }}</span>
+            <NuSelo v-for="c in meta.chips" :key="c">{{ c }}</NuSelo>
           </div>
         </div>
         <div v-if="temLider" class="rks__topo-palco">
@@ -166,38 +175,44 @@ const painel = useChatPainel()
       <header class="rks__toolbar">
         <div class="rks__toolbar-meta">
           <NuEyebrow como="p">Lista completa</NuEyebrow>
-          <p class="rks__toolbar-count">{{ count }} {{ isTesouro ? 'títulos' : 'ativos' }} no ranking</p>
+          <!-- enquanto a lista chega, o número é um traço; sem lista (erro, vazio), a linha sai: quem explica é o estado -->
+          <p v-if="chegando || count" class="rks__toolbar-count"><NuSkeleton v-if="chegando" inline variant="line" width="40px" height="20px" radius="pill" /><template v-else>{{ count }}</template> {{ isTesouro ? 'títulos' : 'ativos' }} no ranking</p>
         </div>
         <!-- 1 tipo declarado = "Todos" e a tab seriam a mesma lista -->
         <RankTypeTabs
           v-if="meta.types.length > 1"
-          :types="meta.types" :model-value="activeType"
+          :types="meta.types" :model-value="activeType" :ocupado="pending"
           @update:model-value="setType"
         />
       </header>
 
-      <!-- loading é sempre esqueleto (contrato da Aportou): a altura das linhas da tabela -->
-      <div v-if="pending" class="rks__sk" aria-busy="true" aria-label="Carregando o ranking">
-        <NuSkeleton v-for="i in 8" :key="i" variant="line" width="100%" height="44px" radius="chip" />
-      </div>
-      <!-- backend fora (ou tesouro sem nenhum indexador vivo — o fetch
-           parcial engole erro, então vazio ≈ indisponível lá) -->
-      <div v-else-if="unavailable || (isTesouro && empty)" class="rks__state">
-        Dados indisponíveis agora. Tente de novo em alguns minutos, o conteúdo abaixo continua valendo.
-      </div>
-      <!-- vazio legítimo (ex.: filtro ?type= sem dado) — estado que não muda
-           sozinho, copy honesta em vez de 'tente de novo' -->
-      <div v-else-if="empty" class="rks__state">
-        Nenhum ativo com dados pra esse filtro no momento. Veja a lista completa em "Todos".
-      </div>
-      <RankTesouroTable v-else-if="isTesouro" :rows="tesouroRows" />
-      <RankTable
-        v-else :rows="rows" :columns="columns" :change-label="meta.changeLabel"
-        :breakdown="isScore" :primary="meta.primaryMetric"
-      />
+      <!-- a troca de estado entra num fade curto (o que sai, sai na hora) -->
+      <Transition name="rks-troca">
+        <!-- loading é sempre esqueleto (contrato da Aportou): a forma da tabela -->
+        <MercadoEsqueleto
+          v-if="chegando" key="esqueleto"
+          :colunas="colunasDoEsqueleto" :logo="!isTesouro" rotulo="Carregando o ranking"
+        />
+        <!-- backend fora (ou tesouro sem nenhum indexador vivo — o fetch
+             parcial engole erro, então vazio ≈ indisponível lá) -->
+        <MercadoEstado v-else-if="unavailable || (isTesouro && empty)" key="erro" tipo="erro" titulo="Dados indisponíveis agora.">
+          O conteúdo abaixo continua valendo.
+          <template #acao><NuLinkSeta @click="tentarDeNovo">Tentar de novo</NuLinkSeta></template>
+        </MercadoEstado>
+        <!-- vazio legítimo (ex.: filtro ?type= sem dado) — estado que não muda
+             sozinho: o próximo passo é a lista completa -->
+        <MercadoEstado v-else-if="empty" key="vazio" titulo="Nenhum ativo com dados pra esse filtro no momento.">
+          <template #acao><NuLinkSeta @click="setType('todos')">Ver a lista completa</NuLinkSeta></template>
+        </MercadoEstado>
+        <RankTesouroTable v-else-if="isTesouro" key="tesouro" :rows="tesouroRows" />
+        <RankTable
+          v-else key="tabela" :rows="rows" :columns="columns" :change-label="meta.changeLabel"
+          :breakdown="isScore" :primary="meta.primaryMetric" :ocupada="pending"
+        />
+      </Transition>
 
       <!-- ============ Answer-first (abaixo da tabela, centralizado) ============ -->
-      <p v-if="copy.answerFirst" class="rks__answer">{{ copy.answerFirst }}</p>
+      <p v-if="copy.answerFirst" v-revelar class="rks__answer">{{ copy.answerFirst }}</p>
     </section>
 
     <!-- ============ Metodologia (extra do redentia-score) ============ -->
@@ -208,7 +223,7 @@ const painel = useChatPainel()
       <template v-if="copy.methodologyIntro?.length" #dek>
         <p v-for="(p, i) in copy.methodologyIntro" :key="i">{{ p }}</p>
       </template>
-      <div class="rks__steps">
+      <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="rks__steps">
         <div v-for="s in copy.methodologySteps" :key="s.title" class="rks__step">
           <h3 class="rks__step-title">{{ s.title }}</h3>
           <p class="rks__step-body">{{ s.body }}</p>
@@ -250,11 +265,11 @@ const painel = useChatPainel()
 
     <!-- ============ Ferramentas relacionadas ============ -->
     <CalcBand v-if="copy.crossLinks.length" tone="cream" title="Ferramentas relacionadas">
-      <div class="rks__grid-cards">
+      <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="rks__grid-cards">
         <NuxtLink v-for="link in copy.crossLinks" :key="link.href" :to="link.href" class="rks__card-link">
           <h3 class="rks__card-link-title">{{ link.title }}</h3>
           <p class="rks__card-link-desc">{{ link.desc }}</p>
-          <span class="rks__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+          <span class="rks__card-link-ir">Abrir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </NuxtLink>
       </div>
     </CalcBand>
@@ -287,29 +302,30 @@ const painel = useChatPainel()
    de gradiente cobalto com o corte gigante. O conteúdo é o de antes. */
 /* 2ª rodada: o topo em duas colunas (o ranking e o nº 1 no cartão carvão com
    a faixa da marca), como o topo do /asset e da tese. */
+/* Robustez (11/11/2026): a margem é a da coluna (--nu-coluna), os espaços no
+   ritmo de 8, o movimento e a cor por token; as seções de baixo entram ao
+   rolar (v-revelar) e os cartões de "Ferramentas relacionadas" sobem 2px e
+   afundam ao apertar, como o .nu-cartao--vivo. */
 .rks__topo {
   background: var(--nu-page); color: var(--nu-ink);
-  padding: clamp(36px, 4.6vw, 68px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(36px, 4.4vw, 60px);
+  padding: clamp(40px, 4.4vw, 64px) var(--nu-coluna) clamp(40px, 4vw, 56px);
 }
-.rks__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(28px, 3.4vw, 40px); }
-.rks__topo-texto { min-width: 0; animation: nu-fade .5s ease both; }
-.rks__topo-palco { min-width: 0; animation: nu-fade .5s ease .1s both; }
+.rks__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(32px, 3.4vw, 40px); }
+/* o topo chega em cascata: o texto, e 60ms depois o cartão do nº 1 */
+.rks__topo-texto { min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+.rks__topo-palco { min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) 60ms both; }
 .rks__eyebrow { margin: 0; }
 .rks__volta {
   display: inline-block; padding: 14px 0; margin: -14px 0; color: inherit;
   text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
-  transition: text-decoration-color .2s ease, color .2s ease;
+  transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor);
 }
 .rks__volta:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
-.rks__h1 { margin: 20px 0 0; font-size: clamp(40px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
-.rks__lead { margin: 20px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: clamp(17px, 1.4vw, 19px); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
+.rks__h1 { margin: 16px 0 0; font-size: clamp(40px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance; }
+.rks__lead { margin: 20px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: clamp(17px, 1.4vw, 19px); font-weight: var(--nu-w-texto); line-height: 1.5; text-wrap: pretty; }
 .rks__chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
-.rks__chip {
-  display: inline-flex; align-items: center; min-height: 30px; background: var(--nu-cream-2); color: var(--nu-ink); border-radius: var(--nu-r-tag);
-  padding: 0 11px; font-size: 13.5px; font-weight: var(--nu-w-medio);
-}
 @media (min-width: 1080px) {
-  .rks__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(36px, 4.4vw, 72px); align-items: center; }
+  .rks__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(40px, 4.4vw, 72px); align-items: center; }
   .rks__topo--so .rks__topo-grade { grid-template-columns: minmax(0, 1fr); }
   .rks__topo--so .rks__h1 { max-width: 18ch; }
 }
@@ -317,9 +333,9 @@ const painel = useChatPainel()
 /* ——— corpo (toolbar + tabela) ——— */
 .rks__body {
   background: var(--nu-page);
-  padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
-  display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 28px);
-  animation: nu-fade .5s ease .15s both;
+  padding: 0 var(--nu-coluna) clamp(72px, 8vw, 128px);
+  display: flex; flex-direction: column; gap: 24px;
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) 120ms both;
 }
 .rks__toolbar {
   display: flex; align-items: flex-end; justify-content: space-between;
@@ -328,93 +344,105 @@ const painel = useChatPainel()
 .rks__toolbar-meta { display: flex; flex-direction: column; gap: 8px; }
 .rks__toolbar-count {
   margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte);
-  font-variant-numeric: tabular-nums; letter-spacing: -0.025em; line-height: 1.1;
+  font-variant-numeric: tabular-nums; letter-spacing: var(--nu-ls-titulo); line-height: 1.1;
 }
-.rks__sk { display: flex; flex-direction: column; gap: 10px; background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(18px, 2vw, 28px); }
-.rks__state {
-  background: var(--nu-card); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente);
-  padding: clamp(32px, 4vw, 48px); text-align: center;
-  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500;
-}
+/* a troca de estado (esqueleto → tabela, erro → tabela) entra num fade curto */
+.rks-troca-enter-active { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor); }
 .rks__answer {
-  margin: clamp(8px, 1.5vw, 16px) 0 0; max-width: 76ch;
-  color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.6;
+  margin: 8px 0 0; max-width: 76ch;
+  color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: var(--nu-w-texto); line-height: 1.6;
 }
 
 /* ——— líder do tesouro: o mesmo cartão carvão ——— */
 .rks__tleader { overflow: hidden; }
 .rks__tleader-main {
-  display: flex; align-items: flex-end; justify-content: space-between; gap: 20px 28px; flex-wrap: wrap;
-  padding: clamp(22px, 2.6vw, 32px) clamp(20px, 2.4vw, 32px) clamp(24px, 2.8vw, 34px); color: var(--nu-white);
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px 32px; flex-wrap: wrap;
+  padding: clamp(24px, 2.6vw, 32px) clamp(20px, 2.4vw, 32px) clamp(24px, 2.8vw, 32px); color: var(--nu-white);
 }
+.rks__tleader-main:focus-visible { outline-color: var(--nu-blue-on-dark); outline-offset: -6px; border-radius: var(--nu-r-card); }
 .rks__tleader-who { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.rks__tleader-name { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; transition: color .2s ease; }
+.rks__tleader-name { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; transition: color var(--nu-dur-rapida) var(--nu-ease-cor); }
 .rks__tleader-main:hover .rks__tleader-name { color: var(--nu-blue-soft); }
-.rks__tleader-sub { color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 600; }
-.rks__tleader-metric { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; }
+.rks__tleader-sub { color: var(--nu-on-dark-2); font-size: 14px; font-weight: var(--nu-w-medio); }
+.rks__tleader-metric { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin-left: auto; }
 .rks__tleader-rate {
   color: var(--nu-white); font-size: clamp(40px, 4.6vw, 60px); font-weight: var(--nu-w-display);
-  letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums;
+  letter-spacing: var(--nu-ls-display); line-height: 1; font-variant-numeric: tabular-nums;
 }
-.rks__tleader-label { color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 600; }
+.rks__tleader-label { color: var(--nu-on-dark-2); font-size: 14px; font-weight: var(--nu-w-texto); }
 @media (max-width: 560px) { .rks__tleader-metric { align-items: flex-start; margin-left: 0; } }
 
 /* ——— prosa educacional (mesma família das calculadoras) ——— */
 .rks__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); line-height: 1.6;
 }
 .rks__prose p:last-child { margin-bottom: 0; }
 .rks__h3 {
-  margin: 28px 0 12px; color: var(--nu-ink);
-  font-size: clamp(20px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.15;
+  margin: 32px 0 12px; color: var(--nu-ink);
+  font-size: clamp(20px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.15;
 }
 .rks__prose .rks__h3:first-child { margin-top: 0; }
-.rks__ul { margin: 0 0 16px; padding-left: 22px; }
+.rks__ul { margin: 0 0 16px; padding-left: 24px; }
 .rks__ul li {
   margin: 0 0 8px; color: var(--nu-gray-3);
-  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6;
+  font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); line-height: 1.6;
 }
 .rks__ul li::marker { color: var(--nu-blue); }
-.rks__prose-link { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+.rks__prose-link {
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.rks__prose-link:hover { text-decoration-color: currentColor; }
 .rks__prose--band { max-width: 780px; margin: clamp(24px, 3vw, 40px) auto 0; }
 
-/* ——— metodologia (score): os passos numerados da marca ——— */
+/* ——— metodologia (score): fio, não caixa. Cada passo é uma coluna sob o fio
+   carvão dos passos da marca (reto: o fio não acompanha o raio de um cartão) ——— */
 .rks__steps {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  gap: 32px clamp(24px, 3vw, 40px); margin-top: clamp(32px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.rks__step { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px; box-shadow: var(--nu-shadow-branco); border-top: 3px solid var(--nu-ink); }
-.rks__step-title { margin: 0 0 8px; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
-.rks__step-body { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
-.rks__formula { margin: 24px auto 0; max-width: 680px; text-align: center; }
+.rks__step { padding-top: 20px; border-top: 2px solid var(--nu-ink); }
+.rks__step-title { margin: 0 0 8px; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+.rks__step-body { margin: 0; color: var(--nu-gray-3); font-size: 15px; font-weight: var(--nu-w-texto); line-height: 1.55; }
+.rks__formula { margin: 40px auto 0; max-width: 680px; text-align: center; }
 .rks__formula code {
   display: inline-block; background: var(--nu-ink); border-radius: var(--nu-r-input);
-  padding: 14px 20px; color: var(--nu-white); font-family: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
+  padding: 16px 24px; color: var(--nu-white); font-family: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
   font-variant-numeric: tabular-nums;
 }
 
-/* ——— ferramentas relacionadas ——— */
+/* ——— ferramentas relacionadas: o cartão inteiro é o clique ——— */
 .rks__grid-cards {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  gap: 16px; margin-top: clamp(32px, 4vw, 48px);
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .rks__card-link {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-branco);
-  display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px 24px 20px; box-shadow: var(--nu-shadow-branco);
+  display: flex; flex-direction: column; gap: 8px;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.rks__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.rks__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; transition: color .2s ease; }
-.rks__card-link:hover .rks__card-link-title { color: var(--nu-blue-text); }
-.rks__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
-
-.rks__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); }
-.rks__card-link-ir svg { transition: transform .2s ease; }
-.rks__card-link:hover .rks__card-link-ir svg { transform: translateX(3px); }
+.rks__card-link:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.rks__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+.rks__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); transition: color var(--nu-dur-rapida) var(--nu-ease-cor); }
+.rks__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 1.5; }
+/* o "Abrir →" do cartão fala como o NuLinkSeta (o cartão já é o link: não dá para pôr outro dentro) */
+.rks__card-link-ir {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px;
+  color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
+}
+.rks__card-link-ir svg { width: 16px; height: 16px; flex: none; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+@media (hover: hover) {
+  .rks__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+  .rks__card-link:hover .rks__card-link-title { color: var(--nu-blue-text); }
+  .rks__card-link:hover .rks__card-link-ir svg { transform: translateX(3px); }
+}
 
 /* ——— pílula da IA no FAQ (o fecho é o MercadoFecho) ——— */
-.rks__pill { margin-top: 28px; }
-@media (prefers-reduced-motion: reduce) { .rks__card-link, .rks__card-link-ir svg { transition: none; } .rks__card-link:hover, .rks__card-link:hover .rks__card-link-ir svg { transform: none; } }
+.rks__pill { margin-top: 32px; }
+@media (prefers-reduced-motion: reduce) {
+  .rks__card-link:hover, .rks__card-link:active, .rks__card-link:hover .rks__card-link-ir svg { transform: none; }
+}
 </style>

@@ -3,12 +3,15 @@
 // e tabs condicionais a meta.types. A troca vive no useRanking.setType (?type=
 // na URL, sem reload, deep-linkável). Desde a 2ª rodada da Aportou
 // (11/11/2026) é o trilho da base (NuTrilho): creme, com a escolhida na pílula
-// carvão que desliza até a nova.
+// carvão que desliza até a nova. Robustez (11/11/2026): enquanto a lista nova
+// chega (`ocupado`), o trilho segura a escolha (aria-busy) e não aceita outra.
 import type { RankingAssetType, RankingTypeFilter } from '~/types/rankings'
 
 const props = defineProps<{
   types: RankingAssetType[]
   modelValue: RankingTypeFilter
+  /** a lista do tipo escolhido ainda está chegando */
+  ocupado?: boolean
 }>()
 const emit = defineEmits<{ (e: 'update:modelValue', v: RankingTypeFilter): void }>()
 
@@ -21,5 +24,5 @@ const tabs = computed(() => [
 </script>
 
 <template>
-  <NuTrilho :opcoes="tabs" :model-value="modelValue" rotulo="Filtrar tipo de ativo" @update:model-value="emit('update:modelValue', $event)" />
+  <NuTrilho :opcoes="tabs" :model-value="modelValue" :ocupado="ocupado" rotulo="Filtrar tipo de ativo" @update:model-value="emit('update:modelValue', $event)" />
 </template>

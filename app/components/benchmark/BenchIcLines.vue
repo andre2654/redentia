@@ -135,7 +135,7 @@ const resumo = computed(() => `IC de Spearman de cada IA, ${props.labels.length 
 .bic__grid--zero { background: var(--nu-cream-text-30); }
 .bic__gridlbl {
   position: absolute; left: calc(-1 * var(--calha)); width: calc(var(--calha) - 10px); text-align: right; transform: translateY(-50%);
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums;
 }
 .bic__gridlbl--zero { color: var(--nu-cream-text-78); font-weight: var(--nu-w-medio); }
 /* o trecho que ainda não aconteceu: um véu leve até a régua da nota oficial */
@@ -149,12 +149,12 @@ const resumo = computed(() => `IC de Spearman de cada IA, ${props.labels.length 
   position: absolute; top: -2px; right: 8px; white-space: nowrap; border-radius: var(--nu-r-pill); padding: 3px 9px;
   background: var(--nu-navy-2); color: var(--nu-cream-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
 }
-.bic__linha { transition: opacity .25s ease, stroke-width .25s ease; }
+.bic__linha { transition: opacity var(--nu-dur-media) var(--nu-ease-cor), stroke-width var(--nu-dur-media) var(--nu-ease-saida); }
 .bic__linha--apaga { opacity: .15; }
 .bic__linha--realce { stroke-width: 3.6; filter: drop-shadow(0 0 6px var(--c)); }
 .bic__ponta {
   position: absolute; width: 9px; height: 9px; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none;
-  background: var(--c); box-shadow: 0 0 0 3px var(--nu-navy), 0 0 10px var(--c); transition: opacity .25s ease;
+  background: var(--c); box-shadow: 0 0 0 3px var(--nu-navy), 0 0 10px var(--c); transition: opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
 .bic__ponta--apaga { opacity: .15; }
 .bic__cross { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--nu-cream-text-30); pointer-events: none; }
@@ -168,20 +168,20 @@ const resumo = computed(() => `IC de Spearman de cada IA, ${props.labels.length 
 }
 .bic__tip-data { color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: .4px; }
 .bic__tip-lista { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
-.bic__tip-lista li { display: flex; align-items: center; gap: 8px; color: var(--nu-navy); font-size: var(--nu-fs-sm); font-weight: 500; }
+.bic__tip-lista li { display: flex; align-items: center; gap: 8px; color: var(--nu-navy); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 .bic__tip-lista i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
 .bic__tip-lista span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bic__tip-lista b { margin-left: auto; font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .bic__eixo {
   position: relative; display: flex; justify-content: space-between; gap: 12px; margin: 10px 0 0 var(--calha);
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 500;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto);
 }
 .bic__eixo-hoje { position: absolute; top: 0; transform: translateX(-50%); color: var(--nu-cream-text); font-weight: var(--nu-w-medio); white-space: nowrap; }
 .bic__fichas { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .bic__ficha {
   display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: var(--nu-r-pill); cursor: default;
   border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); color: var(--nu-cream-text-78);
-  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); transition: background .2s ease, color .2s ease, border-color .2s ease;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor), border-color var(--nu-dur-rapida) var(--nu-ease-cor);
 }
 .bic__ficha i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); }
 .bic__ficha--on { color: var(--nu-cream-text); background: color-mix(in srgb, var(--c) 14%, transparent); border-color: var(--c); }
@@ -191,7 +191,7 @@ const resumo = computed(() => `IC de Spearman de cada IA, ${props.labels.length 
 .is-pending .bic__clip { transform: scaleX(0); }
 .is-in .bic__clip { transform: scaleX(1); transition: transform 1.1s cubic-bezier(.45, .05, .2, 1); }
 .is-pending .bic__ponta { opacity: 0; }
-.is-in .bic__ponta { animation: bic-ponta .4s ease .9s backwards; }
+.is-in .bic__ponta { animation: bic-ponta var(--nu-dur-media) var(--nu-ease-cor) var(--nu-dur-lenta) backwards; }
 @keyframes bic-ponta { from { opacity: 0; } }
 
 @container (max-width: 560px) {

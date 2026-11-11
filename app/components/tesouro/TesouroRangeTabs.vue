@@ -1,19 +1,22 @@
 <script setup lang="ts">
-// Pills de período do gráfico do título — MESMA pele do NuRangeTabs (ativa em
-// creme sólido texto navy 800; inativas texto rgba(creme,.5)), com os 5
-// ranges do backend do Tesouro (?range=30d|6m|1y|5y|full). Componente próprio
-// porque o NuRangeTabs é tipado nos ranges do /asset (1mo|6mo|12mo).
+// O período do gráfico do título, com os 5 ranges do backend do Tesouro
+// (?range=30d|6m|1y|5y|full). Componente próprio porque os ranges são outros
+// que os do /asset (1mo|6mo|12mo).
+// Robustez (11/11/2026): é o trilho da base (NuTrilho) no tom escuro, no lugar
+// das pílulas feitas à mão: a escolhida em creme desliza até a nova, as setas
+// do teclado andam, e enquanto a série nova chega (`disabled`, o rangeLoading)
+// ele segura a escolha em vez de apagar.
 import type { TesouroRange } from '~/types/tesouro'
 
 const props = defineProps<{ modelValue: TesouroRange; disabled?: boolean }>()
 const emit = defineEmits<{ 'update:modelValue': [TesouroRange] }>()
 
-const TABS: { value: TesouroRange; label: string }[] = [
-  { value: '30d', label: '30D' },
-  { value: '6m', label: '6M' },
-  { value: '1y', label: '1A' },
-  { value: '5y', label: '5A' },
-  { value: 'full', label: 'Tudo' },
+const TABS: { valor: TesouroRange; rotulo: string; extenso: string }[] = [
+  { valor: '30d', rotulo: '30D', extenso: '30 dias' },
+  { valor: '6m', rotulo: '6M', extenso: '6 meses' },
+  { valor: '1y', rotulo: '1A', extenso: '12 meses' },
+  { valor: '5y', rotulo: '5A', extenso: '5 anos' },
+  { valor: 'full', rotulo: 'Tudo', extenso: 'Todo o histórico' },
 ]
 
 function select(value: TesouroRange) {
@@ -22,27 +25,10 @@ function select(value: TesouroRange) {
 </script>
 
 <template>
-  <div class="trt" role="tablist" aria-label="Período do gráfico">
-    <button
-      v-for="t in TABS" :key="t.value" type="button" role="tab"
-      class="trt__tab" :class="{ 'trt__tab--active': t.value === modelValue }"
-      :aria-selected="t.value === modelValue"
-      @click="select(t.value)"
-    >{{ t.label }}</button>
-  </div>
+  <NuTrilho class="trt" :opcoes="TABS" :model-value="modelValue" tom="escuro" tamanho="p" :ocupado="disabled" rotulo="Período do gráfico" @update:model-value="select" />
 </template>
 
 <style scoped>
-.trt { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; }
-.trt__tab {
-  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-on-dark); font: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer;
-  transition: color .2s, background .2s;
-}
-.trt__tab:hover { color: var(--nu-white); }
-.trt__tab--active, .trt__tab--active:hover { background: var(--nu-creme); color: var(--nu-ink); }
-
-@media (max-width: 760px) {
-  .trt__tab { padding: 0 14px; font-size: 14.5px; }
-}
+/* o trilho não encolhe ao lado do eixo (Preço/Taxa): quebra de linha inteiro */
+.trt { flex-shrink: 0; }
 </style>

@@ -126,20 +126,22 @@ const aria = (r: Linha) => [
 }
 .bdl--sem-num { --cols: minmax(0, 240px) minmax(0, 1fr) minmax(64px, auto); }
 .bdl__lista { list-style: none; margin: 0; padding: 0; }
-.bdl__item + .bdl__item { border-top: 1.5px solid var(--fio); }
+.bdl__item + .bdl__item { border-top: 1px solid var(--fio); }
 .bdl__l {
   display: grid; grid-template-columns: var(--cols); align-items: center; gap: 14px;
   width: calc(100% + 24px); margin: 0 -12px; padding: 11px 12px; border: 0; border-radius: var(--nu-r-chip);
   background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;
-  transition: background .18s ease, opacity .18s ease;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor), opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
 .bdl__l:hover { background: var(--hover); }
+.bdl__l:active { background: var(--fio); }
 .bdl__l:focus-visible { outline-offset: -3px; }
 /* um modelo em foco: o resto recua */
 .bdl--foco .bdl__item:not(.bdl__item--on) .bdl__l { opacity: .45; }
 .bdl--foco .bdl__item:not(.bdl__item--on) .bdl__l:hover { opacity: .8; }
 
-.bdl__pos { color: var(--apoio); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
+.bdl__pos { color: var(--apoio); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .bdl__who { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .bdl__tile {
   width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center;
@@ -150,7 +152,7 @@ const aria = (r: Linha) => [
 .bdl__name { min-width: 0; color: var(--tinta); font-size: 14.5px; font-weight: var(--nu-w-medio); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .bdl__track { position: relative; height: 10px; border-radius: var(--nu-r-pill); background: var(--pista); }
-.bdl__fill { position: absolute; top: 0; bottom: 0; border-radius: var(--nu-r-pill); background: var(--nu-blue-soft); transition: background .18s ease; }
+.bdl__fill { position: absolute; top: 0; bottom: 0; border-radius: var(--nu-r-pill); background: var(--nu-blue-soft); transition: background-color var(--nu-dur-media) var(--nu-ease-cor); }
 .bdl__item--top .bdl__fill, .bdl__item--on .bdl__fill { background: var(--nu-blue); }
 .bdl__fill--neg, .bdl__item--on .bdl__fill--neg { background: var(--nu-red); }
 .bdl--escuro .bdl__fill { background: var(--nu-cream-text-35); }
@@ -173,7 +175,7 @@ const aria = (r: Linha) => [
 .bdl__val { color: var(--tinta); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bdl__item--on .bdl__val { color: var(--nu-blue-text); }
 .bdl--escuro .bdl__item--on .bdl__val { color: var(--nu-blue-soft); }
-.bdl__extra { color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; white-space: pre; text-align: right; }
+.bdl__extra { color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; white-space: pre; text-align: right; }
 
 /* estreito: duas linhas, o nome inteiro em cima com o número, a barra
    embaixo com o apoio à direita */

@@ -75,15 +75,16 @@ const lado = (p: { cost: number }) => (x(p.cost) > 62 ? 'esq' : 'dir')
 <style scoped>
 .bdd {
   margin: 0; container-type: inline-size;
-  --tinta: var(--nu-ink); --apoio: var(--nu-gray); --grade: var(--nu-cream-line);
+  /* a grade é discreta: fio leve na horizontal, pontilhado ainda mais leve na vertical */
+  --tinta: var(--nu-ink); --apoio: var(--nu-gray); --grade: color-mix(in srgb, var(--nu-cream-line) 75%, transparent);
 }
 .bdd--escuro { --tinta: var(--nu-agora-texto); --apoio: var(--nu-agora-sub); --grade: var(--nu-agora-linha); }
 /* margem à esquerda para os números da nota e embaixo para os do custo */
 .bdd__area { position: relative; height: clamp(280px, 34vw, 380px); margin: 8px 8px 30px 34px; }
 .bdd__gy { position: absolute; left: 0; right: 0; height: 0; border-top: 1px solid var(--grade); }
-.bdd__gy span { position: absolute; right: calc(100% + 10px); top: -8px; color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; }
-.bdd__gx { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dashed var(--grade); }
-.bdd__gx span { position: absolute; top: calc(100% + 10px); transform: translateX(-50%); white-space: nowrap; color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; }
+.bdd__gy span { position: absolute; right: calc(100% + 10px); top: -8px; color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
+.bdd__gx { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dotted var(--grade); }
+.bdd__gx span { position: absolute; top: calc(100% + 10px); transform: translateX(-50%); white-space: nowrap; color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 .bdd__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .bdd__fronteira { fill: none; stroke: var(--nu-blue); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: .55; }
 .bdd--escuro .bdd__fronteira { stroke: var(--nu-blue-soft); }
@@ -92,12 +93,12 @@ const lado = (p: { cost: number }) => (x(p.cost) > 62 ? 'esq' : 'dir')
   position: absolute; width: 0; height: 0; padding: 0; border: 0; background: none; cursor: pointer; color: inherit; font: inherit;
 }
 .bdd__p:focus-visible { outline: none; }
-.bdd__p:focus-visible .bdd__tile { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.bdd__p:focus-visible .bdd__tile { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .bdd__tile {
   position: absolute; left: 0; top: 0; width: 28px; height: 28px; transform: translate(-50%, -50%); border-radius: 50%;
   display: grid; place-items: center; background: var(--nu-white); color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   box-shadow: inset 0 0 0 1px var(--nu-cream-line), 0 6px 16px -6px var(--nu-navy-14);
-  transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida), opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
 .bdd__tile img { width: 14px; height: 14px; display: block; object-fit: contain; }
 .bdd__p--fr .bdd__tile { box-shadow: inset 0 0 0 2px var(--nu-blue), 0 6px 16px -6px var(--nu-navy-14); }
@@ -107,9 +108,9 @@ const lado = (p: { cost: number }) => (x(p.cost) > 62 ? 'esq' : 'dir')
 .bdd__nome {
   position: absolute; top: 0; transform: translateY(-50%); white-space: nowrap; pointer-events: none;
   display: none; flex-direction: column; line-height: 1.25;
-  color: var(--tinta); font-size: var(--nu-fs-xs); font-weight: 600;
+  color: var(--tinta); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
 }
-.bdd__nome b { color: var(--apoio); font-weight: 500; font-variant-numeric: tabular-nums; }
+.bdd__nome b { color: var(--apoio); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 .bdd__nome--dir { left: 20px; text-align: left; }
 .bdd__nome--esq { right: 20px; text-align: right; }
 .bdd__p--fr .bdd__nome, .bdd__p:hover .bdd__nome, .bdd__p--on .bdd__nome { display: flex; }
@@ -117,7 +118,7 @@ const lado = (p: { cost: number }) => (x(p.cost) > 62 ? 'esq' : 'dir')
 .bdd__area:has(.bdd__p--on) .bdd__p--fr:not(.bdd__p--on):not(:hover) .bdd__nome { display: none; }
 .bdd__p:hover, .bdd__p--on { z-index: 3; }
 
-.bdd__leg { display: flex; flex-wrap: wrap; gap: 6px 20px; color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: 500; }
+.bdd__leg { display: flex; flex-wrap: wrap; gap: 6px 20px; color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
 .bdd__leg-f { display: inline-flex; align-items: center; gap: 8px; }
 .bdd__leg-f i { width: 18px; height: 2px; border-radius: 1px; background: var(--nu-blue); opacity: .55; }
 @container (max-width: 520px) {

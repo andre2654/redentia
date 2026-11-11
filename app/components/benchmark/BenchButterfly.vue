@@ -47,14 +47,14 @@ const { el, revealClass } = useReveal()
 <style scoped>
 .bbf { container-type: inline-size; }
 .bbf__head, .bbf__row { display: grid; grid-template-columns: 1fr minmax(120px, 180px) 1fr; align-items: center; gap: 14px; }
-.bbf__head { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; padding-bottom: 8px; }
+.bbf__head { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); padding-bottom: 8px; }
 .bbf__head-l { text-align: right; }
 .bbf__dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 8px -1px; }
 .bbf__dot--bad { background: var(--nu-red); }
 .bbf__dot--good { background: var(--nu-blue); }
 
 .bbf__rows { list-style: none; margin: 0; padding: 0; }
-.bbf__row { padding: 9px 12px; margin: 0 -12px; border-radius: var(--nu-r-tile); outline: none; transition: background .2s, opacity .2s; }
+.bbf__row { padding: 9px 12px; margin: 0 -12px; border-radius: var(--nu-r-tile); outline: none; transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor), opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .bbf__row:hover, .bbf__row:focus-visible { background: var(--b-surface, var(--nu-cream)); }
 .bbf__rows:hover .bbf__row:not(:hover) { opacity: .5; }
 .bbf__side { display: flex; align-items: center; gap: 10px; min-width: 0; }
@@ -68,12 +68,12 @@ const { el, revealClass } = useReveal()
 .bbf__side--l .bbf__num { text-align: right; }
 .bbf__mid { display: flex; flex-direction: column; align-items: center; min-width: 0; }
 .bbf__name { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-.bbf__score { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; }
-.bbf__foot { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.bbf__score { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
+.bbf__foot { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 
 /* ——— entrada: as pílulas saem do eixo para os dois lados ——— */
 .is-pending .bbf__bar { transform: scaleX(0); }
-.is-in .bbf__bar { transform: scaleX(1); transition: transform .7s var(--nu-ease-saida) calc(var(--i) * 45ms); }
+.is-in .bbf__bar { transform: scaleX(1); transition: transform var(--nu-dur-entrada) var(--nu-ease-saida) calc(var(--i) * 60ms); }
 
 @container (max-width: 640px) {
   .bbf__head, .bbf__row { grid-template-columns: 1fr 92px 1fr; gap: 8px; }
@@ -84,5 +84,5 @@ const { el, revealClass } = useReveal()
      "Gemini 3.8 …" e "Gemini 4 …" ficavam iguais */
   .bbf__name { font-size: var(--nu-fs-xs); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.25; text-align: center; }
 }
-.bbf__row:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.bbf__row:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 </style>

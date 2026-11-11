@@ -30,8 +30,8 @@ const icone = (k: string) => BENCH_ICONS[k] ?? BENCH_ICONS.trophy
 .bdp__ic svg { width: 18px; height: 18px; }
 .bdp__t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .bdp__nome { color: var(--nu-ink); font-size: 17px; font-weight: var(--nu-w-medio); }
-.bdp__q { color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.45; }
-.bdp__st { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.bdp__q { color: var(--nu-gray-3); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 1.45; }
+.bdp__st { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.45; font-variant-numeric: tabular-nums; }
 @container (max-width: 560px) {
   .bdp__i { grid-template-columns: 36px minmax(0, 1fr); row-gap: 4px; }
   .bdp__st { grid-column: 2; }

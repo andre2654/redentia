@@ -174,7 +174,7 @@ const hov = computed(() => {
 .tch__gridline { position: absolute; left: 0; right: 0; height: 1px; background: var(--nu-cream-text-08); }
 .tch__gridlbl {
   position: absolute; right: 18px; transform: translateY(-120%);
-  color: var(--nu-cream-text-35); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums;
+  color: var(--nu-cream-text-35); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums;
 }
 .tch__enddot {
   position: absolute; right: -1px; width: 13px; height: 13px; border-radius: 50%;

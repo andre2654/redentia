@@ -117,9 +117,12 @@ const altura = ref(0)
 // 'fade': navegador sem a API, o painel só entra num fade curto
 const modo = ref<'' | 'vt' | 'fade'>('')
 type DocVT = Document & { startViewTransition?: (cb: () => Promise<void>) => { ready: Promise<void>; finished: Promise<void> } }
-// mesma duração e curva do CSS da transição (::view-transition-group)
-const VT_MS = 420
-const VT_CURVA = 'cubic-bezier(.32, .72, 0, 1)'
+// a caixa da transição é "o que muda de lugar" da casa: a duração e a curva
+// vêm dos tokens (--nu-dur-lenta, --nu-ease-troca), as mesmas do CSS da
+// transição (::view-transition-group) logo abaixo, lidas na hora
+function token(nome: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(nome).trim()
+}
 async function alternar() {
   const abrir = !cheia.value
   const troca = async () => {
@@ -146,9 +149,12 @@ async function alternar() {
     // volta). Antes vinha de uma variável animada no html, que recalculava o
     // estilo da página inteira a cada quadro e travava a animação.
     vt.ready.then(() => {
+      const duracao = parseFloat(token('--nu-dur-lenta'))
+      const curva = token('--nu-ease-troca')
+      if (!Number.isFinite(duracao) || !curva) return
       document.documentElement.animate(
         { borderRadius: abrir ? ['22px', '0px'] : ['0px', '22px'] },
-        { duration: VT_MS, easing: VT_CURVA, pseudoElement: '::view-transition-group(blv-cheia)' },
+        { duration: duracao, easing: curva, pseudoElement: '::view-transition-group(blv-cheia)' },
       )
     }).catch(() => {})
     await vt.finished
@@ -341,16 +347,16 @@ const tip = computed(() => {
 .blv__full {
   flex-shrink: 0; display: grid; place-items: center; width: 36px; height: 36px; margin: -1px -8px 0 0; padding: 0;
   border: 0; background: none; border-radius: 50%; cursor: pointer; color: var(--nu-cream-text-55);
-  transition: color .25s ease, transform .35s var(--nu-ease-saida);
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .blv__full svg { width: 20px; height: 20px; overflow: visible; }
 .blv__full:hover { color: var(--nu-cream-text); }
 .blv__full:active { transform: scale(.9); }
-.blv__full:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 0; }
+.blv__full:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 0; }
 /* cada canto gira no próprio centro: o "abrir" vira o "sair" */
 .blv__full-c {
   transform-box: fill-box; transform-origin: center;
-  transition: transform .55s cubic-bezier(.65, 0, .35, 1), translate .35s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-lenta) var(--nu-ease-troca), translate var(--nu-dur-media) var(--nu-ease-saida);
 }
 .blv--cheia .blv__full-c { transform: rotate(180deg); }
 /* hover: os cantos respiram para fora (abrir) ou para dentro (sair) */
@@ -381,41 +387,43 @@ const tip = computed(() => {
 .blv__pill--cor:hover { opacity: .85; }
 .blv__pill-dot {
   width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  box-shadow: inset 0 0 0 1.5px var(--c); transition: background .25s ease, box-shadow .25s ease, transform .3s var(--nu-ease-saida);
+  box-shadow: inset 0 0 0 1.5px var(--c); transition: background-color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
 .blv__pill--ativo, .blv__pill--ativo:hover {
   opacity: 1; color: var(--nu-cream-text);
   border-color: color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent);
 }
 .blv__pill--ativo .blv__pill-dot { background: var(--c); box-shadow: 0 0 10px var(--c); transform: scale(1.1); }
-.blv__pill { transition: background .2s, color .2s, border-color .2s, transform .2s, opacity .2s; }
+.blv__pill { transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor), border-color var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida), opacity var(--nu-dur-media) var(--nu-ease-cor); }
 
 /* linhas da tela cheia: surgem suaves; a realçada engrossa, as outras recuam */
-.blv__multi { animation: blv-pop .45s ease; transition: opacity .25s ease, stroke-width .25s ease; }
+.blv__multi { animation: blv-pop var(--nu-dur-lenta) var(--nu-ease-cor); transition: opacity var(--nu-dur-media) var(--nu-ease-cor), stroke-width var(--nu-dur-media) var(--nu-ease-saida); }
 .blv__multi--apaga { opacity: .16; }
 .blv__multi--realce { stroke-width: 3.6; filter: drop-shadow(0 0 6px var(--c, currentColor)); }
 .blv__dot.blv__dot--multi { width: 10px; height: 10px; border: 2px solid var(--c); background: var(--nu-navy); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 25%, transparent); }
 .blv__tip--multi { transform: none; width: 230px; white-space: normal; }
 .blv__tip-list { list-style: none; margin: 6px 0 8px; padding: 0; display: grid; gap: 4px; }
-.blv__tip-list li { display: flex; align-items: center; gap: 8px; color: var(--nu-navy); font-size: var(--nu-fs-sm); font-weight: 500; }
+.blv__tip-list li { display: flex; align-items: center; gap: 8px; color: var(--nu-navy); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 .blv__tip-list b { margin-left: auto; font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .blv__tip-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
 .blv__tip-nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.blv--cheia.blv--fade { animation: blv-cheia-in .35s var(--nu-ease-saida); }
+.blv--cheia.blv--fade { animation: blv-cheia-in var(--nu-dur-media) var(--nu-ease-saida); }
 @keyframes blv-cheia-in { from { opacity: 0; } }
 .blv__pill {
   padding: 7px 13px; border-radius: var(--nu-r-pill); cursor: pointer; font-family: inherit;
   border: 1px solid var(--nu-cream-text-18); background: transparent;
   color: var(--nu-cream-text-78); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
-  transition: background .2s, color .2s, border-color .2s, transform .2s;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor), border-color var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
 .blv__pill:hover { border-color: var(--nu-cream-text-45); color: var(--nu-cream-text); transform: translateY(-1px); }
 .blv__pill--on, .blv__pill--on:hover { background: var(--nu-cream); border-color: var(--nu-cream); color: var(--nu-navy); }
-.blv__pill:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
+.blv__pill:active { transform: scale(.97); }
+.blv__pill:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 2px; }
 
 .blv__legend {
   display: flex; gap: 6px 18px; flex-wrap: wrap; margin-top: 18px;
-  color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 500;
+  color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto);
 }
 .blv__legend span { display: inline-flex; align-items: center; gap: 8px; }
 .blv__sw { display: inline-block; width: 18px; height: 3px; border-radius: 2px; }
@@ -436,11 +444,11 @@ const tip = computed(() => {
 .blv__gridline { position: absolute; left: 0; right: 0; height: 1px; background: var(--nu-cream-text-08); }
 .blv__gridlbl {
   position: absolute; left: 0; transform: translateY(-120%);
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums;
 }
 .blv__end {
   position: absolute; right: 0; transform: translateY(-50%); display: flex; flex-direction: column; align-items: flex-end;
-  border-radius: 12px; padding: 6px 11px; white-space: nowrap; pointer-events: none; transition: top .4s ease;
+  border-radius: 12px; padding: 6px 11px; white-space: nowrap; pointer-events: none; transition: top var(--nu-dur-lenta) var(--nu-ease-troca);
 }
 .blv__end--sel { background: var(--nu-cream); box-shadow: var(--nu-shadow-chart-pill); }
 .blv__end--ibov { background: var(--nu-navy-2); }
@@ -479,18 +487,18 @@ const tip = computed(() => {
 }
 .blv__tip-date { color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: .4px; }
 .blv__tip-main { color: var(--nu-navy); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
-.blv__tip-row { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
-.blv__axis { display: flex; justify-content: space-between; margin-top: 10px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 500; }
-.blv__foot { margin: 14px 0 0; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; }
+.blv__tip-row { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
+.blv__axis { display: flex; justify-content: space-between; margin-top: 10px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
+.blv__foot { margin: 14px 0 0; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 
 /* ——— entrada: as linhas se revelam da esquerda; troca de modelo faz a nova surgir ——— */
 .blv__clip { transform-box: fill-box; transform-origin: left; }
 .is-pending .blv__clip { transform: scaleX(0); }
-.is-in .blv__clip { transform: scaleX(1); transition: transform 1.4s cubic-bezier(.45, .05, .2, 1); }
+.is-in .blv__clip { transform: scaleX(1); transition: transform calc(var(--nu-dur-entrada) * 2) var(--nu-ease-troca); }
 .is-pending .blv__end, .is-pending .blv__mark, .is-pending .blv__rule, .is-pending .blv__mark-foot { opacity: 0; }
-.is-in .blv__mark, .is-in .blv__rule, .is-in .blv__mark-foot { transition: opacity .4s ease .3s; }
-.is-in .blv__end { transition: opacity .4s ease 1.1s, top .4s ease; }
-.blv__selg { animation: blv-pop .45s ease; }
+.is-in .blv__mark, .is-in .blv__rule, .is-in .blv__mark-foot { transition: opacity var(--nu-dur-media) var(--nu-ease-cor) var(--nu-dur-media); }
+.is-in .blv__end { transition: opacity var(--nu-dur-media) var(--nu-ease-cor) var(--nu-dur-entrada), top var(--nu-dur-lenta) var(--nu-ease-troca); }
+.blv__selg { animation: blv-pop var(--nu-dur-lenta) var(--nu-ease-cor); }
 @keyframes blv-pop { from { opacity: 0; } to { opacity: 1; } }
 
 .blv__select { display: none; }
@@ -500,7 +508,7 @@ const tip = computed(() => {
   /* tela cheia no celular: as pílulas correm numa linha só, com fade na borda */
   .blv__pick--multi {
     display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 2px 0;
-    mask-image: linear-gradient(90deg, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, var(--nu-ink) 88%, transparent);
   }
   .blv__pick--multi::-webkit-scrollbar { display: none; }
   .blv__pick--multi .blv__pill { flex-shrink: 0; }
@@ -523,18 +531,19 @@ const tip = computed(() => {
 
 <style>
 /* View Transition da tela cheia (pseudo-elementos da raiz: fora do scoped).
-   A caixa cresce do painel até a tela; o conteúdo não estica, é revelado. */
+   A caixa cresce do painel até a tela; o conteúdo não estica, é revelado.
+   Robustez (11/11/2026): o tempo e a curva são os do "o que muda de lugar". */
 html.blv-travada { overflow: hidden; }
 /* a caixa é navy sólida: nada da página vaza enquanto ela cresce ou encolhe.
-   O raio (22px → 0 e volta) é animado por JS só nesta caixa (VT_MS, VT_CURVA). */
+   O raio (22px → 0 e volta) é animado por JS só nesta caixa, nos mesmos tokens. */
 ::view-transition-group(blv-cheia) {
-  animation-duration: .42s; animation-timing-function: cubic-bezier(.32, .72, 0, 1);
+  animation-duration: var(--nu-dur-lenta); animation-timing-function: var(--nu-ease-troca);
   overflow: clip; background: var(--nu-navy);
 }
 /* troca cruzada sem vão: os dois fades correm juntos e somam (plus-lighter),
    então o conteúdo nunca some no meio */
 ::view-transition-old(blv-cheia), ::view-transition-new(blv-cheia) {
-  height: 100%; object-fit: none; object-position: left top; animation-duration: .26s;
+  height: 100%; object-fit: none; object-position: left top; animation-duration: var(--nu-dur-media);
 }
 /* a página por trás não muda à vista: sem crossfade dela, menos camada animando */
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
