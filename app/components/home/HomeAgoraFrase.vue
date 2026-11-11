@@ -43,13 +43,13 @@
 //  - os três fatos viram cartões creme (raio 28, sombra quente, número em 800,
 //    a seta que anda); o do dia fica âmbar quando o dia tem alerta (um papel que
 //    caiu 5% ou mais: `dia.alerta`, o único aviso que o resumo da home traz).
-// O selo ao lado do nome ("Tudo normal" / "Pede atenção") continua saindo do
-// resumo do dia. O selo da /carteira soma a isso o aviso urgente do motor de
-// avisos (GET /me/carteira/visao: conexão parada, por exemplo), que a home não
-// carrega; por isso os dois podem divergir. Não é regra desta tela mudar isso.
+// O selo ao lado do nome ("Tudo normal" / "Pede atenção") sai do resumo do dia
+// e, desde 11/11/2026, também do aviso urgente do motor de avisos, como o da
+// /carteira (ver "O AVISO DO MOTOR" abaixo): as duas telas dizem a mesma coisa.
 import type { CarteiraResumoVM } from '~/types/carteira'
 import { frasesDoDia } from '~/utils/diaDaCarteira'
 import { estadoDoPregao } from '~/utils/pregao'
+import { avisosLiberados } from '~/utils/carteiraVisao'
 import { contraOCdi, dataDoCorte, rebase100, serieDesde, variacaoDoIndice } from '~/utils/rentabilidadeCarteira'
 import FraseDestaque from '~/components/carteira/visao/FraseDestaque.vue'
 
@@ -113,11 +113,35 @@ const apoioDoDia = computed(() => {
   if (!f) return ''
   return dia.value?.alerta ? (f.apoio ?? '') : [f.veredito, f.apoio].filter(Boolean).join(' ')
 })
-/** o estado ao lado do nome: 'Tudo normal' no dia comum, 'Pede atenção' no alerta; em dia de movimento forte, só a data */
+// O AVISO DO MOTOR (11/11/2026). O selo da home só conhecia o alerta do dia (um
+// papel que caiu 5% ou mais) e dizia "Tudo normal" enquanto a /carteira dizia
+// "Pede atenção" por um aviso urgente do motor (uma conexão parada, por
+// exemplo). Para as duas telas dizerem a mesma coisa, a home consulta os
+// avisos da /carteira: só no cliente, depois de montar, para quem tem carteira
+// e assina, e sem segurar a primeira pintura. Sem resposta (a visão desligada
+// para a pessoa, rede, 5xx) o selo fica como era. A regra de quando o aviso já
+// pode aparecer é a mesma da carteira (avisosLiberados: só com a bolsa aberta
+// ou depois dela, nunca antes das 10h de um dia de pregão).
+const { token } = useAuthState()
+const avisoUrgente = ref(false)
+async function consultarAvisos() {
+  if (!token.value) return
+  try {
+    const v = await $fetch<{ avisos?: { urgente?: string | null; itens?: { id: string }[] } }>('/api/backend/me/carteira/visao', {
+      headers: { Accept: 'application/json', Authorization: `Bearer ${token.value}` },
+    })
+    const id = v.avisos?.urgente
+    avisoUrgente.value = !!id && !!v.avisos?.itens?.some((a) => a.id === id)
+  } catch { /* a home segue com o selo do dia */ }
+}
+watch(() => comCarteira.value && podeVerNumeros.value, (pode) => { if (pode && import.meta.client) void consultarAvisos() }, { immediate: true })
+const avisoDoMotor = computed(() => avisoUrgente.value && !!estado.value && avisosLiberados(estado.value))
+
+/** o estado ao lado do nome: 'Tudo normal' no dia comum, 'Pede atenção' no alerta do dia ou no aviso urgente do motor; em dia de movimento forte, só a data */
 const selo = computed(() => {
   const f = frases.value
   if (!f) return null
-  if (dia.value?.alerta) return { texto: 'Pede atenção', tom: 'ambar' as const }
+  if (dia.value?.alerta || avisoDoMotor.value) return { texto: 'Pede atenção', tom: 'ambar' as const }
   return f.titulo === 'Tudo normal.' ? { texto: 'Tudo normal', tom: 'verde' as const } : null
 })
 
@@ -177,7 +201,9 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
       <div class="haf__id">
         <p class="haf__ola">{{ ola }}</p>
         <template v-if="comCarteira && podeVerNumeros && frases">
-          <span v-if="selo" class="haf__selo" :class="`haf__selo--${selo.tom}`"><i aria-hidden="true" />{{ selo.texto }}</span>
+          <!-- o aviso do motor leva à carteira, onde ele está explicado; o do dia é só o estado -->
+          <NuxtLink v-if="selo && avisoDoMotor && !dia?.alerta" to="/carteira" class="haf__selo haf__selo--link" :class="`haf__selo--${selo.tom}`"><i aria-hidden="true" />{{ selo.texto }}<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg></NuxtLink>
+          <span v-else-if="selo" class="haf__selo" :class="`haf__selo--${selo.tom}`"><i aria-hidden="true" />{{ selo.texto }}</span>
           <span class="haf__quando">{{ frases.sobrelinha }}</span>
         </template>
         <span v-else-if="!comCarteira || podeVerNumeros" class="haf__quando">{{ momento.rotulo }}</span>
@@ -318,6 +344,11 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
 .haf__selo--verde i { background: var(--nu-green); }
 .haf__selo--ambar { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .haf__selo--ambar i { background: var(--nu-amber); }
+.haf__selo--link { min-height: 28px; text-decoration: none; transition: background .2s; }
+.haf__selo--link:hover { background: color-mix(in srgb, var(--nu-amber) 30%, var(--nu-amber-bg)); color: var(--nu-amber-text); }
+.haf__selo--link svg { transition: transform .2s; }
+.haf__selo--link:hover svg { transform: translateX(2px); }
+.haf__selo--link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .haf__quando { color: var(--sub); font-size: 14.5px; font-weight: 600; }
 /* o olho: o botão de ícone do contrato (círculo de 44 px, contorno carvão), o mesmo da /carteira */
 .haf__olho {
