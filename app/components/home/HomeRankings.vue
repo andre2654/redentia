@@ -127,6 +127,8 @@ const selo = computed(() => {
           <li v-for="(l, i) in c.linhas" :key="l.ticker">
             <NuxtLink :to="`/asset/${l.ticker}`" class="hrk__linha">
               <span class="hrk__pos">{{ i + 1 }}</span>
+              <!-- o logo de cada empresa (pedido do dono, 11/11/2026); sem logo, a letra -->
+              <NuAssetLogo :ticker="l.ticker" :letter="l.ticker.charAt(0)" tile-bg="var(--nu-cream-2)" tile-fg="var(--nu-ink)" :size="40" :radius="12" class="hrk__logo" />
               <span class="hrk__id">
                 <span class="hrk__empresa">{{ l.nome }}</span>
                 <span class="hrk__ticker">{{ l.ticker }}</span>
@@ -178,8 +180,9 @@ const selo = computed(() => {
 .hrk__nome { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
 .hrk__cartao-sub { margin: 4px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; }
 .hrk__linhas { list-style: none; margin: 12px 0 0; padding: 0; }
+.hrk__logo { flex: none; }
 .hrk__linha {
-  display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 10px; margin: 0 -10px;
+  display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 10px; margin: 0 -10px;
   border-top: 1.5px solid var(--nu-line-2); color: var(--nu-ink); transition: background .2s;
 }
 .hrk__linhas > li:first-child .hrk__linha { border-top-color: transparent; }
