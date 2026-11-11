@@ -3,6 +3,7 @@
 //  - proxies em 3 camadas e routeRules de cache (Frontend)
 //  - deploy git→Vercel e organização por feature (Atlas)
 // Plano mestre: docs/redentia-nu/PLANO-REDENTIA-NU.md (repo raiz).
+import { fileURLToPath } from 'node:url'
 import { businessLeadDemoLigadoNoBuild } from './app/utils/business-lead.ts'
 import { CABECALHOS_JSON_DO_PROXY } from './server/utils/backend-proxy-json.ts'
 
@@ -17,6 +18,16 @@ export default defineNuxtConfig({
   ssr: true,
 
   css: ['~/assets/css/tokens.css', '~/assets/css/fontes.css', '~/assets/css/tema-redentia.css', '~/assets/css/base.css'],
+
+  // Hover só onde há mouse (11/11/2026, robustez): no toque, o realce ficava
+  // preso depois de tocar (o cartão erguido, a linha acesa, a seta adiantada).
+  // Toda regra com :hover vai para dentro de @media (hover: hover), no mesmo
+  // lugar da cascata (postcss/hover-com-mouse.mjs, com teste; o mesmo do B2B).
+  postcss: {
+    plugins: {
+      [fileURLToPath(new URL('./postcss/hover-com-mouse.mjs', import.meta.url))]: {},
+    },
+  },
 
   app: {
     head: {
