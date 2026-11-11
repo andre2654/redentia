@@ -19,36 +19,22 @@
 // Ela aparece duas vezes nas calculadoras: compacta, logo depois da conta e das
 // tags ("coloque uma seção CTA abaixo dos cards das calculadoras, abaixo das
 // tags"), e inteira no fim da página.
+// Robustez (11/11/2026): uma chamada só no painel. A principal segue na
+// pílula creme com a seta (NuBotaoSeta); a segunda virou o link com seta da
+// base (NuLinkSeta claro), em vez de uma segunda pílula ao lado. A entrada é o
+// v-revelar (título, texto, ações e cápsulas em cascata de 60ms), que nunca
+// esconde nada: antes a faixa ficava invisível esperando o observador (e
+// saía vazia na impressão e na foto da página inteira).
 defineProps<{
   titulo: string
   texto: string
   /** o botão branco, o principal */
   primario: { label: string; to: string }
-  /** o botão de contorno */
+  /** a segunda chamada: o link com seta, em branco */
   secundario: { label: string; to: string }
   /** a versão do meio da página, logo depois da conta e das tags: menos alta */
   compacta?: boolean
 }>()
-
-// a entrada (título, texto, botões e cápsulas subindo do desfoque) acontece
-// quando a faixa aparece na tela, não ao carregar a página, lá no topo. Sem
-// JavaScript, ou com movimento reduzido, a faixa só aparece pronta.
-const raiz = ref<HTMLElement | null>(null)
-const entrada = ref<'' | 'espera' | 'entra'>('')
-let olho: IntersectionObserver | null = null
-onMounted(() => {
-  const el = raiz.value
-  if (!el || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  if (el.getBoundingClientRect().top < window.innerHeight) return
-  entrada.value = 'espera'
-  olho = new IntersectionObserver((vistos) => {
-    if (!vistos.some((v) => v.isIntersecting)) return
-    entrada.value = 'entra'
-    olho?.disconnect()
-  }, { threshold: 0.25 })
-  olho.observe(el)
-})
-onBeforeUnmount(() => olho?.disconnect())
 
 const BENEFICIOS = [
   { texto: 'Contas guardadas', d: ['M6.5 3.5h11a1 1 0 0 1 1 1v16l-6.5-4-6.5 4v-16a1 1 0 0 1 1-1z'] },
@@ -59,18 +45,18 @@ const BENEFICIOS = [
 </script>
 
 <template>
-  <section ref="raiz" class="cft" :class="[entrada && `cft--${entrada}`, { 'cft--compacta': compacta }]">
+  <section class="cft" :class="{ 'cft--compacta': compacta }">
     <div class="cft__painel">
     <MarcaCorte class="cft__corte nu-corte-fundo" :largura="compacta ? 460 : 620" cor="var(--nu-white)" />
-    <div class="cft__miolo">
+    <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="cft__miolo">
       <h2 class="cft__titulo">{{ titulo }}</h2>
       <p class="cft__texto">{{ texto }}</p>
       <div class="cft__acoes">
         <NuBotaoSeta :to="primario.to" variante="creme">{{ primario.label }}</NuBotaoSeta>
-        <NuxtLink :to="secundario.to" class="cft__pill cft__pill--contorno">{{ secundario.label }}</NuxtLink>
+        <NuLinkSeta :to="secundario.to" tom="claro" class="cft__link">{{ secundario.label }}</NuLinkSeta>
       </div>
       <ul class="cft__beneficios" aria-label="O que a conta dá">
-        <li v-for="(b, i) in BENEFICIOS" :key="b.texto" class="cft__beneficio" :style="{ '--i': i }">
+        <li v-for="b in BENEFICIOS" :key="b.texto" class="cft__beneficio">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path v-for="d in b.d" :key="d" :d="d" /></svg>
           {{ b.texto }}
         </li>
@@ -102,45 +88,35 @@ const BENEFICIOS = [
 .cft__miolo { position: relative; max-width: 980px; margin: 0 auto; }
 .cft__titulo {
   margin: 0 auto; max-width: 900px; color: var(--nu-white);
-  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance;
+  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; text-wrap: balance;
 }
 .cft__texto {
   margin: 18px auto 0; max-width: 560px; color: var(--nu-blue-on-blue);
-  font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: balance;
+  font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; text-wrap: balance;
 }
-.cft__acoes { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; margin-top: 34px; }
-.cft__pill {
-  display: inline-flex; align-items: center; justify-content: center; min-height: 62px; padding: 0 28px; border-radius: var(--nu-r-pill);
-  font-size: 19px; font-weight: var(--nu-w-medio); transition: background .2s ease, transform .15s var(--nu-ease-saida);
-}
-.cft__pill--contorno { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-white-60); color: var(--nu-white); }
-.cft__pill--contorno:hover { background: var(--nu-white-14); color: var(--nu-white); }
-.cft__pill--contorno:active { transform: scale(.98); }
+.cft__acoes { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px 28px; margin-top: 40px; }
+/* a segunda chamada: o link com seta, em branco, no tamanho da letra do botão */
+.cft__link { font-size: 17px; }
 .cft__acoes :focus-visible { outline: 3px solid var(--nu-white); outline-offset: 3px; }
+/* o anel do link com seta é desenhado no ::after: sobre o azul, branco */
+.cft__acoes :deep(.nls:focus-visible::after) { outline-color: var(--nu-white); }
 
 /* o que a conta dá: chips sobre o azul */
-.cft__beneficios { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 44px 0 0; padding: 0; list-style: none; }
+.cft__beneficios { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 40px 0 0; padding: 0; list-style: none; }
 .cft__beneficio {
   display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border-radius: var(--nu-r-pill);
   background: var(--nu-white-14); box-shadow: inset 0 0 0 1px var(--nu-white-30);
-  color: var(--nu-white); font-size: 14.5px; font-weight: 600; white-space: nowrap;
+  color: var(--nu-white); font-size: 14.5px; font-weight: var(--nu-w-medio); white-space: nowrap;
 }
 .cft__beneficio svg { color: var(--nu-white); opacity: .9; }
-
-/* a entrada, quando a faixa aparece na tela */
-.cft--espera :is(.cft__titulo, .cft__texto, .cft__acoes, .cft__beneficio) { opacity: 0; transform: translateY(10px); }
-.cft--entra .cft__titulo { animation: nu-fade .5s ease both; }
-.cft--entra .cft__texto { animation: nu-fade .5s ease .06s both; }
-.cft--entra .cft__acoes { animation: nu-fade .5s ease .12s both; }
-.cft--entra .cft__beneficio { animation: nu-fade .5s ease both; animation-delay: calc(.2s + var(--i) * 60ms); }
 
 @media (max-width: 640px) {
   .cft__painel { text-align: left; border-radius: var(--nu-r-card); }
   .cft__titulo, .cft__texto { margin-left: 0; }
   .cft__acoes, .cft__beneficios { justify-content: flex-start; }
-  .cft__acoes > * { flex: 1 1 100%; }
-  .cft__pill { font-size: 17px; }
-  .cft__beneficios { gap: 8px; margin-top: 34px; }
+  .cft__acoes { flex-direction: column; align-items: stretch; gap: 12px; }
+  .cft__acoes .cft__link { align-self: flex-start; }
+  .cft__beneficios { gap: 8px; margin-top: 32px; }
   .cft__beneficio { min-height: 36px; padding: 0 12px; gap: 6px; font-size: var(--nu-fs-dense); }
   .cft__corte, .cft--compacta .cft__corte { right: -260px; }
 }

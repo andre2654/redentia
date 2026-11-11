@@ -222,7 +222,7 @@ usePageSeo({
     />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <CalcBand tone="cream" title="Cenários populares de investimento">
+    <CalcBand v-revelar tone="cream" title="Cenários populares de investimento">
       <template #dek>
         <p>Veja na hora o resultado dos cenários mais buscados, basta clicar e a simulação carrega já preenchida.</p>
       </template>
@@ -235,7 +235,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Simulador de juros compostos grátis e online</template>
       <div class="jc__prose">
         <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
@@ -244,7 +244,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="cream">
+    <CalcSplit v-revelar tone="cream">
       <template #title>O que são Juros Compostos?</template>
       <div class="jc__prose">
         <p>Juros compostos são os "juros sobre juros", ou seja, quando você ganha retorno não apenas sobre o capital inicial, mas também sobre os rendimentos acumulados. É o conceito mais poderoso das finanças pessoais e o segredo para construir riqueza a longo prazo.</p>
@@ -252,7 +252,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcBand tone="white" title-tag="h3" title="Por que Investir com Juros Compostos?">
+    <CalcBand v-revelar tone="white" title-tag="h3" title="Por que Investir com Juros Compostos?">
       <div class="jc__tiles">
         <div v-for="c in whyCards" :key="c.title" class="jc__tile">
           <h4 class="jc__h4 jc__h4--accent">{{ c.title }}</h4>
@@ -261,7 +261,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Como Calcular Juros Compostos: Fórmula Completa</template>
       <template #left>
         <h3 class="jc__sub">Fórmula Matemática</h3>
@@ -277,7 +277,7 @@ usePageSeo({
       >M = C × (1 + i)ⁿ</CalcFormulaCard>
     </CalcSplit>
 
-    <CalcSplit tone="cream" title-tag="h3" size="sm">
+    <CalcSplit v-revelar tone="cream" title-tag="h3" size="sm">
       <template #title>Com Aportes Mensais</template>
       <template #dek>
         <p>Quando você faz aportes regulares, a fórmula se torna um pouco mais complexa:</p>
@@ -291,12 +291,12 @@ usePageSeo({
       <p class="jc__small">Os demais valores seguem a mesma definição</p>
     </CalcSplit>
 
-    <CalcBand tone="white" title="Quanto Rende R$ 500 por Mês em Juros Compostos? (5, 10, 20 e 30 anos)">
+    <CalcBand v-revelar tone="white" title="Quanto Rende R$ 500 por Mês em Juros Compostos? (5, 10, 20 e 30 anos)">
       <template #dek>
         <p>A melhor forma de entender o poder dos juros compostos é ver o que acontece com o mesmo aporte em horizontes diferentes. Na tabela abaixo, simulamos R$ 500 investidos por mês a 10% ao ano (taxa próxima da média histórica da bolsa brasileira):</p>
       </template>
       <div class="jc__band-body">
-        <CalcTableCard
+        <CalcTableCard alinhar-numeros
           tone="cream"
           :columns="['Prazo', 'Total Investido', 'Montante Final', 'Juros Acumulados', 'Multiplicador']"
           :rows="horizonRows"
@@ -306,7 +306,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="cream" title="Exemplos Práticos de Juros Compostos">
+    <CalcBand v-revelar tone="cream" title="Exemplos Práticos de Juros Compostos">
       <div class="jc__ex-grid">
         <div>
           <h3 class="jc__ex-title">Exemplo 1: Investimento Inicial sem Aportes</h3>
@@ -372,9 +372,9 @@ usePageSeo({
       <p class="jc__ex-note">João investiu apenas R$ 60.000 a mais, mas terminou com R$ 2 milhões a mais que Maria! Isso é o poder de começar cedo.</p>
     </CalcBand>
 
-    <CalcBand tone="white" title="Juros Simples vs Juros Compostos">
+    <CalcBand v-revelar tone="white" title="Juros Simples vs Juros Compostos">
       <div class="jc__band-body">
-        <CalcTableCard
+        <CalcTableCard alinhar-numeros
           tone="cream"
           :columns="['Característica', 'Juros Simples', 'Juros Compostos']"
           :rows="simpleVsCompoundRows"
@@ -383,12 +383,12 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="white" title="Poupança vs Juros Compostos: Por Que a Poupança é o Pior Investimento">
+    <CalcBand v-revelar tone="white" title="Poupança vs Juros Compostos: Por Que a Poupança é o Pior Investimento">
       <template #dek>
         <p>A poupança rende 70% da Selic + TR (quando Selic está acima ou igual a 8,5%) ou 0,5% ao mês + TR (quando Selic abaixo de 8,5%). Em 2026 com Selic em 12%, poupança rende cerca de 6,5% a.a. Já o Tesouro Selic, considerado o investimento mais seguro do Brasil, rende próximo da Selic integral, ou seja, ~12% a.a. Mesmo após o IR, ainda ganha de longe da poupança.</p>
       </template>
       <div class="jc__band-body">
-        <CalcTableCard
+        <CalcTableCard alinhar-numeros
           tone="cream"
           :columns="['Investimento', 'Taxa Bruta', 'Após IR', 'Total em 20 anos', 'Diferença vs Poupança']"
           :rows="poupancaRows"
@@ -399,12 +399,12 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
-    <CalcBand tone="cream" title="Como Usar a Calculadora de Juros Compostos">
+    <CalcBand v-revelar tone="cream" title="Como Usar a Calculadora de Juros Compostos">
       <div class="jc__band-body"><CalcSteps :steps="howToSteps" /></div>
     </CalcBand>
 
     <!-- ============ Onde aplicar (split: título à esquerda, tiles à direita) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Tesouro Direto, CDB, LCI e LCA: Onde Aplicar Juros Compostos</template>
       <template #dek>
         <p>Os juros compostos só funcionam de verdade quando você aplica em produtos com retorno consistente. Os 4 mais usados no Brasil hoje:</p>
@@ -418,7 +418,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas Frequentes sobre Juros Compostos</template>
       <template #left>
         <CalcPerguntarIa />
@@ -427,7 +427,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Dicas (texto verbatim) ============ -->
-    <CalcBand tone="white" title="Dicas para Maximizar Seus Juros Compostos">
+    <CalcBand v-revelar tone="white" title="Dicas para Maximizar Seus Juros Compostos">
       <div class="jc__tiles">
         <div v-for="c in tipCards" :key="c.title" class="jc__tile">
           <h4 class="jc__h4 jc__h4--accent">{{ c.title }}</h4>
@@ -437,7 +437,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Rankings + outras calculadoras + E-E-A-T + CTA ============ -->
-    <CalcBand tone="cream" title="Rankings Relacionados">
+    <CalcBand v-revelar tone="cream" title="Rankings Relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -449,7 +449,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="cream" title="Outras Calculadoras">
+    <CalcBand v-revelar tone="cream" title="Outras Calculadoras">
       <div class="jc__grid-cards">
         <NuxtLink to="/calculadora/acoes" class="jc__card-link">
           <h3 class="jc__card-link-title">Simulador de Ações</h3>
@@ -487,15 +487,16 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada ——— */
 .jc__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
-.jc__h4--accent { color: var(--nu-blue-text); }
+/* robustez (11/11/2026): título de cartão que não é link fica em carvão (azul é o que se clica ou se mexe) */
+.jc__h4--accent { color: var(--nu-ink); }
 .jc__h4--negative { color: var(--nu-red-text); }
-.jc__small { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.jc__small { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 .jc__link { text-decoration: underline; }
 .jc__link:hover { color: var(--nu-blue-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .jc__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 .jc__prose p:last-child { margin-bottom: 0; }
@@ -503,7 +504,7 @@ usePageSeo({
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
 .jc__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
-.jc__sub-p { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 420px; }
+.jc__sub-p { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6; max-width: 420px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .jc__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -514,13 +515,15 @@ usePageSeo({
   gap: 10px; margin-top: clamp(24px, 3.5vw, 36px);
 }
 .jc__scenario {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .jc__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.jc__scenario:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.jc__scenario:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .jc__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
-.jc__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.jc__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
 .jc__tiles {
@@ -534,12 +537,12 @@ usePageSeo({
 }
 .jc__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
 .cbd--cream .jc__tile { background: var(--nu-white); }
-.jc__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
-.jc__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
+.jc__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
+.jc__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.7; }
 .jc__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
 .jc__result-box--negative { background: var(--nu-red-tint); }
 .jc__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
-.jc__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
+.jc__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 /* ——— exemplos práticos (cards brancos na banda creme) ——— */
 .jc__ex-grid {
@@ -553,7 +556,7 @@ usePageSeo({
 .jc__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
 .jc__ex-note {
   margin: 22px auto 0; max-width: 680px; text-align: center;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6;
 }
 
 /* ——— cards-link (rankings / outras calculadoras) ——— */
@@ -563,11 +566,13 @@ usePageSeo({
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .jc__card-link {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .jc__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.jc__card-link:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.jc__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .jc__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 .jc__eeat {
@@ -575,6 +580,6 @@ usePageSeo({
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
 .jc__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.jc__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
-.jc__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.jc__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.65; }
+.jc__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 </style>

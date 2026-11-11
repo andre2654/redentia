@@ -5,6 +5,8 @@
 // peça só: carvão, com o corte azul do "t" na frente, que é o sinal da IA da
 // Aportou. Abre o painel do chat aqui mesmo (11/11/2026; antes levava à
 // /busca, que deixou de ser onde se conversa em 02/11).
+// Robustez (11/11/2026): movimento e peso só por token; o corte anda 3px sob o
+// ponteiro, como a seta do NuLinkSeta.
 const painel = useChatPainel()
 </script>
 
@@ -17,14 +19,15 @@ const painel = useChatPainel()
 
 <style scoped>
 .cpi {
-  display: inline-flex; align-items: center; gap: 11px; min-height: 52px; margin-top: 30px; padding: 0 24px 0 20px;
+  display: inline-flex; align-items: center; gap: 11px; min-height: 48px; margin-top: 32px; padding: 0 22px 0 18px;
   border: 0; font-family: inherit; cursor: pointer;
   border-radius: var(--nu-r-pill); background: var(--nu-ink); color: var(--nu-white);
-  font-size: 16.5px; font-weight: var(--nu-w-medio); white-space: nowrap;
-  transition: background .2s, transform .15s var(--nu-ease-saida);
+  font-size: 15.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .cpi:hover { background: var(--nu-ink-hover); color: var(--nu-white); }
 .cpi:active { transform: scale(.98); }
-.cpi :deep(.mkc) { transition: transform .25s var(--nu-ease-saida); }
+.cpi :deep(.mkc) { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .cpi:hover :deep(.mkc) { transform: translateX(3px); }
 </style>

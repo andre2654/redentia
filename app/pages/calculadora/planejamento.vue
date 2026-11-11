@@ -185,7 +185,7 @@ usePageSeo({
     />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <CalcBand tone="cream" title="Cenários populares de planejamento">
+    <CalcBand v-revelar tone="cream" title="Cenários populares de planejamento">
       <template #dek>
         <p>Veja na hora a carteira sugerida e o tempo até a meta dos cenários mais buscados, basta clicar e a simulação carrega já preenchida.</p>
       </template>
@@ -198,7 +198,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Simulador de Planejamento Patrimonial grátis e online</template>
       <template #left>
         <h2 class="pl__sub">O que é Planejamento Patrimonial?</h2>
@@ -211,7 +211,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcBand tone="cream" title-tag="h3" title="Por que Fazer um Planejamento Patrimonial?">
+    <CalcBand v-revelar tone="cream" title-tag="h3" title="Por que Fazer um Planejamento Patrimonial?">
       <div class="pl__tiles">
         <div v-for="c in whyCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--accent">{{ c.title }}</h4>
@@ -220,7 +220,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Reserva de Emergência: Pré-requisito do Planejamento</template>
       <div class="pl__prose">
         <p>Antes de qualquer estratégia patrimonial, monte uma reserva de emergência. Quanto: 6 a 12 meses do seu custo de vida (autônomo ou renda variável: 12 meses; CLT estável: 6 meses). Onde guardar: Tesouro Selic 2030, CDB com liquidez diária de banco grande (FGC até R$ 250 mil), conta remunerada como Nubank, Inter ou C6 que rende ~100% do CDI.</p>
@@ -229,12 +229,12 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
-    <CalcBand tone="cream" title="Como Usar a Calculadora de Planejamento">
+    <CalcBand v-revelar tone="cream" title="Como Usar a Calculadora de Planejamento">
       <div class="pl__band-body"><CalcSteps :steps="howToSteps" /></div>
     </CalcBand>
 
     <!-- ============ Asset allocation (split: título gigante + prosa e tiles à direita) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Asset Allocation: Alocação de Ativos por Perfil</template>
       <div class="pl__prose">
         <p>Asset allocation é a distribuição percentual da carteira entre classes de ativos: ações, FIIs, renda fixa, ouro, internacional. A decisão estratégica de "quanto em cada classe" pesa mais que qual ativo individual escolher dentro da classe.</p>
@@ -249,7 +249,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Estratégias (banda creme, cards brancos com título h3) ============ -->
-    <CalcBand tone="cream" title="Estratégias de Planejamento">
+    <CalcBand v-revelar tone="cream" title="Estratégias de Planejamento">
       <div class="pl__ex-grid">
         <div>
           <h3 class="pl__ex-title">Maior Rentabilidade</h3>
@@ -293,7 +293,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Exemplos de metas (banda branca, cards creme com título h3) ============ -->
-    <CalcBand tone="white" title="Exemplos de Metas e Resultados">
+    <CalcBand v-revelar tone="white" title="Exemplos de Metas e Resultados">
       <div class="pl__ex-grid">
         <div>
           <h3 class="pl__ex-title">Exemplo 1: Aposentadoria Antecipada</h3>
@@ -348,7 +348,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Como interpretar (banda creme centrada + tiles brancos) ============ -->
-    <CalcBand tone="cream" title="Como Interpretar a Carteira Recomendada">
+    <CalcBand v-revelar tone="cream" title="Como Interpretar a Carteira Recomendada">
       <template #dek>
         <p>A carteira recomendada mostra ativos específicos e seus pesos sugeridos. Veja o que cada informação significa:</p>
       </template>
@@ -361,7 +361,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Patrimonial vs sucessório (split: prosa + tiles à direita) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Planejamento Patrimonial vs Planejamento Sucessório</template>
       <div class="pl__prose">
         <p>Os dois conceitos são complementares mas têm focos distintos. Planejamento patrimonial foca em ACUMULAR e GERIR riqueza durante a vida ativa do investidor, escolha de ativos, asset allocation, otimização tributária. Planejamento sucessório foca em TRANSMITIR esse patrimônio aos herdeiros com mínimo de impostos e mínimo de conflito, é uma camada que entra em cena quando o patrimônio começa a ficar relevante.</p>
@@ -376,7 +376,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas Frequentes</template>
       <template #left>
         <CalcPerguntarIa />
@@ -385,7 +385,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Dicas (banda branca, tiles creme) ============ -->
-    <CalcBand tone="white" title="Dicas para Executar Seu Planejamento">
+    <CalcBand v-revelar tone="white" title="Dicas para Executar Seu Planejamento">
       <div class="pl__tiles">
         <div v-for="c in tipCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--accent">{{ c.title }}</h4>
@@ -395,7 +395,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Erros comuns (banda creme, tiles brancos com h4 negativo) ============ -->
-    <CalcBand tone="cream" title="Erros Comuns a Evitar">
+    <CalcBand v-revelar tone="cream" title="Erros Comuns a Evitar">
       <div class="pl__tiles">
         <div v-for="c in errorCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--negative">{{ c.title }}</h4>
@@ -405,7 +405,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Rankings + outras ferramentas + CTA ============ -->
-    <CalcBand tone="white" title="Rankings Relacionados">
+    <CalcBand v-revelar tone="white" title="Rankings Relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -417,7 +417,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="cream" title="Outras Ferramentas">
+    <CalcBand v-revelar tone="cream" title="Outras Ferramentas">
       <div class="pl__grid-cards">
         <NuxtLink to="/calculadora/juros-compostos" class="pl__card-link">
           <h3 class="pl__card-link-title">Calculadora de Juros Compostos</h3>
@@ -443,13 +443,14 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada ——— */
 .pl__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
-.pl__h4--accent { color: var(--nu-blue-text); }
+/* robustez (11/11/2026): título de cartão que não é link fica em carvão (azul é o que se clica ou se mexe) */
+.pl__h4--accent { color: var(--nu-ink); }
 .pl__h4--positive { color: var(--nu-green-text); }
 .pl__h4--negative { color: var(--nu-red-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .pl__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 .pl__prose p:last-child { margin-bottom: 0; }
@@ -467,13 +468,15 @@ usePageSeo({
   gap: 10px; margin-top: clamp(24px, 3.5vw, 36px);
 }
 .pl__scenario {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .pl__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.pl__scenario:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.pl__scenario:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .pl__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
-.pl__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.pl__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 /* ——— tiles (grid de cards pequenos, mesma família do exemplar) ——— */
 .pl__tiles {
@@ -491,13 +494,13 @@ usePageSeo({
    neste setup — descendente é dropado — então fica o descendente scoped puro,
    que casa porque só o último elemento do seletor recebe o data-v). */
 .cbd--cream .pl__tile { background: var(--nu-white); }
-.pl__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.pl__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 .pl__card-p--strong { color: var(--nu-ink); font-weight: var(--nu-w-medio); margin-top: 14px; }
-.pl__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
+.pl__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.7; }
 .pl__list--plain { list-style: none; padding-left: 0; }
 .pl__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
 .pl__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
-.pl__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
+.pl__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 
 /* ——— ex-grid (cards com título h3 acima, família dos exemplos do exemplar) ——— */
 .pl__ex-grid {
@@ -516,12 +519,14 @@ usePageSeo({
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .pl__card-link {
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-cream); box-shadow: var(--nu-shadow-quente); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .cbd--cream .pl__card-link { background: var(--nu-white); }
 .pl__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.pl__card-link:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.pl__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .pl__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 </style>

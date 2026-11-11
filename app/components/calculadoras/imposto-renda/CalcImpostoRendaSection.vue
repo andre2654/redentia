@@ -356,19 +356,20 @@ const lossTxt = computed(() => brl(accumulatedLoss.value))
 
 <style scoped>
 .irs__tipo { margin-bottom: 18px; }
-.irs__dica { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
+.irs__dica { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
 /* o DARF, como um comprovante, na coluna do gráfico: rótulo à esquerda, valor à direita */
 .irs__darf { padding: 20px 22px; border-radius: var(--nu-r-panel); background: var(--nu-band); }
 .irs__darf-titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
 .irs__darf--zero .irs__darf-titulo { color: var(--nu-green-text); }
 .irs__campos { margin: 12px 0 0; padding: 2px 16px; border-radius: var(--nu-r-tile); background: var(--nu-white); }
-.irs__campo { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 10px 0; border-top: 1.5px dashed var(--nu-line); }
+.irs__campo { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 10px 0; border-top: 1px dashed var(--nu-line); }
 .irs__campo:first-child { border-top: 0; }
-.irs__campo dt { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.irs__campo dt { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 .irs__campo dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); text-align: right; font-variant-numeric: tabular-nums; }
-.irs__campo-valor { color: var(--nu-blue-text) !important; }
-.irs__como { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.55; }
+/* o valor a pagar: o número que importa no comprovante, em carvão (azul é o que se mexe na frase) */
+.irs__campo-valor { font-size: var(--nu-fs-lg) !important; }
+.irs__como { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); line-height: 1.55; }
 .irs__como strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* as regras, embaixo das cápsulas */
@@ -377,5 +378,5 @@ const lossTxt = computed(() => brl(accumulatedLoss.value))
 .irs__regras-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 10px; margin-top: 18px; }
 .irs__regras-grade > div { padding: 18px 20px; border-radius: var(--nu-r-tile); background: var(--nu-white); box-shadow: var(--nu-shadow-quente); }
 .irs__regra-titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
-.irs__regra-texto { margin: 6px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.irs__regra-texto { margin: 6px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; }
 </style>

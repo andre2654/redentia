@@ -13,6 +13,11 @@
 // Aportou (11/11/2026): a seção é o creme da página (sem faixa branca); o
 // cartão é o cartão branco dos quadros (raio 32, sombra do cartão branco) e
 // os fios são de 1,5px.
+// Robustez (11/11/2026): uma sombra só (--nu-shadow-branco, um fio de 1px e
+// camadas que quase não se veem), o fio entre a frase e o resultado em 1px, a
+// entrada em --nu-dur-entrada --nu-ease-saida, 60ms depois do topo. No
+// celular, com a barra do chat no pé da tela (html.nu-chat-barra), o salvar
+// gruda logo acima dela em vez de ficar escondido embaixo.
 defineProps<{
   sectionId?: string
   bg?: 'white' | 'cream'
@@ -43,7 +48,7 @@ defineProps<{
 .cco {
   background: var(--nu-page);
   padding: clamp(18px, 2.4vw, 28px) max(clamp(12px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(56px, 7vw, 96px);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) 60ms both;
 }
 .cco--branco { background: var(--nu-page); }
 .cco__titulo-oculto {
@@ -61,13 +66,13 @@ defineProps<{
     "premissas premissas";
   padding: clamp(22px, 3vw, 38px) clamp(20px, 3.8vw, 52px) clamp(18px, 2.2vw, 26px);
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
-  box-shadow: var(--nu-shadow-quente), var(--nu-shadow-branco);
+  box-shadow: var(--nu-shadow-branco);
 }
 .cco--branco .cco__cartao { box-shadow: 0 0 0 1px var(--nu-line-2); }
 .cco__cabeca { grid-area: frase; display: flex; align-items: flex-start; gap: 20px; }
 .cco__frase { flex: 1; min-width: 0; }
 .cco__topo { flex: none; }
-.cco__linha { grid-area: linha; height: 1.5px; margin: 22px 0 20px; background: var(--nu-line-2); }
+.cco__linha { grid-area: linha; height: 1px; margin: 24px 0; background: var(--nu-line-2); }
 .cco__resultado { grid-area: resultado; min-width: 0; }
 .cco__acoes { grid-area: acoes; align-self: end; margin-top: 18px; }
 .cco__grafico { grid-area: grafico; min-width: 0; align-self: end; }
@@ -78,7 +83,7 @@ defineProps<{
   .cco__cartao {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: "frase" "linha" "resultado" "grafico" "premissas" "acoes";
-    border-radius: 26px;
+    border-radius: var(--nu-r-card);
   }
   .cco__cabeca { flex-direction: column-reverse; gap: 12px; }
   .cco__topo { align-self: flex-end; }
@@ -89,10 +94,15 @@ defineProps<{
     position: sticky; bottom: 0; z-index: 2;
     margin: 18px calc(-1 * clamp(20px, 3.8vw, 52px)) calc(-1 * clamp(18px, 2.2vw, 26px));
     padding: 12px clamp(20px, 3.8vw, 52px) calc(14px + env(safe-area-inset-bottom));
-    border-radius: 0 0 26px 26px;
+    border-radius: 0 0 var(--nu-r-card) var(--nu-r-card);
     background: color-mix(in srgb, var(--nu-white) 94%, transparent);
     box-shadow: 0 -10px 30px -20px color-mix(in srgb, var(--nu-ink) 35%, transparent);
     -webkit-backdrop-filter: saturate(1.4) blur(12px); backdrop-filter: saturate(1.4) blur(12px);
   }
+  /* a barra do chat mora no pé da tela: o salvar gruda logo acima dela (a pílula do computador vai até 760px) */
+  :where(html.nu-chat-barra) .cco__acoes { bottom: calc(90px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 760px) {
+  :where(html.nu-chat-barra) .cco__acoes { bottom: calc(72px + env(safe-area-inset-bottom)); }
 }
 </style>

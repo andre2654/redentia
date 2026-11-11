@@ -17,6 +17,13 @@
 // painel azul com o corte gigante, e as faixas em creme (sem faixa branca).
 // O rótulo de cada cartão ("Simulação", "Valuation"…) e a chamada ("Usar
 // calculadora"…) ficam: são texto de âncora dos links internos.
+//
+// ROBUSTEZ (11/11/2026, docs/aportou/robustez.md): mesma página, mesmo texto.
+// O herói e os cartões entram em cascata de 60ms nas curvas dos tokens; as
+// faixas abaixo da dobra entram com o v-revelar (nada fica escondido no HTML);
+// o cartão clicável sobe 2px no hover, afunda ao apertar e tem o anel de foco;
+// o selo "Dica" é o NuSelo; o painel do fim tem uma chamada só (a pílula com a
+// seta) e a segunda vira o link com seta da base.
 
 const calculators = [
   {
@@ -200,10 +207,10 @@ usePageSeo({
     </section>
 
     <!-- Por que usar (texto antigo verbatim) -->
-    <section class="chb__band chb__band--faixa">
+    <section v-revelar class="chb__band chb__band--faixa">
       <NuSectionHeading eyebrow="Por que usar">O que separa essas calculadoras das genéricas</NuSectionHeading>
       <div class="chb__reasons">
-        <article v-for="(r, i) in reasons" :key="r.title" class="chb__reason" :style="{ '--i': i }">
+        <article v-for="r in reasons" :key="r.title" class="chb__reason">
           <h3 class="chb__h3">{{ r.title }}</h3>
           <p class="chb__p">{{ r.body }}</p>
         </article>
@@ -211,7 +218,7 @@ usePageSeo({
     </section>
 
     <!-- Qual calculadora usar (texto antigo verbatim) -->
-    <section class="chb__band">
+    <section v-revelar class="chb__band">
       <NuSectionHeading eyebrow="Guia">
         Qual calculadora usar
         <template #dek>Cada ferramenta resolve um tipo diferente de pergunta. Aqui o atalho pra acertar de primeira.</template>
@@ -233,11 +240,11 @@ usePageSeo({
     </section>
 
     <!-- Boas práticas (texto antigo verbatim) -->
-    <section class="chb__band chb__band--faixa">
+    <section v-revelar class="chb__band chb__band--faixa">
       <NuSectionHeading eyebrow="Boas práticas">Como tirar mais dessas ferramentas</NuSectionHeading>
       <div class="chb__tips">
-        <article v-for="(tip, i) in tips" :key="tip.title" class="chb__tip" :style="{ '--i': i }">
-          <span class="chb__tip-tag">Dica</span>
+        <article v-for="tip in tips" :key="tip.title" class="chb__tip">
+          <NuSelo tom="azul" tamanho="p" class="chb__tip-tag">Dica</NuSelo>
           <h3 class="chb__h3">{{ tip.title }}</h3>
           <p class="chb__p">{{ tip.body }}</p>
         </article>
@@ -245,14 +252,14 @@ usePageSeo({
     </section>
 
     <!-- CTA final (texto antigo verbatim, só a marca muda) -->
-    <section class="chb__band">
+    <section v-revelar class="chb__band">
       <div class="chb__cta">
         <MarcaCorte class="chb__cta-corte nu-corte-fundo" :largura="520" cor="var(--nu-white)" />
         <h2 class="chb__cta-title">Pronto pra começar a investir?</h2>
         <p class="chb__cta-sub">Cadastre-se na Aportou pra ter análises com IA, acompanhamento de carteira e mais.</p>
         <div class="chb__cta-actions">
           <NuBotaoSeta to="/login" variante="creme">Criar conta grátis</NuBotaoSeta>
-          <NuxtLink to="/" class="chb__pill chb__pill--outline">Conhecer a plataforma</NuxtLink>
+          <NuLinkSeta to="/" tom="claro" class="chb__cta-link">Conhecer a plataforma</NuLinkSeta>
         </div>
       </div>
     </section>
@@ -264,15 +271,15 @@ usePageSeo({
 .chb__hero {
   background: var(--nu-page);
   padding: clamp(48px, 7vw, 92px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(56px, 7vw, 92px);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both;
 }
 .chb__h1 {
   margin: 18px 0 0; color: var(--nu-ink);
   font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display);
-  letter-spacing: -0.035em; line-height: .98;
+  letter-spacing: var(--nu-ls-display); line-height: .98;
 }
 .chb__sub {
-  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto);
   line-height: 1.45; margin: 22px 0 0; max-width: 600px;
 }
 .chb__grid {
@@ -282,32 +289,33 @@ usePageSeo({
 /* o cartão do quadro Home: creme de faixa, raio 26, ícone cobalto de traço */
 .chb__card {
   position: relative; overflow: hidden; isolation: isolate;
-  background: var(--nu-band); color: var(--nu-ink); border-radius: 26px; padding: 26px;
+  background: var(--nu-band); color: var(--nu-ink); border-radius: var(--nu-r-card); padding: 28px;
   display: flex; flex-direction: column; gap: 10px; min-height: 250px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
-  animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; animation-delay: calc(var(--i, 0) * 60ms);
 }
 .chb__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); color: var(--nu-ink); }
-.chb__card:active { transform: scale(.99); }
+.chb__card:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.chb__card:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .chb__card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .chb__card-icon { flex: none; color: var(--nu-blue); }
 .chb__card-eyebrow {
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
-  letter-spacing: 0.16em; text-transform: uppercase; text-align: right;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
+  letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; text-align: right;
 }
 .chb__card-title {
   margin: 6px 0 0; color: inherit; font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte);
-  letter-spacing: -0.02em; line-height: 1.15;
+  letter-spacing: var(--nu-ls-titulo); line-height: 1.15;
 }
 .chb__card-body {
-  margin: 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500; line-height: 1.5;
+  margin: 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: var(--nu-w-texto); line-height: 1.5;
 }
 .chb__card-cta {
   margin-top: auto; padding-top: 10px; min-height: 44px;
   display: flex; align-items: center; gap: 8px;
   color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
 }
-.chb__card-seta { flex: none; transition: transform .25s var(--nu-ease-saida); }
+.chb__card-seta { flex: none; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .chb__card:hover .chb__card-seta { transform: translateX(3px); }
 
 /* o destaque: o painel azul da marca, com o corte gigante no canto */
@@ -322,8 +330,8 @@ usePageSeo({
 /* ——— faixas de conteúdo: creme da página e creme de faixa, alternados ——— */
 .chb__band { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
 .chb__band--faixa { background: var(--nu-band); }
-.chb__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.2; }
-.chb__p { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+.chb__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.2; }
+.chb__p { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
 .chb__reasons, .chb__tips {
   /* 230px: as quatro cabem numa linha no desktop (280px deixava a 4ª órfã) */
@@ -333,14 +341,9 @@ usePageSeo({
 /* cartão branco dentro da faixa creme */
 .chb__reason, .chb__tip {
   background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px;
-  box-shadow: var(--nu-shadow-quente);
-  animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
+  box-shadow: var(--nu-shadow-branco);
 }
-.chb__tip-tag {
-  display: inline-flex; align-self: flex-start; margin-bottom: 12px; padding: 4px 9px;
-  border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); color: var(--nu-blue-text);
-  font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); letter-spacing: 0.04em;
-}
+.chb__tip-tag { margin-bottom: 12px; }
 
 .chb__guides { display: flex; flex-direction: column; margin-top: clamp(32px, 4vw, 40px); border-bottom: 1px solid var(--nu-line); }
 /* linhas com fio de 1,5px, como o FAQ dos quadros */
@@ -350,13 +353,13 @@ usePageSeo({
 }
 .chb__guide-head { flex: 0 0 300px; min-width: min(240px, 100%); }
 .chb__use-se {
-  display: block; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
-  letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 8px;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
+  letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; margin-bottom: 8px;
 }
 .chb__points { list-style: none; margin: 0; padding: 0; flex: 1 1 280px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 28px; align-content: start; }
 .chb__points li {
   display: flex; align-items: flex-start; gap: 10px;
-  color: var(--nu-gray-3); font-size: 15.5px; font-weight: 600; line-height: 1.4;
+  color: var(--nu-gray-3); font-size: 15.5px; font-weight: var(--nu-w-medio); line-height: 1.4;
 }
 .chb__check { flex: none; margin-top: 2px; color: var(--nu-green-text); }
 
@@ -369,23 +372,19 @@ usePageSeo({
 .chb__cta-corte { position: absolute; right: -40px; bottom: -150px; z-index: -1; opacity: .08; pointer-events: none; }
 .chb__cta-title {
   margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2);
-  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; max-width: 820px;
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; max-width: 820px;
 }
-.chb__cta-sub { margin: 18px 0 0; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; max-width: 560px; }
-.chb__cta-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-top: 30px; }
-.chb__pill {
-  display: inline-flex; align-items: center; min-height: 62px; border-radius: var(--nu-r-pill);
-  padding: 0 28px; font-size: 19px; font-weight: var(--nu-w-medio); transition: background .2s, transform .15s var(--nu-ease-saida);
-}
-.chb__pill--outline { box-shadow: inset 0 0 0 1.5px var(--nu-white-60); color: var(--nu-white); }
-.chb__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
-.chb__pill--outline:active { transform: scale(.98); }
+.chb__cta-sub { margin: 18px 0 0; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; max-width: 560px; }
+.chb__cta-actions { display: flex; gap: 16px 28px; flex-wrap: wrap; align-items: center; margin-top: 32px; }
+/* a segunda chamada: o link com seta, em branco, com o anel de foco branco sobre o azul */
+.chb__cta-link { font-size: 17px; }
+.chb__cta-actions :deep(.nls:focus-visible::after) { outline-color: var(--nu-white); }
 
 @media (max-width: 640px) {
   .chb__card { min-height: 0; }
   .chb__points { grid-template-columns: minmax(0, 1fr); }
   .chb__cta { border-radius: var(--nu-r-card-lg); }
-  .chb__cta-actions > * { flex: 1 1 100%; justify-content: space-between; }
-  .chb__pill { justify-content: center; font-size: 17px; }
+  .chb__cta-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+  .chb__cta-actions .chb__cta-link { align-self: flex-start; }
 }
 </style>

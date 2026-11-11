@@ -168,7 +168,7 @@ usePageSeo({
     />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <CalcBand tone="cream" title="Cenários populares de IR sobre ações">
+    <CalcBand v-revelar tone="cream" title="Cenários populares de IR sobre ações">
       <template #dek>
         <p>Clique em um cenário típico do investidor brasileiro e a calculadora carrega já preenchida com vendas, lucro e tipo de operação.</p>
       </template>
@@ -181,7 +181,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Simulador de IR sobre ações grátis e online</template>
       <div class="ir__prose">
         <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
@@ -190,7 +190,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="cream">
+    <CalcSplit v-revelar tone="cream">
       <template #title>Como Funciona o IR sobre Ações no Brasil</template>
       <template #dek>
         <p>No Brasil, o Imposto de Renda sobre operações com ações segue regras específicas que todo investidor precisa conhecer. O não pagamento resulta em multas pesadas e problemas com a Receita Federal.</p>
@@ -209,7 +209,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcBand tone="white" title="Tributação de Dividendos: o que Mudou com a Lei 15.270/2025">
+    <CalcBand v-revelar tone="white" title="Tributação de Dividendos: o que Mudou com a Lei 15.270/2025">
       <template #dek>
         <p>A grande dúvida do investidor brasileiro em 2026 é a tributação de dividendos. A regra nova já vale desde 1º de janeiro de 2026, e entender o limite de R$ 50 mil por mês ajuda a organizar a carteira.</p>
       </template>
@@ -235,12 +235,12 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Passo a passo do DARF (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
-    <CalcBand tone="cream" title="Passo a Passo para Pagar o DARF">
+    <CalcBand v-revelar tone="cream" title="Passo a Passo para Pagar o DARF">
       <div class="ir__band-body"><CalcSteps :steps="darfSteps" /></div>
     </CalcBand>
 
     <!-- ============ Declaração IRPF (banda branca, tiles creme) ============ -->
-    <CalcBand tone="white" title="Como Declarar Suas Ações no IRPF 2026">
+    <CalcBand v-revelar tone="white" title="Como Declarar Suas Ações no IRPF 2026">
       <template #dek>
         <p>Pagar o DARF mensal não substitui a declaração anual no IRPF. A Receita Federal exige a declaração completa de operações em renda variável, mesmo as isentas, e cruza a informação com a e-Financeira das corretoras. Veja o que precisa ser feito:</p>
       </template>
@@ -286,7 +286,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ FIIs (banda creme, tiles brancos) ============ -->
-    <CalcBand tone="cream" title="IR sobre FIIs (Fundos Imobiliários)">
+    <CalcBand v-revelar tone="cream" title="IR sobre FIIs (Fundos Imobiliários)">
       <template #dek>
         <p>Fundos Imobiliários têm regime tributário próprio, diferente das ações. Saber a regra evita pagar imposto a mais ou a menos.</p>
       </template>
@@ -311,7 +311,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Criptomoedas (banda branca, tiles creme) ============ -->
-    <CalcBand tone="white" title="IR sobre Criptomoedas">
+    <CalcBand v-revelar tone="white" title="IR sobre Criptomoedas">
       <template #dek>
         <p>Bitcoin, Ethereum e demais criptomoedas têm regime próprio definido pela IN RFB 1.888/2019 e atualizações. Confunde porque parece ações, mas as regras divergem em pontos importantes.</p>
       </template>
@@ -341,7 +341,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas Frequentes sobre IR de Ações</template>
       <template #left>
         <CalcPerguntarIa />
@@ -350,7 +350,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Evite estes erros (texto verbatim) ============ -->
-    <CalcBand tone="white" title="Evite Estes Erros">
+    <CalcBand v-revelar tone="white" title="Evite Estes Erros">
       <div class="ir__tiles ir__tiles--duo">
         <div v-for="c in avoidCards" :key="c.title" class="ir__tile ir__tile--danger">
           <h4 class="ir__h4 ir__h4--negative">{{ c.title }}</h4>
@@ -360,7 +360,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Rankings + outras ferramentas + E-E-A-T + CTA ============ -->
-    <CalcBand tone="cream" title="Rankings Relacionados">
+    <CalcBand v-revelar tone="cream" title="Rankings Relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -372,7 +372,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="cream" title="Outras Ferramentas">
+    <CalcBand v-revelar tone="cream" title="Outras Ferramentas">
       <div class="ir__grid-cards">
         <NuxtLink to="/calculadora/acoes" class="ir__card-link">
           <h3 class="ir__card-link-title">Simulador de Ações</h3>
@@ -410,14 +410,15 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada ——— */
 .ir__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
-.ir__h4--accent { color: var(--nu-blue-text); }
+/* robustez (11/11/2026): título de cartão que não é link fica em carvão (azul é o que se clica ou se mexe) */
+.ir__h4--accent { color: var(--nu-ink); }
 .ir__h4--negative { color: var(--nu-red-text); }
 .ir__link { text-decoration: underline; }
 .ir__link:hover { color: var(--nu-blue-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .ir__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 .ir__prose p:last-child { margin-bottom: 0; }
@@ -435,13 +436,15 @@ usePageSeo({
   gap: 10px; margin-top: clamp(24px, 3.5vw, 36px);
 }
 .ir__scenario {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .ir__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.ir__scenario:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.ir__scenario:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .ir__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
-.ir__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.ir__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
 .ir__tiles {
@@ -461,13 +464,13 @@ usePageSeo({
 .cbd--cream .ir__tile { background: var(--nu-white); }
 .csp--cream .ir__tile { background: var(--nu-white); }
 .ir__tile--danger { background: var(--nu-red-tint); }
-.ir__tile-title { margin: 0 0 8px; color: var(--nu-blue-text); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
-.ir__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
-.ir__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
+.ir__tile-title { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
+.ir__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
+.ir__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.7; }
 .ir__list :deep(strong), .ir__list strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .ir__note {
   margin: 22px auto 0; max-width: 680px; text-align: center;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6;
 }
 
 /* ——— cards-link (rankings / outras ferramentas) ——— */
@@ -477,11 +480,13 @@ usePageSeo({
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .ir__card-link {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .ir__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.ir__card-link:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.ir__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .ir__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
@@ -490,6 +495,6 @@ usePageSeo({
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
 .ir__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.ir__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
-.ir__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.ir__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.65; }
+.ir__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 </style>

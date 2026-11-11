@@ -11,6 +11,9 @@
 // Título, H1, URL e os rótulos do resultado não mudam: o dono liberou mexer
 // na página só para isto. O HTML cacheado na borda é o mesmo para todo mundo;
 // sessão, alerta criado e inscrição só existem depois do mount.
+// Robustez (11/11/2026), só o acabamento: os botões respondem ao apertar, o
+// campo ganha o anel de 3px no foco e a cor muda nas curvas dos tokens. Texto,
+// tamanho e ordem iguais.
 const props = defineProps<{
   ticker: string
   /** o preço teto médio do resultado; null some com o alerta */
@@ -115,13 +118,15 @@ const isca = ref('')
   background: var(--nu-cream); border-radius: 18px; padding: 18px 22px;
 }
 .cct__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.1px; }
-.cct__texto { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.cct__texto { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; }
 .cct__btn {
   margin-top: 14px; background: var(--nu-blue); color: var(--nu-white); border: none;
   border-radius: var(--nu-r-pill); padding: 11px 20px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte);
-  cursor: pointer; transition: background .2s;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .cct__btn:hover { background: var(--nu-blue-hover); }
+.cct__btn:active:not(:disabled) { transform: scale(.98); }
 .cct__btn:disabled { opacity: .6; cursor: default; }
 .cct__btn--linha { margin-top: 0; flex-shrink: 0; }
 .cct__linha { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
@@ -129,10 +134,12 @@ const isca = ref('')
   flex: 1 1 200px; min-width: 0;
   background: var(--nu-white); color: var(--nu-ink);
   border: 1px solid var(--nu-cream-line); border-radius: var(--nu-r-pill);
-  padding: 10px 16px; font-size: var(--nu-fs-sm); font-weight: 500;
+  padding: 10px 16px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto);
+  transition: border-color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.cct__input:focus { outline: 2px solid var(--nu-blue); outline-offset: 1px; }
-.cct__legal { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 500; }
+.cct__input:hover { border-color: var(--nu-borda-campo); }
+.cct__input:focus { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
+.cct__legal { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
 .cct__legal a { color: inherit; text-decoration: underline; }
 .cct__ok { margin: 12px 0 0; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; }
 .cct__nota { margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; }

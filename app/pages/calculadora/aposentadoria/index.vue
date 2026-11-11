@@ -255,7 +255,7 @@ usePageSeo({
     />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <CalcBand tone="cream" title="Cenários populares de aposentadoria">
+    <CalcBand v-revelar tone="cream" title="Cenários populares de aposentadoria">
       <template #dek>
         <p>Veja na hora o patrimônio necessário e o aporte mensal pra cada cenário, basta clicar e a simulação carrega já preenchida.</p>
       </template>
@@ -268,7 +268,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Simulador de Aposentadoria grátis e online</template>
       <div class="ap__prose">
         <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
@@ -276,7 +276,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="cream">
+    <CalcSplit v-revelar tone="cream">
       <template #title>Como Planejar sua Aposentadoria no Brasil</template>
       <div class="ap__prose">
         <p>Aposentadoria não acontece por acaso, é resultado de planejamento, disciplina e juros compostos trabalhando por décadas. Quanto mais cedo você começar a planejar, mais confortável será sua aposentadoria e menor será o aporte mensal exigido.</p>
@@ -284,7 +284,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcBand tone="white" title-tag="h3" title="Os 3 Pilares do Planejamento de Aposentadoria">
+    <CalcBand v-revelar tone="white" title-tag="h3" title="Os 3 Pilares do Planejamento de Aposentadoria">
       <div class="ap__tiles">
         <div v-for="c in pillarCards" :key="c.title" class="ap__tile">
           <h4 class="ap__h4 ap__h4--accent">{{ c.title }}</h4>
@@ -293,7 +293,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcSplit tone="cream">
+    <CalcSplit v-revelar tone="cream">
       <template #title>Reserva de Emergência: Pré-requisito da Aposentadoria</template>
       <div class="ap__prose">
         <p>Antes de pensar em FIRE, regra dos 4% ou previdência privada, monte uma reserva de emergência. Ela é o que evita você sacar seus investimentos de longo prazo em momentos ruins (perda de emprego, problema de saúde, despesa inesperada) e quebrar o efeito dos juros compostos.</p>
@@ -313,7 +313,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- split de fórmula em banda branca = CalcFormulaCard creme (default, pin do design) -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>A Regra dos 4% (Safe Withdrawal Rate)</template>
       <template #dek>
         <p>A regra dos 4%, derivada do Trinity Study (1998), é o pilar matemático da aposentadoria moderna. Ela diz que você pode sacar 4% do seu patrimônio inicial por ano (corrigido pela inflação) com altíssima probabilidade de não acabar o dinheiro em 30 anos. No Brasil, com taxas reais mais altas, a regra é até mais confortável.</p>
@@ -327,7 +327,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="cream">
+    <CalcSplit v-revelar tone="cream">
       <template #title>Taxa de Retirada Segura (SWR) e Regra dos 4%</template>
       <template #dek>
         <p>A Safe Withdrawal Rate (SWR) é o percentual que você pode sacar do patrimônio por ano sem o risco de acabar o dinheiro durante a aposentadoria. A regra dos 4% nasceu do Trinity Study de 1998, que rodou simulações com dados históricos do mercado americano de 1925 a 1995 e concluiu que 4% real (ajustado pela inflação) por 30 anos tem altíssima taxa de sucesso.</p>
@@ -343,7 +343,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Movimento FIRE: Aposentadoria Antecipada no Brasil</template>
       <template #dek>
         <p>FIRE (Financial Independence, Retire Early) é um movimento global que prega independência financeira e aposentadoria antecipada através de poupança agressiva (50-70% da renda) e investimentos disciplinados. No Brasil, com Selic alta e ferramentas como Tesouro Direto, FIRE é matematicamente viável.</p>
@@ -356,12 +356,12 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcBand tone="cream" title="Quanto Preciso Acumular para Cada Renda na Aposentadoria">
+    <CalcBand v-revelar tone="cream" title="Quanto Preciso Acumular para Cada Renda na Aposentadoria">
       <template #dek>
         <p>Tabela de referência rápida usando a regra dos 4%, sem considerar INSS e sem ajuste pela inflação. Para projeções com inflação, use a calculadora acima.</p>
       </template>
       <div class="ap__band-body">
-        <CalcTableCard
+        <CalcTableCard alinhar-numeros
           tone="white"
           :columns="['Renda mensal', 'Renda anual', 'Patrimônio (4%)', 'Aporte 25 anos (10% a.a.)']"
           :rows="wealthRows"
@@ -371,7 +371,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="white" title="Cenários Reais de Aposentadoria">
+    <CalcBand v-revelar tone="white" title="Cenários Reais de Aposentadoria">
       <div class="ap__ex-grid">
         <div v-for="sc in realScenarios" :key="sc.h3">
           <h3 class="ap__ex-title">{{ sc.h3 }}</h3>
@@ -389,12 +389,12 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
-    <CalcBand tone="cream" title="Como Usar a Calculadora de Aposentadoria">
+    <CalcBand v-revelar tone="cream" title="Como Usar a Calculadora de Aposentadoria">
       <div class="ap__band-body"><CalcSteps :steps="howToSteps" /></div>
     </CalcBand>
 
     <!-- ============ Previdência privada (split: título à esquerda, tiles à direita) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Previdência Privada (PGBL e VGBL) vs Investimentos Diretos</template>
       <template #dek>
         <p>Previdência privada complementa o INSS e funciona como veículo automatizado de aposentadoria, com débito mensal e benefício fiscal. PGBL e VGBL são os dois principais formatos no Brasil, cada um indicado pra um perfil específico de declaração de Imposto de Renda. Saber qual escolher (e se vale escolher algum) muda bastante o resultado de longo prazo.</p>
@@ -411,7 +411,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas Frequentes sobre Aposentadoria</template>
       <template #left>
         <CalcPerguntarIa />
@@ -420,7 +420,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Dicas (texto verbatim) ============ -->
-    <CalcBand tone="white" title="Dicas para Acelerar sua Aposentadoria">
+    <CalcBand v-revelar tone="white" title="Dicas para Acelerar sua Aposentadoria">
       <div class="ap__tiles">
         <div v-for="c in tipCards" :key="c.title" class="ap__tile">
           <h4 class="ap__h4 ap__h4--accent">{{ c.title }}</h4>
@@ -430,7 +430,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Rankings + outras calculadoras + E-E-A-T + CTA ============ -->
-    <CalcBand tone="cream" title="Rankings Relacionados">
+    <CalcBand v-revelar tone="cream" title="Rankings Relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -442,7 +442,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="cream" title="Outras Calculadoras">
+    <CalcBand v-revelar tone="cream" title="Outras Calculadoras">
       <div class="ap__grid-cards">
         <NuxtLink to="/calculadora/quanto-investir" class="ap__card-link">
           <h3 class="ap__card-link-title">Quanto Investir por Mês</h3>
@@ -481,13 +481,14 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada ——— */
 .ap__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
-.ap__h4--accent { color: var(--nu-blue-text); }
+/* robustez (11/11/2026): título de cartão que não é link fica em carvão (azul é o que se clica ou se mexe) */
+.ap__h4--accent { color: var(--nu-ink); }
 .ap__link { text-decoration: underline; }
 .ap__link:hover { color: var(--nu-blue-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .ap__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 .ap__prose p:last-child { margin-bottom: 0; }
@@ -503,13 +504,15 @@ usePageSeo({
   gap: 10px; margin-top: clamp(24px, 3.5vw, 36px);
 }
 .ap__scenario {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .ap__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.ap__scenario:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.ap__scenario:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .ap__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
-.ap__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.ap__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
 .ap__tiles {
@@ -525,17 +528,17 @@ usePageSeo({
 .cbd--cream .ap__tile { background: var(--nu-white); }
 .csp--cream .ap__tile { background: var(--nu-white); }
 .ap__tile--push { margin-top: 22px; }
-.ap__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
-.ap__card-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.6; }
-.ap__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
+.ap__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
+.ap__card-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); line-height: 1.6; }
+.ap__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.7; }
 .ap__list strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .ap__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
-.ap__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
+.ap__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; font-variant-numeric: tabular-nums; }
 
 /* ——— exemplos da fórmula (coluna direita do split) ——— */
 .ap__examples { margin-top: 18px; }
 .ap__examples p {
-  margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500;
+  margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto);
   line-height: 1.65;
 }
 .ap__examples strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
@@ -557,11 +560,13 @@ usePageSeo({
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .ap__card-link {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .ap__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.ap__card-link:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.ap__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .ap__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
@@ -570,6 +575,6 @@ usePageSeo({
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
 .ap__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.ap__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
-.ap__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.ap__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.65; }
+.ap__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 </style>

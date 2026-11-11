@@ -553,14 +553,14 @@ usePageSeo({
           />?
         </CalcFrase>
         <!-- os números que a conta usa, com os rótulos de sempre: para ler; "Usar
-             meus números" faz de cada valor um selo com o painel da frase -->
-        <CalcPremissas v-model:aberto="meusNumeros" class="pt__dados" :class="{ 'pt__dados--edita': meusNumeros }" nome="Os dados desta conta" abrir="Usar meus números" fechar="Pronto">
+             meus números" acende cada valor no lugar, como o selo da frase (CalcFraseCampo leitura) -->
+        <CalcPremissas v-model:aberto="meusNumeros" class="pt__dados" nome="Os dados desta conta" abrir="Usar meus números" fechar="Pronto">
           <template #resumo>
-            <span class="pt__dado">Preço Atual (R$) <CalcFraseCampo v-if="meusNumeros" v-model="price" livre rotulo="Preço Atual (R$)" :min="1" :max="priceMax" :passo="0.5" :texto="priceTxt" prefixo="R$" /><b v-else>{{ priceTxt }}</b></span>
-            <span class="pt__dado">Lucro por Ação - LPA (R$) <CalcFraseCampo v-if="meusNumeros" v-model="lpa" livre rotulo="Lucro por Ação - LPA (R$)" :min="0" :max="lpaMax" :passo="0.1" :texto="lpaTxt" prefixo="R$" /><b v-else>{{ lpaTxt }}</b></span>
-            <span class="pt__dado">Valor Patrimonial - VPA (R$) <CalcFraseCampo v-if="meusNumeros" v-model="vpa" livre rotulo="Valor Patrimonial - VPA (R$)" :min="0" :max="vpaMax" :passo="0.5" :texto="vpaTxt" prefixo="R$" /><b v-else>{{ vpaTxt }}</b></span>
-            <span class="pt__dado">Dividendo Anual (R$) <CalcFraseCampo v-if="meusNumeros" v-model="dividend" livre rotulo="Dividendo Anual (R$)" :min="0" :max="dividendMax" :passo="0.1" :texto="dividendTxt" prefixo="R$" /><b v-else>{{ dividendTxt }}</b></span>
-            <span class="pt__dado">P/L Médio do Setor <CalcFraseCampo v-if="meusNumeros" v-model="sectorPL" livre rotulo="P/L Médio do Setor" :min="1" :max="plMax" :passo="0.5" :texto="sectorPLTxt" :atalhos="plPresets" /><b v-else>{{ sectorPLTxt }}</b></span>
+            <span class="pt__dado">Preço Atual (R$) <CalcFraseCampo :leitura="!meusNumeros" v-model="price" livre rotulo="Preço Atual (R$)" :min="1" :max="priceMax" :passo="0.5" :texto="priceTxt" prefixo="R$" /></span>
+            <span class="pt__dado">Lucro por Ação - LPA (R$) <CalcFraseCampo :leitura="!meusNumeros" v-model="lpa" livre rotulo="Lucro por Ação - LPA (R$)" :min="0" :max="lpaMax" :passo="0.1" :texto="lpaTxt" prefixo="R$" /></span>
+            <span class="pt__dado">Valor Patrimonial - VPA (R$) <CalcFraseCampo :leitura="!meusNumeros" v-model="vpa" livre rotulo="Valor Patrimonial - VPA (R$)" :min="0" :max="vpaMax" :passo="0.5" :texto="vpaTxt" prefixo="R$" /></span>
+            <span class="pt__dado">Dividendo Anual (R$) <CalcFraseCampo :leitura="!meusNumeros" v-model="dividend" livre rotulo="Dividendo Anual (R$)" :min="0" :max="dividendMax" :passo="0.1" :texto="dividendTxt" prefixo="R$" /></span>
+            <span class="pt__dado">P/L Médio do Setor <CalcFraseCampo :leitura="!meusNumeros" v-model="sectorPL" livre rotulo="P/L Médio do Setor" :min="1" :max="plMax" :passo="0.5" :texto="sectorPLTxt" :atalhos="plPresets" /></span>
           </template>
         </CalcPremissas>
         <p class="pt__dica">Valores ilustrativos, ajuste com os fundamentos reais da ação (LPA, VPA e dividendos dos últimos 12 meses).</p>
@@ -593,9 +593,9 @@ usePageSeo({
                clique do site inteiro, então TODA renderização mandava o Google
                num redirect em vez de na URL canônica. Alimentava as 1.073
                "Página com redirecionamento" do relatório de cobertura. -->
-          <NuxtLink :to="`/asset/${activeTicker.toUpperCase()}`" class="pt__asset-link">
-            Ver análise completa de {{ activeTicker }} →
-          </NuxtLink>
+          <p class="pt__asset-link">
+            <NuLinkSeta :to="`/asset/${activeTicker.toUpperCase()}`">Ver análise completa de {{ activeTicker }}</NuLinkSeta>
+          </p>
         </template>
       </template>
 
@@ -995,12 +995,10 @@ usePageSeo({
    conta: a lista dos dados e os cartões de cada método (as barras são o CalcBarras). */
 .pt__dados { margin-top: 16px; }
 /* cada dado é um bloco que não se parte: a linha quebra entre um dado e outro */
-.pt__dado { display: inline-block; white-space: nowrap; }
-.pt__dado b { color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
+/* a entrelinha já cabe o selo: ao virar editável, o valor acende no lugar e a linha não se mexe */
+.pt__dado { display: inline-block; white-space: nowrap; line-height: 1.9; }
 .pt__dado:not(:last-child)::after { content: '·'; margin: 0 9px; color: var(--nu-gray); }
-/* com "Usar meus números", cada valor é um selo da frase: mais ar entre as linhas */
-.pt__dados--edita .pt__dado { line-height: 2.1; }
-.pt__dado .cfc { font-weight: var(--nu-w-forte); }
+.pt__dado .cfc { font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .pt__dica { margin: 8px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 
 /* embaixo do número: o preço e a margem */
@@ -1011,11 +1009,7 @@ usePageSeo({
 .pt__ponto { width: 11px; height: 11px; border-radius: 50%; background: var(--nu-blue); flex: none; }
 .pt__ponto--preco { background: var(--nu-ink); }
 
-.pt__asset-link {
-  display: inline-flex; align-items: center; min-height: 44px; margin-top: 10px;
-  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
-}
-.pt__asset-link:hover { color: var(--nu-blue-hover); }
+.pt__asset-link { margin: 20px 0 0; font-size: var(--nu-fs-sm); }
 
 /* no pé do cartão: o alerta e a newsletter lado a lado, a fonte como aviso curto */
 :deep(.cco__premissas .cct) { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); margin-top: 0; }

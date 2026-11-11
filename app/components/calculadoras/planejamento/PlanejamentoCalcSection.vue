@@ -247,16 +247,22 @@ useConviteDaConta('planejamento', () => JSON.stringify(simParams.value), () => {
     </template>
 
     <template #resultado>
+      <!-- a troca entre carregando, erro e pronto é um fade curto, no mesmo lugar -->
+      <Transition name="pcs-chega">
       <CalcNumero v-if="numero" v-bind="numero" />
       <div v-else-if="erro" class="pcs__erro" role="alert">
         <p class="pcs__erro-texto">Não deu para ler os dados da B3 agora.</p>
         <button type="button" class="pcs__de-novo" @click="carregar">Tentar de novo</button>
       </div>
+      <!-- carregando: o esqueleto no tamanho do resultado (número, selo e a linha que explica), sem pulo quando ele chega -->
       <div v-else class="pcs__lendo" aria-busy="true">
         <p class="pcs__lendo-legenda">Você chega lá em</p>
-        <span class="pcs__esqueleto" aria-hidden="true" />
+        <NuSkeleton class="pcs__esq-numero" width="min(320px, 80%)" height="clamp(46px, 5.2vw, 68px)" radius="tile" />
+        <NuSkeleton class="pcs__esq-selo" width="190px" height="28px" radius="var(--nu-r-tag)" />
         <p class="pcs__lendo-texto"><span class="pcs__pulso" aria-hidden="true" /> Lendo 5 anos de preços e dividendos da B3…</p>
+        <NuSkeleton class="pcs__esq-linha" width="min(360px, 70%)" height="12px" radius="chip" />
       </div>
+      </Transition>
     </template>
 
     <template #acoes>
@@ -311,28 +317,26 @@ useConviteDaConta('planejamento', () => JSON.stringify(simParams.value), () => {
 
 <style scoped>
 .pcs__carteira-escolha { margin-top: 18px; }
-.pcs__dica { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
+.pcs__dica { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
-/* enquanto a carteira sai da B3 (~2 s) */
-.pcs__lendo-legenda { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
-.pcs__esqueleto {
-  display: block; width: min(320px, 80%); height: 56px; margin-top: 8px; border-radius: 16px;
-  background: linear-gradient(90deg, var(--nu-cream-2) 0%, var(--nu-line-2) 50%, var(--nu-cream-2) 100%);
-  background-size: 200% 100%; animation: pcs-brilha 1.4s ease-in-out infinite;
-}
-.pcs__lendo-texto { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.pcs__pulso { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-blue); animation: pcs-pulsa 1.2s ease-in-out infinite; }
-@keyframes pcs-brilha { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.pcs-chega-enter-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.pcs-chega-enter-from { opacity: 0; }
+
+/* enquanto o dado sai da B3: o esqueleto do tamanho do resultado (o NuSkeleton da base) */
+.pcs__lendo-legenda { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); }
+.pcs__esq-numero { margin-top: 8px; }
+.pcs__esq-selo { margin-top: 16px; }
+.pcs__lendo-texto { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
+.pcs__esq-linha { margin-top: 8px; }
+.pcs__pulso { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-blue); animation: pcs-pulsa 1.2s var(--nu-ease-cor) infinite; }
 @keyframes pcs-pulsa { 50% { opacity: .3; } }
-@media (prefers-reduced-motion: reduce) {
-  .pcs__esqueleto, .pcs__pulso { animation: none; }
-}
 
 .pcs__erro-texto { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .pcs__de-novo {
   margin-top: 14px; min-height: 44px; padding: 0 20px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-ink);
   background: var(--nu-white); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer;
-  transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .pcs__de-novo:hover { background: var(--nu-ink); color: var(--nu-white); }
 .pcs__de-novo:active { transform: scale(.98); }
@@ -340,7 +344,7 @@ useConviteDaConta('planejamento', () => JSON.stringify(simParams.value), () => {
 /* a carteira sugerida, embaixo das cápsulas */
 .pcs__carteira { max-width: 1080px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
 .pcs__carteira-titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; text-align: center; }
-.pcs__carteira-desc { margin: 6px auto 0; max-width: 560px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; text-align: center; }
+.pcs__carteira-desc { margin: 6px auto 0; max-width: 560px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; text-align: center; }
 .pcs__ativos {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 10px;
   margin: 20px 0 0; padding: 0; list-style: none;
@@ -349,12 +353,14 @@ useConviteDaConta('planejamento', () => JSON.stringify(simParams.value), () => {
   display: grid; grid-template-columns: 1fr auto; grid-template-areas: "cat peso" "ticker peso" "ret ret";
   row-gap: 2px; column-gap: 12px; height: 100%; padding: 16px 18px; border-radius: var(--nu-r-tile);
   background: var(--nu-white); color: inherit; box-shadow: var(--nu-shadow-quente);
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 a.pcs__ativo:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+a.pcs__ativo:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+a.pcs__ativo:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .pcs__ativo-cat { grid-area: cat; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0.14em; text-transform: uppercase; }
 .pcs__ativo-ticker { grid-area: ticker; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
-.pcs__ativo-peso { grid-area: peso; align-self: center; color: var(--nu-blue-text); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
+.pcs__ativo-peso { grid-area: peso; align-self: center; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .pcs__ativo-ret { grid-area: ret; margin-top: 8px; font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .pcs__ativo-ret--alta { color: var(--nu-green-text); }
 .pcs__ativo-ret--queda { color: var(--nu-red-text); }

@@ -390,17 +390,23 @@ useConviteDaConta('acoes', () => JSON.stringify([simParams.value, simTextos.valu
     </template>
 
     <template #resultado>
+      <!-- a troca entre carregando, vazio, erro e pronto é um fade curto, no mesmo lugar -->
+      <Transition name="cas-chega">
       <CalcNumero v-if="numero" v-bind="numero" />
       <p v-else-if="calculo.estado === 'vazio'" class="cas__aviso">Escolha pelo menos um ativo na frase para ver a conta.</p>
       <div v-else-if="calculo.estado === 'sem-dados'" class="cas__erro" role="alert">
         <p class="cas__erro-texto">Não deu para ler o histórico de {{ calculo.falhos.join(', ') }} agora.</p>
         <button type="button" class="cas__de-novo" @click="carregar">Tentar de novo</button>
       </div>
+      <!-- carregando: o esqueleto no tamanho do resultado (número, selo e a linha que explica), sem pulo quando ele chega -->
       <div v-else class="cas__lendo" aria-busy="true">
         <p class="cas__lendo-legenda">Hoje você teria</p>
-        <span class="cas__esqueleto" aria-hidden="true" />
+        <NuSkeleton class="cas__esq-numero" width="min(320px, 80%)" height="clamp(46px, 5.2vw, 68px)" radius="tile" />
+        <NuSkeleton class="cas__esq-selo" width="190px" height="28px" radius="var(--nu-r-tag)" />
         <p class="cas__lendo-texto"><span class="cas__pulso" aria-hidden="true" /> Lendo o histórico de {{ ativosTxt }} na B3…</p>
+        <NuSkeleton class="cas__esq-linha" width="min(360px, 70%)" height="12px" radius="chip" />
       </div>
+      </Transition>
     </template>
 
     <template #acoes>
@@ -442,26 +448,24 @@ useConviteDaConta('acoes', () => JSON.stringify([simParams.value, simTextos.valu
 <style scoped>
 .cas__aviso { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 
-/* enquanto o histórico sai da B3 */
-.cas__lendo-legenda { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
-.cas__esqueleto {
-  display: block; width: min(320px, 80%); height: 56px; margin-top: 8px; border-radius: 16px;
-  background: linear-gradient(90deg, var(--nu-cream-2) 0%, var(--nu-line-2) 50%, var(--nu-cream-2) 100%);
-  background-size: 200% 100%; animation: cas-brilha 1.4s ease-in-out infinite;
-}
-.cas__lendo-texto { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.cas__pulso { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-blue); animation: cas-pulsa 1.2s ease-in-out infinite; }
-@keyframes cas-brilha { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.cas-chega-enter-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.cas-chega-enter-from { opacity: 0; }
+
+/* enquanto o dado sai da B3: o esqueleto do tamanho do resultado (o NuSkeleton da base) */
+.cas__lendo-legenda { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); }
+.cas__esq-numero { margin-top: 8px; }
+.cas__esq-selo { margin-top: 16px; }
+.cas__lendo-texto { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
+.cas__esq-linha { margin-top: 8px; }
+.cas__pulso { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-blue); animation: cas-pulsa 1.2s var(--nu-ease-cor) infinite; }
 @keyframes cas-pulsa { 50% { opacity: .3; } }
-@media (prefers-reduced-motion: reduce) {
-  .cas__esqueleto, .cas__pulso { animation: none; }
-}
 
 .cas__erro-texto { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .cas__de-novo {
   margin-top: 14px; min-height: 44px; padding: 0 20px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-ink);
   background: var(--nu-white); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer;
-  transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .cas__de-novo:hover { background: var(--nu-ink); color: var(--nu-white); }
 .cas__de-novo:active { transform: scale(.98); }

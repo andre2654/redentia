@@ -225,7 +225,7 @@ usePageSeo({
     />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <CalcBand tone="cream" title="Cenários populares de dividend yield">
+    <CalcBand v-revelar tone="cream" title="Cenários populares de dividend yield">
       <template #dek>
         <p>Veja na hora o DY dos ativos mais buscados e os cenários on cost mais comuns. Basta clicar e a calculadora carrega já preenchida.</p>
       </template>
@@ -238,7 +238,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Simulador de dividend yield grátis e online</template>
       <div class="dy__prose">
         <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
@@ -250,7 +250,7 @@ usePageSeo({
     <!-- ============ Modos de renda: a conta em reais (SEO do cluster
          "calculadora de dividendos mensais" / "quanto preciso pra viver de
          dividendos") ============ -->
-    <CalcSplit tone="cream">
+    <CalcSplit v-revelar tone="cream">
       <template #title>Quanto você recebe de dividendos por mês</template>
       <template #dek>
         <p>O dividend yield responde em percentual, mas a pergunta de quem investe pra renda é em reais: quanto cai na conta todo mês. Os modos <strong>Renda mensal</strong> e <strong>Quanto preciso</strong> da calculadora fazem as duas pontas dessa conta.</p>
@@ -273,7 +273,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="white" title-tag="h3" size="sm">
+    <CalcSplit v-revelar tone="white" title-tag="h3" size="sm">
       <template #title>Dividendos reinvestidos: como a projeção é feita</template>
       <div class="dy__prose">
         <p>Quando você reinveste os dividendos, cada pagamento compra mais cotas, que passam a pagar dividendos também. A projeção da calculadora aplica a taxa mensal equivalente ao DY anual, <strong>(1 + DY)<sup>1/12</sup> − 1</strong>, sobre o patrimônio acumulado mais os aportes do período.</p>
@@ -282,7 +282,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="cream">
+    <CalcSplit v-revelar tone="cream">
       <template #title>O que é Dividend Yield?</template>
       <div class="dy__prose">
         <p>Dividend Yield (DY) é um indicador que mostra quanto uma empresa paga em dividendos em relação ao preço da ação. É expresso em porcentagem anual e é fundamental para quem investe buscando renda passiva.</p>
@@ -296,7 +296,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="white" title-tag="h3" size="sm">
+    <CalcSplit v-revelar tone="white" title-tag="h3" size="sm">
       <template #title>DY On Cost, O Verdadeiro Retorno</template>
       <div class="dy__prose">
         <p>DY on cost é o dividend yield calculado sobre o seu preço de compra, não o preço atual. Se você comprou uma ação por R$ 20 e ela vale R$ 30 hoje, mas continua pagando R$ 1,50 de dividendo, seu DY on cost é 7,5% (1,50÷20), não 5% (1,50÷30).</p>
@@ -304,9 +304,9 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcBand tone="cream" title="Média de DY por Tipo de Ativo">
+    <CalcBand v-revelar tone="cream" title="Média de DY por Tipo de Ativo">
       <div class="dy__band-body">
-        <CalcTableCard
+        <CalcTableCard alinhar-numeros
           :columns="['Tipo de Ativo', 'DY Típico', 'Observações']"
           :rows="dyTableRows"
           :accent-col="1"
@@ -314,7 +314,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Tributação de Dividendos no Brasil (Lei e Mudanças 2026)</template>
       <template #dek>
         <p>A tributação de dividendos no Brasil sempre foi um diferencial competitivo: dividendos pagos por empresas listadas a pessoa física são isentos de Imposto de Renda. Essa regra está em discussão no Congresso desde 2025 e pode mudar nos próximos anos. Entender o cenário atual e o que está em tramitação ajuda você a planejar a carteira de dividendos sem ser pego de surpresa.</p>
@@ -330,7 +330,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="cream" title-tag="h3" size="sm">
+    <CalcSplit v-revelar tone="cream" title-tag="h3" size="sm">
       <template #title>O que pode mudar (PL 1.087/2025)</template>
       <template #dek>
         <p>O Projeto de Lei 1.087/2025 propõe taxar dividendos pagos a pessoa física acima de R$ 50.000 por mês a 10% retidos na fonte. Pra investidor médio (R$ 5.000 a R$ 10.000/mês de dividendos), a probabilidade de ser afetado é baixa. O PL foi aprovado na Câmara em 2025 e está em apreciação no Senado em 2026. Caso aprovado sem grandes alterações, a vigência mais provável é 2027.</p>
@@ -346,7 +346,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="white" title-tag="h3" size="sm">
+    <CalcSplit v-revelar tone="white" title-tag="h3" size="sm">
       <template #title>FIIs com Dividendos Mensais</template>
       <template #dek>
         <p>FIIs (Fundos de Investimento Imobiliário) são o veículo preferido de quem busca dividendos mensais e isenção de IR no Brasil. Por lei, distribuem 95% ou mais do lucro do fundo, geralmente todo mês (até o dia 25). Existem dois grandes blocos com perfis distintos.</p>
@@ -363,12 +363,12 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
-    <CalcBand tone="cream" title="Como Usar a Calculadora de Dividend Yield">
+    <CalcBand v-revelar tone="cream" title="Como Usar a Calculadora de Dividend Yield">
       <div class="dy__band-body"><CalcSteps :steps="howToSteps" /></div>
     </CalcBand>
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas Frequentes sobre Dividend Yield</template>
       <template #left>
         <CalcPerguntarIa />
@@ -378,7 +378,7 @@ usePageSeo({
 
     <!-- ============ Termos do glossário (link interno — ver o cabeçalho de
          CalcGlossaryLinks.vue pro número que motivou) ============ -->
-    <CalcBand tone="white" title="Termos usados neste cálculo">
+    <CalcBand v-revelar tone="white" title="Termos usados neste cálculo">
       <template #dek>
         <p>O que cada conceito da calculadora significa, explicado em uma página só.</p>
       </template>
@@ -388,7 +388,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Rankings + outras ferramentas + E-E-A-T + CTA ============ -->
-    <CalcBand tone="cream" title="Rankings Relacionados">
+    <CalcBand v-revelar tone="cream" title="Rankings Relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -400,7 +400,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="white" title="Outras Ferramentas">
+    <CalcBand v-revelar tone="white" title="Outras Ferramentas">
       <div class="dy__grid-cards">
         <!-- A dona de "calculadora/simulador de dividendos" (bloco DONO DO
              CLUSTER em pages/calculadora/acoes.vue), com a âncora dela. -->
@@ -444,13 +444,14 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada (classes do exemplar jc__, mesmos valores) ——— */
 .dy__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
-.dy__h4--accent { color: var(--nu-blue-text); }
+/* robustez (11/11/2026): título de cartão que não é link fica em carvão (azul é o que se clica ou se mexe) */
+.dy__h4--accent { color: var(--nu-ink); }
 .dy__link { text-decoration: underline; }
 .dy__link:hover { color: var(--nu-blue-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .dy__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 .dy__prose p:last-child { margin-bottom: 0; }
@@ -469,28 +470,30 @@ usePageSeo({
   gap: 10px; margin-top: clamp(24px, 3.5vw, 36px);
 }
 .dy__scenario {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .dy__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.dy__scenario:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.dy__scenario:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .dy__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
-.dy__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.dy__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 /* ——— tiles (cards do conteúdo; creme em banda branca, branco em banda creme) ——— */
 .dy__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
 .cbd--cream .dy__tile,
 .csp--cream .dy__tile { background: var(--nu-white); }
-.dy__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.dy__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 .dy__card-p--mt { margin-top: 12px; }
-.dy__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
+.dy__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.7; }
 .dy__list li + li { margin-top: 8px; }
 .dy__list :deep(strong) { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* ——— fórmula (exemplo centrado abaixo do card) ——— */
 .dy__formula-block { margin-top: 22px; }
 .dy__formula-example { margin-top: 14px; text-align: center; }
-.dy__formula-example p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
+.dy__formula-example p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6; }
 .dy__formula-example p strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .dy__formula-accent { color: var(--nu-blue-text) !important; font-weight: var(--nu-w-medio) !important; margin-top: 4px !important; font-variant-numeric: tabular-nums; }
 
@@ -502,12 +505,14 @@ usePageSeo({
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .dy__card-link {
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-cream); box-shadow: var(--nu-shadow-quente); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .cbd--cream .dy__card-link { background: var(--nu-white); }
 .dy__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.dy__card-link:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.dy__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .dy__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
@@ -516,6 +521,6 @@ usePageSeo({
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
 .dy__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.dy__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
-.dy__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.dy__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.65; }
+.dy__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 </style>

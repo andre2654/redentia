@@ -247,7 +247,7 @@ usePageSeo({
     />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <CalcBand tone="cream" title="Cenários populares de meta financeira">
+    <CalcBand v-revelar tone="cream" title="Cenários populares de meta financeira">
       <template #dek>
         <p>Veja na hora o aporte mensal necessário para cada meta, basta clicar e a simulação carrega já preenchida.</p>
       </template>
@@ -260,7 +260,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Simulador de Aporte Mensal grátis e online</template>
       <div class="qi__prose">
         <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
@@ -268,7 +268,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="cream">
+    <CalcSplit v-revelar tone="cream">
       <template #title>Como Calcular Quanto Investir por Mês</template>
       <div class="qi__prose">
         <p>A maioria das calculadoras te pergunta "quanto você vai investir" e mostra "quanto vai ter". Esta faz o caminho inverso: você define sua meta (R$ 500 mil, R$ 1 milhão, entrada de imóvel) e o prazo, e a calculadora descobre exatamente quanto precisa aportar todo mês para chegar lá.</p>
@@ -276,7 +276,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcBand tone="white" title-tag="h3" title="Por que Calcular Quanto Investir Faz Diferença">
+    <CalcBand v-revelar tone="white" title-tag="h3" title="Por que Calcular Quanto Investir Faz Diferença">
       <div class="qi__tiles">
         <div v-for="c in whyCards" :key="c.title" class="qi__tile">
           <h4 class="qi__h4 qi__h4--accent">{{ c.title }}</h4>
@@ -285,14 +285,14 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcSplit tone="cream">
+    <CalcSplit v-revelar tone="cream">
       <template #title>Educação Financeira Aplicada</template>
       <div class="qi__prose">
         <p>Educação financeira é o ponto de partida do planejamento financeiro pessoal. Antes de saber quanto investir, é preciso entender 3 coisas: orçamento (regra 50/30/20 ou método dos 4 envelopes), reserva de emergência (6-12 meses de despesas em renda fixa líquida) e perfil de risco (conservador, moderado, arrojado). Sem esses três alicerces, qualquer aporte vira aposta. Com eles, o aporte vira plano e a meta vira rotina.</p>
       </div>
     </CalcSplit>
 
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Reserva de Emergência: Antes de Tudo</template>
       <template #dek>
         <p>Antes de aportar em metas de longo prazo, monte a reserva de emergência. Ela é o colchão financeiro que protege seu plano de imprevistos (desemprego, problema de saúde, conserto urgente) e impede que você venda investimentos de longo prazo em momentos ruins, cristalizando perdas.</p>
@@ -302,7 +302,7 @@ usePageSeo({
       </ul>
     </CalcSplit>
 
-    <CalcBand tone="cream" title="Onde Investir o Aporte Mensal">
+    <CalcBand v-revelar tone="cream" title="Onde Investir o Aporte Mensal">
       <template #dek>
         <p>Calcular o aporte é metade do trabalho. A outra metade é decidir onde alocar o dinheiro todo mês. A escolha depende do seu perfil de risco e do horizonte da meta. Veja a sugestão de carteira por perfil:</p>
       </template>
@@ -315,12 +315,12 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="white" title="Comparar CDB e Tesouro Direto">
+    <CalcBand v-revelar tone="white" title="Comparar CDB e Tesouro Direto">
       <template #dek>
         <p>As duas alternativas mais usadas pra renda fixa no Brasil são Tesouro Direto (títulos do governo) e CDB (Certificado de Depósito Bancário emitido por bancos). Veja as diferenças que importam pra sua decisão:</p>
       </template>
       <div class="qi__band-body">
-        <CalcTableCard
+        <CalcTableCard alinhar-numeros
           tone="cream"
           :columns="['Critério', 'Tesouro Direto', 'CDB']"
           :rows="cdbTesouroRows"
@@ -329,7 +329,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcSplit tone="cream">
+    <CalcSplit v-revelar tone="cream">
       <template #title>Fórmula do Aporte Mensal Necessário</template>
       <template #dek>
         <p>A matemática por trás do cálculo é a fórmula de anuidade dos juros compostos invertida para isolar o aporte (PMT):</p>
@@ -346,12 +346,12 @@ usePageSeo({
       >PMT = (FV − PV × (1 + i)ⁿ) ÷ [((1 + i)ⁿ − 1) ÷ i]</CalcFormulaCard>
     </CalcSplit>
 
-    <CalcBand tone="white" title="Tabela de Aporte Mensal por Meta e Prazo (Taxa 10% a.a.)">
+    <CalcBand v-revelar tone="white" title="Tabela de Aporte Mensal por Meta e Prazo (Taxa 10% a.a.)">
       <template #dek>
         <p>A referência rápida para metas comuns considerando 10% a.a. de retorno (próximo da média histórica do CDI somado a uma fatia de bolsa):</p>
       </template>
       <div class="qi__band-body">
-        <CalcTableCard
+        <CalcTableCard alinhar-numeros
           tone="cream"
           :columns="['Meta', '5 anos', '10 anos', '15 anos', '20 anos']"
           :rows="goalTermRows"
@@ -361,7 +361,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="cream" title="Quanto Investir para Cada Tipo de Meta">
+    <CalcBand v-revelar tone="cream" title="Quanto Investir para Cada Tipo de Meta">
       <div class="qi__meta-grid">
         <div class="qi__meta-card">
           <h3 class="qi__meta-title">Reserva de Emergência</h3>
@@ -382,9 +382,9 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="white" title="Quanto da Renda Devo Investir?">
+    <CalcBand v-revelar tone="white" title="Quanto da Renda Devo Investir?">
       <div class="qi__band-body">
-        <CalcTableCard
+        <CalcTableCard alinhar-numeros
           tone="cream"
           :columns="['Perfil', '% da renda', 'Renda R$ 5 mil', 'Patrimônio em 20 anos']"
           :rows="incomeRows"
@@ -394,17 +394,17 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
-    <CalcBand tone="cream" title="Como Usar a Calculadora de Aporte Mensal">
+    <CalcBand v-revelar tone="cream" title="Como Usar a Calculadora de Aporte Mensal">
       <div class="qi__band-body"><CalcSteps :steps="howToSteps" /></div>
     </CalcBand>
 
     <!-- ============ Quanto investir por idade (texto verbatim) ============ -->
-    <CalcBand tone="white" title="Quanto Investir por Idade">
+    <CalcBand v-revelar tone="white" title="Quanto Investir por Idade">
       <template #dek>
         <p>O aporte ideal varia ao longo da vida. Quanto antes começar, menor o esforço mensal exigido pra alcançar metas relevantes. Veja a referência por faixa etária:</p>
       </template>
       <div class="qi__band-body">
-        <CalcTableCard
+        <CalcTableCard alinhar-numeros
           tone="cream"
           :columns="['Idade', 'Aporte Sugerido', '% da Renda', 'Meta Realista']"
           :rows="ageRows"
@@ -415,7 +415,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas Frequentes sobre Aporte Mensal</template>
       <template #left>
         <CalcPerguntarIa />
@@ -424,7 +424,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Dicas (texto verbatim) ============ -->
-    <CalcBand tone="white" title="Dicas para Cumprir o Aporte Mensal Calculado">
+    <CalcBand v-revelar tone="white" title="Dicas para Cumprir o Aporte Mensal Calculado">
       <div class="qi__tiles">
         <div v-for="c in tipCards" :key="c.title" class="qi__tile">
           <h4 class="qi__h4 qi__h4--accent">{{ c.title }}</h4>
@@ -434,7 +434,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Rankings + outras calculadoras + E-E-A-T + CTA ============ -->
-    <CalcBand tone="cream" title="Rankings Relacionados">
+    <CalcBand v-revelar tone="cream" title="Rankings Relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -446,7 +446,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="cream" title="Outras Calculadoras">
+    <CalcBand v-revelar tone="cream" title="Outras Calculadoras">
       <div class="qi__grid-cards">
         <NuxtLink to="/calculadora/juros-compostos" class="qi__card-link">
           <h3 class="qi__card-link-title">Juros Compostos</h3>
@@ -484,7 +484,8 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada ——— */
 .qi__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
-.qi__h4--accent { color: var(--nu-blue-text); }
+/* robustez (11/11/2026): título de cartão que não é link fica em carvão (azul é o que se clica ou se mexe) */
+.qi__h4--accent { color: var(--nu-ink); }
 .qi__link { text-decoration: underline; }
 .qi__link:hover { color: var(--nu-blue-text); }
 .qi__link--accent { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); }
@@ -492,7 +493,7 @@ usePageSeo({
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .qi__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 .qi__prose p:last-child { margin-bottom: 0; }
@@ -507,13 +508,15 @@ usePageSeo({
   gap: 10px; margin-top: clamp(24px, 3.5vw, 36px);
 }
 .qi__scenario {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .qi__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.qi__scenario:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.qi__scenario:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .qi__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
-.qi__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.qi__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
 .qi__tiles {
@@ -523,8 +526,8 @@ usePageSeo({
 }
 .qi__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
 .cbd--cream .qi__tile { background: var(--nu-white); }
-.qi__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
-.qi__card-note { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.qi__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
+.qi__card-note { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 /* ——— reserva de emergência (card creme com hairlines na banda branca) ——— */
 .qi__reserve {
@@ -533,7 +536,7 @@ usePageSeo({
 }
 .qi__reserve li {
   padding: 12px 0; border-top: 1.5px solid var(--nu-cream-line-2);
-  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.7;
 }
 .qi__reserve li:first-child { border-top: none; padding-top: 0; }
 .qi__reserve li:last-child { padding-bottom: 0; }
@@ -547,7 +550,7 @@ usePageSeo({
 }
 .qi__meta-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
 .qi__meta-title { margin: 0 0 10px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
-.qi__meta-p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65; }
+.qi__meta-p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.65; }
 
 /* ——— cards-link (rankings / outras calculadoras) ——— */
 .qi__grid-cards {
@@ -556,11 +559,13 @@ usePageSeo({
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .qi__card-link {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .qi__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.qi__card-link:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.qi__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .qi__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .qi__card-link .qi__card-p { margin: 0; }
 
@@ -570,6 +575,6 @@ usePageSeo({
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
 .qi__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.qi__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
-.qi__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.qi__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.65; }
+.qi__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 </style>

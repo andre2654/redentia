@@ -303,7 +303,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
     </CalcCompoundSection>
 
     <!-- ============ Outros cenários populares (banda centrada do design) ============ -->
-    <CalcBand tone="cream" title="Outros cenários populares">
+    <CalcBand v-revelar tone="cream" title="Outros cenários populares">
       <template #dek>
         <p>Compare diferentes simulações lado a lado, basta clicar e a calculadora carrega já preenchida com os valores do cenário.</p>
       </template>
@@ -321,7 +321,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
     </CalcBand>
 
     <!-- ============ Conteúdo educacional (split: título gigante + prosa, texto verbatim) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>{{ scenario.eduH2 }}</template>
       <div class="jcs__prose">
         <div v-for="block in scenario.eduBlocks" :key="block.h3">
@@ -332,7 +332,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
     </CalcSplit>
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas frequentes sobre este cenário</template>
       <template #left>
         <CalcPerguntarIa />
@@ -356,11 +356,11 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
 .jcs__hero {
   background: var(--nu-page);
   padding: clamp(48px, 6.5vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both;
 }
 .jcs__status {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-bottom: 22px;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); margin-bottom: 22px;
 }
 .jcs__live { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .jcs__live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); flex-shrink: 0; }
@@ -369,7 +369,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
   background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1px var(--nu-line);
   border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 20px;
   font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
-  transition: box-shadow .2s, transform .15s var(--nu-ease-saida);
+  transition: box-shadow var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .jcs__back:hover { box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink); }
 .jcs__back:active { transform: scale(.98); }
@@ -380,7 +380,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
   letter-spacing: -0.035em; line-height: 1.02; max-width: 1080px;
 }
 .jcs__lead {
-  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto);
   line-height: 1.45; margin: 20px 0 0; max-width: 840px;
 }
 .jcs__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
@@ -397,17 +397,19 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
   gap: 10px; margin-top: clamp(24px, 3.5vw, 36px);
 }
 .jcs__scenario {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .jcs__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.jcs__scenario:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.jcs__scenario:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .jcs__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
-.jcs__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.jcs__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 /* ——— prosa da coluna direita (bandas split do design: jc__prose) ——— */
 .jcs__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 .jcs__prose p:last-child { margin-bottom: 0; }

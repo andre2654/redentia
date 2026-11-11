@@ -9,7 +9,8 @@
 </template>
 
 <style scoped>
-.cfr { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.55; text-wrap: pretty; }
+/* robustez (11/11/2026): o tracking de título por token */
+.cfr { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.55; text-wrap: pretty; }
 @media (max-width: 640px) {
   .cfr { line-height: 1.7; }
 }

@@ -18,6 +18,10 @@
 // piso: 0 pra campos naturalmente não-negativos (min>=0), pra não gerar valor
 // sem sentido/NaN; campos que aceitam negativo (min<0) ficam totalmente livres.
 // O thumb do slider fica encostado na ponta quando o valor passa da faixa.
+// Robustez (11/11/2026): o trilho e os atalhos são os do painel do selo da
+// frase (CalcFraseCampo): trilho de 6px, o botão branco com o anel cobalto e o
+// halo no ponteiro, atalhos em creme com o escolhido em carvão. Mesma função,
+// mesma peça. Movimento e cor só por token.
 const props = defineProps<{
   label: string
   modelValue: number
@@ -139,7 +143,7 @@ function cancel() {
       :value="modelValue"
       :aria-label="label"
       :aria-valuetext="valueText"
-      :style="{ background: `linear-gradient(to right, var(--nu-blue) 0% ${fillPct}%, var(--nu-line) ${fillPct}% 100%)` }"
+      :style="{ '--csf-p': `${fillPct}%` }"
       @input="onInput"
     >
     <div v-if="presets?.length" class="csf__chips">
@@ -149,6 +153,7 @@ function cancel() {
         type="button"
         class="csf__chip"
         :class="{ 'csf__chip--active': isActive(p.value) }"
+        :aria-pressed="isActive(p.value)"
         @click="emit('update:modelValue', p.value)"
       >{{ p.label }}</button>
     </div>
@@ -157,7 +162,7 @@ function cancel() {
 
 <style scoped>
 .csf__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.csf__label { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.csf__label { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
 
 /* valor = campo editável: box levemente mais clara que o creme + arredondada,
    sinalizando "passe o mouse e troque". Idle = branco suave + lapiseira quieta;
@@ -169,13 +174,12 @@ function cancel() {
   background: var(--nu-white-75);
   font-family: inherit; color: var(--nu-ink);
   font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; line-height: 1.15;
-  transition: background .18s, border-color .18s, color .18s;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), border-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor);
 }
 button.csf__value { cursor: pointer; }
-button.csf__value:hover, button.csf__value:focus-visible {
-  background: var(--nu-white); border-color: var(--nu-sand-border); color: var(--nu-blue-text); outline: none;
-}
-.csf__edit-ic { color: var(--nu-gray); flex-shrink: 0; transition: color .18s; }
+button.csf__value:hover { background: var(--nu-white); border-color: var(--nu-sand-border); color: var(--nu-blue-text); }
+button.csf__value:focus-visible { background: var(--nu-white); border-color: var(--nu-blue); color: var(--nu-blue-text); outline: 3px solid var(--nu-blue); outline-offset: 1px; }
+.csf__edit-ic { color: var(--nu-gray); flex-shrink: 0; transition: color var(--nu-dur-media) var(--nu-ease-cor); }
 button.csf__value:hover .csf__edit-ic, button.csf__value:focus-visible .csf__edit-ic { color: var(--nu-blue-text); }
 
 /* editando: box branca com borda azul; input transparente por dentro */
@@ -188,61 +192,43 @@ button.csf__value:hover .csf__edit-ic, button.csf__value:focus-visible .csf__edi
   caret-color: var(--nu-blue);
 }
 
+/* o trilho do painel do selo (CalcFraseCampo): 6px, cobalto até o valor */
 .csf__range {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 8px;
-  border-radius: var(--nu-r-pill);
-  outline: none;
-  margin-top: 14px;
-  display: block;
+  -webkit-appearance: none; appearance: none; display: block;
+  width: 100%; height: 22px; margin-top: 10px; background: transparent; outline: none; cursor: pointer;
 }
+.csf__range::-webkit-slider-runnable-track {
+  height: 6px; border-radius: var(--nu-r-pill);
+  background: linear-gradient(to right, var(--nu-blue) var(--csf-p), var(--nu-cream-2) var(--csf-p));
+}
+.csf__range::-moz-range-track { height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-cream-2); }
+.csf__range::-moz-range-progress { height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-blue); }
 .csf__range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--nu-blue);
-  border: 4px solid var(--nu-white);
-  box-shadow: var(--nu-shadow-slider-thumb);
-  cursor: pointer;
+  -webkit-appearance: none; appearance: none; width: 22px; height: 22px; margin-top: -8px; border-radius: 50%; cursor: grab;
+  background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-blue), 0 0 0 3px transparent, var(--nu-shadow-slider-thumb);
+  transition: box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .csf__range::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--nu-blue);
-  border: 4px solid var(--nu-white);
-  box-shadow: var(--nu-shadow-slider-thumb);
-  cursor: pointer;
+  width: 22px; height: 22px; border: 0; border-radius: 50%; cursor: grab;
+  background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-blue);
 }
+.csf__range:hover::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--nu-blue), 0 0 0 8px color-mix(in srgb, var(--nu-blue) 14%, transparent), var(--nu-shadow-slider-thumb); }
+.csf__range:active::-webkit-slider-thumb { cursor: grabbing; box-shadow: 0 0 0 3px var(--nu-blue), 0 0 0 10px color-mix(in srgb, var(--nu-blue) 20%, transparent), var(--nu-shadow-slider-thumb); }
 /* foco de teclado visível: outline:none acima tirava QUALQUER indicação de
    qual slider está focado (o usuário mexia com as setas "no escuro"). */
-.csf__range:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 3px var(--nu-white), 0 0 0 6px var(--nu-blue);
-}
-.csf__range:focus-visible::-moz-range-thumb {
-  box-shadow: 0 0 0 3px var(--nu-white), 0 0 0 6px var(--nu-blue);
-}
+.csf__range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--nu-blue), 0 0 0 7px color-mix(in srgb, var(--nu-blue) 25%, transparent); }
+.csf__range:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--nu-blue), 0 0 0 7px color-mix(in srgb, var(--nu-blue) 25%, transparent); }
 
-.csf__chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+/* os atalhos do painel do selo: creme, o escolhido em carvão */
+.csf__chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
 .csf__chip {
-  padding: 8px 14px;
-  border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-dense);
-  font-weight: var(--nu-w-medio);
-  white-space: nowrap;
-  cursor: pointer;
-  border: 1px solid var(--nu-line);
-  background: var(--nu-white);
-  color: var(--nu-gray-3);
-  transition: background .2s, border-color .2s, color .2s;
+  min-height: 36px; padding: 0 12px; border: 0; border-radius: var(--nu-r-pill); cursor: pointer;
+  background: var(--nu-cream-2); color: var(--nu-gray-3); white-space: nowrap;
+  font-family: inherit; font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); font-variant-numeric: tabular-nums;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
-.csf__chip--active {
-  border-color: var(--nu-ink);
-  background: var(--nu-ink);
-  color: var(--nu-white);
-}
+.csf__chip:hover { background: var(--nu-line-2); color: var(--nu-ink); }
+.csf__chip:active { transform: scale(.97); }
+.csf__chip--active, .csf__chip--active:hover { background: var(--nu-ink); color: var(--nu-white); }
 </style>

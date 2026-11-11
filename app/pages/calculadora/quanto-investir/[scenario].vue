@@ -327,7 +327,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
     </QuantoInvestirCalc>
 
     <!-- ============ Outros cenários populares (cross-link, banda do design) ============ -->
-    <CalcBand tone="cream" title="Outros cenários populares">
+    <CalcBand v-revelar tone="cream" title="Outros cenários populares">
       <template #dek>
         <p>Compare aporte mensal exigido para metas diferentes, basta clicar e a calculadora carrega já preenchida.</p>
       </template>
@@ -345,7 +345,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
     </CalcBand>
 
     <!-- ============ Conteúdo educacional do cenário (verbatim, split do design) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>{{ scenario.eduH2 }}</template>
       <div>
         <div v-for="block in scenario.eduBlocks" :key="block.h3" class="qis__block">
@@ -356,7 +356,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
     </CalcSplit>
 
     <!-- ============ FAQ do cenário (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas frequentes sobre este cenário</template>
       <template #left>
         <CalcPerguntarIa />
@@ -380,11 +380,11 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
 .qis__hero {
   background: var(--nu-page);
   padding: clamp(48px, 6.5vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both;
 }
 .qis__status {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-bottom: 22px;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); margin-bottom: 22px;
 }
 .qis__live { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .qis__live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); flex-shrink: 0; }
@@ -393,7 +393,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
   background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1px var(--nu-line);
   border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 20px;
   font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
-  transition: box-shadow .2s, transform .15s var(--nu-ease-saida);
+  transition: box-shadow var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .qis__back:hover { box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink); }
 .qis__back:active { transform: scale(.98); }
@@ -404,7 +404,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
   letter-spacing: -0.035em; line-height: 1.02; max-width: 1080px;
 }
 .qis__lead {
-  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto);
   line-height: 1.45; margin: 20px 0 0; max-width: 840px;
 }
 .qis__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
@@ -419,7 +419,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
 .qis__block + .qis__block { margin-top: clamp(28px, 4vw, 44px); }
 .qis__sub { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
 .qis__prose-p {
-  margin: 12px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 12px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 
@@ -429,12 +429,14 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
   gap: 12px; margin-top: clamp(24px, 3.5vw, 36px);
 }
 .qis__rel-card {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 20px 22px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-tile); padding: 20px 22px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .qis__rel-card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.qis__rel-card:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.qis__rel-card:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .qis__rel-title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; line-height: 1.35; }
-.qis__rel-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
+.qis__rel-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
 </style>

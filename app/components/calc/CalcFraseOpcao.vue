@@ -25,18 +25,24 @@ onMounted(() => { montado.value = true })
 </template>
 
 <style scoped>
-/* o mesmo valor azul dos campos da frase (CalcFraseCampo) */
+/* o mesmo selo dos campos da frase (CalcFraseCampo): fundo azul claro, fio reto, hover, apertado e foco.
+   Quem recebe o ponteiro e o foco é o <select> invisível por cima; o selo responde pelo :hover/:focus-within do pai. */
 .cfo { position: relative; display: inline-block; white-space: nowrap; }
 .cfo__valor {
+  --cfo-fundo: var(--nu-blue-bg);
+  --cfo-fio: color-mix(in srgb, var(--nu-blue) 62%, transparent); --cfo-fio-e: 1.5px;
   display: inline-block; padding: 0 0.32em 0.08em; border-radius: 0.36em;
-  color: var(--nu-blue-text); background: var(--nu-blue-bg);
-  box-shadow: inset 0 -2px 0 var(--nu-blue);
-  transition: background .18s ease;
+  color: var(--nu-blue-text); background-color: var(--cfo-fundo);
+  background-image: linear-gradient(var(--cfo-fio), var(--cfo-fio));
+  background-repeat: no-repeat; background-position: 50% 100%; background-size: calc(100% - .5em) var(--cfo-fio-e);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), background-size var(--nu-dur-media) var(--nu-ease-saida);
 }
-.cfo:hover .cfo__valor { background: color-mix(in srgb, var(--nu-blue) 18%, var(--nu-white)); }
-.cfo:focus-within .cfo__valor { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
+.cfo:hover .cfo__valor { --cfo-fundo: color-mix(in srgb, var(--nu-blue) 16%, var(--nu-white)); --cfo-fio: var(--nu-blue); --cfo-fio-e: 2px; }
+.cfo:active .cfo__valor { --cfo-fundo: color-mix(in srgb, var(--nu-blue) 24%, var(--nu-white)); transition-duration: var(--nu-dur-rapida); }
+.cfo:has(.cfo__seletor:focus-visible) .cfo__valor { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .cfo__seletor {
   position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0;
   opacity: 0; cursor: pointer; font-size: 16px; appearance: none;
 }
+.cfo__seletor:focus-visible { outline: none; }
 </style>

@@ -339,7 +339,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
     </CalcRetirementSection>
 
     <!-- ============ Outros cenários populares (cross-link, grid de cards-link) ============ -->
-    <CalcBand tone="cream" title="Outros cenários populares">
+    <CalcBand v-revelar tone="cream" title="Outros cenários populares">
       <template #dek>
         <p>Compare planos de aposentadoria diferentes, basta clicar e a calculadora carrega já preenchida.</p>
       </template>
@@ -357,7 +357,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
     </CalcBand>
 
     <!-- ============ Conteúdo educacional do cenário (verbatim, bandas split alternando) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>{{ scenario.eduH2 }}</template>
       <template v-if="firstEduBlock">
         <h3 class="aps__sub">{{ firstEduBlock.h3 }}</h3>
@@ -367,7 +367,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
       </template>
     </CalcSplit>
 
-    <CalcSplit
+    <CalcSplit v-revelar
       v-for="(block, i) in restEduBlocks"
       :key="block.h3"
       :tone="i % 2 === 0 ? 'white' : 'cream'"
@@ -381,7 +381,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
     </CalcSplit>
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas frequentes sobre este cenário</template>
       <template #left>
         <CalcPerguntarIa />
@@ -405,11 +405,11 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
 .aps__hero {
   background: var(--nu-page);
   padding: clamp(48px, 6.5vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both;
 }
 .aps__status {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-bottom: 22px;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); margin-bottom: 22px;
 }
 .aps__live { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .aps__live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); flex-shrink: 0; }
@@ -418,7 +418,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
   background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1px var(--nu-line);
   border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 20px;
   font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
-  transition: box-shadow .2s, transform .15s var(--nu-ease-saida);
+  transition: box-shadow var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .aps__back:hover { box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink); }
 .aps__back:active { transform: scale(.98); }
@@ -429,7 +429,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
   letter-spacing: -0.035em; line-height: 1.02; max-width: 1080px;
 }
 .aps__lead {
-  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto);
   line-height: 1.45; margin: 20px 0 0; max-width: 840px;
 }
 .aps__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
@@ -442,7 +442,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .aps__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 .aps__prose p:last-child { margin-bottom: 0; }
@@ -457,12 +457,14 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .aps__rel-card {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .aps__rel-card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.aps__rel-card:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.aps__rel-card:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .aps__rel-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; line-height: 1.3; }
-.aps__rel-sub { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.aps__rel-sub { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 
 </style>

@@ -81,7 +81,8 @@ const grid = computed(() =>
 <style scoped>
 .cac { position: relative; height: clamp(220px, 26vw, 320px); }
 .cac__svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.cac__line { position: absolute; left: 0; right: 0; height: 1.5px; background: var(--nu-line-2); }
+/* robustez (11/11/2026): as linhas de grade em fio de 1px */
+.cac__line { position: absolute; left: 0; right: 0; height: 1px; background: var(--nu-line-2); }
 .cac__lbl {
   position: absolute; right: 2px; transform: translateY(-120%);
   color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;

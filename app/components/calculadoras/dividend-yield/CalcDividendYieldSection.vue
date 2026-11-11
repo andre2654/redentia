@@ -804,7 +804,7 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 .dys__marca {
   position: absolute; top: 0; height: 54px; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-  transition: left .35s var(--nu-ease-saida);
+  transition: left var(--nu-dur-lenta) var(--nu-ease-troca);
 }
 .dys__marca::after { content: ''; width: 2px; height: 14px; margin-top: 4px; border-radius: 2px; background: var(--nu-blue); }
 .dys__marca-txt {
@@ -818,12 +818,12 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 .dys__marca--hoje::before { content: ''; width: 2px; height: 14px; margin-bottom: 4px; border-radius: 2px; background: var(--nu-gray); }
 .dys__marca--hoje .dys__marca-txt { background: var(--nu-cream-2); color: var(--nu-gray-3); }
 .dys__regua--dupla .dys__nomes { margin-top: 56px; }
-.dys__faixas { display: flex; gap: 4px; height: 14px; transform-origin: left center; animation: dys-cresce .6s var(--nu-ease-saida) both; }
+.dys__faixas { display: flex; gap: 4px; height: 14px; transform-origin: left center; animation: dys-cresce var(--nu-dur-entrada) var(--nu-ease-saida) both; }
 /* a régua cresce da esquerda na entrada (microtransição da Aportou) */
 @keyframes dys-cresce { from { transform: scaleX(0); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .dys__faixas { animation: none; } }
 /* barras empilhadas dos quadros: pontas redondas só nos extremos */
-.dys__faixa { border-radius: 3px; background: var(--nu-cream-2); transition: background .25s ease; }
+.dys__faixa { border-radius: 3px; background: var(--nu-cream-2); transition: background-color var(--nu-dur-media) var(--nu-ease-cor); }
 .dys__faixa:first-child { border-radius: 7px 3px 3px 7px; }
 .dys__faixa:last-child { border-radius: 3px 7px 7px 3px; }
 .dys__faixa--on.dys__faixa--baixo { background: var(--nu-gray); }
@@ -832,6 +832,6 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 .dys__faixa--on.dys__faixa--alto { background: var(--nu-amber); }
 .dys__nomes { display: flex; gap: 4px; margin-top: 10px; }
 .dys__nomes > span { flex-basis: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
-.dys__nomes small { display: block; font-size: var(--nu-fs-xs); font-weight: 500; }
+.dys__nomes small { display: block; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
 .dys__nome--on { color: var(--nu-ink) !important; }
 </style>

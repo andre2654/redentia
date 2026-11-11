@@ -15,6 +15,12 @@
 //
 // O modal segue o padrão da casa (Teleport + useModalA11y + Esc/scrim/X) —
 // este é dismissível, ao contrário do onboarding.
+//
+// Robustez (11/11/2026): o botão responde na hora e não muda de largura. Os
+// três rótulos ("Salvar esta conta", "Salvando…", "Conta salva") moram na
+// mesma célula e trocam com fade; o botão tem a largura do maior (no HTML do
+// servidor só o primeiro existe). O marcador se preenche ao salvar. O modal
+// entra com o véu da base (--nu-veu) e o cartão subindo, e sai pelo inverso.
 import type { CadastroContexto } from '~/composables/useCadastroFolha'
 import type { SimulationVM } from '~/composables/useSimulations'
 
@@ -50,7 +56,11 @@ const sims = useSimulations(props.calculator)
 const folha = useCadastroFolha()
 
 const savedNow = ref(false)
+// os rótulos que trocam só existem depois de montar (o HTML do servidor tem o primeiro)
+const montado = ref(false)
+const estadoDoBotao = computed(() => (sims.busy.value ? 'salvando' : savedNow.value ? 'salva' : 'salvar'))
 onMounted(async () => {
+  montado.value = true
   if (!isAuthenticated.value) return
   if (props.variant === 'save') {
     const savedPending = await sims.savePending()
@@ -154,11 +164,17 @@ function dateTxt(s: SimulationVM): string {
   <div v-if="variant === 'save'" class="csv">
     <div class="csv__botoes">
       <button
-        type="button" class="csv__btn" :class="{ 'csv__btn--saved': savedNow }"
-        :disabled="sims.busy.value" @click="pedir('botao')"
+        type="button" class="csv__btn" :class="[`csv__btn--${estadoDoBotao}`, { 'csv__btn--saved': savedNow }]"
+        :disabled="sims.busy.value" :aria-busy="sims.busy.value || undefined" @click="pedir('botao')"
       >
-        <svg width="17" height="17" viewBox="0 0 24 24" :fill="savedNow ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
-        {{ sims.busy.value ? 'Salvando…' : (savedNow ? 'Conta salva' : 'Salvar esta conta') }}
+        <svg class="csv__marca" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
+        <span class="csv__rotulos">
+          <span class="csv__rotulo" :class="{ 'csv__rotulo--on': estadoDoBotao === 'salvar' }" :aria-hidden="estadoDoBotao !== 'salvar' || undefined">Salvar esta conta</span>
+          <template v-if="montado">
+            <span class="csv__rotulo" :class="{ 'csv__rotulo--on': estadoDoBotao === 'salvando' }" :aria-hidden="estadoDoBotao !== 'salvando' || undefined">Salvando…</span>
+            <span class="csv__rotulo" :class="{ 'csv__rotulo--on': estadoDoBotao === 'salva' }" :aria-hidden="estadoDoBotao !== 'salva' || undefined">Conta salva</span>
+          </template>
+        </span>
       </button>
       <slot />
     </div>
@@ -178,6 +194,7 @@ function dateTxt(s: SimulationVM): string {
     </button>
 
     <Teleport to="body">
+      <Transition name="cshm">
       <div v-if="open" class="cshm" role="presentation" @click.self="open = false">
         <div
           ref="cardRef" class="cshm__card" role="dialog" aria-modal="true"
@@ -215,6 +232,7 @@ function dateTxt(s: SimulationVM): string {
           <p class="cshm__foot">Clique numa simulação pra carregar os valores na calculadora.</p>
         </div>
       </div>
+      </Transition>
     </Teleport>
   </template>
 </template>
@@ -223,20 +241,39 @@ function dateTxt(s: SimulationVM): string {
 /* ——— save (ao lado do resultado) ——— */
 .csv { display: flex; flex-direction: column; gap: 8px; }
 .csv__botoes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+/* o botão do cartão: 48px (o "m" do NuBotaoSeta), a largura do maior rótulo */
 .csv__btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 9px; height: 52px;
-  padding: 0 24px; border: 0; border-radius: var(--nu-r-pill);
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px; height: 48px;
+  padding: 0 22px 0 20px; border: 0; border-radius: var(--nu-r-pill);
   background: var(--nu-blue); color: var(--nu-white); white-space: nowrap;
-  font-size: 16.5px; font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
-  transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
+  font-size: 15.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); cursor: pointer; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .csv__btn:hover { background: var(--nu-blue-hover); }
 .csv__btn:active { transform: scale(.98); }
-.csv__btn:disabled { opacity: 0.6; cursor: default; }
-.csv__btn--saved { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
-.csv__btn--saved:hover { background: var(--nu-blue-bg); }
+.csv__btn:disabled { cursor: default; }
+.csv__btn--salvando { background: color-mix(in srgb, var(--nu-blue) 82%, var(--nu-white)); }
+.csv__btn--saved, .csv__btn--saved:hover { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .csv__btn:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
-.csv__hint { margin: 0; padding-left: 4px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
+/* o marcador se preenche quando a conta fica salva, com um assentar curto */
+.csv__marca { flex: none; }
+.csv__marca path { fill: transparent; transition: fill var(--nu-dur-media) var(--nu-ease-cor); }
+.csv__btn--saved .csv__marca { animation: csv-assenta var(--nu-dur-lenta) var(--nu-ease-saida) both; }
+.csv__btn--saved .csv__marca path { fill: currentColor; }
+@keyframes csv-assenta { from { transform: scale(.82); } }
+/* os rótulos na mesma célula: a largura é a do maior e a troca é um fade */
+.csv__rotulos { display: inline-grid; }
+/* quem sai some rápido; quem entra vem logo depois (sem as duas palavras uma sobre a outra) */
+.csv__rotulo {
+  grid-area: 1 / 1; text-align: center; opacity: 0; visibility: hidden; transform: translateY(-3px);
+  transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-cor), visibility 0s linear var(--nu-dur-rapida);
+}
+.csv__rotulo--on {
+  opacity: 1; visibility: visible; transform: none;
+  transition: opacity var(--nu-dur-media) var(--nu-ease-saida) var(--nu-dur-rapida), transform var(--nu-dur-media) var(--nu-ease-saida) var(--nu-dur-rapida), visibility 0s;
+}
+.csv__hint { margin: 0; padding-left: 4px; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); }
 .csv__error { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
 /* no celular o salvar vive numa barra fina grudada no pé da tela: uma linha só */
 @media (max-width: 900px) {
@@ -251,9 +288,11 @@ function dateTxt(s: SimulationVM): string {
   min-height: 44px; padding: 0 16px; border: 1px solid var(--nu-line); border-radius: var(--nu-r-pill);
   background: var(--nu-white); color: var(--nu-gray-3);
   font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
-  white-space: nowrap; transition: border-color .15s, color .15s;
+  white-space: nowrap;
+  transition: border-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .csh-btn:hover { border-color: var(--nu-blue); color: var(--nu-blue-text); }
+.csh-btn:active { transform: scale(.98); }
 .csh-btn__count {
   min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--nu-r-tag);
   display: inline-flex; align-items: center; justify-content: center;
@@ -261,51 +300,57 @@ function dateTxt(s: SimulationVM): string {
   font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 
-/* ——— modal ——— */
+/* ——— modal: o véu da base, o cartão sobe; sai pelo inverso, mais rápido ——— */
 .cshm {
   position: fixed; inset: 0; z-index: 120;
   display: flex; align-items: center; justify-content: center; padding: 18px;
-  background: var(--nu-day-backdrop);
+  background: var(--nu-veu);
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  animation: nu-surgir .2s ease both;
 }
+.cshm-enter-active { transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor); }
+.cshm-leave-active { transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor); }
+.cshm-enter-from, .cshm-leave-to { opacity: 0; }
+.cshm-enter-active .cshm__card { transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida), transform var(--nu-dur-lenta) var(--nu-ease-saida); }
+.cshm-leave-active .cshm__card { transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-cor); }
+.cshm-enter-from .cshm__card, .cshm-leave-to .cshm__card { opacity: 0; transform: translateY(16px) scale(.985); }
 .cshm__card {
   width: min(560px, 100%); max-height: calc(100dvh - 36px); overflow-y: auto;
   background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
-  padding: 32px 34px 26px; box-shadow: var(--nu-shadow-day-modal);
-  outline: none; animation: nu-subir .32s var(--nu-ease-saida) both;
+  padding: 32px 32px 24px; box-shadow: var(--nu-shadow-float);
+  outline: none;
 }
 .cshm__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-.cshm__title { margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(26px, 2.8vw, 34px); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.05; }
+.cshm__title { margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(26px, 2.8vw, 34px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.05; }
 .cshm__close {
   width: 44px; height: 44px; flex-shrink: 0; border: none; border-radius: 50%;
   background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
-  transition: background .15s;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .cshm__close:hover { background: var(--nu-line-2); }
+.cshm__close:active { transform: scale(.94); }
 
-.cshm__list { margin-top: 20px; display: flex; flex-direction: column; border-bottom: 1px solid var(--nu-line-2); }
-.cshm__row { display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--nu-line-2); transition: background .15s; }
+.cshm__list { margin-top: 24px; display: flex; flex-direction: column; border-bottom: 1px solid var(--nu-line-2); }
+.cshm__row { display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--nu-line-2); transition: background-color var(--nu-dur-media) var(--nu-ease-cor); }
 .cshm__row:hover, .cshm__row--hot { background: var(--nu-cream-2); }
 .cshm__row-main {
   flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;
-  text-align: left; padding: 11px 14px; border: none; background: transparent;
+  text-align: left; padding: 12px 14px; border: none; background: transparent;
   cursor: pointer; font-family: inherit;
 }
 .cshm__row-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cshm__row-meta { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
-.cshm__row-meta strong { color: var(--nu-blue-text); font-weight: var(--nu-w-forte); }
+.cshm__row-meta { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
+.cshm__row-meta strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .cshm__row-del {
   width: 44px; height: 44px; flex-shrink: 0; margin-right: 2px;
   border: none; border-radius: 50%; background: transparent; color: var(--nu-gray);
   cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-  transition: background .15s, color .15s;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .cshm__row-del:hover { background: var(--nu-red-bg); color: var(--nu-red-text); }
-.cshm__empty { margin: 22px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
+.cshm__empty { margin: 24px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); }
 .cshm__error { margin: 12px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
-.cshm__foot { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.cshm__foot { margin: 16px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 @media (max-width: 760px) {
   .cshm { padding: 12px; align-items: flex-end; }
