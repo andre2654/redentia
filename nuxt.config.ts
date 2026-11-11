@@ -1,3 +1,7 @@
+import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
+
+const require = createRequire(import.meta.url)
 // Redentia Nu — a nova Redentia. SSR-first (as superfícies públicas são o motor
 // de aquisição/SEO). Arquitetura herdada dos dois apps anteriores:
 //  - proxies em 3 camadas e routeRules de cache (Frontend)
@@ -314,6 +318,21 @@ export default defineNuxtConfig({
     // useEvent() fora de handler: o server/plugins/backend-front-key.ts lê o
     // request em curso de dentro do $fetch do SSR pra carimbar o IP do visitante.
     experimental: { asyncContext: true },
+    // resvg e wawoff2 resolvem binário e wasm em node_modules. Empacotar
+    // quebra o caminho. A rota do PNG faz require deles em runtime.
+    externals: {
+      external: ['@resvg/resvg-js', 'wawoff2'],
+      // O require é dinâmico (createRequire). Sem isto o pacote some do
+      // package.json da função e o PNG quebra na Vercel.
+      traceInclude: [
+        require.resolve('@resvg/resvg-js'),
+        require.resolve('wawoff2'),
+        require.resolve('@resvg/resvg-js-linux-x64-gnu'),
+      ],
+      // O dev do Nitro reescreve o import de scripts/indexnow.mjs para um
+      // caminho acima da raiz do disco. Inline mantém o cron no bundle.
+      inline: [fileURLToPath(new URL('./scripts/indexnow.mjs', import.meta.url))],
+    },
     // A renovação em segundo plano do sitemap de quanto rende ainda lê o
     // histórico de cada pagador, espaçado para ficar abaixo do limite do
     // backend (~600/min). ~900 leituras a 7 por segundo cabem em 180s. A

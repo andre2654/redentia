@@ -12,11 +12,13 @@
     "test": "node --test \"tests/*.test.ts\""
   },
   "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@vercel/functions": "^3.10.5",
     "gsap": "^3.15.0",
     "nuxt": "^4.4.8",
     "pluggy-connect-sdk": "^2.13.0",
     "vue": "^3.5.39",
-    "vue-router": "^5.1.0"
+    "vue-router": "^5.1.0",
+    "wawoff2": "^2.0.1"
   }
 }
