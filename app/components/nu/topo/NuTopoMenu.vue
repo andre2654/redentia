@@ -3,6 +3,12 @@
 // grande separada por fios (a direção "editorial calmo"). A nav (os grupos
 // abrem no lugar), a busca, o mercado (slot) e as chamadas da conta no pé.
 // Tab preso e foco de volta no hambúrguer (useModalA11y); Escape fecha.
+//
+// APORTOU (11/11/2026): no site de investidor o menu veste a marca (classe
+// ntn--ap): fundo creme da página, o wordmark no topo, itens em 600 com fios de
+// 1,5px, a lista entrando em cascata e, no pé, a chamada em pílula carvão com a
+// seta ("Criar conta grátis", a mesma do topo). A variante business não muda:
+// sem a classe, valem as regras de antes com os tokens do tema .marca-redentia.
 import type { NavItem } from '~/utils/topo'
 import { grupoAtivo, rotaAtiva } from '~/utils/topo'
 
@@ -11,6 +17,7 @@ import { grupoAtivo, rotaAtiva } from '~/utils/topo'
 // `bizNova` (05/11/2026, na landing /business): o pé do print, "Testar com
 // carteira demo" (o mesmo cadastro do Entrar) e "Agendar 1 hora" (#contato).
 const props = defineProps<{ aberto: boolean; nav: NavItem[]; logado: boolean; variante?: 'business'; bizNova?: boolean }>()
+const business = computed(() => props.variante === 'business')
 const destinoCadastro = useDestinoCadastroBusiness()
 const emit = defineEmits<{ fechar: []; sair: [] }>()
 const route = useRoute()
@@ -35,7 +42,7 @@ onBeforeUnmount(() => { if (import.meta.client) document.removeEventListener('ke
 <template>
   <Teleport to="body">
     <Transition name="ntn">
-      <div v-if="aberto" ref="caixa" class="ntn" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1">
+      <div v-if="aberto" ref="caixa" class="ntn" :class="{ 'ntn--ap': !business }" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1">
         <div class="ntn__topo">
           <NuTopoMarca class="ntn__marca" :business="variante === 'business'" @click="emit('fechar')" />
           <button type="button" class="ntn__fechar" aria-label="Fechar menu" @click="emit('fechar')">
@@ -92,14 +99,14 @@ onBeforeUnmount(() => { if (import.meta.client) document.removeEventListener('ke
         </div>
         <div v-else class="ntn__pe">
           <template v-if="logado">
-            <NuxtLink to="/carteira" class="ntn__cta ntn__cta--cheio" @click="emit('fechar')">Minha carteira</NuxtLink>
+            <NuBotaoSeta to="/carteira" variante="carvao" tamanho="m" largo @click="emit('fechar')">Minha carteira</NuBotaoSeta>
             <div class="ntn__linha">
               <NuxtLink to="/conta" class="ntn__cta" @click="emit('fechar')">Configurações</NuxtLink>
               <button type="button" class="ntn__cta ntn__cta--sair" @click="emit('sair')">Sair</button>
             </div>
           </template>
           <template v-else>
-            <NuxtLink to="/assinar?quiz=1&de=menu" class="ntn__cta ntn__cta--cheio" @click="emit('fechar')">Conectar carteira</NuxtLink>
+            <NuBotaoSeta to="/assinar?quiz=1&de=menu" variante="carvao" tamanho="m" largo @click="emit('fechar')">Criar conta grátis</NuBotaoSeta>
             <NuxtLink to="/login" class="ntn__cta" @click="emit('fechar')">Entrar</NuxtLink>
           </template>
         </div>
@@ -181,4 +188,49 @@ onBeforeUnmount(() => { if (import.meta.client) document.removeEventListener('ke
 @media (prefers-reduced-motion: reduce) {
   .ntn-enter-active, .ntn-leave-active, .ntn__sub, .ntn__chev { transition: none; }
 }
+
+/* ——— Aportou: o menu do site de investidor ——— */
+.ntn--ap { background: var(--nu-page); }
+.ntn--ap .ntn__topo { border-bottom: 1.5px solid var(--nu-line-2); }
+.ntn--ap .ntn__marca { padding: 4px 6px 4px 0; }
+.ntn--ap .ntn__marca :deep(svg) { height: 24px; width: auto; }
+.ntn--ap .ntn__fechar:hover { background: var(--nu-band); }
+@media (min-width: 641px) {
+  .ntn--ap .ntn__marca { padding: 6px 6px 6px 2px; }
+  .ntn--ap .ntn__marca :deep(svg) { height: 30px; }
+}
+.ntn--ap .ntn__rolo { padding-top: 16px; }
+.ntn--ap .ntn__busca { height: 48px; margin-bottom: 8px; background: var(--nu-band); font-weight: 600; transition: background .2s, color .2s; }
+.ntn--ap .ntn__busca:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
+.ntn--ap .ntn__item { min-height: 58px; border-bottom: 1.5px solid var(--nu-line); font-weight: 600; letter-spacing: -0.01em; transition: color .2s; }
+.ntn--ap .ntn__item:hover { color: var(--nu-blue-text); }
+.ntn--ap .ntn__item--ativo { color: var(--nu-blue-text); font-weight: 700; }
+.ntn--ap .ntn__chev { color: var(--nu-ink); }
+.ntn--ap .ntn__grupo--aberto .ntn__item--grupo { border-bottom-color: transparent; }
+.ntn--ap .ntn__grupo--aberto .ntn__sub-dentro { border-bottom: 1.5px solid var(--nu-line); }
+.ntn--ap .ntn__subitem { min-height: 46px; color: var(--nu-gray-3); font-weight: 600; transition: color .2s, transform .2s cubic-bezier(.2, .8, .2, 1); }
+.ntn--ap .ntn__subitem:hover { color: var(--nu-blue-text); transform: translateX(3px); }
+.ntn--ap .ntn__subitem--ativo { color: var(--nu-blue-text); font-weight: 700; }
+.ntn--ap .ntn__tag { border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); letter-spacing: 0.06em; }
+.ntn--ap .ntn__pe { border-top: 1.5px solid var(--nu-line-2); background: var(--nu-page); }
+.ntn--ap .ntn__cta {
+  min-height: 52px; background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-ink);
+  font-weight: 700; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+}
+.ntn--ap .ntn__cta:hover { background: var(--nu-band); color: var(--nu-ink); }
+.ntn--ap .ntn__cta:active { transform: scale(.98); }
+.ntn--ap .ntn__cta--sair { box-shadow: inset 0 0 0 1.5px var(--nu-line); }
+/* a entrada: o fundo surge, a lista sobe em cascata de 60ms e o pé sobe por último */
+.ntn--ap.ntn-enter-active { transition: opacity .2s ease; }
+.ntn--ap.ntn-enter-from { transform: none; }
+.ntn--ap.ntn-leave-active { transition: opacity .18s ease, transform .18s ease; }
+.ntn--ap .ntn__busca, .ntn--ap .ntn__lista > *, .ntn--ap .ntn__mercado { animation: nu-fade .5s cubic-bezier(.2, .8, .2, 1) both; }
+.ntn--ap .ntn__lista > :nth-child(1) { animation-delay: 60ms; }
+.ntn--ap .ntn__lista > :nth-child(2) { animation-delay: 120ms; }
+.ntn--ap .ntn__lista > :nth-child(3) { animation-delay: 180ms; }
+.ntn--ap .ntn__lista > :nth-child(4) { animation-delay: 240ms; }
+.ntn--ap .ntn__lista > :nth-child(5) { animation-delay: 300ms; }
+.ntn--ap .ntn__lista > :nth-child(n+6) { animation-delay: 360ms; }
+.ntn--ap .ntn__mercado { animation-delay: 380ms; }
+.ntn--ap .ntn__pe { animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) .12s both; }
 </style>

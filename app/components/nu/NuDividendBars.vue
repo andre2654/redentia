@@ -47,11 +47,14 @@ const sobre = useSobreDoContexto()
 .ndb__val--current { color: var(--nu-blue-text); }
 .ndb__bar {
   width: 100%; max-width: 86px; min-height: 22px; border-radius: var(--nu-r-tile);
-  background: var(--nu-bar-inactive); transition: transform .18s;
+  background: var(--nu-bar-inactive); transform-origin: bottom;
+  animation: ndb-cresce .6s cubic-bezier(.2, .8, .2, 1) both;
 }
+/* a barra cresce do chão na entrada (só transform) */
+@keyframes ndb-cresce { from { transform: scaleY(0); } to { transform: none; } }
 .ndb__bar--current { background: var(--nu-blue); }
 .ndb__years { display: flex; gap: clamp(10px, 1.6vw, 22px); margin-top: 12px; }
-.ndb__year { flex: 1; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.ndb__year { flex: 1; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 .ndb__year--current { color: var(--nu-ink); font-weight: 800; }
 .ndb__footnote { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 </style>

@@ -1,15 +1,16 @@
 <script setup lang="ts">
-// Card creme "A LEITURA DO ATLAS" (mini-badge quadrado azul com a marca +
-// label uppercase espaçada + parágrafo da leitura da IA) — valores exatos do
-// design (Redentia Noticias Nu.dc.html). Compartilhado: qualquer tela que
-// mostre take do Atlas (notícia, ativo, mercado, briefing).
+// Cartão creme "A LEITURA DA IA": o sinal da marca + rótulo em caixa alta
+// espaçada + o parágrafo da leitura. Compartilhado: qualquer tela que mostre a
+// leitura da IA (notícia, ativo, mercado, briefing).
+// APORTOU (11/11/2026): o selo quadrado azul com o losango da Redentia deu
+// lugar ao corte azul do "t" (o sinal da IA da Aportou), no rótulo da marca.
 withDefaults(defineProps<{ text: string; label?: string }>(), { label: 'A leitura da IA' })
 </script>
 
 <template>
   <div class="nat">
     <div class="nat__head">
-      <span class="nat__badge"><img src="/logo-branca.svg" alt="" class="nat__logo"></span>
+      <MarcaCorte :largura="20" />
       <span class="nat__label">{{ label }}</span>
     </div>
     <div class="nat__body">{{ text }}</div>
@@ -17,16 +18,11 @@ withDefaults(defineProps<{ text: string; label?: string }>(), { label: 'A leitur
 </template>
 
 <style scoped>
-.nat { background: var(--nu-cream); border-radius: 20px; padding: 20px 22px; }
+.nat { background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 20px 22px; box-shadow: var(--nu-shadow-quente); }
 .nat__head { display: flex; align-items: center; gap: 9px; }
-.nat__badge {
-  width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px; background: var(--nu-blue);
-  display: inline-flex; align-items: center; justify-content: center;
-}
-.nat__logo { width: 14px; height: 14px; display: block; object-fit: contain; }
 .nat__label {
-  color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
 }
-.nat__body { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65; margin-top: 10px; }
+.nat__body { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; margin-top: 10px; }
 </style>

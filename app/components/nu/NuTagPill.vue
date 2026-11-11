@@ -15,11 +15,11 @@ defineProps<{ tag: AcaoTag; block?: boolean }>()
 <style scoped>
 .ntp {
   display: inline-flex; align-items: center; font-size: var(--nu-fs-dense); font-weight: 700;
-  padding: 5px 13px; border-radius: var(--nu-r-pill); white-space: nowrap;
+  padding: 5px 11px; border-radius: var(--nu-r-tag); white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 .ntp--block { margin-top: 14px; }
-.ntp--green { background: var(--nu-green-bg); color: var(--nu-green-2); }
+.ntp--green { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .ntp--amber { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .ntp--gray { background: var(--nu-sand-2); color: var(--nu-gray-tag); }
 </style>

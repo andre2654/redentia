@@ -202,7 +202,7 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
           </p>
 
           <p class="rec__mao">A vida segue.<br>A bolsa também.</p>
-          <p class="rec__assina"><span class="rec__assina-nome">André</span>, da Redentia</p>
+          <p class="rec__assina"><span class="rec__assina-nome">André</span>, da Aportou</p>
 
           <div class="rec__acoes">
             <NuxtLink to="/carteira" class="rec__cta" @click="fechar('carteira')">Ver minha carteira</NuxtLink>
@@ -221,14 +221,14 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
-  animation: rec-fade .2s ease;
+  animation: nu-surgir .2s ease both;
 }
 .rec__card {
   position: relative;
   width: min(540px, 100%); max-height: calc(100vh - 48px); overflow: auto;
   background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
   box-shadow: var(--nu-shadow-day-modal);
-  animation: rec-sobe .32s cubic-bezier(.2, .8, .2, 1);
+  animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both;
 }
 .rec__card:focus { outline: none; }
 
@@ -308,17 +308,16 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--nu-blue); color: var(--nu-white); text-decoration: none;
   border-radius: var(--nu-r-pill); padding: 13px 24px;
-  font-size: var(--nu-fs-md); font-weight: 800; transition: background .2s, transform .2s;
+  min-height: 52px; font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.rec__cta:hover { background: var(--nu-blue-hover); transform: translateY(-1px); }
+.rec__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.rec__cta:active { transform: scale(.98); }
 .rec__ok {
   border: none; background: none; padding: 10px 4px; cursor: pointer;
   color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 700;
 }
 .rec__ok:hover { color: var(--nu-ink); }
 
-@keyframes rec-fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes rec-sobe { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes rec-desenha { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes rec-escreve { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 

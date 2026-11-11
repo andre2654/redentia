@@ -8,6 +8,9 @@
 // SSR-safe: mesmo padrão do menu do NuHeader (Teleport to body + v-if num estado
 // que só liga no cliente após clique) — nada teleporta no SSR. Sem animação de
 // saída (o design usa só keyframes de entrada; v-if desmonta direto).
+// APORTOU (11/11/2026): o eyebrow da marca (o corte + caixa alta), fio de 1,5px,
+// fechar num círculo de 44px e a entrada/saída do contrato: o fundo surge
+// (nu-surgir .2s), o cartão sobe (nu-subir .32s) e, ao fechar, o inverso em .18s.
 import type { NuDayBlock } from '~/types/market'
 
 const props = defineProps<{
@@ -50,6 +53,7 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="body">
+    <Transition name="ndm-sai">
     <div v-if="open" class="ndm" @click="emit('close')">
       <div
         ref="cardRef"
@@ -62,11 +66,13 @@ onBeforeUnmount(() => {
       >
         <div class="ndm__head">
           <div>
-            <div class="ndm__eyebrow">{{ eyebrow }}</div>
+            <NuEyebrow como="div">{{ eyebrow }}</NuEyebrow>
             <h4 :id="titleId" class="ndm__title">{{ title }}</h4>
             <div class="ndm__date">{{ dateLine }}</div>
           </div>
-          <button type="button" class="ndm__close" aria-label="Fechar" @click="emit('close')">✕</button>
+          <button type="button" class="ndm__close" aria-label="Fechar" @click="emit('close')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
         </div>
 
         <div class="ndm__divider" />
@@ -84,6 +90,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
+    </Transition>
   </Teleport>
 </template>
 
@@ -94,28 +101,33 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
   padding: 32px;
-  animation: qmfade .18s ease;
+  animation: nu-surgir .2s ease both;
 }
 .ndm__card {
   width: min(680px, 92vw); max-height: 86vh; overflow: auto;
   background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
   padding: 44px 46px 42px; box-shadow: var(--nu-shadow-day-modal);
-  animation: qmrise .24s cubic-bezier(.2, .8, .2, 1);
+  animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both;
 }
+/* fechar: o inverso, em .18s */
+/* (a animação de entrada segura opacity e transform com fill both: sai antes) */
+.ndm-sai-leave-active { animation: none; transition: opacity .18s ease; }
+.ndm-sai-leave-active .ndm__card { animation: none; transition: transform .18s ease; }
+.ndm-sai-leave-to { opacity: 0; }
+.ndm-sai-leave-to .ndm__card { transform: translateY(12px) scale(.985); }
 .ndm__card:focus { outline: none; }
 .ndm__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
-.ndm__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
-.ndm__title { margin: 9px 0 0; color: var(--nu-ink); font-size: 30px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
-.ndm__date { margin-top: 7px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.ndm__title { margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.ndm__date { margin-top: 8px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 .ndm__close {
-  flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; border: none;
+  flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; border: none;
   background: var(--nu-day-close); color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
   cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
 .ndm__close:hover { background: var(--nu-day-close-hover); }
-.ndm__divider { height: 1px; background: var(--nu-day-divider); margin: 26px 0; }
+.ndm__divider { height: 1.5px; background: var(--nu-line); margin: 26px 0; }
 .ndm__blocks { display: flex; flex-direction: column; gap: 22px; }
-.ndm__label { font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+.ndm__label { font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
 .ndm__p {
   margin: 8px 0 0; color: var(--nu-day-body); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.62; text-wrap: pretty;
@@ -123,16 +135,14 @@ onBeforeUnmount(() => {
 .ndm__foot { display: flex; justify-content: flex-end; margin-top: 30px; }
 .ndm__done {
   background: var(--nu-ink); color: var(--nu-white); border: none; border-radius: var(--nu-r-pill);
-  padding: 13px 24px; font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer; transition: background .2s;
+  min-height: 48px; padding: 0 26px; font-family: inherit; font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
+  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
 .ndm__done:hover { background: var(--nu-ink-hover); }
-
-@keyframes qmfade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes qmrise { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+.ndm__done:active { transform: scale(.98); }
 
 @media (max-width: 760px) {
   .ndm { padding: 18px; }
   .ndm__card { padding: 30px 24px 28px; }
-  .ndm__title { font-size: var(--nu-fs-2xl); }
 }
 </style>

@@ -33,6 +33,8 @@ const attrs = computed(() => props.to
     :class="[`nbs--${variante}`, `nbs--${tamanho}`, { 'nbs--largo': largo, 'nbs--off': disabled, 'nbs--wait': loading }]"
     :aria-busy="loading || undefined"
   >
+    <!-- `antes`: o que vem antes do rótulo dentro da pílula (os logos dos bancos na chamada da home) -->
+    <slot name="antes" />
     <span class="nbs__txt"><slot /></span>
     <span class="nbs__bola" aria-hidden="true">
       <span v-if="loading" class="nbs__pontos"><i /><i /><i /></span>

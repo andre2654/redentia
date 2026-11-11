@@ -1,29 +1,34 @@
 <script setup lang="ts">
-// Card compacto de convite à IA (kicker uppercase azul + frase 700), creme
-// com hover #EFE9DD — usado no TOC do guia, serve em qualquer sidebar.
-// Valores exatos do design (Redentia Guia Open Finance.dc.html).
+// Cartão compacto de convite à IA (rótulo em caixa alta + frase 700), usado no
+// TOC do guia; serve em qualquer sidebar.
+// APORTOU (11/11/2026): cartão creme com o corte azul no rótulo; é clicável,
+// então sobe 2px e ganha sombra ao passar o ponteiro, e a seta anda 3px.
 defineProps<{ kicker: string; text: string; to: string }>()
 </script>
 
 <template>
   <NuxtLink :to="to" class="napc">
-    <span class="napc__kicker">{{ kicker }}</span>
+    <span class="napc__kicker"><MarcaCorte :largura="18" />{{ kicker }}</span>
     <span class="napc__text">{{ text }}</span>
+    <svg class="napc__seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15" /><path d="M13.5 6.5 19 12l-5.5 5.5" /></svg>
   </NuxtLink>
 </template>
 
 <style scoped>
 .napc {
-  display: block; background: var(--nu-cream); border-radius: 18px;
-  padding: 20px; transition: background .2s;
+  display: block; background: var(--nu-card); border-radius: var(--nu-r-panel);
+  padding: 20px; box-shadow: var(--nu-shadow-quente);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
 }
-.napc:hover { background: var(--nu-cream-4); }
+.napc:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .napc__kicker {
-  display: block; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: 1.2px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
 }
 .napc__text {
-  display: block; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
-  line-height: 1.45; margin-top: 8px;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
+  line-height: 1.4; margin-top: 10px;
 }
+.napc__seta { display: block; margin-top: 12px; color: var(--nu-blue); transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.napc:hover .napc__seta { transform: translateX(3px); }
 </style>

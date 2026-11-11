@@ -7,6 +7,8 @@
 // fila: IBOV, dólar, IFIX, CDI, PETR4, bitcoin), e no canto de quando são os
 // números e o aviso de atraso da B3, que nunca sai (no celular vira o relógio
 // com "15 min").
+// APORTOU (11/11/2026): a régua senta no creme da página, como o topo, com um
+// fio leve embaixo (--nu-line-2). Não existe faixa branca de ponta a ponta.
 // Dados via useMarketTicker (esqueleto → hidrata real). Sem dado real a régua
 // NÃO é desenhada: até 2026-08-29 ela degradava pra um seed de cotações do
 // design e mostrava número inventado sob o carimbo "B3".
@@ -96,7 +98,7 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
 
 <style scoped>
 .nut-wrap {
-  background: var(--nu-cream);
+  background: var(--nu-page); border-bottom: 1.5px solid var(--nu-line-2);
   /* gruda ABAIXO do header sticky (UX do dono 2026-07-11): --nuh-h vive no
      <html>, setada pelo NuHeader (72px normal, 60px encolhido; no celular
      52 e 46). .nut-wrap é a classe que o ChatSeletor conta como topo. */
@@ -104,7 +106,7 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
   transition: top .32s cubic-bezier(.2, .8, .2, 1);
 }
 .nut { display: flex; align-items: center; gap: 26px; padding: 14px 22px; }
-.nut__label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; flex-shrink: 0; }
+.nut__label { color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 .nut__marquee { flex: 1; min-width: 0; overflow: hidden; }
 .nut__track { display: inline-flex; width: max-content; animation: nut-scroll 55s linear infinite; }
 .nut__marquee:hover .nut__track { animation-play-state: paused; }
@@ -112,14 +114,15 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
 @keyframes nut-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .nut__item { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .nut__value { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.nut__visto { color: var(--nu-green); flex-shrink: 0; }
+.nut__visto { color: var(--nu-green-text); flex-shrink: 0; }
 .nut__conectar {
   display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; padding: 8px 14px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue); color: var(--nu-white); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 800; cursor: pointer;
-  transition: background .2s;
+  background: var(--nu-blue); color: var(--nu-white); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
+  min-height: 36px; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
 .nut__conectar:hover { background: var(--nu-blue-hover); }
-.nut__conectar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.nut__conectar:hover svg { animation: nu-seta .45s cubic-bezier(.4, 0, .2, 1); }
+.nut__conectar:active { transform: scale(.98); }
 
 /* no celular a faixa de venda fica só com os itens e o botão */
 @media (max-width: 560px) {
@@ -133,11 +136,10 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
 /* ——— a régua do mercado ——— */
 .nut-regua {
   display: flex; align-items: center; gap: 22px; height: 40px; padding: 0 clamp(16px, 3vw, 40px);
-  background: var(--nu-white); border-bottom: 1px solid var(--nu-cream-line);
   font-size: var(--nu-fs-dense);
 }
 .nut-regua__sk { display: flex; align-items: center; gap: 28px; overflow: hidden; }
-.nut-regua__estado { flex-shrink: 0; padding-right: 22px; border-right: 1px solid var(--nu-cream-line); height: 16px; }
+.nut-regua__estado { flex-shrink: 0; padding-right: 22px; border-right: 1.5px solid var(--nu-line-2); height: 16px; }
 .nut-regua__cot { flex: 1 1 0; --ntc-gap: 28px; }
 .nut-regua__relogio { display: none; margin-right: 3px; vertical-align: -1px; }
 .nut-regua__nota { flex-shrink: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; white-space: nowrap; }

@@ -19,12 +19,13 @@ defineEmits<{ (e: 'update:modelValue', value: string): void }>()
 <style scoped>
 .nfp { display: flex; gap: 8px; flex-wrap: wrap; }
 .nfp__pill {
-  padding: 10px 18px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: 700;
-  cursor: pointer; border: 2px solid var(--nu-sand-border); background: var(--nu-white);
-  color: var(--nu-gray-2); transition: all .2s; white-space: nowrap;
+  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: 700;
+  cursor: pointer; border: 1.5px solid var(--nu-line); background: var(--nu-white);
+  color: var(--nu-gray-3); transition: background .2s, color .2s, border-color .2s, transform .15s cubic-bezier(.2, .8, .2, 1); white-space: nowrap;
 }
-.nfp__pill--active {
-  border-color: var(--nu-ink); background: var(--nu-ink);
-  color: var(--nu-white); font-weight: 800;
+.nfp__pill:hover { border-color: var(--nu-ink); color: var(--nu-ink); }
+.nfp__pill:active { transform: scale(.98); }
+.nfp__pill--active, .nfp__pill--active:hover {
+  border-color: var(--nu-ink); background: var(--nu-ink); color: var(--nu-white);
 }
 </style>

@@ -6,6 +6,9 @@
 // Foto: passe `image` (paisagem, assunto à direita, espaço livre à esquerda —
 // direção do André). Enquanto o arquivo não existir a url 404a silenciosamente
 // e o gradiente placeholder (2ª camada) + scrims mantêm a legibilidade.
+// APORTOU (11/11/2026): a chamada principal é a pílula com a seta no círculo
+// (NuBotaoSeta creme, sobre o azul); a segunda é a pílula de contorno. Título em
+// 800 com a entrelinha da marca. A foto, os scrims e o conteúdo não mudam.
 interface CtaAction { label: string; to: string }
 
 withDefaults(defineProps<{
@@ -32,7 +35,7 @@ withDefaults(defineProps<{
       <h2 class="ncp__title"><slot name="title" /></h2>
       <div class="ncp__sub"><slot name="subtitle" /></div>
       <div class="ncp__actions">
-        <NuxtLink :to="primary.to" class="ncp__primary">{{ primary.label }}</NuxtLink>
+        <NuBotaoSeta :to="primary.to" variante="creme">{{ primary.label }}</NuBotaoSeta>
         <NuxtLink v-if="secondary" :to="secondary.to" class="ncp__secondary">{{ secondary.label }}</NuxtLink>
       </div>
     </div>
@@ -56,20 +59,15 @@ withDefaults(defineProps<{
 .ncp__inner { position: relative; z-index: 2; max-width: 660px; }
 .ncp__title {
   margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h2);
-  font-weight: 800; letter-spacing: -0.045em; line-height: 1.03;
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
-.ncp__sub { color: var(--nu-cream-text-82); font-size: var(--nu-fs-dek); font-weight: 500; margin-top: 18px; }
+.ncp__sub { color: var(--nu-blue-on-blue); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.45; margin-top: 18px; }
 .ncp__actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 38px; }
-.ncp__primary {
-  display: inline-flex; align-items: center; gap: 10px; background: var(--nu-cream); color: var(--nu-navy);
-  border-radius: var(--nu-r-pill); padding: 17px 30px; font-size: var(--nu-fs-lg); font-weight: 800;
-  transition: background .2s, transform .15s;
-}
-.ncp__primary:hover { background: var(--nu-white); color: var(--nu-navy); transform: translateY(-2px); }
 .ncp__secondary {
-  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-cream-text);
-  border: 2px solid var(--nu-cream-text-45); border-radius: var(--nu-r-pill); padding: 15px 28px;
-  font-size: var(--nu-fs-lg); font-weight: 700; transition: background .2s, border-color .2s;
+  display: inline-flex; align-items: center; min-height: 62px; background: transparent; color: var(--nu-white);
+  box-shadow: inset 0 0 0 1.5px var(--nu-white-60); border-radius: var(--nu-r-pill); padding: 0 28px;
+  font-size: var(--nu-fs-lg); font-weight: 700; transition: background .2s, box-shadow .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.ncp__secondary:hover { background: var(--nu-cream-text-10); border-color: var(--nu-cream-text-80); color: var(--nu-cream-text); }
+.ncp__secondary:hover { background: var(--nu-white-14); box-shadow: inset 0 0 0 1.5px var(--nu-white); color: var(--nu-white); }
+.ncp__secondary:active { transform: scale(.98); }
 </style>

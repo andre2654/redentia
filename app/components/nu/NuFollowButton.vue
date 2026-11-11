@@ -44,20 +44,21 @@ const label = computed(() => {
 <style scoped>
 .nfb {
   pointer-events: auto; display: inline-flex; align-items: center; gap: 10px;
-  border: none; border-radius: var(--nu-r-pill); padding: 15px 28px;
-  font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer;
-  background: var(--nu-cream); color: var(--nu-navy);
-  transition: background .2s, color .2s, transform .15s;
+  border: none; border-radius: var(--nu-r-pill); min-height: 52px; padding: 0 28px;
+  font-family: inherit; font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
+  background: var(--nu-creme); color: var(--nu-ink);
+  transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.nfb--on { background: var(--nu-green-soft); }
+.nfb:hover { background: var(--nu-white); }
+.nfb:active { transform: scale(.98); }
+.nfb--on, .nfb--on:hover { background: var(--nu-green-soft); }
 
 /* ativo sobre o creme (card sobre creme é branco — regra 2 do design system) */
 .nfb--cream {
-  background: var(--nu-white); color: var(--nu-ink);
-  padding: 17px 26px; font-size: var(--nu-fs-lg); font-weight: 700;
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
+  min-height: 62px; padding: 0 26px; font-size: var(--nu-fs-lg); font-weight: 700;
 }
-.nfb--cream:hover { transform: translateY(-2px); }
-.nfb--cream.nfb--on { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
+.nfb--cream:hover { background: var(--nu-row-hover); }
+.nfb--cream.nfb--on, .nfb--cream.nfb--on:hover { background: var(--nu-blue-bg); color: var(--nu-blue-text); box-shadow: none; }
 .nfb[aria-busy='true'] { cursor: progress; }
-.nfb:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
 </style>

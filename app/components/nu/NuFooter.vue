@@ -50,7 +50,7 @@ const assinaturaNoRodape = computed(() => !business.value && newsletterLigada &&
 const COLUMNS = [
   // fusão home+carteira (2026-07-13): /mercado e /carteira viraram '/' — o
   // link único "Mercado" cobre os dois (logado, '/' É a carteira).
-  { title: 'Produto', links: [{ label: 'Mercado', to: '/' }, { label: 'Rankings', to: '/rankings' }, { label: 'Teses', to: '/teses' }, { label: 'Redentia MCP', to: '/mcp' }] },
+  { title: 'Produto', links: [{ label: 'Mercado', to: '/' }, { label: 'Rankings', to: '/rankings' }, { label: 'Teses', to: '/teses' }, { label: 'Aportou MCP', to: '/mcp' }] },
   // Direto pras calculadoras, não só pro hub: são as URLs que sustentam o site.
   { title: 'Calculadoras', links: [{ label: 'Preço teto', to: '/calculadora/preco-teto' }, { label: 'Simulador de ações e dividendos', to: '/calculadora/acoes' }, { label: 'Dividend yield', to: '/calculadora/dividend-yield' }, { label: 'Juros compostos', to: '/calculadora/juros-compostos' }, { label: 'Imposto de renda', to: '/calculadora/imposto-renda' }] },
   { title: 'Recursos', links: [{ label: 'Notícias', to: '/noticias' }, { label: 'Guias', to: '/guias' }, { label: 'Glossário', to: '/glossario' }, { label: 'Setores da B3', to: '/setor' }, { label: 'Tesouro Direto', to: '/tesouro' }] },

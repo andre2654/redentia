@@ -8,6 +8,8 @@
 // scroll-margin-top) e fecha. Fecha também com Escape e clique fora.
 // Sticky abaixo do header (mesma mecânica do NuMarketTicker via --nuh-h); o
 // dropdown é um overlay absoluto — não empurra o conteúdo da página.
+// APORTOU (11/11/2026): no creme da página, com fio leve embaixo; o painel é
+// um cartão creme que desce com nu-subir e fios de 1,5px entre as seções.
 const rail = useState<RailState | null>('nu:section-rail', () => null)
 const sections = computed(() => rail.value?.sections ?? [])
 const pageLabel = computed(() => rail.value?.pageLabel ?? '')
@@ -93,7 +95,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .nsr-wrap {
-  background: var(--nu-cream);
+  background: var(--nu-page); border-bottom: 1.5px solid var(--nu-line-2);
   /* MESMO mecanismo do NuMarketTicker: gruda abaixo do header sticky; --nuh-h
      vive no <html> (76px normal, 58px encolhido). */
   position: sticky; top: var(--nuh-h, 76px); z-index: 40;
@@ -102,34 +104,35 @@ onBeforeUnmount(() => {
 .nsr {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   width: 100%; border: none; background: transparent; cursor: pointer;
-  padding: 13px 22px; font-family: inherit; text-align: left;
+  min-height: 44px; padding: 10px clamp(16px, 3vw, 40px); font-family: inherit; text-align: left;
   color: var(--nu-ink);
 }
 .nsr__head { display: inline-flex; align-items: baseline; gap: 10px; min-width: 0; }
-.nsr__title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; }
-.nsr__count { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; white-space: nowrap; }
-.nsr__chev { flex-shrink: 0; color: var(--nu-ink); transition: transform .25s ease; }
+.nsr__title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap; }
+.nsr__count { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 600; white-space: nowrap; }
+.nsr__chev { flex-shrink: 0; color: var(--nu-ink); transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
 .nsr__chev--open { transform: rotate(180deg); }
 
 .nsr__panel {
-  position: absolute; top: 100%; left: 0; right: 0; z-index: 41;
-  background: var(--nu-cream);
-  border-top: 1.5px solid var(--nu-cream-2);
-  box-shadow: 0 26px 44px -22px rgba(12, 21, 36, 0.28);
+  position: absolute; top: calc(100% + 1.5px); left: 0; right: 0; z-index: 41;
+  background: var(--nu-page);
+  border-bottom: 1.5px solid var(--nu-line-2);
+  box-shadow: var(--nu-shadow-card);
   display: flex; flex-direction: column;
   max-height: min(62vh, 480px); overflow-y: auto;
-  animation: nu-fade .18s ease both;
+  animation: nu-fade .22s cubic-bezier(.2, .8, .2, 1) both;
 }
 .nsr__row {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   border: none; background: transparent; cursor: pointer; text-align: left;
-  padding: 17px 22px; font-family: inherit;
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.015em;
+  min-height: 52px; padding: 14px clamp(16px, 3vw, 40px); font-family: inherit;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600;
   transition: background .15s;
 }
-.nsr__row + .nsr__row { border-top: 1px solid var(--nu-cream-2); }
-.nsr__row:hover { background: var(--nu-cream-hover); }
-.nsr__row svg { color: var(--nu-gray); flex-shrink: 0; }
-.nsr__row--active { color: var(--nu-blue-text); }
+.nsr__row + .nsr__row { border-top: 1.5px solid var(--nu-line-2); }
+.nsr__row:hover { background: var(--nu-band); }
+.nsr__row svg { color: var(--nu-gray); flex-shrink: 0; transition: transform .2s cubic-bezier(.2, .8, .2, 1); }
+.nsr__row:hover svg { transform: translateX(3px); }
+.nsr__row--active { color: var(--nu-blue-text); font-weight: 700; }
 .nsr__row--active svg { color: var(--nu-blue); }
 </style>

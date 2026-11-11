@@ -163,8 +163,41 @@
   --nu-chat-luz-2: rgba(180, 140, 255, 0.40);
   --nu-chat-luz-3: rgba(255, 107, 138, 0.30);
   --nu-page: #ffffff;
+  /* os tokens que nasceram com a Aportou, no equivalente da Redentia: componente
+     compartilhado que use um deles não muda a tela de escritório sem querer */
+  --nu-card: #F5F1EA;
+  --nu-band: #F5F1EA;
+  --nu-creme: #F5F1EA;
+  --nu-sage: #ECE7DC;
+  --nu-sage-soft: #ECE7DC;
+  --nu-sage-line: #E4E0D6;
+  --nu-line: #E7E0D2;
+  --nu-line-2: #E9E4D8;
+  --nu-borda-campo: #E4E0D6;
+  --nu-on-dark: rgba(245, 241, 234, 0.78);
+  --nu-on-dark-2: rgba(245, 241, 234, 0.6);
+  --nu-dark-line: rgba(245, 241, 234, 0.14);
+  --nu-dark-chip: #16233B;
+  --nu-dark-chip-line: #1C2C4A;
+  --nu-blue-on-dark: #9EC8FF;
+  --nu-blue-on-blue: rgba(245, 241, 234, 0.82);
+  --nu-blue-on-blue-2: rgba(245, 241, 234, 0.7);
+  --nu-blue-pale: #9EC8FF;
+  --nu-grad-cobalto: linear-gradient(120deg, #2F6BFF 0%, #2456C9 58%, #16357F 100%);
+  --nu-shadow-quente: 0 24px 60px -30px rgba(12, 21, 36, 0.18);
+  --nu-shadow-escuro: 0 30px 64px -24px rgba(5, 10, 25, 0.6);
+  --nu-shadow-branco: 0 24px 60px -30px rgba(12, 21, 36, 0.18);
   --nu-fs-marca: 13.5px;
 }
+
+/* O eyebrow da Redentia continua o de antes: texto azul em caixa baixa, sem o
+   corte do "t" (que é sinal da Aportou). */
+.marca-redentia .nu-eyebrow {
+  color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800;
+  letter-spacing: 0; text-transform: none; line-height: inherit;
+}
+.marca-redentia .nu-eyebrow--claro { color: var(--nu-blue-soft); }
+.marca-redentia .nu-eyebrow > svg { display: none; }
 
 /* A fonte da Redentia B2B segue a Plus Jakarta Sans. O arquivo só baixa nas
    telas que usam a família (as de .marca-redentia). */

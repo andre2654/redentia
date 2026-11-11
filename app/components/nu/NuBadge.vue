@@ -9,6 +9,8 @@
 //   eval  = 12px   / 6px 13px (badge de status da avaliação por ativo)
 //   label = 11.5px / 6px 13px + uppercase ls 1px (tag dos decision cards)
 // Ícones entram por slot (seta da convicção, etc).
+// APORTOU (11/11/2026): no site de investidor é o selo da marca (raio 8, 700).
+// Nas telas de escritório (.marca-redentia) segue a pílula 800 de antes.
 defineProps<{
   variant: 'dark' | 'green-soft' | 'green' | 'blue' | 'blue-solid' | 'red' | 'neutral' | 'black'
   size?: 'hero' | 'card' | 'row' | 'eval' | 'label'
@@ -21,9 +23,10 @@ defineProps<{
 
 <style scoped>
 .nb {
-  display: inline-flex; align-items: center; gap: 7px; font-weight: 800;
-  border-radius: var(--nu-r-pill); white-space: nowrap; font-variant-numeric: tabular-nums;
+  display: inline-flex; align-items: center; gap: 7px; font-weight: 700;
+  border-radius: var(--nu-r-tag); white-space: nowrap; font-variant-numeric: tabular-nums;
 }
+.marca-redentia .nb { font-weight: 800; border-radius: var(--nu-r-pill); }
 .nb--s-hero { font-size: var(--nu-fs-dense); padding: 7px 14px; gap: 6px; }
 .nb--s-card { font-size: var(--nu-fs-dense); padding: 7px 15px; }
 .nb--s-row { font-size: var(--nu-fs-dense); padding: 6px 13px; }

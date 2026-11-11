@@ -3,6 +3,8 @@
 // (avatar azul com a marca + autor + linha de atualização). Valores exatos do
 // design (Redentia Guia Open Finance.dc.html). Genérico pra qualquer página
 // editorial Nu (guia hoje; tese amanhã).
+// APORTOU (11/11/2026): senta no creme da página; a assinatura do artigo é o
+// ícone da marca (MarcaIcone) no lugar do losango da Redentia.
 defineProps<{
   breadcrumbs: { label: string; to: string }[]
   title: string
@@ -24,9 +26,7 @@ defineProps<{
       <h1 class="nah__title">{{ title }}</h1>
       <div class="nah__dek">{{ dek }}</div>
       <div class="nah__byline">
-        <span class="nah__avatar">
-          <img src="/logo-branca.svg" alt="Redentia" class="nah__avatar-logo">
-        </span>
+        <MarcaIcone :tamanho="44" />
         <span>
           <span class="nah__author">{{ author }}</span>
           <span class="nah__meta">{{ metaLine }}</span>
@@ -38,32 +38,27 @@ defineProps<{
 
 <style scoped>
 .nah {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   padding: clamp(48px, 7vw, 88px) clamp(22px, 5.5vw, 80px) clamp(44px, 6vw, 72px);
   animation: nu-fade .5s ease both;
 }
 .nah__inner { max-width: 920px; }
 .nah__crumbs {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600;
 }
 .nah__crumb { transition: color .2s; }
 .nah__crumb:hover { color: var(--nu-blue-text); }
 .nah__title {
   margin: 20px 0 0; color: var(--nu-ink);
   font-size: clamp(36px, 5vw, 68px); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1.03;
+  letter-spacing: -0.035em; line-height: 1.02;
 }
 .nah__dek {
-  color: var(--nu-gray-2); font-size: clamp(17px, 1.8vw, 21px); font-weight: 500;
-  line-height: 1.55; margin-top: 20px; max-width: 760px;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
+  line-height: 1.45; margin-top: 22px; max-width: 760px;
 }
 .nah__byline { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 28px; }
-.nah__avatar {
-  width: 44px; height: 44px; border-radius: 50%; background: var(--nu-blue);
-  display: flex; align-items: center; justify-content: center;
-}
-.nah__avatar-logo { width: 22px; height: 22px; display: block; object-fit: contain; }
 .nah__author { display: block; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
 .nah__meta { display: block; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; margin-top: 1px; }
 </style>

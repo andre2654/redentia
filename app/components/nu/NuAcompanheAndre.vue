@@ -63,28 +63,28 @@ const hrefThreads = urlAcompanhe('threads', props.lugar)
   font-size: var(--nu-fs-sm);
   font-weight: 500;
   line-height: 1.45;
-  color: var(--nu-navy);
+  color: var(--nu-ink);
 }
+/* sem fundo próprio: a linha senta no creme da seção em que está (Aportou,
+   11/11/2026; antes pintava uma tira creme ou branca de ponta a ponta) */
 .aa--calculadora {
   justify-content: center;
-  background: var(--nu-cream);
   padding: 0 clamp(22px, 5.5vw, 80px) 18px;
 }
 .aa--asset {
-  background: var(--nu-white);
   padding: 0 clamp(22px, 5.5vw, 80px) 18px;
 }
 .aa--rodape {
   margin-top: 22px;
   align-self: stretch;
 }
-.aa--escuro { color: var(--nu-cream-text); }
+.aa--escuro { color: var(--nu-on-dark); }
 
 .aa__link {
   display: inline-flex;
   align-items: center;
   gap: 0.28em;
-  color: var(--nu-blue);
+  color: var(--nu-blue-text);
   font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
@@ -92,14 +92,14 @@ const hrefThreads = urlAcompanhe('threads', props.lugar)
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
-.aa--escuro .aa__link { color: var(--nu-blue); }
-.aa__link:hover { color: var(--nu-blue-hover); }
-.aa--escuro .aa__link:hover { color: var(--nu-cream-text); }
+.aa--escuro .aa__link { color: var(--nu-blue-on-dark); }
+.aa__link:hover { color: var(--nu-ink); }
+.aa--escuro .aa__link:hover { color: var(--nu-white); }
 .aa__link:focus-visible {
   outline: 2px solid var(--nu-blue);
   outline-offset: 3px;
   border-radius: 2px;
 }
-.aa--escuro .aa__link:focus-visible { outline-color: var(--nu-blue-soft); }
+.aa--escuro .aa__link:focus-visible { outline-color: var(--nu-blue-on-dark); }
 .aa__link svg { display: block; flex: none; }
 </style>

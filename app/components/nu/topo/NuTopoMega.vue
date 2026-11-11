@@ -3,6 +3,8 @@
 // à direita (a referência do dono de 20/08, a mesma do NuHeader), com o hover
 // em cada item trocando a vinheta. Vai para o <body> e é position: fixed (ver
 // useTopo).
+// APORTOU (11/11/2026): cartão creme com fio de 1,5px; o painel surge e o miolo
+// sobe (nu-surgir / nu-subir), sem mexer a caixa (o ponteiro não perde o painel).
 import type { NavChild } from '~/utils/topo'
 import { rotaAtiva } from '~/utils/topo'
 
@@ -43,26 +45,25 @@ const unico = computed(() => props.filhos.length === 1)
 .ntg {
   position: fixed; z-index: 60; width: 700px; padding: 8px;
   display: flex; align-items: stretch; gap: 8px;
-  background: var(--nu-white); border: 1px solid var(--nu-navy-06); border-radius: var(--nu-r-panel);
-  box-shadow: 0 24px 54px -22px rgba(12, 21, 36, 0.32), 0 2px 8px rgba(12, 21, 36, 0.06);
-  animation: ntg-entra .22s cubic-bezier(.2, .8, .2, 1) both; transform-origin: top left;
+  background: var(--nu-page); border-radius: var(--nu-r-panel);
+  box-shadow: 0 0 0 1.5px var(--nu-line-2), var(--nu-shadow-card);
+  animation: nu-surgir .2s ease both;
 }
-@keyframes ntg-entra { from { opacity: 0; transform: translateY(-4px) scale(.985); } to { opacity: 1; transform: none; } }
-.ntg__lista { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 4px; }
-.ntg__item { display: flex; flex-direction: column; gap: 3px; padding: 11px 14px; border-radius: 14px; transition: background .15s; }
-.ntg__item--quente { background: var(--nu-ink-04); }
-.ntg__item:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: -2px; }
-.ntg__rotulo { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 800; }
+.ntg__lista { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 4px; animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both; }
+.ntg__item { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-radius: var(--nu-r-tile); transition: background .15s; }
+.ntg__item--quente { background: var(--nu-band); }
+.ntg__item:focus-visible { outline-offset: -3px; }
+.ntg__rotulo { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .ntg__item--ativo .ntg__rotulo { color: var(--nu-blue-text); }
 .ntg__tag {
-  padding: 2px 7px; border-radius: var(--nu-r-pill); background: var(--nu-blue-tint); color: var(--nu-blue-text);
-  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); color: var(--nu-blue-text);
+  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
 }
-.ntg__desc { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.4; }
-.ntg__vista { width: 400px; min-height: 280px; flex-shrink: 0; border-radius: var(--nu-r-tile); background: var(--nu-cream); position: relative; overflow: hidden; }
+.ntg__desc { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.4; }
+.ntg__vista { width: 400px; min-height: 280px; flex-shrink: 0; border-radius: var(--nu-r-tile); background: var(--nu-band); position: relative; overflow: hidden; animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) .04s both; }
 .ntgv-enter-active { transition: opacity .3s ease, transform .3s ease; }
 .ntgv-leave-active { transition: opacity .16s ease; }
 .ntgv-enter-from { opacity: 0; transform: translateY(8px) scale(.985); }
 .ntgv-leave-to { opacity: 0; }
-@media (prefers-reduced-motion: reduce) { .ntg { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .ntg, .ntg__lista, .ntg__vista { animation: none; } }
 </style>

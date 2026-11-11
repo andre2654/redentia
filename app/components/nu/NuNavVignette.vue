@@ -16,7 +16,7 @@ defineProps<{ name: string }>()
   <div v-if="name === 'mcp'" class="nuv nuv--mcp">
     <div class="nuv__bubble nuv__bubble--user">Quanto de Apple tem no IVVB11?</div>
     <div class="nuv__bubble nuv__bubble--ai">
-      <span class="nuv__brandword">Redentia MCP</span>
+      <span class="nuv__brandword">Aportou MCP</span>
       <span class="nuv__dots" aria-hidden="true"><i /><i /><i /></span>
     </div>
     <div class="nuv__bubble nuv__bubble--user nuv__bubble--ghost">Por que a minha carteira caiu hoje?</div>
@@ -168,7 +168,7 @@ defineProps<{ name: string }>()
       <span class="nuv__line nuv__line--bold" style="width: 88%" />
       <span class="nuv__line nuv__line--bold" style="width: 64%" />
       <div class="nuv__quote">
-        <span class="nuv__brandword">Leitura da Redentia</span>
+        <span class="nuv__brandword">Leitura da Aportou</span>
         <span class="nuv__line nuv__line--soft" style="width: 92%" />
         <span class="nuv__line nuv__line--soft" style="width: 70%" />
       </div>
@@ -254,7 +254,7 @@ defineProps<{ name: string }>()
 }
 .nuv__card {
   background: var(--nu-white); border-radius: var(--nu-r-tile);
-  box-shadow: 0 14px 34px -18px rgba(12, 21, 36, 0.22);
+  box-shadow: var(--nu-shadow-branco);
 }
 .nuv__card--pad { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
 
@@ -265,16 +265,16 @@ defineProps<{ name: string }>()
 .nuv__chiprow { display: flex; gap: 6px; }
 .nuv__chip {
   display: inline-flex; align-self: flex-start; padding: 4px 10px; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream); color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 700;
+  background: var(--nu-band); color: var(--nu-gray-3); font-size: var(--nu-fs-xs); font-weight: 700;
 }
-.nuv__chip--blue { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
-.nuv__brandword { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.01em; }
+.nuv__chip--blue { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
+.nuv__brandword { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 
 /* ——— MCP (chat) ——— */
 .nuv--mcp { align-items: stretch; justify-content: center; }
 .nuv__bubble {
   max-width: 78%; padding: 11px 15px; border-radius: 16px;
-  background: var(--nu-white); box-shadow: 0 10px 26px -16px rgba(12, 21, 36, 0.24);
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco);
   font-size: var(--nu-fs-sm); font-weight: 500; color: var(--nu-gray-3); line-height: 1.35;
 }
 .nuv__bubble--user { align-self: flex-end; border-bottom-right-radius: 6px; }

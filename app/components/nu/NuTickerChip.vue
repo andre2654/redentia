@@ -18,12 +18,12 @@ defineProps<{ ticker: string; dir: NoticiasDir }>()
 
 <style scoped>
 .ntk {
-  display: inline-flex; align-items: center; gap: 6px; font-size: var(--nu-fs-dense); font-weight: 700;
-  padding: 6px 14px; border-radius: var(--nu-r-pill); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 6px; font-size: var(--nu-fs-dense); font-weight: 800; letter-spacing: 0.04em;
+  padding: 6px 11px; border-radius: var(--nu-r-tag); white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
-.ntk--up { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.ntk--down { background: var(--nu-red-bg); color: var(--nu-red-2); }
+.ntk--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.ntk--down { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .ntk--flat { background: var(--nu-sand-2); color: var(--nu-gray-tag); }
 .ntk__arrow { display: block; }
 .ntk--down .ntk__arrow { transform: rotate(180deg); }

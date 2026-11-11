@@ -1,15 +1,18 @@
 <script setup lang="ts">
-// Hero de seção em creme (eyebrow azul + H1 gigante + subtítulo muted + slot
-// de tabs/ações) — anatomia compartilhada das telas Nu (Notícias; Guias e
-// Calculadoras reusam). Valores exatos do design (Redentia Noticias Nu.dc.html).
-// size="lg" (PR4): escala do hub /guias (Redentia Guias Nu.dc.html) — H1 até
-// 88px, paddings e eyebrow maiores, subtítulo 560px, tabs a 38px.
+// Hero de página (eyebrow + H1 gigante + subtítulo + slot de tabs/ações) —
+// anatomia compartilhada das telas Nu (Notícias; Guias e Calculadoras reusam).
+// size="lg": escala do hub /guias (H1 até 88px, paddings maiores, tabs a 38px).
+//
+// APORTOU (11/11/2026): o hero senta no creme da página, em continuidade com o
+// topo e a régua (não é mais uma faixa de outro creme); o eyebrow é o da marca
+// (o corte azul + caixa alta espaçada), o H1 vai em 800 com a entrelinha
+// apertada e o subtítulo vira o lead da marca. Estrutura, textos e slots iguais.
 defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
 </script>
 
 <template>
   <div class="nph" :class="{ 'nph--lg': size === 'lg' }">
-    <div class="nph__eyebrow">{{ eyebrow }}</div>
+    <NuEyebrow como="div" class="nph__eyebrow">{{ eyebrow }}</NuEyebrow>
     <h1 class="nph__title"><slot name="title" /></h1>
     <div v-if="subtitle" class="nph__sub">{{ subtitle }}</div>
     <div v-if="$slots.default" class="nph__actions"><slot /></div>
@@ -18,25 +21,23 @@ defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
 
 <style scoped>
 .nph {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(36px, 4.5vw, 56px);
   animation: nu-fade .5s ease both;
 }
-.nph__eyebrow { color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
 .nph__title {
-  margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(40px, 5.5vw, 76px);
-  font-weight: 800; letter-spacing: -0.045em; line-height: 1.0;
+  margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(40px, 5.5vw, 76px);
+  font-weight: 800; letter-spacing: -0.035em; line-height: 0.98;
 }
 .nph__sub {
-  color: var(--nu-gray); font-size: clamp(16px, 1.7vw, 20px); font-weight: 500;
-  line-height: 1.55; margin-top: 20px; max-width: 620px;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
+  line-height: 1.45; margin-top: 22px; max-width: 620px;
 }
 .nph__actions { margin-top: 32px; }
 
-/* variante lg (valores exatos de Redentia Guias Nu.dc.html) */
+/* variante lg (o hub /guias): o H1 de página da marca */
 .nph--lg { padding: clamp(56px, 8vw, 100px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 60px); }
-.nph--lg .nph__eyebrow { font-size: clamp(17px, 1.6vw, 21px); letter-spacing: -.2px; }
-.nph--lg .nph__title { margin-top: 14px; font-size: clamp(46px, 6.5vw, 88px); }
-.nph--lg .nph__sub { font-size: clamp(17px, 1.8vw, 21px); margin-top: 22px; max-width: 560px; }
+.nph--lg .nph__title { font-size: var(--nu-fs-hero); }
+.nph--lg .nph__sub { margin-top: 24px; max-width: 560px; }
 .nph--lg .nph__actions { margin-top: 38px; }
 </style>

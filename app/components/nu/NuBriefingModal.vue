@@ -85,7 +85,7 @@ function submit() {
       <div ref="cardRef" class="nbm__card" role="dialog" aria-modal="true" :aria-labelledby="titleId" tabindex="-1" @click.stop>
         <div class="nbm__head">
           <div>
-            <div class="nbm__eyebrow">Redentia · Alertas</div>
+            <div class="nbm__eyebrow">Aportou · Alertas</div>
             <h4 :id="titleId" class="nbm__title">Receba o resumo diário</h4>
             <div class="nbm__sub">Todo dia às 7h30 · cancele quando quiser</div>
           </div>
@@ -123,7 +123,7 @@ function submit() {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2z" /></svg>
             </span>
             <div class="nbm__preview-txt">
-              <span class="nbm__preview-from">Redentia · hoje 7h30</span>
+              <span class="nbm__preview-from">Aportou · hoje 7h30</span>
               <p class="nbm__preview-body">Ibovespa +1,22% ontem, bancos puxaram, petróleo caiu. Sua carteira: +R$ 761 (0,91%). Abra pra ler o resumo completo.</p>
             </div>
           </div>

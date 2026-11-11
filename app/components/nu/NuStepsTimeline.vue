@@ -3,6 +3,8 @@
 // trilho cinza e fill azul cuja altura acompanha o scroll — fórmula exata do
 // design: progresso = clamp((vh*0.78 - rect.top)/rect.height, 0, 1) *
 // (clientHeight - 20). HTML dos passos é conteúdo local confiável (<strong>).
+// APORTOU (11/11/2026): cartão creme da marca; os números vão em cobalto 800
+// (os "passos numerados" do quadro) e o trilho é o fio de 1,5px.
 const props = defineProps<{ steps: string[] }>()
 
 const railRef = ref<HTMLElement | null>(null)
@@ -35,24 +37,24 @@ const nums = computed(() => props.steps.map((_, i) => String(i + 1).padStart(2, 
 </template>
 
 <style scoped>
-.nst { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: clamp(22px, 3.5vw, 40px); }
+.nst { background: var(--nu-card); border-radius: var(--nu-r-card); padding: clamp(24px, 3vw, 40px); box-shadow: var(--nu-shadow-quente); }
 .nst__rail { position: relative; padding-left: clamp(18px, 2.5vw, 30px); }
 .nst__track {
-  position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px;
-  background: var(--nu-ink-10);
+  position: absolute; left: 0; top: 10px; bottom: 10px; width: 1.5px;
+  background: var(--nu-line);
 }
 .nst__fill {
-  position: absolute; left: 0; top: 10px; height: 0; width: 2.5px;
+  position: absolute; left: -0.75px; top: 10px; height: 0; width: 3px; border-radius: 3px;
   background: var(--nu-blue); transition: height .18s ease-out;
 }
 .nst__step { display: flex; align-items: flex-start; gap: clamp(18px, 3vw, 38px); padding: 14px 0; }
 .nst__num {
-  color: var(--nu-ink); font-size: clamp(21px, 2vw, 26px); font-weight: 800;
-  width: 44px; flex-shrink: 0; font-variant-numeric: tabular-nums;
+  color: var(--nu-blue); font-size: clamp(24px, 2.4vw, 32px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.1;
+  width: 48px; flex-shrink: 0; font-variant-numeric: tabular-nums;
 }
 .nst__text {
   color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500;
-  line-height: 1.65; padding-top: 2px;
+  line-height: 1.6; padding-top: 4px;
 }
 .nst__text :deep(strong) { font-weight: 800; }
 </style>

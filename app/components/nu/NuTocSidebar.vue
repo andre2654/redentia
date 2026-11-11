@@ -23,7 +23,7 @@ useNuScrollFrame(() => {
 
 <template>
   <div class="ntoc" data-nu-toc>
-    <div class="ntoc__label">{{ label }}</div>
+    <div class="ntoc__label"><MarcaCorte :largura="18" />{{ label }}</div>
     <div class="ntoc__list">
       <a
         v-for="(it, i) in items" :key="it.targetId" :href="`#${it.targetId}`"
@@ -43,22 +43,24 @@ useNuScrollFrame(() => {
   top: calc(var(--nuh-h, 76px) + 60px);
 }
 .ntoc__label {
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
-  letter-spacing: 1.2px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+  color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
 }
 .ntoc__list {
   display: flex; flex-direction: column; margin-top: 16px;
-  border-left: 2px solid var(--nu-cream-2);
+  border-left: 1.5px solid var(--nu-line);
 }
 .ntoc__item {
-  display: block; padding: 9px 0 9px 18px; margin-left: -2px;
-  border-left: 2.5px solid transparent;
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.35;
+  display: block; padding: 10px 0 10px 18px; margin-left: -2.25px;
+  border-left: 3px solid transparent;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.35;
   transition: color .2s, border-color .2s;
 }
+.ntoc__item:hover { color: var(--nu-ink); }
 .ntoc__item--active {
   border-left-color: var(--nu-blue);
-  color: var(--nu-ink); font-weight: 800;
+  color: var(--nu-ink); font-weight: 700;
 }
 .ntoc__extra { margin-top: 28px; }
 
