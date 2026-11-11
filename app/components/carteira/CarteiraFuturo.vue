@@ -149,7 +149,7 @@ const apoio = computed(() => {
           </li>
         </ul>
       </div>
-      <NuBotaoSeta :to="pergunta" variante="creme" tamanho="m" class="cfu__perguntar" @click.prevent="painel.abrir(PERGUNTA)">
+      <NuBotaoSeta :to="pergunta" variante="creme" tamanho="m" class="cfu__perguntar" @click.capture.prevent="painel.abrir(PERGUNTA)">
         Perguntar à IA como proteger o lado ruim
       </NuBotaoSeta>
 

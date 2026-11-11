@@ -452,5 +452,5 @@
   /* o véu de modal e folha */
   --nu-veu: color-mix(in srgb, var(--nu-ink) 52%, transparent);
   /* a borda do campo sob o ponteiro (a Redentia redefine junto com a borda) */
-  --nu-borda-campo-hover: var(--nu-borda-campo-hover);
+  --nu-borda-campo-hover: color-mix(in srgb, var(--nu-borda-campo), var(--nu-ink) 30%);
 }

@@ -178,7 +178,7 @@
   --nu-line: #E7E0D2;
   --nu-line-2: #E9E4D8;
   --nu-borda-campo: #E4E0D6;
-  --nu-borda-campo-hover: var(--nu-borda-campo-hover);
+  --nu-borda-campo-hover: color-mix(in srgb, var(--nu-borda-campo), var(--nu-ink) 30%);
   --nu-on-dark: rgba(245, 241, 234, 0.78);
   --nu-on-dark-2: rgba(245, 241, 234, 0.6);
   --nu-dark-line: rgba(245, 241, 234, 0.14);
