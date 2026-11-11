@@ -511,19 +511,19 @@ export function textosDaBolsa(d: BolsaDoDia, estado: EstadoDoPregao, agora = new
   let linkFechamento: string | null = null
   if (d.leitura?.bate && d.leitura.data === ib.data) {
     const hora = horaSP(d.leitura.publicadoEm)
-    leitura = { texto: d.leitura.texto, assinatura: `IA da Redentia · ${ddmm(d.leitura.data)}${hora ? `, ${hora}` : ''}` }
+    leitura = { texto: d.leitura.texto, assinatura: `IA da Aportou · ${ddmm(d.leitura.data)}${hora ? `, ${hora}` : ''}` }
     linkFechamento = 'Ler o fechamento inteiro'
   } else {
     if (d.leitura) linkFechamento = `Ler o fechamento de ${diaDaSemana(d.leitura.data)}`
     if (estado === 'fechada' && doDia && (sp.hora < 21 || (sp.hora === 21 && sp.minuto < 30))) aviso = 'O fechamento da IA sai por volta das 20h.'
   }
 
-  // a ponte: a mesma linha que a Redentia escreve para quem conectou a carteira
+  // a ponte: a mesma linha que a Aportou escreve para quem conectou a carteira
   const rotulo = usarSemana ? 'Bolsa na semana' : aoVivo ? 'Bolsa até agora' : doDia ? 'Bolsa hoje' : `Bolsa ${quando}`
   const m = d.mes
   const frase = m?.confiavel && m.ultimoPregao && m.raros && !aoVivo
     ? `Desde ${m.raros.desde}, o Ibovespa ${m.pct < 0 ? 'caiu' : 'subiu'} ${nf2.format(Math.abs(m.pct))}% ou mais em ${m.raros.n} meses, este incluído. Os 2.000 cenários testam a sua carteira com trechos reais como este.`
-    : 'Todo pregão, a Redentia escreve esta linha para a sua carteira.'
+    : 'Todo pregão, a Aportou escreve esta linha para a sua carteira.'
 
   return { sobrelinha, aoVivo: vivo, numero, legenda, titulo, apoio, causa, contagem, tese, leitura, aviso, linkFechamento, ponte: { rotulo, valor: numero, frase } }
 }

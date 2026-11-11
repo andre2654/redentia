@@ -25,6 +25,13 @@
 // cliques do Google na home vêm da busca "redentia" (GSC, 90 dias até
 // 28/10/2026), gente que já ouviu falar e quer saber o que é.
 //
+// Aportou (11/11/2026): o dono viu o wordmark e o título em 800 sobre este
+// palco e aprovou ("gostei mais da Aportou assim"). O herói fica como está e
+// ganha a personalidade: a chamada é a pílula da marca (HomeChamada), o céu vai
+// do carvão ao preto das telas (o preto puro só existe aqui, no palco dos
+// aparelhos) e a linha de luz do horizonte leva as cores do anel do input
+// mágico (--nu-anel: cobalto, céu, sálvia e areia).
+//
 // LCP: o Mac é o maior elemento da primeira tela. Vai em AVIF (WebP de
 // reserva), com preload e prioridade alta, sem lazy, e a entrada dele só sobe
 // (sem opacidade nem desfoque, que atrasariam a pintura). As telas são as do
@@ -132,7 +139,7 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
   padding: clamp(40px, 4.4vw, 60px) var(--g) var(--fim);
   background: var(--nu-agora-bg);
 }
-/* o céu: navy no alto (o mesmo do rodapé), preto onde os aparelhos ficam */
+/* o céu: carvão no alto (o mesmo do rodapé), preto onde os aparelhos ficam */
 .hhv__ceu {
   position: absolute; inset: 0; z-index: -2; pointer-events: none;
   background:
@@ -190,10 +197,16 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
 .hhv__aparelho--watch::before, .hhv__aparelho--watch::after {
   content: ''; position: absolute; z-index: -1; left: 47.6%; width: 60%; height: 55%;
   transform: translateX(-50%); pointer-events: none;
+  /* a borracha grafite, em quatro tons do preto do palco clareado com branco */
+  --p1: color-mix(in srgb, var(--nu-white) 12%, var(--nu-agora-bg));
+  --p2: color-mix(in srgb, var(--nu-white) 23%, var(--nu-agora-bg));
+  --p3: color-mix(in srgb, var(--nu-white) 17%, var(--nu-agora-bg));
+  --p4: color-mix(in srgb, var(--nu-white) 10%, var(--nu-agora-bg));
+  --borda: color-mix(in srgb, var(--nu-agora-bg) 55%, transparent);
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, .55), transparent 18%, transparent 82%, rgba(0, 0, 0, .55)),
-    linear-gradient(90deg, #1d1e22, #3a3c42 42%, #2b2d32 58%, #18191c);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06), 0 18px 34px -14px var(--nu-agora-bg);
+    linear-gradient(90deg, var(--borda), transparent 18%, transparent 82%, var(--borda)),
+    linear-gradient(90deg, var(--p1), var(--p2) 42%, var(--p3) 58%, var(--p4));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nu-white) 6%, transparent), 0 18px 34px -14px var(--nu-agora-bg);
 }
 /* a de cima entra por trás do topo da caixa; a de baixo, pelo pé */
 .hhv__aparelho--watch::before { bottom: 93%; border-radius: 46% 46% 10% 10% / 16% 16% 4% 4%; }
@@ -201,9 +214,9 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
   top: 93%; border-radius: 10% 10% 46% 46% / 4% 4% 16% 16%;
   /* os furinhos da pulseira esportiva, no meio da ponta de baixo */
   background:
-    radial-gradient(circle at 50% 50%, #0d0e10 0 22%, transparent 26%) 50% 58% / 18% 9% repeat-y,
-    linear-gradient(90deg, rgba(0, 0, 0, .55), transparent 18%, transparent 82%, rgba(0, 0, 0, .55)),
-    linear-gradient(90deg, #1d1e22, #3a3c42 42%, #2b2d32 58%, #18191c);
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--nu-white) 5%, var(--nu-agora-bg)) 0 22%, transparent 26%) 50% 58% / 18% 9% repeat-y,
+    linear-gradient(90deg, var(--borda), transparent 18%, transparent 82%, var(--borda)),
+    linear-gradient(90deg, var(--p1), var(--p2) 42%, var(--p3) 58%, var(--p4));
 }
 /* a borda fina com brilho no topo, como vidro */
 .hhv__aparelho--mac img { border-radius: 1.1% / 1.76%; box-shadow: 0 0 0 1px var(--nu-white-14), 0 -1px 0 0 var(--nu-white-30); }
@@ -219,13 +232,22 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
   mask-image: linear-gradient(0deg, var(--nu-agora-bg) 0%, transparent 15%);
 }
 
-/* a linha de luz: o brilho da barra da Redentia, esticado no horizonte */
+/* a linha de luz: o anel do input mágico (cobalto, céu, sálvia e areia),
+   esticado no horizonte. O fio é o ::before (a máscara apaga as pontas sem
+   cortar o brilho, que é a sombra da caixa de fora) */
 .hhv__horizonte {
   position: absolute; left: -20%; right: -20%; top: calc(100% - var(--chao)); height: 2px; pointer-events: none;
-  background: linear-gradient(90deg, transparent 4%, var(--nu-chat-luz-1) 24%, var(--nu-white-60) 50%, var(--nu-chat-luz-3) 76%, transparent 96%);
-  box-shadow: 0 0 18px 3px var(--nu-chat-luz-1), 0 0 60px 14px var(--nu-chat-luz-2), 0 -40px 120px 20px color-mix(in srgb, var(--nu-blue) 14%, transparent);
+  box-shadow: 0 0 60px 14px color-mix(in srgb, var(--nu-blue) 26%, transparent), 0 -40px 120px 20px color-mix(in srgb, var(--nu-blue) 14%, transparent);
   border-radius: 50%;
 }
+.hhv__horizonte::before, .hhv__horizonte::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: var(--nu-anel); background-size: 100% 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent 6%, var(--nu-agora-bg) 26%, var(--nu-agora-bg) 74%, transparent 94%);
+  mask-image: linear-gradient(90deg, transparent 6%, var(--nu-agora-bg) 26%, var(--nu-agora-bg) 74%, transparent 94%);
+}
+/* o mesmo anel, desfocado, é o halo colorido em volta do fio */
+.hhv__horizonte::after { inset: -7px 0; filter: blur(9px); opacity: .7; }
 
 /* ——— os aparelhos levam à loja ———
    O selo: uma pílula de vidro sobre o aparelho. Branca quando é link (o iPhone,

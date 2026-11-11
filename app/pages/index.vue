@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Home única `/`. Desde 31/10/2026 é a página da Redentia como produto (o
+// Home única `/`. Desde 31/10/2026 é a página do produto, hoje a Aportou (o
 // pedido do dono: os apps, a frase dos 2.000 cenários e uma chamada só para o
 // /assinar), com o mercado do dia mais abaixo. Anônimo e logado veem a mesma
 // URL com seções diferentes; a consciência de sessão vive DENTRO do
@@ -23,12 +23,13 @@
 const siteOrigin = useSiteOrigin()
 usePageSeo({
   title: 'Sua carteira testada em 2.000 cenários, com IA',
-  description: 'A IA da Redentia junta a sua carteira de qualquer banco, testa em 2.000 cenários de cinco anos e vigia todo dia. Mercado de hoje, calculadoras e guias grátis.',
+  // só a marca mudou (11/11/2026): o nome vem de MARCA, e o titleTemplate põe " · Aportou" no título
+  description: `A ${MARCA.ia} junta a sua carteira de qualquer banco, testa em 2.000 cenários de cinco anos e vigia todo dia. Mercado de hoje, calculadoras e guias grátis.`,
   path: '/',
   structuredData: [{
     '@type': 'WebSite',
     '@id': `${siteOrigin}/#website`,
-    name: 'Redentia',
+    name: MARCA.nome,
     url: `${siteOrigin}/`,
     inLanguage: 'pt-BR',
     potentialAction: {

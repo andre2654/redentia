@@ -64,7 +64,7 @@ test('fechou e a IA escreveu: a história inteira', () => {
   assert.equal(causaEmTexto(t.causa!), 'Quem mais tirou: Itaú Unibanco, −324; B3, −274; BTG Pactual, −215. Vale (+518) e Petrobras (+326) seguraram a queda.')
   assert.equal(t.contagem, '17 das 76 ações do Ibovespa subiram; 58 caíram.')
   assert.equal(t.tese!.texto, 'Itaú Unibanco e BTG Pactual estão na tese Bancos Brasileiros: convicção 88 de 100, era 90 até 27/10.')
-  assert.deepEqual(t.leitura && t.leitura.assinatura, 'IA da Redentia · 30/10, 20h20')
+  assert.deepEqual(t.leitura && t.leitura.assinatura, 'IA da Aportou · 30/10, 20h20')
   assert.equal(t.linkFechamento, 'Ler o fechamento inteiro')
   assert.match(t.ponte.frase, /^Desde 2001, o Ibovespa caiu 9,88% ou mais em 17 meses, este incluído\./)
 })

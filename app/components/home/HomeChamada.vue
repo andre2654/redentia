@@ -14,20 +14,25 @@
 // Mandar o visitante primeiro para o /login esconderia o preço atrás de um
 // cadastro, que é o contrário do que a Apple faria.
 //
+// Aportou (11/11/2026): o botão é a pílula da marca, com a seta no círculo
+// (NuBotaoSeta), e os logos dos bancos seguem dentro dela, à esquerda do
+// rótulo. Sobre o creme ele é cobalto; sobre o carvão do herói e sobre o painel
+// azul do fecho, creme com o círculo carvão. O rótulo e o destino não mudam.
+//
 // A linha dos aparelhos sai de utils/appsRedentia.ts, a fonte única do que
 // já está na App Store (02/11/2026: só o iPhone; Mac e relógio em revisão).
 // O link da loja fica nos aparelhos do herói (HomeHeroVisitante), não aqui:
 // a ação desta chamada é uma só, conectar a carteira.
 import { fraseDosApps } from '~/utils/appsRedentia'
 withDefaults(defineProps<{
-  /** 'claro' no creme (o herói); 'escuro' sobre o navy (o fecho da página) */
+  /** 'claro' sobre o creme (o topo de quem tem conta); 'escuro' sobre o carvão do herói e o azul do fecho */
   tom?: 'claro' | 'escuro'
   /** centraliza a letra miúda embaixo do botão */
   centro?: boolean
   /** quem já conectou o banco não lê "Conectar carteira": o passo dele é assinar */
   rotulo?: string
-  /** 'calmo': o botão mais baixo, os bancos menores e o peso 600 (o herói
-   *  do visitante desde 02/11/2026, "A noite"); 'grande' é o de sempre */
+  /** 'calmo': a pílula de 52 px com os bancos menores (o herói do visitante);
+   *  'grande' é a de 62 px */
   porte?: 'grande' | 'calmo'
 }>(), { tom: 'claro', centro: true, rotulo: 'Conectar carteira', porte: 'grande' })
 
@@ -43,16 +48,17 @@ const BANCOS = [
 
 <template>
   <div class="hch" :class="[`hch--${tom}`, `hch--${porte}`, { 'hch--centro': centro }]">
-    <NuxtLink to="/assinar?quiz=1&de=home" class="hch__botao">
-      <span class="hch__bancos" aria-hidden="true">
-        <img
-          v-for="(b, i) in BANCOS" :key="b.nome" :src="b.logo" alt="" width="34" height="34"
-          class="hch__banco" :class="{ 'hch__banco--extra': i >= 3 }" :style="{ zIndex: BANCOS.length - i }"
-        >
+    <NuBotaoSeta to="/assinar?quiz=1&de=home" :variante="tom === 'escuro' ? 'creme' : 'azul'" :tamanho="porte === 'calmo' ? 'm' : 'g'" class="hch__botao">
+      <span class="hch__dentro">
+        <span class="hch__bancos" aria-hidden="true">
+          <img
+            v-for="(b, i) in BANCOS" :key="b.nome" :src="b.logo" alt="" width="36" height="36"
+            class="hch__banco" :class="{ 'hch__banco--extra': i >= 3 }" :style="{ zIndex: BANCOS.length - i }"
+          >
+        </span>
+        <span class="hch__rotulo">{{ rotulo }}</span>
       </span>
-      <span class="hch__rotulo">{{ rotulo }}</span>
-      <svg class="hch__seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-    </NuxtLink>
+    </NuBotaoSeta>
 
     <p class="hch__letra">
       <strong>Qualquer banco ou corretora.</strong>
@@ -75,48 +81,44 @@ const BANCOS = [
 .hch { display: flex; flex-direction: column; align-items: flex-start; }
 .hch--centro { align-items: center; text-align: center; }
 
-/* o botão: azul, alto, com os bancos empilhados à esquerda */
-.hch__botao {
-  display: inline-flex; align-items: center; gap: 14px; min-height: 64px; max-width: 100%;
-  padding: 10px 26px 10px 12px; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue); color: var(--nu-white);
-  font-size: var(--nu-fs-lg); font-weight: 700; line-height: 1.2;
-  box-shadow: var(--nu-home-sombra-botao);
-  transition: background .2s ease, transform .2s ease, box-shadow .25s ease;
-}
-.hch__botao:hover { background: var(--nu-blue-hover); color: var(--nu-white); transform: translateY(-2px); }
-.hch__botao:active { transform: translateY(0); }
-.hch__botao:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 4px; }
+/* o botão: a pílula da marca (NuBotaoSeta), com os bancos empilhados à
+   esquerda do rótulo e a seta no círculo à direita */
+.hch .hch__botao { max-width: 100%; padding-left: 10px; gap: 18px; box-shadow: var(--nu-home-sombra-botao); }
+.hch--escuro .hch__botao { box-shadow: var(--nu-home-sombra-botao-escuro); }
 .hch--escuro .hch__botao:focus-visible { outline-color: var(--nu-white); }
-.hch__seta { flex: none; transition: transform .2s ease; }
-.hch__botao:hover .hch__seta { transform: translateX(3px); }
-
+.hch__dentro { display: inline-flex; align-items: center; gap: 14px; min-width: 0; }
 .hch__bancos { display: inline-flex; flex: none; }
 .hch__banco {
-  position: relative; width: 34px; height: 34px; border-radius: 50%; object-fit: cover;
-  box-shadow: 0 0 0 2.5px var(--nu-blue); background: var(--nu-white);
+  position: relative; width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+  /* o anel de cada logo é a cor da pílula (a variável é do NuBotaoSeta) */
+  box-shadow: 0 0 0 2.5px var(--nbs-bg, var(--nu-blue)); background: var(--nu-white);
 }
-.hch__banco + .hch__banco { margin-left: -9px; }
+.hch__banco + .hch__banco { margin-left: -10px; }
 .hch__rotulo { white-space: nowrap; }
 
 /* a letra miúda: de onde vem a carteira (sem preço desde 01/11/2026) */
 .hch__letra {
-  margin: 18px 0 0; max-width: 64ch; color: var(--nu-gray-2);
-  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; text-wrap: balance;
+  margin: 18px 0 0; max-width: 64ch; color: var(--nu-gray);
+  font-size: 14.5px; font-weight: 500; line-height: 1.55; text-wrap: balance;
 }
 .hch__letra strong { color: var(--nu-ink); font-weight: 700; }
 .hch__apps {
-  display: inline-flex; align-items: center; gap: 10px; margin: 10px 0 0;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.4;
+  display: inline-flex; align-items: center; gap: 10px; margin: 8px 0 0;
+  color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.4;
 }
 .hch__glifos { display: inline-flex; align-items: center; gap: 6px; color: var(--nu-ink); }
 
-/* sobre o navy */
-.hch--escuro .hch__botao { background: var(--nu-white); color: var(--nu-blue-text); box-shadow: var(--nu-home-sombra-botao-escuro); }
-.hch--escuro .hch__botao:hover { background: var(--nu-cream); color: var(--nu-blue-hover); }
-.hch--escuro .hch__banco { box-shadow: 0 0 0 2.5px var(--nu-white); }
-.hch--escuro .hch__letra, .hch--escuro .hch__apps { color: var(--nu-white-85); }
+/* sobre o carvão do herói e sobre o azul do fecho */
+.hch--escuro .hch__letra, .hch--escuro .hch__apps { color: var(--nu-blue-on-blue); }
 .hch--escuro .hch__letra strong, .hch--escuro .hch__glifos { color: var(--nu-white); }
+
+/* porte calmo (o herói do visitante): a pílula de 52 px, os bancos de 30 px */
+.hch--calmo .hch__botao { padding-left: 8px; gap: 14px; }
+.hch--calmo .hch__dentro { gap: 12px; }
+.hch--calmo .hch__banco { width: 30px; height: 30px; box-shadow: 0 0 0 2px var(--nbs-bg, var(--nu-blue)); }
+.hch--calmo .hch__banco + .hch__banco { margin-left: -8px; }
+.hch--calmo .hch__letra { margin-top: 16px; }
+.hch--calmo .hch__apps { margin-top: 6px; }
 
 /* a linha dos aparelhos fica só no computador (pedido do dono, 01/11/2026):
    no celular e no tablet ela só empurrava os aparelhos para baixo */
@@ -125,34 +127,10 @@ const BANCOS = [
 }
 @media (max-width: 560px) {
   .hch { align-self: stretch; }
-  .hch__botao { width: 100%; justify-content: center; gap: 12px; padding: 10px 20px 10px 10px; font-size: var(--nu-fs-md); }
+  .hch .hch__botao { display: flex; width: 100%; }
   .hch__banco--extra { display: none; }
-  .hch__banco { width: 30px; height: 30px; }
+  .hch__banco, .hch--calmo .hch__banco { width: 30px; height: 30px; }
   /* a frase em negrito numa linha, o Open Finance na outra */
   .hch__letra strong { display: block; }
-}
-/* porte calmo (o herói do visitante, 02/11/2026): a mesma chamada num botão de
-   52 px, os bancos de 26 px e o rótulo em 600, para ficar do tamanho do título
-   em peso médio, e não maior que ele */
-.hch--calmo .hch__botao {
-  min-height: 52px; gap: 12px; padding: 6px 22px 6px 7px;
-  font-size: var(--nu-fs-md); font-weight: 600; letter-spacing: -0.005em;
-  box-shadow: 0 10px 28px -14px color-mix(in srgb, var(--nu-blue) 70%, transparent);
-}
-.hch--calmo.hch--escuro .hch__botao { box-shadow: 0 10px 30px -14px color-mix(in srgb, var(--nu-agora-bg) 70%, transparent); }
-.hch--calmo .hch__banco { width: 26px; height: 26px; box-shadow: 0 0 0 2px var(--nu-blue); }
-.hch--calmo.hch--escuro .hch__banco { box-shadow: 0 0 0 2px var(--nu-white); }
-.hch--calmo .hch__banco + .hch__banco { margin-left: -7px; }
-.hch--calmo .hch__seta { width: 16px; height: 16px; }
-.hch--calmo .hch__letra { margin-top: 16px; font-size: var(--nu-fs-sm); }
-.hch--calmo .hch__letra strong { font-weight: 600; }
-.hch--calmo .hch__apps { margin-top: 6px; }
-@media (max-width: 560px) {
-  .hch--calmo .hch__botao { padding: 6px 18px 6px 7px; gap: 10px; }
-  .hch--calmo .hch__banco { width: 26px; height: 26px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hch__botao, .hch__seta { transition: none; }
 }
 </style>

@@ -51,15 +51,17 @@ function saiuDoFoco(e: FocusEvent) {
   display: inline; padding: 0; border: 0; background: none; cursor: help; font: inherit; color: inherit;
   text-decoration: underline dotted; text-decoration-thickness: 1.5px; text-underline-offset: 4px;
 }
-.hte__termo:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; border-radius: 3px; }
+.hte__termo:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 2px; border-radius: 3px; }
+/* a caixinha: cartão branco de raio 16, que surge em 0,2 s */
 .hte__caixa {
   position: absolute; z-index: 5; left: 0; top: calc(100% + 8px); width: min(300px, calc(100vw - 44px));
-  display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: 14px;
+  display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: var(--nu-r-tile);
   background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-card);
-  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; text-align: left; white-space: normal;
+  font-size: 14.5px; font-weight: 500; line-height: 1.5; text-align: left; white-space: normal;
+  animation: nu-surgir .2s ease both;
 }
 .hte__caixa--dir { left: auto; right: 0; }
 .hte__def { color: var(--nu-ink); }
-.hte__link { color: var(--nu-blue-text); font-weight: 700; }
+.hte__link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .hte__link:hover { color: var(--nu-blue-hover); }
 </style>

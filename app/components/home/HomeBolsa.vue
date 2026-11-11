@@ -25,6 +25,12 @@
 // clara atravessa o dia, das 10h ao fechamento, com a hora que está lendo) e
 // então aparecem os cartões do fechamento. É o gesto do produto: você não lê
 // o mercado, ela lê e te entrega o que importa.
+//
+// Aportou (11/11/2026): a seção é carvão (era o azul-marinho), a sobrelinha é
+// o eyebrow da marca (o corte + caixa alta), os dois botões cheios são a pílula
+// com a seta no círculo (NuBotaoSeta creme), os cartões do dia são o cartão
+// carvão de raio 28 e os rótulos viram rótulo de coluna (caixa alta, 0,16em).
+// O texto fala em Aportou. Estrutura, dados e a leitura do gráfico: iguais.
 import { textosDaBolsa } from '~/utils/bolsaDoDia'
 import { agoraEmSP, estadoDoPregao, horaDoFechamento, quandoFoi } from '~/utils/pregao'
 import { rodapeSemAssinatura } from '~/utils/newsletter-lugares'
@@ -32,6 +38,8 @@ import { marcarTermos } from '~/utils/termosDoDia'
 
 // o briefing registra o onMounted dele: vem antes de qualquer await
 const { briefing, loading: briefingLoading, real: briefingReal } = useNuBriefing()
+// a entrada da seção (também antes do await): só embeleza, nada fica escondido
+const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
 
 // a hora vai no estado: a hidratação herda a do servidor e o cliente acerta ao montar
 const agora = useState('home:bolsa-agora', () => Date.now())
@@ -124,11 +132,11 @@ function lerODia() {
   }
   quadro = requestAnimationFrame(passo)
 }
-// depois da leitura, a frase que diz o que a Redentia leu
+// depois da leitura, a frase que diz o que a Aportou leu
 const leuoDia = computed(() => {
   const mercados = bolsa.value?.mercados.length ?? 0
   const empresas = bolsa.value?.acoes.length || bolsa.value?.contagem?.total || 0
-  return `A Redentia leu o pregão inteiro, das 10h às ${fechaAs.value}h, ${mercados} mercados e ${empresas} empresas. O dia em três frases:`
+  return `A Aportou leu o pregão inteiro, das 10h às ${fechaAs.value}h, ${mercados} mercados e ${empresas} empresas. O dia em três frases:`
 })
 // os números da leitura sobem junto com a faixa
 const contadores = computed(() => {
@@ -141,10 +149,11 @@ const contadores = computed(() => {
   }
 })
 const aberto = ref(false)
-const gatilho = ref<HTMLButtonElement | null>(null)
+// o gatilho é um NuBotaoSeta: o foco volta para o botão de dentro dele
+const gatilho = ref<{ $el?: HTMLElement } | null>(null)
 function fechar() {
   aberto.value = false
-  nextTick(() => gatilho.value?.focus())
+  nextTick(() => gatilho.value?.$el?.focus())
 }
 
 // "Receber por e-mail": a newsletter do rodapé (O mercado da semana, toda
@@ -162,11 +171,11 @@ function irParaNewsletter(e: MouseEvent) {
 </script>
 
 <template>
-  <section v-contexto-chat="{ id: 'bolsa:hoje', tipo: 'bolsa', rotulo: 'A bolsa hoje' }" class="hbo" aria-labelledby="hbo-titulo">
+  <section ref="secao" v-contexto-chat="{ id: 'bolsa:hoje', tipo: 'bolsa', rotulo: 'A bolsa hoje' }" class="hbo" :class="revealClass" aria-labelledby="hbo-titulo">
     <!-- o topo: a frase da bolsa à esquerda e a deixa à direita, na mesma altura -->
     <div class="hbo__topo">
       <div class="hbo__titulos" :class="{ 'hbo__titulos--lendo': fase === 'lendo' }">
-        <p v-if="textos" class="hbo__rotulo" :class="{ 'hbo__rotulo--aberta': aoVivo }">{{ textos.sobrelinha }}</p>
+        <NuEyebrow v-if="textos" como="p" sobre="escuro" class="hbo__rotulo" :class="{ 'hbo__rotulo--aberta': aoVivo }">{{ textos.sobrelinha }}</NuEyebrow>
         <!-- lido: o título vira o da leitura, para não ficarem dois títulos na tela -->
         <Transition name="hbo-troca" mode="out-in" @after-enter="focarTitulo">
           <div v-if="fase === 'lido'" key="lido">
@@ -182,13 +191,10 @@ function irParaNewsletter(e: MouseEvent) {
       </div>
       <div v-if="temGrafico && fase !== 'lido' && (briefingLoading || cartoes.length)" class="hbo__deixa">
         <p class="hbo__deixa-txt" aria-live="polite">
-          <template v-if="fase === 'antes'"><strong>Parece confuso?</strong> A Redentia deixa mais simples.</template>
+          <template v-if="fase === 'antes'"><strong>Parece confuso?</strong> A Aportou deixa mais simples.</template>
           <template v-else>Lendo <strong>{{ contadores.minutos }}</strong> minutos, <strong>{{ contadores.mercados }}</strong> mercados e <strong>{{ contadores.empresas }}</strong> empresas.</template>
         </p>
-        <button v-if="fase === 'antes'" type="button" class="hbo__ler hbo__ler--cheio hbo__ler-dia" @click="lerODia">
-          Deixar simples
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </button>
+        <NuBotaoSeta v-if="fase === 'antes'" variante="creme" tamanho="m" class="hbo__ler-dia" @click="lerODia">Deixar simples</NuBotaoSeta>
       </div>
     </div>
 
@@ -215,10 +221,7 @@ function irParaNewsletter(e: MouseEvent) {
             </li>
           </ol>
           <div class="hbo__simples-acoes">
-            <button v-if="cartoes.length" ref="gatilho" type="button" class="hbo__ler hbo__ler--cheio" aria-haspopup="dialog" :aria-expanded="aberto" @click="aberto = true">
-              Ler o resumo do dia
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-            </button>
+            <NuBotaoSeta v-if="cartoes.length" ref="gatilho" variante="creme" tamanho="m" aria-haspopup="dialog" :aria-expanded="aberto" @click="aberto = true">Ler o resumo do dia</NuBotaoSeta>
             <button type="button" class="hbo__link-news" @click="fase = 'antes'">Ver o gráfico de novo</button>
             <a v-if="receber" href="#newsletter" class="hbo__link-news" @click="irParaNewsletter">Receber toda sexta por e-mail</a>
           </div>
@@ -243,7 +246,7 @@ function irParaNewsletter(e: MouseEvent) {
 
     <NuDayModal
       :open="aberto"
-      eyebrow="Resumo do dia · Redentia"
+      eyebrow="Resumo do dia · Aportou"
       title="O dia no mercado"
       :date-line="briefing.metaLine"
       :blocks="blocos"
@@ -253,15 +256,16 @@ function irParaNewsletter(e: MouseEvent) {
 </template>
 
 <style scoped>
-.hbo { background: var(--nu-navy); padding: clamp(56px, 7vw, 92px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.hbo__rotulo { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 700; }
+/* a seção carvão da home, no contêiner de 1.240 px */
+.hbo { background: var(--nu-ink); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1176px) / 2)); }
+/* a sobrelinha é o eyebrow da marca; com a bolsa aberta, o texto fica verde */
 .hbo__rotulo--aberta { color: var(--nu-green-soft); }
 .hbo__frase {
-  margin: 10px 0 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h2);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h2);
+  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
 }
-.hbo__sub { margin: 14px 0 0; max-width: 62ch; color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; text-wrap: pretty; }
-.hbo__sub-sk { margin-top: 18px; }
+.hbo__sub { margin: 16px 0 0; max-width: 62ch; color: var(--nu-on-dark); font-size: clamp(17px, 1.4vw, 19px); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; text-wrap: pretty; }
+.hbo__sub-sk { margin-top: 20px; }
 .hbo__frase:focus { outline: none; }
 /* lendo: o topo dá um passo atrás, os olhos vão para o gráfico */
 .hbo__frase, .hbo__sub { transition: opacity .4s ease; }
@@ -287,56 +291,59 @@ function irParaNewsletter(e: MouseEvent) {
 .hbo__item:nth-child(1) { animation-delay: .1s; }
 .hbo__item:nth-child(2) { animation-delay: .22s; }
 .hbo__item:nth-child(3) { animation-delay: .34s; }
-.hbo__item-seta { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--nu-r-pill); }
+.hbo__item-seta { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--nu-r-pill); }
 .hbo__item-seta--sobe { color: var(--nu-green-soft); background: color-mix(in srgb, var(--nu-green-soft) 16%, transparent); }
 .hbo__item-seta--cai { color: var(--nu-red-soft); background: color-mix(in srgb, var(--nu-red-soft) 16%, transparent); }
-.hbo__item-rotulo { display: block; margin-top: 8px; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-.hbo__item-titulo { display: block; margin-top: 16px; color: var(--nu-cream-text); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
+.hbo__item-rotulo { display: block; margin-top: 10px; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; }
+.hbo__item-titulo { display: block; margin-top: 16px; color: var(--nu-white); font-size: clamp(22px, 2.2vw, 28px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance; }
 /* as ações no fim do quadro, centradas */
 .hbo__simples-acoes { padding-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 12px 24px; flex-wrap: wrap; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) .46s backwards; }
-.hbo__link-news { padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
-.hbo__link-news:hover { color: var(--nu-cream-text); }
+/* a segunda ação: link em negrito sublinhado, com 44 px de toque */
+.hbo__link-news {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
+  color: var(--nu-on-dark); font-family: inherit; font-size: 15.5px; font-weight: 700; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px;
+  transition: color .2s;
+}
+.hbo__link-news:hover { color: var(--nu-white); }
 
 /* o topo: o título à esquerda e a deixa ("Parece confuso?" e o botão) à direita */
 .hbo__topo { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 24px 48px; }
 .hbo__titulos { min-width: 0; }
-.hbo__deixa { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; max-width: 340px; text-align: right; }
-.hbo__deixa-txt { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.4; font-variant-numeric: tabular-nums; text-wrap: balance; }
-.hbo__deixa-txt strong { color: var(--nu-cream-text); font-weight: 800; }
+.hbo__deixa { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; max-width: 340px; text-align: right; }
+.hbo__deixa-txt { margin: 0; color: var(--nu-on-dark); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.4; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.hbo__deixa-txt strong { color: var(--nu-white); font-weight: 800; }
 .hbo__mercado-rotulo--fora { visibility: hidden; }
-.hbo__mercado-rotulo { margin: 0; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.hbo__ler-dia { min-height: 56px; padding: 0 28px; font-size: var(--nu-fs-lg); }
+.hbo__mercado-rotulo { margin: 0; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 
 /* o dia no mercado: três cartões do fechamento da IA */
-.hbo__dia { margin-top: clamp(44px, 5vw, 60px); }
+.hbo__dia { margin-top: clamp(40px, 4.6vw, 56px); }
 .hbo__dia-titulo:focus { outline: none; }
 /* o resumo da leitura entra de baixo para cima */
 @keyframes hbo-entra { from { opacity: 0; transform: translateY(12px); } }
-.hbo__dia-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.hbo__dia-meta { margin: 10px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; }
+.hbo__dia-titulo { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.hbo__dia-meta { margin: 10px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; }
 .hbo__dia-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
 @media (max-width: 900px) { .hbo__dia-grade { grid-template-columns: 1fr; } }
-.hbo__dia-cartao { display: flex; flex-direction: column; background: var(--nu-navy-2); border-radius: var(--nu-r-card-lg); padding: 24px 26px 28px; }
-.hbo__dia-rotulo { color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-.hbo__dia-stat, .hbo__dia-titulo-cartao { padding-top: 18px; color: var(--nu-cream-text); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
-.hbo__dia-stat { font-size: var(--nu-fs-h2); font-variant-numeric: tabular-nums; }
-.hbo__dia-titulo-cartao { font-size: var(--nu-fs-2xl); }
-.hbo__dia-texto { margin: 12px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
-.hbo__dia-texto :deep(.hte__termo) { color: var(--nu-cream-text); }
-.hbo__dia-acoes { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
-
-/* os botões: o resumo em creme (o texto escuro agora lê) e a newsletter em contorno */
-.hbo__ler {
-  display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 24px;
-  border: 1.5px solid var(--nu-cream-text-12); border-radius: var(--nu-r-pill); background: transparent; cursor: pointer;
-  color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s, border-color .2s;
+/* o cartão carvão do contrato, um tom acima da seção, com o fio escuro */
+.hbo__dia-cartao {
+  display: flex; flex-direction: column; padding: clamp(22px, 2.4vw, 28px);
+  border-radius: var(--nu-r-card); background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1.5px var(--nu-dark-line);
 }
-.hbo__ler:hover { background: var(--nu-cream-text-08); border-color: var(--nu-cream-text-45); color: var(--nu-cream-text); }
-.hbo__ler.hbo__ler--cheio { background: var(--nu-cream); border-color: var(--nu-cream); color: var(--nu-navy); }
-.hbo__ler.hbo__ler--cheio:hover { background: var(--nu-white); border-color: var(--nu-white); color: var(--nu-navy); }
-.hbo__ler:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
-.hbo__ler svg { transition: transform .2s ease; }
-.hbo__ler:hover svg { transform: translateX(3px); }
+.hbo__dia-rotulo { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; }
+.hbo__dia-stat, .hbo__dia-titulo-cartao { padding-top: 18px; color: var(--nu-white); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+.hbo__dia-stat { font-size: var(--nu-fs-h2); font-variant-numeric: tabular-nums; }
+.hbo__dia-titulo-cartao { font-size: clamp(22px, 2.2vw, 28px); letter-spacing: -0.025em; line-height: 1.1; }
+.hbo__dia-texto { margin: 12px 0 0; color: var(--nu-on-dark); font-size: 16.5px; font-weight: 500; line-height: 1.5; }
+.hbo__dia-texto :deep(.hte__termo) { color: var(--nu-white); }
+
+/* entrada da seção: o topo e depois o quadro (só quando ela chega de fora da tela) */
+.hbo.is-in .hbo__titulos, .hbo.is-in .hbo__deixa, .hbo.is-in .hbo__mercado, .hbo.is-in .hbo__dia { animation: nu-fade .5s ease backwards; }
+.hbo.is-in .hbo__deixa { animation-delay: .06s; }
+.hbo.is-in .hbo__mercado, .hbo.is-in .hbo__dia { animation-delay: .12s; }
+.hbo.is-in .hbo__dia-cartao { animation: nu-fade .5s ease backwards; }
+.hbo.is-in .hbo__dia-cartao:nth-child(1) { animation-delay: .18s; }
+.hbo.is-in .hbo__dia-cartao:nth-child(2) { animation-delay: .24s; }
+.hbo.is-in .hbo__dia-cartao:nth-child(3) { animation-delay: .3s; }
 
 /* abaixo de 1000 px o resumo vem embaixo do gráfico, que encolhe */
 @media (max-width: 999px) {
@@ -352,13 +359,11 @@ function irParaNewsletter(e: MouseEvent) {
   .hbo__item { padding: 0; }
   .hbo__quadro--lido .hbo__grafico { display: none; }
 }
-@media (max-width: 560px) {
-  .hbo__dia-acoes { flex-direction: column; align-items: stretch; }
-  .hbo__ler { justify-content: center; }
+@media (max-width: 760px) {
+  .hbo { padding-inline: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hbo, .hbo__simples, .hbo__simples * { animation: none !important; }
+  .hbo, .hbo *, .hbo__simples, .hbo__simples * { animation: none !important; }
   .hbo__grafico, .hbo__frase, .hbo__sub, .hbo-troca-enter-active, .hbo-troca-leave-active { transition: none; }
-  .hbo__ler svg { transition: none; }
 }
 </style>

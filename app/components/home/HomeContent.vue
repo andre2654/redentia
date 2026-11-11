@@ -18,9 +18,19 @@
 //    Sem carteira, vê também os três cartões: é o passo que falta.
 //
 // A ordem, de cima para baixo:
-//   visitante  HomeHeroVisitante → HomeComoFunciona → HomeBolsa → HomeRankings → HomeMais → FAQ → HomeFecho
-//   logado     HomeAgoraFrase (o dia numa frase, o gráfico de 12 meses e três números) → SeguirFaixa → [HomeComoFunciona, sem carteira ou sem assinatura] → HomeMais → FAQ
+//   visitante  HomeHeroVisitante → HomeComoFunciona → HomeOQueNaoE → HomeBolsa → HomeRankings → HomeMais → FAQ → HomeFecho
+//   logado     HomeAgoraFrase (o dia numa frase, o gráfico de 12 meses e três números) → SeguirFaixa → [HomeComoFunciona → HomeOQueNaoE, sem carteira ou sem assinatura] → HomeMais → FAQ
 // SEO fica na página (index.vue): o head não varia por sessão.
+//
+// Aportou (11/11/2026): a mesma home, com a personalidade da marca nova. As
+// seções alternam o fundo e nenhuma é branca de ponta a ponta:
+//   herói (carvão ao preto do palco) → como funciona (creme da página) → o que
+//   a Aportou não é (sálvia) → a bolsa (carvão) → rankings (faixa quente) →
+//   de graça (creme) → FAQ (faixa quente) → o fecho (painel azul sobre o creme)
+// Do quadro Home entrou uma peça só, o "O que a Aportou não é" com o cartão
+// "SEUS DADOS" (HomeOQueNaoE), depois do "como funciona", para quem ainda vai
+// conectar a carteira. Planos, fatos e o cartão "PERGUNTE À IA" do quadro
+// trazem números de exemplo e não entraram.
 const { isAuthenticated, clearSession } = useAuthState()
 
 // resumo da carteira (só logado; anônimo não dispara fetch). Token morto
@@ -50,6 +60,9 @@ const mostrarComoFunciona = computed(() =>
     <SeguirFaixa v-if="isAuthenticated" />
 
     <HomeComoFunciona v-if="mostrarComoFunciona" />
+    <!-- o que a Aportou não é e o que ela faz com os dados: a peça do quadro
+         que responde a quem ainda vai conectar a carteira -->
+    <HomeOQueNaoE v-if="mostrarComoFunciona" />
 
     <!-- a bolsa do dia fica para o visitante; o logado tem o Ibovespa no alto da
          tela preta (pedido do dono, 31/10/2026) -->
@@ -64,7 +77,7 @@ const mostrarComoFunciona = computed(() =>
     <section id="faq" class="mfq">
       <div class="mfq__cols">
         <div class="mfq__left">
-          <NuSectionHeading>Ficou com alguma <br>dúvida?</NuSectionHeading>
+          <NuSectionHeading eyebrow="Perguntas frequentes">Ficou com alguma <br>dúvida?</NuSectionHeading>
           <div class="mfq__copy">O que a assinatura inclui, quanto custa, de onde vêm os cenários e como fica o seu dinheiro.</div>
         </div>
         <div class="mfq__right">
@@ -80,11 +93,14 @@ const mostrarComoFunciona = computed(() =>
 
 <style scoped>
 /* ——— FAQ (o mesmo da home anterior; o /benchmark-ia e a /teses copiam).
-   Creme com os cartões brancos desde 31/10/2026, para alternar com o branco
-   do "O que é grátis" logo acima ——— */
-.mfq { background: var(--nu-cream); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
+   Aportou: a faixa quente da marca, com os cartões brancos por cima, no
+   contêiner de 1.240 px ——— */
+.mfq { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1176px) / 2)); }
 .mfq__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .mfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.mfq__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
+.mfq__copy { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; margin-top: 20px; max-width: 420px; }
 .mfq__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
+@media (max-width: 760px) {
+  .mfq { padding-inline: 20px; }
+}
 </style>

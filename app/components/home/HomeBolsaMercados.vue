@@ -4,8 +4,13 @@
 // só. De propósito parece um pouco confuso: é a deixa para "Parece confuso? A
 // Redentia deixa mais simples." e o botão da leitura.
 // O Ibovespa é a linha principal (creme, mais grossa); IFIX, dólar e Bitcoin
-// têm as cores validadas contra daltonismo sobre o azul-marinho, com o nome e
-// o número no fim de cada linha (a cor nunca está sozinha). Sem brilho.
+// levam o nome e o número no fim de cada linha (a cor nunca está sozinha).
+// Sem brilho.
+// Aportou (11/11/2026): as cores saíram do hex fixo para os tokens da marca
+// sobre o carvão: Ibovespa no creme da paleta, IFIX no cobalto que lê sobre
+// escuro, dólar no âmbar e Bitcoin na sálvia (todas acima de 5:1 no carvão).
+// Antes eram azul, ocre e rosa validados contra daltonismo sobre o navy; a
+// família nova não passou por essa validação (está no relatório da leva).
 // A leitura (`varredura`, 0 a 1): uma faixa clara atravessa o dia, com a hora;
 // o que ela já leu fica aceso e o resto, apagado.
 // Hover, toque e as setas do teclado mostram os quatro naquele minuto.
@@ -18,7 +23,7 @@ const props = defineProps<{
   varredura?: number | null
 }>()
 
-const COR: Record<MercadoDoDia['id'], string> = { ibov: '#F5F1EA', ifix: '#3A8BE6', dolar: '#B9820F', btc: '#D45F94' }
+const COR: Record<MercadoDoDia['id'], string> = { ibov: 'var(--nu-creme)', ifix: 'var(--nu-blue-on-dark)', dolar: 'var(--nu-amber)', btc: 'var(--nu-sage)' }
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const pct = (v: number) => (Math.abs(v) < 0.005 ? '0,00%' : `${v > 0 ? '+' : '−'}${nf2.format(Math.abs(v))}%`)
 const hora = (m: number) => `${10 + Math.floor(m / 60)}h${String(Math.max(0, m) % 60).padStart(2, '0')}`
@@ -120,8 +125,8 @@ const resumo = computed(() => props.mercados.map((m) => `${m.nome} ${pct(m.final
         <defs>
           <clipPath id="hbm-lido"><rect x="0" y="0" :width="leitura ? leitura.x : largura" :height="ALTURA" /></clipPath>
           <linearGradient id="hbm-rastro" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#64B5FF" stop-opacity="0" />
-            <stop offset="1" stop-color="#64B5FF" stop-opacity="0.18" />
+            <stop offset="0" class="hbm__rastro" stop-opacity="0" />
+            <stop offset="1" class="hbm__rastro" stop-opacity="0.18" />
           </linearGradient>
         </defs>
         <!-- o zero: o nível das 10h -->
@@ -165,33 +170,34 @@ const resumo = computed(() => props.mercados.map((m) => `${m.nome} ${pct(m.final
 
 <style scoped>
 .hbm { margin: 0; min-width: 0; }
-.hbm__legenda { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 500; }
+.hbm__legenda { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; color: var(--nu-on-dark); font-size: 14.5px; font-weight: 500; }
 .hbm__chave { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
 .hbm__chave i { width: 14px; height: 3px; border-radius: 2px; }
-.hbm__chave strong { color: var(--nu-cream-text); font-weight: 800; font-variant-numeric: tabular-nums; }
-.hbm__nota { color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; }
+.hbm__chave strong { color: var(--nu-white); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hbm__nota { color: var(--nu-on-dark-2); font-size: var(--nu-fs-dense); font-weight: 700; }
+.hbm__rastro { stop-color: var(--nu-blue-on-dark); }
 .hbm__caixa { position: relative; height: 280px; margin-top: 12px; touch-action: pan-y; outline: none; border-radius: 8px; }
-.hbm__caixa:focus-visible { box-shadow: 0 0 0 2px var(--nu-blue-soft); }
+.hbm__caixa:focus-visible { box-shadow: 0 0 0 3px var(--nu-blue-on-dark); }
 .hbm__svg { display: block; overflow: visible; }
 .hbm__zero { stroke: var(--nu-cream-text-45); stroke-width: 1; stroke-dasharray: 3 4; }
-.hbm__zero-txt, .hbm__marca { fill: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; }
+.hbm__zero-txt, .hbm__marca { fill: var(--nu-on-dark-2); font-size: var(--nu-fs-dense); font-weight: 700; }
 /* o rótulo do zero fica sob o começo das linhas: um contorno da cor do fundo o separa */
-.hbm__zero-txt { paint-order: stroke; stroke: var(--nu-navy); stroke-width: 4px; stroke-linejoin: round; }
+.hbm__zero-txt { paint-order: stroke; stroke: var(--nu-ink); stroke-width: 4px; stroke-linejoin: round; }
 .hbm__eixo { stroke: var(--nu-cream-text-12); stroke-width: 1; }
 .hbm__apagada { stroke: var(--nu-cream-text-12); }
-.hbm__fim-nome { fill: var(--nu-cream-text); font-size: var(--nu-fs-sm); font-weight: 800; }
-.hbm__fim-num { fill: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
-.hbm__leitor { stroke: var(--nu-cream-text); stroke-width: 2; }
-.hbm__leitor-txt { fill: var(--nu-cream-text); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hbm__fim-nome { fill: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 800; }
+.hbm__fim-num { fill: var(--nu-on-dark); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.hbm__leitor { stroke: var(--nu-creme); stroke-width: 2; }
+.hbm__leitor-txt { fill: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums; }
 .hbm__cursor { stroke: var(--nu-cream-text-45); stroke-width: 1; }
 .hbm__dica {
   position: absolute; top: 34px; transform: translateX(12px); pointer-events: none; z-index: 2;
-  display: flex; flex-direction: column; gap: 4px; padding: 10px 14px; border-radius: 12px;
+  display: flex; flex-direction: column; gap: 4px; padding: 10px 14px; border-radius: var(--nu-r-chip);
   background: var(--nu-white); box-shadow: var(--nu-shadow-card); white-space: nowrap;
 }
 .hbm__dica--esq { transform: translateX(calc(-100% - 12px)); }
 .hbm__dica-hora { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
-.hbm__dica-linha { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
-.hbm__dica-linha i { width: 12px; height: 3px; border-radius: 2px; box-shadow: 0 0 0 1px rgba(12, 21, 36, 0.25); }
+.hbm__dica-linha { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; }
+.hbm__dica-linha i { width: 12px; height: 3px; border-radius: 2px; box-shadow: 0 0 0 1px var(--nu-ink-30); }
 .hbm__dica-linha strong { min-width: 54px; color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
 </style>

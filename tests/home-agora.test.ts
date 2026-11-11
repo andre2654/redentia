@@ -91,3 +91,30 @@ test('a home tem um H1 por variante e as três seções que o dono tirou não vo
     assert.doesNotMatch(conteudo, new RegExp(`<${saiu}\\b`), saiu)
   assert.match(ler('app/pages/index.vue'), /<HomeContent \/>/)
 })
+
+test('a home fala Aportou: nenhum texto visível diz Redentia e nenhuma peça escreve cor em hex (11/11/2026)', () => {
+  // o contrato da marca (docs/aportou/contrato.md): o produto do investidor se chama Aportou, e
+  // componente só usa var(--nu-*). O HomeLosango é o desenho da marca antiga (segue no dev e na
+  // /carteira antiga, fora da home) e não entra na conta.
+  const pecas = ['HomeAgoraFrase', 'HomeBolsa', 'HomeBolsaMercados', 'HomeChamada', 'HomeComoFunciona', 'HomeContent', 'HomeFecho', 'HomeHeroVisitante', 'HomeLeque', 'HomeMais', 'HomeOQueNaoE', 'HomeRankings', 'HomeTermo']
+  for (const p of pecas) {
+    const sfc = ler(`app/components/home/${p}.vue`)
+    const tela = sfc.slice(sfc.indexOf('<template>'), sfc.lastIndexOf('</template>')).replace(/<!--[\s\S]*?-->/g, '')
+    assert.doesNotMatch(tela, /Redentia/, `${p}: texto de tela`)
+    const estilo = sfc.slice(sfc.lastIndexOf('<style')).replace(/\/\*[\s\S]*?\*\//g, '')
+    assert.doesNotMatch(estilo, /#[0-9a-f]{3,8}\b/i, `${p}: cor em hex`)
+  }
+  // as perguntas da home e a linha do fechamento (useMercado) e a assinatura da leitura (bolsaDoDia)
+  const mercado = ler('app/composables/useMercado.ts')
+  assert.doesNotMatch(mercado.slice(mercado.indexOf('export const MERCADO_FAQS')), /Redentia/)
+  assert.match(mercado, /q: 'Quanto custa a Aportou\?'/)
+  assert.match(mercado, /a IA da Aportou escreve o fechamento/)
+  assert.match(ler('app/utils/bolsaDoDia.ts'), /`IA da Aportou · /)
+  // o head da página não escreve a marca à mão: o nome vem de MARCA
+  const pagina = ler('app/pages/index.vue')
+  assert.match(pagina, /name: MARCA\.nome/)
+  assert.doesNotMatch(pagina.slice(pagina.indexOf('usePageSeo(')), /Redentia|'Aportou'/)
+  // o cartão "Seus dados" só afirma o que o site sustenta: a exclusão de conta ficou de fora
+  const naoE = ler('app/components/home/HomeOQueNaoE.vue')
+  assert.doesNotMatch(naoE.slice(naoE.indexOf('<template>')), /apaga a conta/)
+})

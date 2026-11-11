@@ -15,7 +15,12 @@
 // revela esse quadro da esquerda para a direita (barato a 120 Hz). Com
 // movimento reduzido, aparece pronto. Antes do JavaScript, a caixa preta já
 // tem o tamanho final (sem CLS).
-const props = withDefaults(defineProps<{ caminhos?: number }>(), { caminhos: 2000 })
+//
+// Aportou (11/11/2026): `tom="carvao"` desenha o leque sobre o carvão da marca
+// (a home), com o verde e o vermelho que leem sobre ele; o padrão segue o preto
+// da tela do app, para quem já usa (AssinaturaBeneficios). Os nomes das pontas
+// saem na fonte da página (--nu-font, a Figtree), não mais numa fonte fixa.
+const props = withDefaults(defineProps<{ caminhos?: number; tom?: 'preto' | 'carvao' }>(), { caminhos: 2000, tom: 'preto' })
 
 const MESES = 60
 const caixa = ref<HTMLElement | null>(null)
@@ -75,11 +80,22 @@ let progresso = 0
 function cores(el: HTMLElement) {
   const cs = getComputedStyle(el)
   const v = (n: string, d: string) => cs.getPropertyValue(n).trim() || d
+  const fonte = v('--nu-font', 'system-ui, sans-serif')
+  if (props.tom === 'carvao') {
+    return {
+      verde: v('--nu-green-soft', 'lime'),
+      vermelho: v('--nu-red-soft', 'red'),
+      texto: v('--nu-white', 'white'),
+      sub: v('--nu-on-dark-2', 'gray'),
+      fonte,
+    }
+  }
   return {
     verde: v('--nu-agora-verde', 'lime'),
     vermelho: v('--nu-agora-vermelho', 'red'),
     texto: v('--nu-agora-texto', 'white'),
     sub: v('--nu-agora-sub', 'gray'),
+    fonte,
   }
 }
 
@@ -155,7 +171,7 @@ function pintar(p: number) {
   ctx.fill()
   // as três pontas e os nomes, quando o desenho termina
   const fim = Math.max(0, (p - 0.86) / 0.14)
-  ctx.font = '700 13px "Plus Jakarta Sans", system-ui, sans-serif'
+  ctx.font = `700 13px ${c.fonte}`
   ctx.textBaseline = 'middle'
   if (fim > 0) {
     ctx.globalAlpha = fim
@@ -186,7 +202,7 @@ function pintar(p: number) {
   }
   // o eixo: hoje e 5 anos
   ctx.fillStyle = c.sub
-  ctx.font = '700 12px "Plus Jakarta Sans", system-ui, sans-serif'
+  ctx.font = `700 12.5px ${c.fonte}`
   ctx.textBaseline = 'alphabetic'
   ctx.textAlign = 'left'
   ctx.fillText('hoje', x0, h - base / 2 + 4)
@@ -245,12 +261,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="caixa" class="hlq" aria-hidden="true">
+  <div ref="caixa" class="hlq" :class="{ 'hlq--carvao': tom === 'carvao' }" aria-hidden="true">
     <canvas ref="tela" class="hlq__tela" />
   </div>
 </template>
 
 <style scoped>
 .hlq { position: relative; width: 100%; aspect-ratio: 16 / 10; background: var(--nu-agora-bg); }
+.hlq--carvao { background: var(--nu-ink); }
 .hlq__tela { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 </style>

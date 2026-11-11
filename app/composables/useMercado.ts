@@ -36,7 +36,7 @@ function dirOf(n: number): NuDir {
 /* ═════ Briefing ("A leitura do dia") ═════ */
 
 const BRIEFING_SEED: NuBriefing = {
-  metaLine: 'Todo pregão, a IA da Redentia escreve o fechamento. Este é o de hoje, às 18:12',
+  metaLine: 'Todo pregão, a IA da Aportou escreve o fechamento. Este é o de hoje, às 18:12',
   headline: 'Ibovespa sobe 1,22% rumo aos 173 mil com a curva de juros em queda.',
   dek: 'O fluxo gira para bancos e duration, e só o petróleo fica para trás.',
   pills: [
@@ -152,7 +152,7 @@ export function useNuBriefing() {
       const dateLabel = isToday || !d.date ? 'hoje' : `${d.date.slice(8, 10)}/${d.date.slice(5, 7)}`
       const timeLabel = publishedTimeLabel(d.published_at)
       briefing.value = {
-        metaLine: `Todo pregão, a IA da Redentia escreve o fechamento. Este é o de ${dateLabel}${timeLabel ? `, às ${timeLabel}` : ''}`,
+        metaLine: `Todo pregão, a IA da Aportou escreve o fechamento. Este é o de ${dateLabel}${timeLabel ? `, às ${timeLabel}` : ''}`,
         headline: d.headline,
         dek: null, // o resource real não tem dek separado do corpo
         pills,
@@ -182,27 +182,27 @@ export function useNuBriefing() {
 // data. Quando saírem, mude esta resposta junto com utils/appsRedentia.ts.
 export const MERCADO_FAQS: NuFaqItem[] = [
   {
-    q: 'Quanto custa a Redentia?',
+    q: 'Quanto custa a Aportou?',
     a: 'O mercado do dia, as calculadoras, os rankings e os guias são grátis e não pedem conta. A carteira conectada pelo Open Finance, os 2.000 cenários e a IA fazem parte da assinatura: R$ 19,99 por mês. Os 3 primeiros dias são grátis; o cartão é pedido no começo e a primeira cobrança vem no fim do teste.',
   },
   {
     q: 'Como funcionam os 2.000 cenários?',
-    a: 'A Redentia pega a sua carteira de verdade e sorteia 2.000 caminhos possíveis para os próximos cinco anos, a partir de trechos reais do histórico do mercado, com juros, dólar e petróleo andando juntos. O resultado vem em dinheiro de hoje: o caminho pessimista, o do meio e o otimista. É uma simulação, não uma promessa de rendimento.',
+    a: 'A Aportou pega a sua carteira de verdade e sorteia 2.000 caminhos possíveis para os próximos cinco anos, a partir de trechos reais do histórico do mercado, com juros, dólar e petróleo andando juntos. O resultado vem em dinheiro de hoje: o caminho pessimista, o do meio e o otimista. É uma simulação, não uma promessa de rendimento.',
   },
   {
     q: 'Preciso conectar meu banco?',
-    a: 'Para a Redentia vigiar a carteira, sim. A conexão é pelo Open Finance, regulado pelo Banco Central, e funciona com mais de 110 bancos e corretoras. É só leitura: a Redentia vê os investimentos e o saldo, nunca move o seu dinheiro e nunca vê a sua senha do banco.',
+    a: 'Para a Aportou vigiar a carteira, sim. A conexão é pelo Open Finance, regulado pelo Banco Central, e funciona com mais de 110 bancos e corretoras. É só leitura: a Aportou vê os investimentos e o saldo, nunca move o seu dinheiro e nunca vê a sua senha do banco.',
   },
   {
     q: 'Tem app para iPhone, Mac e Apple Watch?',
     a: 'O do iPhone já está na App Store. O do Mac e o do Apple Watch estão a caminho. No site e no app, é a mesma conta e a mesma assinatura.',
   },
   {
-    q: 'A Redentia recomenda compra e venda?',
-    a: 'A Redentia organiza dados e mostra o consenso do mercado. As sugestões da IA são educacionais e não substituem a recomendação de um assessor credenciado.',
+    q: 'A Aportou recomenda compra e venda?',
+    a: 'A Aportou organiza dados e mostra o consenso do mercado. As sugestões da IA são educacionais e não substituem a recomendação de um assessor credenciado.',
   },
   {
     q: 'Meus dados ficam seguros?',
-    a: 'Sim. A Redentia só lê, pelo Open Finance regulado pelo Banco Central: não movimenta dinheiro e não vê a senha do seu banco. Os dados trafegam criptografados e nunca são vendidos. Você revoga a conexão e exclui a conta e todos os dados quando quiser.',
+    a: 'Sim. A Aportou só lê, pelo Open Finance regulado pelo Banco Central: não movimenta dinheiro e não vê a senha do seu banco. Os dados trafegam criptografados e nunca são vendidos. Você revoga a conexão e exclui a conta e todos os dados quando quiser.',
   },
 ]
