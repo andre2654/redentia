@@ -72,7 +72,11 @@ test('o selo tem os sete tons, os dois tamanhos e a versão sobre o carvão', ()
 test('o link com seta: alvo de 44px sem mexer no fluxo e outra aba com noopener', () => {
   const l = ler('app/components/nu/NuLinkSeta.vue')
   assert.match(l, /--nls-folga: max\(0px, calc\(\(44px - 1lh\) \/ 2\)\)/)
-  assert.match(l, /padding: var\(--nls-folga\) 0; margin: calc\(var\(--nls-folga\) \* -1\) 0;/)
+  // a folga entra no padding e volta pela margem negativa (o fluxo não muda);
+  // a margem e a letra ficam em :where para a classe de quem usa vencer sempre
+  assert.match(l, /\.nls \{[^}]*padding: var\(--nls-folga\) 0;/)
+  assert.match(l, /:where\(\.nls\) \{ font: inherit; margin: calc\(var\(--nls-folga\) \* -1\) 0; \}/)
+  assert.doesNotMatch(l, /\.nls \{[^}]*\bfont: inherit/)
   assert.match(l, /target: '_blank', rel: 'noopener'/)
   assert.match(l, /\.nls:hover \.nls__seta \{ transform: translateX\(3px\); \}/)
 })
