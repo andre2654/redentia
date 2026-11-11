@@ -29,7 +29,9 @@ defineProps<{
       </div>
       <div class="cco__linha" aria-hidden="true" />
       <div class="cco__resultado" aria-live="polite"><slot name="resultado" /></div>
-      <div class="cco__acoes"><slot name="acoes" /></div>
+      <!-- sem o slot (a preço-teto não tem salvar nem compartilhar), a barra não existe:
+           vazia, ela viraria uma tira grudada no pé da tela do celular -->
+      <div v-if="$slots.acoes" class="cco__acoes"><slot name="acoes" /></div>
       <div class="cco__grafico"><slot name="grafico" /></div>
       <div v-if="$slots.premissas" class="cco__premissas"><slot name="premissas" /></div>
     </div>

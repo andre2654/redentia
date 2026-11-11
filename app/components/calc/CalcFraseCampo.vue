@@ -12,6 +12,11 @@
 // letra em --nu-blue-text); o número exato é um campo dos quadros (56px, borda
 // 1,5px, raio 16, anel cobalto no foco); − e + são círculos de 44px; a folha
 // do celular entra com nu-subir.
+// `livre` (11/11/2026, a preço-teto): min e max são só a faixa do TRILHO, não
+// o limite do valor. É a regra que os campos dela já tinham (dono, 14/07/2026:
+// dá para digitar acima do teto do slider); só não desce de zero quando o
+// mínimo é zero ou mais. `casas` fixa as casas decimais aceitas quando elas
+// não são as do passo (campo de centavos com passo de 50 centavos).
 const props = defineProps<{
   modelValue: number
   /** o nome do campo, no topo do painel e para o leitor de tela */
@@ -25,6 +30,10 @@ const props = defineProps<{
   prefixo?: string
   sufixo?: string
   atalhos?: { label: string; value: number }[]
+  /** min e max valem só para o trilho: digitar, − e + não prendem na faixa */
+  livre?: boolean
+  /** casas decimais aceitas, quando não são as do passo */
+  casas?: number
 }>()
 const emit = defineEmits<{ 'update:modelValue': [v: number] }>()
 
@@ -39,6 +48,7 @@ const rascunho = ref('')
 const LARGURA = 300
 
 const casas = computed(() => {
+  if (props.casas != null) return props.casas
   const s = String(props.passo)
   const i = s.indexOf('.')
   return i === -1 ? 0 : s.length - i - 1
@@ -47,7 +57,9 @@ const pct = computed(() => {
   const span = props.max - props.min
   return span > 0 ? Math.max(0, Math.min(100, ((props.modelValue - props.min) / span) * 100)) : 0
 })
-const prender = (v: number) => Math.min(props.max, Math.max(props.min, v))
+const prender = (v: number) => props.livre
+  ? (props.min >= 0 ? Math.max(0, v) : v)
+  : Math.min(props.max, Math.max(props.min, v))
 const arredondar = (v: number) => Number(v.toFixed(casas.value))
 const paraTexto = (v: number) => (casas.value ? v.toFixed(casas.value).replace(/0+$/, '').replace(/\.$/, '') : String(Math.round(v))).replace('.', ',')
 
@@ -57,7 +69,9 @@ function definir(v: number) {
   rascunho.value = paraTexto(n)
 }
 function andar(dir: 1 | -1) {
-  definir(props.modelValue + dir * props.passo)
+  const alvo = props.modelValue + dir * props.passo
+  // no campo livre o − para no mínimo do trilho; o + segue além do teto
+  definir(props.livre && dir < 0 && props.modelValue > props.min ? Math.max(props.min, alvo) : alvo)
 }
 function arrastar(e: Event) {
   definir(Number((e.target as HTMLInputElement).value))
@@ -73,7 +87,7 @@ function digitar(e: Event) {
   rascunho.value = (e.target as HTMLInputElement).value
   const n = lerNumero(rascunho.value)
   // enquanto digita, só vale o que já está dentro do intervalo
-  if (n !== null && n >= props.min && n <= props.max) emit('update:modelValue', arredondar(n))
+  if (n !== null && (props.livre ? n === prender(n) : n >= props.min && n <= props.max)) emit('update:modelValue', arredondar(n))
 }
 function firmarRascunho() {
   const n = lerNumero(rascunho.value)
@@ -159,7 +173,7 @@ const campoAberto = shallowRef<symbol | null>(null)
           >
           <span v-if="sufixo" class="cfc__unidade">{{ sufixo }}</span>
         </label>
-        <button type="button" class="cfc__passo" :aria-label="`Mais ${rotulo.toLowerCase()}`" :disabled="modelValue >= max" @click="andar(1)">+</button>
+        <button type="button" class="cfc__passo" :aria-label="`Mais ${rotulo.toLowerCase()}`" :disabled="!livre && modelValue >= max" @click="andar(1)">+</button>
       </span>
       <input
         ref="trilho" type="range" class="cfc__trilho" :min="min" :max="max" :step="passo" :value="modelValue"

@@ -5,6 +5,11 @@
 // mesmo jeito do CalcFraseCampo: o painel vai para o <body>, embaixo do valor
 // no computador; no celular ele fica no alto da tela, para o teclado não
 // cobrir a busca. Esc, um toque fora ou mudar o tamanho da janela fecham.
+// `unico` (11/11/2026, a preço-teto): a conta é de UM ativo. Escolher troca o
+// ativo e fecha o painel; não há lista de escolhidos nem limite, e o ativo da
+// vez segue na lista (escolher de novo recarrega os números dele). O rótulo do
+// painel, o texto da busca e o nome dos sugeridos vêm por prop, com os textos
+// de sempre como padrão.
 interface Ativo {
   id: string
   label: string
@@ -19,7 +24,14 @@ const props = withDefaults(defineProps<{
   /** os sugeridos com a busca vazia, por ticker */
   sugeridos?: string[]
   max?: number
-}>(), { carregando: false, sugeridos: () => [], max: 10 })
+  /** um ativo só: escolher troca e fecha */
+  unico?: boolean
+  /** o nome do campo, no topo do painel e para o leitor de tela */
+  rotulo?: string
+  placeholder?: string
+  /** o nome da lista que aparece com a busca vazia */
+  rotuloSugeridos?: string
+}>(), { carregando: false, sugeridos: () => [], max: 10, unico: false, rotulo: 'Ativos da simulação', placeholder: 'Buscar ação, FII ou ETF', rotuloSugeridos: 'Sugestões' })
 const emit = defineEmits<{ 'update:modelValue': [v: Ativo[]] }>()
 
 const aberto = ref(false)
@@ -39,12 +51,12 @@ const texto = computed(() => {
   if (t.length === 3) return `${t[0]}, ${t[1]} e ${t[2]}`
   return `${t[0]}, ${t[1]} e mais ${t.length - 2}`
 })
-const cheio = computed(() => props.modelValue.length >= props.max)
+const cheio = computed(() => !props.unico && props.modelValue.length >= props.max)
 
 // com a busca vazia, os sugeridos; com texto, o ticker que começa com ele vem antes do nome que o contém
 const achados = computed(() => {
   const escolhidos = new Set(props.modelValue.map((a) => a.id))
-  const livres = props.ativos.filter((a) => !escolhidos.has(a.id))
+  const livres = props.unico ? props.ativos : props.ativos.filter((a) => !escolhidos.has(a.id))
   const t = termo.value.trim().toLowerCase()
   if (!t) {
     const porId = new Map(livres.map((a) => [a.id, a]))
@@ -57,6 +69,11 @@ const achados = computed(() => {
 })
 
 function adicionar(a: Ativo) {
+  if (props.unico) {
+    emit('update:modelValue', [a])
+    fechar(true)
+    return
+  }
   if (cheio.value || props.modelValue.some((x) => x.id === a.id)) return
   emit('update:modelValue', [...props.modelValue, a])
   termo.value = ''
@@ -125,15 +142,15 @@ onBeforeUnmount(() => {
   <span ref="raiz" class="cfa">
     <button
       ref="botao" type="button" class="cfa__valor" :class="{ 'cfa__valor--on': aberto, 'cfa__valor--vazio': !modelValue.length }"
-      aria-haspopup="dialog" :aria-expanded="aberto" :aria-label="`Ativos: ${texto}. Mudar`" @click="alternar"
+      aria-haspopup="dialog" :aria-expanded="aberto" :aria-label="`${unico ? rotulo : 'Ativos'}: ${texto}. Mudar`" @click="alternar"
     >{{ texto }}</button>
     <Teleport to="body">
       <div
         v-if="aberto" ref="painel" class="cfa__painel" :style="posicao"
-        role="dialog" aria-label="Ativos da simulação" @keydown.esc.stop.prevent="fechar(true)"
+        role="dialog" :aria-label="rotulo" @keydown.esc.stop.prevent="fechar(true)"
       >
-        <span class="cfa__rotulo">Ativos da simulação</span>
-        <div v-if="modelValue.length" class="cfa__escolhidos">
+        <span class="cfa__rotulo">{{ rotulo }}</span>
+        <div v-if="modelValue.length && !unico" class="cfa__escolhidos">
           <span v-for="a in modelValue" :key="a.id" class="cfa__escolhido">
             {{ a.label }}
             <button type="button" class="cfa__tirar" :aria-label="`Tirar ${a.label}`" @click="tirar(a.id)">×</button>
@@ -141,12 +158,12 @@ onBeforeUnmount(() => {
         </div>
         <input
           ref="busca" v-model="termo" type="search" class="cfa__busca" :disabled="cheio"
-          :placeholder="cheio ? `Até ${max} ativos por simulação` : 'Buscar ação, FII ou ETF'"
+          :placeholder="cheio ? `Até ${max} ativos por simulação` : placeholder"
           autocomplete="off" enterkeyhint="done" aria-label="Buscar ativo" @keydown.enter.prevent="adicionarPrimeiro"
         >
         <div class="cfa__lista">
           <p v-if="carregando && !ativos.length" class="cfa__nota">Carregando os ativos da B3…</p>
-          <p v-else-if="!termo && achados.length" class="cfa__nota">Sugestões</p>
+          <p v-else-if="!termo && achados.length" class="cfa__nota">{{ rotuloSugeridos }}</p>
           <button v-for="a in achados" :key="a.id" type="button" class="cfa__item" :disabled="cheio" @click="adicionar(a)">
             <b>{{ a.label }}</b>
             <span v-if="a.suffix" class="cfa__nome">{{ a.suffix }}</span>

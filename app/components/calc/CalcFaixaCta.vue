@@ -61,7 +61,7 @@ const BENEFICIOS = [
 <template>
   <section ref="raiz" class="cft" :class="[entrada && `cft--${entrada}`, { 'cft--compacta': compacta }]">
     <div class="cft__painel">
-    <MarcaCorte class="cft__corte" :largura="compacta ? 460 : 620" cor="var(--nu-white)" />
+    <MarcaCorte class="cft__corte nu-corte-fundo" :largura="compacta ? 460 : 620" cor="var(--nu-white)" />
     <div class="cft__miolo">
       <h2 class="cft__titulo">{{ titulo }}</h2>
       <p class="cft__texto">{{ texto }}</p>

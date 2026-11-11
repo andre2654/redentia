@@ -3,6 +3,10 @@
  * /calculadora/preco-teto/{metodo} — uma página por MÉTODO de valuation.
  * A rota [metodo].vue despacha: slug de método cai aqui; ticker cai em
  * CalcPrecoTetoTicker.vue. A matemática vem de ~/utils/preco-teto.
+ * Aportou, 11/11/2026: a conta entrou no padrão das outras calculadoras
+ * (CalcConta + a frase com os valores nos selos, CalcNumero, CalcBarras). Os
+ * rótulos de antes são o título do painel de cada selo e seguem no HTML do
+ * servidor em "Os dados desta conta". Fórmula, valores padrão e textos iguais.
  */
 import { PRECO_TETO_METODOS, PRECO_TETO_METODO_SLUGS } from '~/content/calculadoras/preco-teto-metodos'
 import { priceByMethod, metrics } from '~/utils/preco-teto'
@@ -25,6 +29,8 @@ const sectorPL = ref(10)
 const growth = ref(0)
 
 const usa = (campo: string) => m.inputs.includes(campo as (typeof m.inputs)[number])
+// na frase, o último dado entra com "e"; os outros, com vírgula
+const liga = (campo: string) => (m.inputs[m.inputs.length - 1] === campo ? ' e ' : ', ')
 
 const resultado = computed(() => {
   const teto = priceByMethod(m.id, {
@@ -41,6 +47,21 @@ const resultado = computed(() => {
 const brl = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number.isFinite(v) ? v : 0)
 const pct = (v: number) => `${(v * 100).toFixed(1).replace('.', ',')}%`
+const num = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
+const tomDoSelo = { ok: 'ok', neutro: 'azul', alerta: 'falta' } as const
+
+// o desenho: o preço atual de referência e o preço teto contra ele (a mesma régua da página-mãe)
+const barras = computed(() => {
+  const r = resultado.value
+  const cabe = price.value > 0 && r.fairPrice > 0
+  // as duas barras na mesma escala, a do maior dos dois valores (como na página-mãe)
+  const maior = Math.max(price.value, r.fairPrice, 0.01)
+  const largura = (v: number) => `${Math.max(2, Math.min(100, (v / maior) * 100)).toFixed(1)}%`
+  return [
+    { rotulo: 'Preço atual', valor: brl(price.value), largura: cabe ? largura(price.value) : '100%', tom: 'preco' as const },
+    { rotulo: 'Preço teto', valor: brl(r.fairPrice), largura: cabe ? largura(r.fairPrice) : null },
+  ]
+})
 
 const veredito = computed(() => {
   const r = resultado.value
@@ -89,50 +110,42 @@ usePageSeo({
       <div class="ptm__formula">{{ m.formula }}</div>
     </section>
 
-    <section class="ptm__calc" id="calcular">
-      <h2 class="ptm__h2">Calcular</h2>
-      <div class="ptm__inputs">
-        <label v-if="usa('price')" class="ptm__field">
-          <span>Preço atual (R$)</span>
-          <input v-model.number="price" type="number" min="0" step="0.01" inputmode="decimal">
-        </label>
-        <label v-if="usa('lpa')" class="ptm__field">
-          <span>LPA, lucro por ação (R$)</span>
-          <input v-model.number="lpa" type="number" min="0" step="0.01" inputmode="decimal">
-        </label>
-        <label v-if="usa('vpa')" class="ptm__field">
-          <span>VPA, valor patrimonial (R$)</span>
-          <input v-model.number="vpa" type="number" min="0" step="0.01" inputmode="decimal">
-        </label>
-        <label v-if="usa('dividend')" class="ptm__field">
-          <span>Dividendo 12 meses (R$/ação)</span>
-          <input v-model.number="dividend" type="number" min="0" step="0.01" inputmode="decimal">
-        </label>
-        <label v-if="usa('sectorPL')" class="ptm__field">
-          <span>P/L médio do setor</span>
-          <input v-model.number="sectorPL" type="number" min="0" step="0.1" inputmode="decimal">
-        </label>
-        <label v-if="usa('growth')" class="ptm__field">
-          <span>Crescimento do dividendo (% a.a.)</span>
-          <input v-model.number="growth" type="number" step="0.5" inputmode="decimal">
-        </label>
-      </div>
-
-      <div class="ptm__out">
-        <div class="ptm__out-label">Preço teto</div>
-        <div class="ptm__out-value">{{ brl(resultado.fairPrice) }}</div>
-        <div v-if="veredito" class="ptm__verdict" :class="`ptm__verdict--${veredito.tom}`">
-          <strong>{{ veredito.rotulo }}.</strong> {{ veredito.texto }}
-        </div>
-      </div>
-
-      <p class="ptm__cross">
-        Quer os quatro métodos lado a lado, com consenso e busca por ticker?
-        <NuxtLink to="/calculadora/preco-teto">Use a calculadora completa</NuxtLink>.
-        O passo a passo das cinco fórmulas está no
-        <NuxtLink to="/guias/como-calcular-preco-teto">guia de como calcular preço teto</NuxtLink>.
-      </p>
-    </section>
+    <CalcConta section-id="calcular">
+      <template #title>Calcular</template>
+      <template #frase>
+        <CalcFrase>
+          A ação custa <CalcFraseCampo v-model="price" livre :casas="2" rotulo="Preço atual (R$)" :min="0" :max="150" :passo="0.5" :texto="brl(price)" prefixo="R$" /><template v-if="usa('lpa')">{{ liga('lpa') }}lucra <CalcFraseCampo v-model="lpa" livre :casas="2" rotulo="LPA, lucro por ação (R$)" :min="0" :max="20" :passo="0.1" :texto="brl(lpa)" prefixo="R$" /> por ação (LPA)</template><template v-if="usa('vpa')">{{ liga('vpa') }}tem <CalcFraseCampo v-model="vpa" livre :casas="2" rotulo="VPA, valor patrimonial (R$)" :min="0" :max="60" :passo="0.5" :texto="brl(vpa)" prefixo="R$" /> de valor patrimonial (VPA)</template><template v-if="usa('dividend')">{{ liga('dividend') }}pagou <CalcFraseCampo v-model="dividend" livre :casas="2" rotulo="Dividendo 12 meses (R$/ação)" :min="0" :max="10" :passo="0.1" :texto="brl(dividend)" prefixo="R$" /> de dividendo por ação em 12 meses</template><template v-if="usa('sectorPL')">{{ liga('sectorPL') }}o P/L médio do setor é <CalcFraseCampo v-model="sectorPL" livre :casas="2" rotulo="P/L médio do setor" :min="0" :max="30" :passo="0.5" :texto="num(sectorPL)" /></template><template v-if="usa('growth')">{{ liga('growth') }}o dividendo cresce <CalcFraseCampo v-model="growth" livre :casas="2" rotulo="Crescimento do dividendo (% a.a.)" :min="-10" :max="20" :passo="0.5" :texto="`${num(growth)}%`" sufixo="% a.a." /> ao ano</template>.
+        </CalcFrase>
+        <!-- os rótulos de sempre, no HTML do servidor -->
+        <CalcPremissas class="ptm__dados" nome="Os dados desta conta">
+          <template #resumo>
+            <span v-if="usa('price')" class="ptm__dado">Preço atual (R$) <b>{{ brl(price) }}</b></span>
+            <span v-if="usa('lpa')" class="ptm__dado">LPA, lucro por ação (R$) <b>{{ brl(lpa) }}</b></span>
+            <span v-if="usa('vpa')" class="ptm__dado">VPA, valor patrimonial (R$) <b>{{ brl(vpa) }}</b></span>
+            <span v-if="usa('dividend')" class="ptm__dado">Dividendo 12 meses (R$/ação) <b>{{ brl(dividend) }}</b></span>
+            <span v-if="usa('sectorPL')" class="ptm__dado">P/L médio do setor <b>{{ num(sectorPL) }}</b></span>
+            <span v-if="usa('growth')" class="ptm__dado">Crescimento do dividendo (% a.a.) <b>{{ num(growth) }}%</b></span>
+          </template>
+        </CalcPremissas>
+      </template>
+      <template #resultado>
+        <CalcNumero
+          legenda="Preço teto" :valor="brl(resultado.fairPrice)"
+          :selo="veredito?.rotulo" :tom="veredito ? tomDoSelo[veredito.tom] : 'azul'" :explica="veredito?.texto"
+        />
+      </template>
+      <template #grafico>
+        <CalcBarras :itens="barras" />
+      </template>
+      <template #depois>
+        <p class="ptm__cross">
+          Quer os quatro métodos lado a lado, com consenso e busca por ticker?
+          <NuxtLink to="/calculadora/preco-teto">Use a calculadora completa</NuxtLink>.
+          O passo a passo das cinco fórmulas está no
+          <NuxtLink to="/guias/como-calcular-preco-teto">guia de como calcular preço teto</NuxtLink>.
+        </p>
+      </template>
+    </CalcConta>
 
     <section class="ptm__body">
       <article v-for="s in m.sections" :key="s.h2" class="ptm__block">
@@ -167,13 +180,12 @@ usePageSeo({
 </template>
 
 <style scoped>
-.ptm__hero, .ptm__calc, .ptm__body, .ptm__faq, .ptm__outros {
+.ptm__hero, .ptm__body, .ptm__faq, .ptm__outros {
   padding: clamp(48px, 6vw, 88px) clamp(22px, 5.5vw, 80px);
 }
 /* Aportou (11/11/2026), só cor: sem faixa branca de ponta a ponta. O topo e a
    conta ficam no creme da página; as faixas alternam com o creme de faixa. */
 .ptm__hero { background: var(--nu-page); padding-bottom: 0; }
-.ptm__calc { background: var(--nu-page); }
 .ptm__body { background: var(--nu-band); }
 .ptm__faq { background: var(--nu-page); }
 .ptm__outros { background: var(--nu-band); }
@@ -196,32 +208,16 @@ usePageSeo({
   margin: 0; color: var(--nu-ink); font-size: clamp(24px, 2.8vw, 34px);
   font-weight: 800; letter-spacing: -0.03em; line-height: 1.12;
 }
-.ptm__inputs {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 18px; margin-top: 26px; max-width: 780px;
+/* a linha dos dados: cada dado é um bloco que não se parte */
+.ptm__dados { margin-top: 16px; }
+.ptm__dado { display: inline-block; white-space: nowrap; }
+.ptm__dado b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
+.ptm__dado:not(:last-child)::after { content: '·'; margin: 0 9px; color: var(--nu-gray); }
+@media (max-width: 640px) {
+  .ptm__dado { display: block; }
+  .ptm__dado:not(:last-child)::after { content: none; }
 }
-.ptm__field { display: flex; flex-direction: column; gap: 8px; }
-.ptm__field span { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.ptm__field input {
-  padding: 13px 15px; border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input);
-  background: var(--nu-white); color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.ptm__field input:focus { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
-.ptm__out { margin-top: 32px; }
-.ptm__out-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.ptm__out-value {
-  color: var(--nu-ink); font-size: clamp(44px, 6vw, 72px); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1; margin-top: 8px; font-variant-numeric: tabular-nums;
-}
-.ptm__verdict {
-  display: inline-block; margin-top: 18px; padding: 12px 18px; border-radius: 999px;
-  font-size: var(--nu-fs-md); font-weight: 700;
-}
-.ptm__verdict--ok { background: var(--nu-green-bg); color: var(--nu-green-text); }
-.ptm__verdict--neutro { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
-.ptm__verdict--alerta { background: var(--nu-red-bg); color: var(--nu-red-text); }
-.ptm__cross { margin: 28px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
+.ptm__cross { margin: 0 auto; max-width: 760px; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.5; text-align: center; }
 .ptm__cross a { color: var(--nu-blue-text); font-weight: 800; }
 
 .ptm__block { max-width: 68ch; }

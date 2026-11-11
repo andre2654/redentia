@@ -4,26 +4,37 @@
 // a linha que resume a conta ("retorno de 10% a.a. · inflação de 4%…") e o
 // "Ajustar premissas". Aberto, uma grade de campos (cada filho com a classe
 // `cpr-item`, um CalcSliderField dentro) e o "Restaurar padrão".
-defineProps<{
-  /** a linha que resume as premissas atuais */
-  resumo: string
-}>()
+// 11/11/2026 (a preço-teto): a mesma linha serve para "Os dados desta conta".
+// O nome, o texto do botão e o resumo (slot `resumo`, para valores que viram
+// selos) vêm de fora; sem o slot padrão não há painel, e o botão só liga e
+// desliga `aberto` (v-model:aberto) para quem usa. Sem painel e sem `abrir`, a
+// linha é só para ler (as páginas de método). Sem nada disso, é a linha de
+// premissas de sempre.
+withDefaults(defineProps<{
+  /** a linha que resume as premissas atuais (ou o slot `resumo`) */
+  resumo?: string
+  /** o nome da linha */
+  nome?: string
+  /** o texto do botão fechado e aberto */
+  abrir?: string
+  fechar?: string
+}>(), { resumo: '', nome: 'Premissas', abrir: undefined, fechar: 'Fechar premissas' })
 const emit = defineEmits<{ restaurar: [] }>()
 
-const aberto = ref(false)
+const aberto = defineModel<boolean>('aberto', { default: false })
 const id = useId()
 </script>
 
 <template>
   <div class="cpr">
     <div class="cpr__linha">
-      <p class="cpr__resumo"><span class="cpr__nome">Premissas:</span> {{ resumo }}</p>
-      <button type="button" class="cpr__botao" :aria-expanded="aberto" :aria-controls="id" @click="aberto = !aberto">
-        {{ aberto ? 'Fechar premissas' : 'Ajustar premissas' }}
+      <p class="cpr__resumo"><span class="cpr__nome">{{ nome }}:</span> <slot name="resumo">{{ resumo }}</slot></p>
+      <button v-if="$slots.default || abrir" type="button" class="cpr__botao" :aria-expanded="aberto" :aria-controls="$slots.default ? id : undefined" @click="aberto = !aberto">
+        {{ aberto ? fechar : (abrir ?? 'Ajustar premissas') }}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" :class="{ 'cpr__seta--aberta': aberto }" class="cpr__seta"><path d="M9 6l6 6-6 6" /></svg>
       </button>
     </div>
-    <div v-show="aberto" :id="id" class="cpr__painel">
+    <div v-if="$slots.default" v-show="aberto" :id="id" class="cpr__painel">
       <div class="cpr__cabeca">
         <span class="cpr__nota">Cada uma já vem num valor de mercado. Mexa só se quiser.</span>
         <button type="button" class="cpr__restaurar" @click="emit('restaurar')">Restaurar padrão</button>
