@@ -185,13 +185,13 @@ export function fraseDosAvisos(r: Respostas): { titulo: string; texto: string } 
   const f = r.frequencia?.[0]
   if (f === 'dia') {
     return {
-      titulo: 'Você olha todo dia. A Redentia também.',
+      titulo: 'Você olha todo dia. A Aportou também.',
       texto: 'E só te chama quando algo pede você. No resto do tempo, silêncio.',
     }
   }
   return {
     titulo: 'Você não precisa olhar todo dia.',
-    texto: 'A Redentia olha a sua carteira por você e só te chama quando algo pede você.',
+    texto: 'A Aportou olha a sua carteira por você e só te chama quando algo pede você.',
   }
 }
 
@@ -201,11 +201,11 @@ export function fraseDosCenarios(r: Respostas): { titulo: string; texto: string 
   if (q === 'sim') {
     return {
       titulo: 'Agora imagine 2.000 quedas e altas.',
-      texto: 'A Redentia testa a sua carteira em 2.000 cenários dos próximos 5 anos: o otimista, o meio e o pessimista.',
+      texto: 'A Aportou testa a sua carteira em 2.000 cenários dos próximos 5 anos: o otimista, o meio e o pessimista.',
     }
   }
   return {
-    titulo: q === 'nao' ? 'Quase ninguém sabe. A Redentia te mostra.' : 'A Redentia tira o "mais ou menos".',
+    titulo: q === 'nao' ? 'Quase ninguém sabe. A Aportou te mostra.' : 'A Aportou tira o "mais ou menos".',
     texto: 'Ela testa a sua carteira em 2.000 cenários dos próximos 5 anos: o otimista, o meio e o pessimista.',
   }
 }
@@ -230,14 +230,14 @@ export function resultadoDoQuiz(r: Respostas, nomeDoBanco: (slug: string) => str
       titulo: resto > 0
         ? `${nomes.join(', ')} e mais ${resto}, num lugar só`
         : bancos.length > 1 ? `${listaEmPalavras(nomes)}, num lugar só` : `Seu ${nomes[0]}, lido sozinho`,
-      texto: 'A Redentia lê os seus investimentos pelo Open Finance, sem planilha e sem digitar nada.',
+      texto: 'A Aportou lê os seus investimentos pelo Open Finance, sem planilha e sem digitar nada.',
     })
   }
   else if (r.bancos?.includes('outro')) {
-    add({ id: 'bancos', titulo: 'Os seus bancos, num lugar só', texto: 'A Redentia lê os seus investimentos pelo Open Finance, sem planilha e sem digitar nada.' })
+    add({ id: 'bancos', titulo: 'Os seus bancos, num lugar só', texto: 'A Aportou lê os seus investimentos pelo Open Finance, sem planilha e sem digitar nada.' })
   }
   else if (r.investe?.[0] === 'nao' || r.bancos?.includes('nenhum')) {
-    add({ id: 'bancos', titulo: 'A carteira nasce aqui', texto: 'Quando você fizer o primeiro investimento, a Redentia passa a acompanhar desde o primeiro real.' })
+    add({ id: 'bancos', titulo: 'A carteira nasce aqui', texto: 'Quando você fizer o primeiro investimento, a Aportou passa a acompanhar desde o primeiro real.' })
   }
 
   // o que preocupa

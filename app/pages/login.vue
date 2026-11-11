@@ -1,5 +1,7 @@
 <script setup lang="ts">
-// /login — porta de entrada do miolo logado (PR6). Desde 04/11/2026 a tela é
+// /login — porta de entrada do miolo logado (PR6). Em 11/11/2026 a tela vestiu
+// a Aportou (LoginMinimo segue o quadro Login.dc.html: formulário no creme e o
+// painel cobalto da marca); o fluxo abaixo não mudou. Desde 04/11/2026 a tela é
 // a "Minimal" (LoginMinimo), escolhida pelo dono entre sete direções pensadas
 // no celular: branco, um título enorme e leve, um campo, um botão, e a Apple e
 // o Google em linhas finas. Entrar e Criar conta, celular e e-mail, na MESMA
@@ -53,10 +55,10 @@ const redirectTarget = sanitizeRedirect(route.query.redirect)
 
 // Tela de auth não rankeia: noindex, mas FOLLOW — os links internos (logo →
 // '/') continuam passando sinal. Title exato do produto, sem o sufixo
-// '· Redentia' do titleTemplate global (ficaria "Entrar na Redentia · Redentia").
+// da marca do titleTemplate global (ficaria "Entrar na Aportou · Aportou").
 usePageSeo({
-  title: 'Entrar na Redentia',
-  description: 'Acesse ou crie sua conta Redentia com celular (código por WhatsApp), e-mail, Apple ou Google.',
+  title: `Entrar na ${MARCA.nome}`,
+  description: `Entre ou crie a sua conta na ${MARCA.nome} com o celular (código por WhatsApp), o e-mail, a Apple ou o Google.`,
   path: '/login',
   robots: 'noindex, follow',
 })
@@ -90,14 +92,14 @@ const ready = computed(() =>
 const mainCta = computed(() => {
   if (sending.value) return 'Enviando…'
   if (!ready.value) return 'Continuar'
-  return isCad.value ? 'Criar conta' : 'Acessar'
+  return isCad.value ? 'Criar conta' : 'Entrar'
 })
-const altLabel = computed(() => (isCad.value ? 'Já tem uma conta?' : 'Ainda não tem uma conta?'))
-const altCta = computed(() => (isCad.value ? 'Entrar' : 'Criar agora'))
+const altLabel = computed(() => (isCad.value ? 'Já tem conta?' : 'Ainda não tem conta?'))
+const altCta = computed(() => (isCad.value ? 'Entrar' : 'Criar conta grátis'))
 const fieldHelp = computed(() =>
   isPhone.value
-    ? 'Usamos seu celular só pra te enviar o código de acesso por WhatsApp.'
-    : 'Usamos seu e-mail só pra te enviar o código de acesso.',
+    ? 'Seu celular serve só para receber o código, pelo WhatsApp.'
+    : 'Seu e-mail serve só para receber o código.',
 )
 const whatsappNotice = 'O envio por WhatsApp está temporariamente indisponível. Entre com seu e-mail.'
 

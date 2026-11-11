@@ -55,13 +55,13 @@ const estado = (n: number) => (n < props.passo ? 'feito' : n === props.passo ? '
 .ajr__passo {
   display: flex; align-items: flex-start; gap: 12px; min-width: 0;
   padding: 14px 16px; border-radius: var(--nu-r-tile);
-  background: var(--nu-white); box-shadow: var(--nu-shadow-card);
+  background: var(--nu-white); box-shadow: var(--nu-shadow-quente);
 }
 .ajr__marca {
   width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
   font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums;
-  background: var(--nu-cream); color: var(--nu-gray-2);
+  background: var(--nu-cream-2); color: var(--nu-gray-3);
 }
 .ajr__texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .ajr__t { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 800; }
@@ -69,11 +69,11 @@ const estado = (n: number) => (n < props.passo ? 'feito' : n === props.passo ? '
 .ajr__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* agora: o passo da vez em azul; feito: o check verde; depois: quieto */
-.ajr__passo--agora { box-shadow: 0 0 0 2px var(--nu-blue), var(--nu-shadow-card); }
+.ajr__passo--agora { box-shadow: 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
 .ajr__passo--agora .ajr__marca { background: var(--nu-blue); color: var(--nu-white); }
 .ajr__passo--feito .ajr__marca { background: var(--nu-green); color: var(--nu-white); }
 .ajr__passo--feito .ajr__t { color: var(--nu-gray-2); }
-.ajr__passo--depois { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-cream-line); }
+.ajr__passo--depois { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-line); }
 .ajr__passo--depois .ajr__t { color: var(--nu-gray-2); }
 
 /* compacto (embaixo do botão, no login): só os títulos, cada passo do tamanho

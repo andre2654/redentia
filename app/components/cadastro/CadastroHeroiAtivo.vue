@@ -92,7 +92,7 @@ const id = useId()
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .cha__grafico { display: block; width: 100%; height: auto; margin-top: 6px; overflow: visible; }
-.cha__linha { stroke: var(--nu-blue-soft); filter: drop-shadow(0 0 6px rgba(158, 200, 255, 0.55)); }
+.cha__linha { stroke: var(--nu-blue-soft); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nu-blue-soft) 55%, transparent)); }
 .cha__ontem, .cha__guia { stroke: var(--nu-cream-text-35); }
 .cha__hoje { stroke: var(--cha-hoje); filter: drop-shadow(0 0 6px var(--cha-hoje)); }
 .cha__ponto circle { fill: var(--cha-hoje); }

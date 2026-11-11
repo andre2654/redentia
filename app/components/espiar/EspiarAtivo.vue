@@ -286,7 +286,7 @@ onBeforeUnmount(() => {
             <NuSkeleton variant="pill" width="104px" height="40px" />
             <NuSkeleton variant="pill" width="164px" height="40px" />
           </div>
-          <NuSkeleton variant="pill" width="100%" height="44px" class="esp__sk-perguntar" />
+          <NuSkeleton variant="pill" width="100%" height="52px" class="esp__sk-perguntar" />
         </div>
 
         <div v-else-if="estado === 'erro'" key="erro" class="esp__corpo">
@@ -336,17 +336,14 @@ onBeforeUnmount(() => {
           <div v-if="vm.porQue" class="esp__porque">
             <p class="esp__rotulo">{{ vm.porQue.titulo }}</p>
             <p class="esp__porque-texto">{{ vm.porQue.texto }}</p>
-            <p class="esp__fonte">Leitura da Redentia<template v-if="vm.porQue.fonte"> · {{ vm.porQue.fonte }}</template></p>
+            <p class="esp__fonte"><MarcaCorte :largura="14" />Leitura da Aportou<template v-if="vm.porQue.fonte"> · {{ vm.porQue.fonte }}</template></p>
           </div>
 
           <div class="esp__botoes">
             <SeguirAtivo :ticker="vm.ticker" :path="`/asset/${vm.ticker}`" />
             <button type="button" class="esp__secundario" @click="carteira">Adicionar à carteira</button>
           </div>
-          <button type="button" class="esp__perguntar" @click="perguntar">
-            Perguntar sobre {{ vm.ticker }}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
-          </button>
+          <NuBotaoSeta class="esp__perguntar" variante="carvao" tamanho="m" largo @click="perguntar">Perguntar sobre {{ vm.ticker }}</NuBotaoSeta>
         </div>
       </Transition>
     </section>
@@ -389,21 +386,27 @@ onBeforeUnmount(() => {
 .esp__topo { position: relative; display: flex; align-items: center; gap: 12px; padding: 18px 14px 0 18px; }
 .esp__alca { display: none; }
 .esp__id { flex: 1; min-width: 0; }
-.esp__ticker { margin: 0; font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+/* o ticker no selo da marca: carvão, letra branca em 800, raio 8 */
+.esp__ticker {
+  display: inline-block; margin: 0; padding: 3px 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white);
+  font-size: 15px; font-weight: 800; letter-spacing: 0.04em; line-height: 1.3;
+}
 .esp__nome {
-  margin: 2px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
+  margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .esp__sk-nome { margin-top: 6px; }
 .esp__acoes { display: flex; gap: 2px; align-self: flex-start; }
 .esp__icone {
-  width: 34px; height: 34px; border: 0; border-radius: 50%; padding: 0; display: grid; place-items: center;
+  position: relative; width: 36px; height: 36px; border: 0; border-radius: 50%; padding: 0; display: grid; place-items: center;
   background: transparent; color: var(--nu-gray-3); cursor: pointer;
   transition: background .2s ease, color .2s ease, transform .4s var(--mola);
 }
-.esp__icone:hover { background: var(--nu-cream); color: var(--nu-ink); }
+/* o alvo de toque tem 44px; o círculo, 36 */
+.esp__icone::after { content: ''; position: absolute; inset: -4px; }
+.esp__icone:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
 .esp__icone:active { transform: scale(.92); }
-.esp__icone:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 1px; }
+.esp__icone:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 1px; }
 
 /* ——— corpo ——— */
 .esp__corpo { padding: 14px 18px 18px; overflow-y: auto; overscroll-behavior: contain; }
@@ -424,7 +427,7 @@ onBeforeUnmount(() => {
 }
 .esp__linha-leg {
   display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 8px;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
 }
 .esp__linha-leg b { font-size: var(--nu-fs-dense); letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
 .esp__leg--up { color: var(--nu-green-text); }
@@ -433,48 +436,42 @@ onBeforeUnmount(() => {
 
 .esp__nums {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px;
-  margin: 16px 0 0; padding: 14px 0 0; border-top: 1px solid var(--nu-cream-line);
+  margin: 16px 0 0; padding: 14px 0 0; border-top: 1.5px solid var(--nu-line-2);
 }
 .esp__num { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .esp__num dt { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; line-height: 1.3; }
 .esp__num dd { margin: 0; font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-.esp__porque { margin-top: 16px; padding: 12px 14px; border-radius: var(--nu-r-tile); background: var(--nu-cream); }
-.esp__rotulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.esp__porque { margin-top: 16px; padding: 12px 14px; border-radius: var(--nu-r-tile); background: var(--nu-page); }
+.esp__rotulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
 .esp__porque-texto { margin: 6px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
-.esp__fonte { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+.esp__fonte { display: flex; align-items: center; gap: 7px; margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; }
 .esp__sk-texto { margin-top: 18px; }
 
 .esp__aviso { margin: 4px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 
 /* ——— botões: mola no toque ——— */
 .esp__botoes { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+/* o Seguir é a mesma pílula de contorno da base (NuFollowButton), na altura deste cartão */
 .esp__botoes :deep(.nfb) {
-  height: 40px; padding: 0 16px; gap: 8px; font-size: var(--nu-fs-sm); font-weight: 700;
-  background: var(--nu-cream); color: var(--nu-ink);
+  height: 40px; min-height: 40px; padding: 0 16px; gap: 8px; font-size: var(--nu-fs-sm); font-weight: 700;
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
   transition: background .2s ease, transform .45s var(--mola);
 }
-.esp__botoes :deep(.nfb:hover) { background: var(--nu-cream-2); transform: translateY(-1px); }
+.esp__botoes :deep(.nfb:hover) { background: var(--nu-row-hover); transform: translateY(-1px); }
 .esp__botoes :deep(.nfb:active) { transform: scale(.96); }
-.esp__botoes :deep(.nfb--on) { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.esp__botoes :deep(.nfb--on), .esp__botoes :deep(.nfb--on:hover) { background: var(--nu-blue-bg); color: var(--nu-blue-text); box-shadow: none; }
 .esp__botoes :deep(.sga__msg--on) { font-size: var(--nu-fs-dense); }
 .esp__secundario {
   display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border: 0; border-radius: var(--nu-r-pill);
-  background: transparent; box-shadow: inset 0 0 0 1px var(--nu-cream-line); color: var(--nu-ink);
+  background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink);
   font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; text-decoration: none;
   transition: background .2s ease, box-shadow .2s ease, transform .45s var(--mola);
 }
-.esp__secundario:hover { background: var(--nu-cream); box-shadow: inset 0 0 0 1px var(--nu-sand); transform: translateY(-1px); }
+.esp__secundario:hover { background: var(--nu-row-hover); transform: translateY(-1px); }
 .esp__secundario:active { transform: scale(.96); }
-.esp__perguntar {
-  width: 100%; height: 44px; margin-top: 10px; border: 0; border-radius: var(--nu-r-pill);
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  background: var(--nu-ink); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
-  transition: background .2s ease, transform .45s var(--mola);
-}
-.esp__perguntar:hover { background: var(--nu-ink-hover); }
-.esp__perguntar:active { transform: scale(.98); }
-.esp__secundario:focus-visible, .esp__perguntar:focus-visible, .esp__botoes :deep(.nfb:focus-visible) { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
+.esp__perguntar { margin-top: 10px; }
+.esp__secundario:focus-visible, .esp__botoes :deep(.nfb:focus-visible) { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .esp__sk-perguntar { margin-top: 10px; }
 
 /* ——— celular: a folha que sobe do pé ——— */
@@ -488,7 +485,7 @@ onBeforeUnmount(() => {
   .esp__topo { padding-top: 22px; touch-action: none; cursor: grab; }
   .esp__alca {
     display: block; position: absolute; top: 8px; left: 50%; width: 36px; height: 5px; margin-left: -18px;
-    border-radius: var(--nu-r-pill); background: var(--nu-cream-line);
+    border-radius: var(--nu-r-pill); background: var(--nu-line);
   }
   .esp-enter-from, .esp-leave-to { opacity: 1; transform: translateY(100%); }
   .esp-enter-active { transition: transform .42s var(--entra); }
@@ -514,7 +511,7 @@ onBeforeUnmount(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .esp, .esp-enter-active, .esp-leave-active, .esp-troca-enter-active, .esp-troca-leave-active,
-  .esp__icone, .esp__secundario, .esp__perguntar, .esp__botoes :deep(.nfb) { transition: none; }
+  .esp__icone, .esp__secundario, .esp__botoes :deep(.nfb) { transition: none; }
   .esp-enter-from, .esp-leave-to { transform: none; }
 }
 </style>

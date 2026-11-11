@@ -82,7 +82,7 @@ async function deixar(t: string) {
 <template>
   <section v-show="visivel" id="seguindo" class="sgf" :class="{ 'sgf--so-gancho': !cards.length }">
     <template v-if="cards.length">
-      <NuSectionHeading>Seus ativos.
+      <NuSectionHeading eyebrow="Você segue">Seus ativos.
         <template #dek>A cotação do último pregão de cada ativo que você segue.</template>
       </NuSectionHeading>
 
@@ -122,8 +122,8 @@ async function deixar(t: string) {
 
 <style scoped>
 .sgf {
-  background: var(--nu-white);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px);
+  background: var(--nu-page);
+  padding: clamp(56px, 7vw, 96px) clamp(20px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
 /* só o gancho (ninguém seguido ainda): banda mais baixa, o card é o conteúdo */
@@ -131,17 +131,22 @@ async function deixar(t: string) {
 
 /* a faixa rola, a página não (regra 10) */
 .sgf__row {
-  list-style: none; margin: clamp(28px, 3.5vw, 44px) 0 0; padding: 0 0 4px;
+  list-style: none; margin: clamp(28px, 3.5vw, 44px) -6px 0; padding: 6px 6px 10px;
   display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x proximity;
 }
 .sgf__card {
   position: relative; flex: 0 0 auto; width: min(236px, 72vw);
-  background: var(--nu-cream); border-radius: var(--nu-r-panel);
-  scroll-snap-align: start; transition: transform .2s, box-shadow .2s;
+  background: var(--nu-card); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-quente);
+  scroll-snap-align: start; transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  animation: nu-fade .5s ease backwards;
 }
+.sgf__card:nth-child(2) { animation-delay: 60ms; }
+.sgf__card:nth-child(3) { animation-delay: 120ms; }
+.sgf__card:nth-child(4) { animation-delay: 180ms; }
+.sgf__card:nth-child(n + 5) { animation-delay: 240ms; }
 .sgf__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .sgf__link { display: flex; flex-direction: column; gap: 14px; padding: 20px 20px 18px; min-height: 100%; }
-.sgf__top { display: flex; align-items: center; gap: 12px; padding-right: 30px; min-width: 0; }
+.sgf__top { display: flex; align-items: center; gap: 12px; padding-right: 34px; min-width: 0; }
 .sgf__id { display: flex; flex-direction: column; min-width: 0; }
 .sgf__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; font-variant-numeric: tabular-nums; }
 .sgf__name { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -152,24 +157,27 @@ async function deixar(t: string) {
 .sgf__sk { display: block; }
 .sgf__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .sgf__chg {
-  display: inline-flex; align-items: center; font-size: var(--nu-fs-sm); font-weight: 700;
-  padding: 5px 11px; border-radius: var(--nu-r-pill); font-variant-numeric: tabular-nums; white-space: nowrap;
+  display: inline-flex; align-items: center; font-size: 14px; font-weight: 700;
+  padding: 4px 9px; border-radius: var(--nu-r-tag); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-.sgf__chg--up { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.sgf__chg--down { background: var(--nu-red-bg); color: var(--nu-red-2); }
+.sgf__chg--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.sgf__chg--down { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .sgf__date { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 
 .sgf__unstar {
-  position: absolute; top: 14px; right: 12px; width: 36px; height: 36px;
+  position: absolute; top: 10px; right: 8px; width: 44px; height: 44px;
   display: inline-flex; align-items: center; justify-content: center;
   border: none; border-radius: 50%; cursor: pointer;
-  background: transparent; color: var(--nu-blue-text); transition: background .2s;
+  background: transparent; color: var(--nu-blue); transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
+.sgf__unstar:active { transform: scale(.92); }
 .sgf__unstar:hover { background: var(--nu-blue-bg); }
 .sgf__unstar[aria-busy='true'] { cursor: progress; }
-.sgf__unstar:focus-visible, .sgf__link:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
+.sgf__unstar:focus-visible, .sgf__link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
+.sgf__link { border-radius: var(--nu-r-panel); }
+@media (prefers-reduced-motion: reduce) { .sgf__card { animation: none; transition: none; } }
 
-.sgf__err { margin: 14px 0 0; color: var(--nu-red-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.sgf__err { margin: 14px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .sgf__gancho { margin-top: clamp(24px, 3vw, 36px); }
 .sgf__gancho:empty, .sgf__gancho--solo { margin-top: 0; }

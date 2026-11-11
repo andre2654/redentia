@@ -108,6 +108,7 @@ onBeforeUnmount(() => {
     aria-labelledby="ck-titulo"
   >
     <p id="ck-titulo" class="ck__txt">
+      <MarcaCorte :largura="18" />
       Análise e anúncios só com a sua escolha.
       <span class="ck__links">
         <NuxtLink to="/institucional/privacy">Privacidade</NuxtLink>
@@ -123,6 +124,8 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* a faixa do aviso na Aportou: a banda creme, o fio de 1,5px, o corte como
+   sinal e duas pílulas de contorno iguais (nenhuma é a "certa") */
 .ck {
   position: relative;
   z-index: 1;
@@ -132,17 +135,17 @@ onBeforeUnmount(() => {
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  gap: 8px 10px;
+  gap: 8px 14px;
   width: 100%;
   max-width: 100%;
   margin: 0;
   box-sizing: border-box;
-  padding: 8px 12px;
+  padding: 8px clamp(12px, 2vw, 32px);
   border-radius: 0;
-  background: var(--nu-cream);
-  color: var(--nu-navy);
+  background: var(--nu-band);
+  color: var(--nu-ink);
   border: 0;
-  border-bottom: 1px solid rgba(12, 21, 36, 0.14);
+  border-bottom: 1.5px solid var(--nu-line-2);
   box-shadow: none;
   font-family: var(--nu-font);
 }
@@ -150,43 +153,51 @@ onBeforeUnmount(() => {
   flex: 1 1 12rem;
   min-width: 0;
   margin: 0;
-  color: var(--nu-navy);
-  font-size: 13px;
-  font-weight: 500;
+  color: var(--nu-gray-3);
+  font-size: 14px;
+  font-weight: 600;
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
-.ck__links { white-space: normal; }
+.ck__txt :deep(.mkc) { display: inline-block; vertical-align: -2px; margin-right: 10px; }
+.ck__links { white-space: normal; font-weight: 500; margin-left: 4px; }
 .ck__txt a {
-  color: var(--nu-blue);
+  color: var(--nu-blue-text);
   font-weight: 700;
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: 3px;
+  transition: color .2s;
 }
-.ck__txt a:hover { color: var(--nu-blue-hover); }
+.ck__txt a:hover { color: var(--nu-blue-deep); }
 .ck__acoes { display: flex; flex-wrap: wrap; gap: 8px; flex: 0 0 auto; }
 .ck__btn {
+  position: relative;
   flex: 1 1 0;
   margin: 0;
-  padding: 7px 12px;
+  min-height: 36px;
+  padding: 0 16px;
   border-radius: var(--nu-r-pill);
-  border: 1px solid var(--nu-navy);
-  background: var(--nu-cream);
-  color: var(--nu-navy);
+  border: 0;
+  box-shadow: inset 0 0 0 1.5px var(--nu-ink);
+  background: var(--nu-white);
+  color: var(--nu-ink);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
   cursor: pointer;
+  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.ck__btn:hover { background: var(--nu-white); }
-.ck__btn:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+/* o alvo de toque tem 44px; a pílula, 36 (o aviso é pequeno de propósito) */
+.ck__btn::after { content: ''; position: absolute; inset: -4px 0; }
+.ck__btn:hover { background: var(--nu-row-hover); }
+.ck__btn:active { transform: scale(.98); }
 
 @media (max-width: 759px) {
-  .ck { padding: 8px 10px; }
-  .ck__txt { font-size: 12px; line-height: 1.25; }
+  .ck { padding: 8px 12px; }
+  .ck__txt { font-size: 13.5px; line-height: 1.3; }
   .ck__acoes { gap: 6px; }
-  .ck__btn { padding: 6px 9px; font-size: 12px; }
+  .ck__btn { padding: 0 14px; font-size: 13.5px; }
 }
 /* No fluxo do rodapé o cartão também não sai do documento: a folga, se
    houver, é o padding-bottom do rodapé, não um fixed por cima do texto. */
@@ -196,6 +207,7 @@ onBeforeUnmount(() => {
   right: auto;
   bottom: auto;
 }
+@media (prefers-reduced-motion: reduce) { .ck__btn { transition: none; } }
 </style>
 
 <style>

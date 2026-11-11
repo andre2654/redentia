@@ -28,24 +28,25 @@ const texto = computed(() => (props.frase ? `Bom dia. ${props.frase}` : 'Bom dia
   position: relative; overflow: hidden; height: 100%; min-height: 224px;
   display: flex; flex-direction: column; align-items: center; text-align: center;
   padding: 30px 40px 24px; box-sizing: border-box;
-  background: linear-gradient(180deg, #0A1230 0%, #18265A 36%, #5A4A86 62%, #D98A86 86%, #F6BC82 100%);
+  /* o amanhecer na paleta da Aportou: carvão, cobalto, azul claro e a areia do creme */
+  background: linear-gradient(180deg, var(--nu-ink) 0%, color-mix(in srgb, var(--nu-blue-deep) 62%, var(--nu-ink)) 34%, var(--nu-blue) 60%, var(--nu-blue-soft) 82%, var(--nu-amber-soft) 100%);
   color: var(--nu-cream-text);
 }
 .chr__sol {
   position: absolute; left: 50%; bottom: -84px; width: 200px; height: 200px; margin-left: -100px; border-radius: 50%;
-  background: radial-gradient(circle, #FFF3D1 0%, #FFD38F 30%, rgba(255, 196, 120, 0.4) 52%, rgba(255, 196, 120, 0) 70%);
+  background: radial-gradient(circle, var(--nu-white) 0%, var(--nu-amber-soft) 30%, color-mix(in srgb, var(--nu-amber-soft) 40%, transparent) 52%, transparent 70%);
 }
-.chr__nevoa { position: absolute; left: 0; right: 0; bottom: 0; height: 60px; background: linear-gradient(180deg, rgba(246, 188, 130, 0) 0%, rgba(246, 188, 130, 0.38) 100%); }
-.chr__noite { position: absolute; inset: 0; background: var(--nu-orb-black); opacity: 0; }
+.chr__nevoa { position: absolute; left: 0; right: 0; bottom: 0; height: 60px; background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--nu-amber-soft) 40%, transparent) 100%); }
+.chr__noite { position: absolute; inset: 0; background: var(--nu-ink); opacity: 0; }
 .chr__estrela { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: var(--nu-cream-text); opacity: 0; }
 .chr__relogio {
   position: relative; font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.05em; line-height: 1;
-  text-shadow: 0 2px 24px rgba(10, 18, 48, 0.35);
+  text-shadow: 0 2px 24px color-mix(in srgb, var(--nu-ink) 35%, transparent);
 }
 .chr__frase {
   position: relative; margin: 18px 0 0; max-width: 40ch;
   font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.45;
-  text-shadow: 0 1px 12px rgba(10, 18, 48, 0.5);
+  text-shadow: 0 1px 12px color-mix(in srgb, var(--nu-ink) 50%, transparent);
 }
 
 /* o laço (10 s): noite → amanhecer. Parado, fica o céu claro com a frase. */

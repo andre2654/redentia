@@ -59,18 +59,18 @@ const SELOS = ['Leva 1 minuto', 'Regulado pelo Banco Central', 'Só leitura']
 .aof__cancelado {
   margin: 18px 0 0; padding: 12px 16px; border-radius: var(--nu-r-chip);
   background: var(--nu-white); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
-  box-shadow: var(--nu-shadow-pos-nav);
+  box-shadow: var(--nu-shadow-branco);
 }
 .aof__acao { margin-top: clamp(4px, 1vw, 8px); }
 .aof__erro { margin: 14px 0 0; max-width: 460px; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .aof__letra { margin: 16px 0 0; max-width: 480px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .aof__selos { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
-.aof__selos li { display: inline-flex; align-items: center; gap: 6px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
-.aof__selos svg { color: var(--nu-green); }
-.aof--escuro .aof__selos li { color: var(--nu-cream-text-70); }
+.aof__selos li { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-gray-3); font-size: 15px; font-weight: 600; }
+.aof__selos svg { color: var(--nu-green-text); }
+.aof--escuro .aof__selos li { color: var(--nu-on-dark); }
 .aof--escuro .aof__selos svg { color: var(--nu-green-soft); }
 
 /* no azul-marinho: os textos em creme */
-.aof--escuro .aof__letra { color: var(--nu-cream-text-55); }
+.aof--escuro .aof__letra { color: var(--nu-on-dark-2); }
 .aof--escuro .aof__erro { color: var(--nu-red-soft); }
 </style>

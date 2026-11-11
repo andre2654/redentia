@@ -71,7 +71,7 @@ const pronto = computed(() => (comEmail.value
 
     <p v-else class="sgg__done" role="status">
       <span class="sgg__check" aria-hidden="true">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M4 12l5 5L20 6" /></svg>
       </span>
       {{ pronto }}
     </p>
@@ -83,53 +83,60 @@ const pronto = computed(() => (comEmail.value
   border-radius: var(--nu-r-card); padding: clamp(20px, 3vw, 28px);
   max-width: 760px; animation: nu-fade .5s ease both;
 }
-/* card sobre creme é branco; sobre branco é creme (regra 2) */
-.sgg--on-cream { background: var(--nu-white); margin-top: 32px; }
-.sgg--on-white { background: var(--nu-cream); }
+/* sobre o painel creme o cartão é branco; sobre a página, é o cartão creme da marca */
+.sgg--on-cream { background: var(--nu-white); margin-top: 32px; box-shadow: var(--nu-shadow-branco); }
+.sgg--on-white { background: var(--nu-band); box-shadow: var(--nu-shadow-quente); }
 
 .sgg__head { display: flex; align-items: flex-start; gap: 14px; }
 .sgg__icon {
-  width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%;
+  width: 38px; height: 38px; flex-shrink: 0; border-radius: var(--nu-r-chip);
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--nu-blue-bg); color: var(--nu-blue);
 }
 .sgg__title {
   margin: 0; color: var(--nu-ink); font-size: clamp(17px, 1.6vw, 20px);
-  font-weight: 800; letter-spacing: -.2px; line-height: 1.35; padding-top: 5px;
+  font-weight: 800; letter-spacing: -0.015em; line-height: 1.3; padding-top: 6px;
 }
 
 .sgg__chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
 .sgg__chip {
   display: inline-flex; align-items: center; gap: 7px; border: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); padding: 11px 16px; font-size: var(--nu-fs-md); font-weight: 800;
+  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 16px; font-size: 15px; font-weight: 800; letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums; color: var(--nu-ink);
-  transition: background .2s, color .2s, transform .15s;
+  transition: background .2s, color .2s, transform .2s cubic-bezier(.2, .8, .2, 1), box-shadow .2s;
 }
-.sgg--on-cream .sgg__chip { background: var(--nu-cream); }
-.sgg--on-white .sgg__chip { background: var(--nu-white); }
+.sgg--on-cream .sgg__chip { background: var(--nu-cream-2); }
+.sgg--on-white .sgg__chip { background: var(--nu-white); box-shadow: var(--nu-shadow-quente); }
 .sgg__chip:hover { transform: translateY(-2px); }
 .sgg .sgg__chip--on { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .sgg__chip[aria-busy='true'] { cursor: progress; }
-.sgg__chip:focus-visible, .sgg__later:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
+.sgg__chip:active { transform: scale(.97); }
+.sgg__chip:focus-visible, .sgg__later:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 
-.sgg__err { margin: 14px 0 0; color: var(--nu-red-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.sgg__err { margin: 14px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .sgg__foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
 .sgg__prog { display: inline-flex; align-items: center; gap: 6px; }
-.sgg__seg { width: 30px; height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-cream-3); transition: background .2s; }
-.sgg--on-white .sgg__seg { background: var(--nu-sand-2); }
+.sgg__seg { width: 30px; height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-line-2); transition: background .3s; }
+.sgg--on-white .sgg__seg { background: var(--nu-line); }
 .sgg .sgg__seg--on { background: var(--nu-blue); }
 .sgg__count { margin-left: 6px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .sgg__later {
-  background: none; border: none; cursor: pointer; padding: 8px 4px;
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700;
+  background: none; border: none; cursor: pointer; min-height: 44px; padding: 0 4px;
+  color: var(--nu-gray-3); font-size: 15px; font-weight: 700; transition: color .2s;
 }
-.sgg__later:hover { color: var(--nu-ink); text-decoration: underline; }
+.sgg__later:hover { color: var(--nu-ink); text-decoration: underline; text-underline-offset: 3px; }
 
 .sgg__done { display: flex; align-items: center; gap: 12px; margin: 0; color: var(--nu-ink); font-size: clamp(16px, 1.5vw, 18px); font-weight: 800; line-height: 1.4; }
 .sgg__check {
   width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--nu-green-bg); color: var(--nu-green-2);
+  background: var(--nu-green-bg); color: var(--nu-green-text);
+  animation: sgg-pousa .45s cubic-bezier(.2, .8, .2, 1) backwards;
 }
+/* o check se desenha, uma vez */
+.sgg__check path { stroke-dasharray: 1; animation: sgg-desenha .5s cubic-bezier(.65, 0, .35, 1) .2s backwards; }
+@keyframes sgg-pousa { from { opacity: 0; transform: scale(.6); } }
+@keyframes sgg-desenha { from { stroke-dashoffset: 1; } }
+@media (prefers-reduced-motion: reduce) { .sgg, .sgg__check, .sgg__check path { animation: none; } .sgg__chip { transition: none; } }
 </style>

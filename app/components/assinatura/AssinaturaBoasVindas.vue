@@ -22,7 +22,7 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
 
 <template>
   <section v-if="fase !== 'pronta'" class="abv" aria-live="polite">
-    <span class="abv__estado"><span class="abv__ponto" aria-hidden="true" />Assinatura Redentia</span>
+    <NuEyebrow>Assinatura {{ MARCA.nome }}</NuEyebrow>
     <h1 class="abv__titulo">Sua assinatura <br>começou.</h1>
     <p v-if="fase === 'confirmando'" class="abv__linha abv__linha--analisando">Estamos abrindo a sua carteira.</p>
     <template v-else>
@@ -30,7 +30,7 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
         A confirmação do cartão ainda não chegou. Costuma levar alguns segundos, e
         nada foi cobrado agora.
       </p>
-      <button type="button" class="abv__tentar" @click="emit('tentar')">Atualizar</button>
+      <NuBotaoSeta class="abv__tentar" variante="carvao" tamanho="m" @click="emit('tentar')">Atualizar</NuBotaoSeta>
     </template>
     <AssinaturaJornada class="abv__jornada" :passo="3" />
   </section>
@@ -51,15 +51,13 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
 
 <style scoped>
 .abv {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   min-height: clamp(520px, calc(100svh - 150px), 760px);
   padding: clamp(56px, 8vw, 112px) clamp(22px, 5.5vw, 80px);
   display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
   animation: nu-fade .5s ease both;
 }
-.abv__estado { display: inline-flex; align-items: center; gap: 9px; color: var(--nu-green-text); font-size: var(--nu-fs-md); font-weight: 700; }
-.abv__ponto { width: 9px; height: 9px; border-radius: 50%; background: var(--nu-green); box-shadow: 0 0 0 4px var(--nu-green-tint); }
-.abv__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(52px, 8.4vw, 120px); font-weight: 800; letter-spacing: -0.05em; line-height: 0.96; }
+.abv__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero-xl); font-weight: 800; letter-spacing: -0.04em; line-height: 0.96; }
 .abv__linha { margin: clamp(16px, 2vw, 24px) 0 0; max-width: 620px; color: var(--nu-gray-2); font-size: clamp(18px, 2vw, 24px); font-weight: 500; line-height: 1.45; }
 .abv__linha--analisando {
   background: linear-gradient(100deg, var(--nu-gray-2) 0%, var(--nu-gray-2) 38%, var(--nu-sand) 50%, var(--nu-gray-2) 62%, var(--nu-gray-2) 100%);
@@ -68,14 +66,7 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
   animation: abv-brilho 2.6s linear 8 both;
 }
 @keyframes abv-brilho { from { background-position: 100% 0; } to { background-position: 0% 0; } }
-.abv__tentar {
-  margin-top: 26px; border: none; cursor: pointer; font-family: inherit;
-  background: var(--nu-ink); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 14px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  transition: background .2s;
-}
-.abv__tentar:hover { background: var(--nu-ink-hover); }
-.abv__tentar:focus-visible, .abf__ok:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.abv__tentar { margin-top: 26px; }
 
 .abf {
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
@@ -88,15 +79,16 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
   background: var(--nu-green); color: var(--nu-white);
   display: inline-flex; align-items: center; justify-content: center;
 }
-.abf__texto { flex: 1; min-width: min(260px, 100%); display: flex; flex-direction: column; gap: 2px; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
+.abf__texto { flex: 1; min-width: min(260px, 100%); display: flex; flex-direction: column; gap: 2px; color: var(--nu-green-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
 .abf__texto strong { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
 .abf__ok {
   border: none; cursor: pointer; font-family: inherit;
   background: var(--nu-white); color: var(--nu-ink);
-  border-radius: var(--nu-r-pill); padding: 11px 20px; font-size: var(--nu-fs-sm); font-weight: 700;
-  transition: transform .15s;
+  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 22px; font-size: 15px; font-weight: 700;
+  box-shadow: inset 0 0 0 1.5px var(--nu-ink); transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
-.abf__ok:hover { transform: translateY(-1px); }
+.abf__ok:hover { background: var(--nu-row-hover); }
+.abf__ok:active { transform: scale(.98); }
 
 @media (max-width: 760px) {
   .abv__titulo br { display: none; }

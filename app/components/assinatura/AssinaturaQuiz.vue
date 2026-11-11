@@ -52,7 +52,7 @@ const dadosProntos = computed(() =>
 const subDosDados = computed(() => {
   if (falta.value.relay) return 'O seu e-mail da Apple fica oculto. Diga para onde mandamos os recibos e os avisos, e o seu WhatsApp.'
   if (falta.value.email && falta.value.cpf) return 'O CPF confirma que o teste grátis é seu. O e-mail é por onde chegam os recibos e os avisos.'
-  if (falta.value.cpf) return 'O CPF confirma que o teste grátis é seu. O WhatsApp é por onde a Redentia te avisa.'
+  if (falta.value.cpf) return 'O CPF confirma que o teste grátis é seu. O WhatsApp é por onde a Aportou te avisa.'
   return 'Só confirmar como falamos com você.'
 })
 async function irParaPagamento() {
@@ -292,7 +292,7 @@ const ICONES: Record<string, string> = {
             <Transition :name="indo === 'frente' ? 'aqz-frente' : 'aqz-tras'" mode="out-in">
               <!-- uma pergunta -->
               <section v-if="passo.tipo === 'pergunta'" :key="`p-${indice}`" class="aqz__passo">
-                <p class="aqz__conta">{{ feitas + 1 }} de {{ totalPerguntas }}</p>
+                <NuEyebrow como="p" class="aqz__conta">Pergunta {{ feitas + 1 }} de {{ totalPerguntas }}</NuEyebrow>
                 <h2 :id="tituloId" class="aqz__titulo">{{ passo.pergunta.titulo }}</h2>
                 <p v-if="passo.pergunta.sub" class="aqz__sub">{{ passo.pergunta.sub }}</p>
 
@@ -345,38 +345,34 @@ const ICONES: Record<string, string> = {
                   </button>
                 </div>
 
-                <button
-                  v-if="passo.pergunta.multipla" type="button" class="aqz__seguir"
+                <NuBotaoSeta
+                  v-if="passo.pergunta.multipla" largo class="aqz__seguir"
                   :disabled="!marcados(passo.pergunta).length" @click="avancar"
-                >Continuar</button>
+                >Continuar</NuBotaoSeta>
               </section>
 
               <!-- respiro 1: o aviso de exemplo -->
               <section v-else-if="passo.tipo === 'respiro' && passo.id === 'avisos'" :key="`r-${indice}`" class="aqz__passo aqz__passo--escuro">
                 <h2 :id="tituloId" class="aqz__titulo aqz__titulo--claro">{{ avisos.titulo }}</h2>
                 <p class="aqz__sub aqz__sub--claro">{{ avisos.texto }}</p>
-                <div class="aqz__celular" aria-label="Exemplo de aviso da Redentia" role="img">
+                <div class="aqz__celular" aria-label="Exemplo de aviso da Aportou" role="img">
                   <span class="aqz__exemplo">Exemplo de aviso</span>
                   <div class="aqz__aviso">
-                    <span class="aqz__aviso-logo" aria-hidden="true">
-                      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /></svg>
-                    </span>
+                    <MarcaIcone class="aqz__aviso-logo" :tamanho="34" />
                     <span class="aqz__aviso-txt">
-                      <span class="aqz__aviso-topo"><strong>Redentia</strong><span>agora</span></span>
+                      <span class="aqz__aviso-topo"><strong>Aportou</strong><span>agora</span></span>
                       <span class="aqz__aviso-msg">Sua carteira caiu 3,1% hoje, mais que a bolsa (−1,2%). Os bancos puxaram.</span>
                     </span>
                   </div>
                   <div class="aqz__aviso aqz__aviso--atras">
-                    <span class="aqz__aviso-logo" aria-hidden="true">
-                      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /></svg>
-                    </span>
+                    <MarcaIcone class="aqz__aviso-logo" :tamanho="34" />
                     <span class="aqz__aviso-txt">
-                      <span class="aqz__aviso-topo"><strong>Redentia</strong><span>ontem</span></span>
+                      <span class="aqz__aviso-topo"><strong>Aportou</strong><span>ontem</span></span>
                       <span class="aqz__aviso-msg">Tudo normal. Sua carteira subiu 0,4%; a bolsa, 0,3%.</span>
                     </span>
                   </div>
                 </div>
-                <button type="button" class="aqz__seguir aqz__seguir--claro" @click="avancar">Continuar</button>
+                <NuBotaoSeta largo variante="creme" class="aqz__seguir aqz__seguir--claro" @click="avancar">Continuar</NuBotaoSeta>
               </section>
 
               <!-- respiro 2: os 2.000 cenários se desenhando -->
@@ -386,12 +382,13 @@ const ICONES: Record<string, string> = {
                 <div class="aqz__leque">
                   <AssinaturaExemploCaminhos :altura="230" />
                 </div>
-                <button type="button" class="aqz__seguir aqz__seguir--claro" @click="avancar">Continuar</button>
+                <NuBotaoSeta largo variante="creme" class="aqz__seguir aqz__seguir--claro" @click="avancar">Continuar</NuBotaoSeta>
               </section>
 
               <!-- a conta: para onde mandamos o plano (só para quem chega sem conta) -->
               <section v-else-if="passo.tipo === 'conta'" :key="`c-${indice}`" class="aqz__passo">
                 <template v-if="cad.etapa.value === 'contato'">
+                  <NuEyebrow como="p">Sua conta</NuEyebrow>
                   <h2 :id="tituloId" class="aqz__titulo">Para onde mandamos o seu plano?</h2>
                   <p class="aqz__sub">{{ socialNoQuiz ? 'Com a sua conta Apple ou Google, num toque. Ou pelo e-mail, com um código de 6 números, sem senha.' : 'O seu e-mail. Mandamos um código de 6 números para confirmar, sem senha.' }}</p>
                   <LoginSocial
@@ -403,22 +400,19 @@ const ICONES: Record<string, string> = {
                     <input id="aqz-email" v-model="email" class="aqz__campo" type="email" inputmode="email" autocomplete="email" placeholder="voce@email.com" required>
                     <input v-model="isca" class="aqz__isca" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
                     <p v-if="cad.erro.value" class="aqz__erro-claro" role="alert">{{ cad.erro.value }}</p>
-                    <button type="submit" class="aqz__seguir" :disabled="cad.enviando.value || !email.trim()">
-                      {{ cad.enviando.value ? 'Enviando o código' : 'Ver o meu plano' }}
-                    </button>
+                    <NuBotaoSeta type="submit" largo class="aqz__seguir" :loading="cad.enviando.value" :disabled="!email.trim()">{{ cad.enviando.value ? 'Enviando o código' : 'Ver o meu plano' }}</NuBotaoSeta>
                   </form>
-                  <p class="aqz__miudo">Ao continuar, você cria a sua conta na Redentia e aceita os <NuxtLink to="/institucional/terms" target="_blank">Termos</NuxtLink> e a <NuxtLink to="/institucional/privacy" target="_blank">Privacidade</NuxtLink>.</p>
+                  <p class="aqz__miudo">Ao continuar, você cria a sua conta na Aportou e aceita os <NuxtLink to="/institucional/terms" target="_blank">Termos</NuxtLink> e a <NuxtLink to="/institucional/privacy" target="_blank">Privacidade</NuxtLink>.</p>
                 </template>
                 <template v-else>
+                  <NuEyebrow como="p">Código</NuEyebrow>
                   <h2 :id="tituloId" class="aqz__titulo">Confira o seu e-mail.</h2>
                   <p class="aqz__sub">Mandamos um código de 6 números para <strong>{{ cad.contato.value }}</strong>.</p>
                   <form class="aqz__form" @submit.prevent="confirmarCodigo">
                     <label class="aqz__rotulo" for="aqz-codigo">Código</label>
                     <input id="aqz-codigo" v-model="codigo" class="aqz__campo aqz__campo--codigo" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" required>
                     <p v-if="cad.erro.value" class="aqz__erro-claro" role="alert">{{ cad.erro.value }}</p>
-                    <button type="submit" class="aqz__seguir" :disabled="cad.enviando.value || codigo.replace(/\D/g, '').length !== 6">
-                      {{ cad.enviando.value ? 'Confirmando' : 'Confirmar' }}
-                    </button>
+                    <NuBotaoSeta type="submit" largo class="aqz__seguir" :loading="cad.enviando.value" :disabled="codigo.replace(/\D/g, '').length !== 6">{{ cad.enviando.value ? 'Confirmando' : 'Confirmar' }}</NuBotaoSeta>
                   </form>
                   <p class="aqz__miudo">
                     <button type="button" class="aqz__link" :disabled="cad.reenviarEm.value > 0" @click="cad.reenviar('/assinar')">
@@ -446,6 +440,7 @@ const ICONES: Record<string, string> = {
               <!-- o resultado e a oferta -->
               <!-- os dados do titular: CPF e WhatsApp, antes do pagamento -->
               <section v-else-if="pedirDados" key="dados" class="aqz__passo">
+                <NuEyebrow como="p">Seus dados</NuEyebrow>
                 <h2 :id="tituloId" class="aqz__titulo">Falta pouco.</h2>
                 <p class="aqz__sub">{{ subDosDados }}</p>
                 <form class="aqz__form" @submit.prevent="enviarDados">
@@ -466,16 +461,15 @@ const ICONES: Record<string, string> = {
                     <span>{{ TEXTO_ACEITE_WHATSAPP }}</span>
                   </label>
                   <p v-if="erroDados || erro" class="aqz__erro-claro" role="alert">{{ erroDados || erro }}</p>
-                  <button type="submit" class="aqz__seguir" :disabled="abrindo || !dadosProntos">
-                    {{ abrindo ? 'Abrindo o pagamento' : primeiraAssinatura ? 'Começar 3 dias grátis' : 'Ir para o pagamento' }}
-                  </button>
+                  <NuBotaoSeta type="submit" largo class="aqz__seguir" :loading="abrindo" :disabled="!dadosProntos">{{ abrindo ? 'Abrindo o pagamento' : primeiraAssinatura ? 'Começar 3 dias grátis' : 'Ir para o pagamento' }}</NuBotaoSeta>
                 </form>
                 <p class="aqz__miudo">O pagamento é na Stripe, com o cartão. {{ falta.cpf ? 'O CPF fica guardado com segurança e não aparece para ninguém.' : 'Os seus dados ficam guardados com segurança.' }}</p>
               </section>
 
               <section v-else :key="`f-${indice}`" class="aqz__passo">
+                <NuEyebrow como="p">Seu plano</NuEyebrow>
                 <h2 :id="tituloId" class="aqz__titulo">{{ titulo }}</h2>
-                <p class="aqz__sub">O que a Redentia vai fazer pela sua carteira:</p>
+                <p class="aqz__sub">O que a Aportou vai fazer pela sua carteira:</p>
                 <ul class="aqz__itens">
                   <li v-for="it in itens" :key="it.id" class="aqz__item">
                     <span class="aqz__item-marca" aria-hidden="true">
@@ -500,10 +494,7 @@ const ICONES: Record<string, string> = {
                     </template>
                     <template v-else>Cobrança hoje, no cartão, e depois uma vez por mês. Cancele quando quiser.</template>
                   </p>
-                  <button type="button" class="aqz__pagar" :disabled="abrindo" @click="irParaPagamento">
-                    {{ abrindo ? 'Abrindo o pagamento' : primeiraAssinatura ? 'Começar 3 dias grátis' : `Assinar por ${PRECO_MENSAL}/mês` }}
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-                  </button>
+                  <NuBotaoSeta largo class="aqz__pagar" :loading="abrindo" @click="irParaPagamento">{{ abrindo ? 'Abrindo o pagamento' : primeiraAssinatura ? 'Começar 3 dias grátis' : `Assinar por ${PRECO_MENSAL}/mês` }}</NuBotaoSeta>
                   <p v-if="erro" class="aqz__erro" role="alert">{{ erro }}</p>
                 </div>
               </section>
@@ -518,58 +509,63 @@ const ICONES: Record<string, string> = {
 <style scoped>
 .aqz {
   position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 24px;
-  background: rgba(8, 14, 26, 0.62); backdrop-filter: blur(6px);
+  background: color-mix(in srgb, var(--nu-ink) 62%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  animation: nu-surgir .2s ease backwards;
 }
 .aqz__card {
   position: relative; display: flex; flex-direction: column; width: min(640px, 100%); height: min(760px, calc(100dvh - 48px));
-  background: var(--nu-cream); border-radius: var(--nu-r-card-lg); box-shadow: var(--nu-shadow-float); overflow: hidden; outline: none;
+  background: var(--nu-page); border-radius: var(--nu-r-card-lg); box-shadow: var(--nu-shadow-escuro); overflow: hidden; outline: none;
+  animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) backwards;
 }
 /* nos respiros o cartão inteiro vira azul-marinho */
 .aqz__card { transition: background .3s ease; }
 .aqz__card--escuro { background: var(--nu-navy); }
-.aqz__card--escuro .aqz__icone-btn { background: var(--nu-navy-2); color: var(--nu-cream-text); box-shadow: none; }
-.aqz__card--escuro .aqz__barra { background: var(--nu-cream-text-12); }
-.aqz__card--escuro .aqz__barra-cheia { background: var(--nu-blue-soft); }
+.aqz__card--escuro .aqz__icone-btn { background: var(--nu-dark-chip); color: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line); }
+.aqz__card--escuro .aqz__barra { background: var(--nu-dark-chip-line); }
+.aqz__card--escuro .aqz__barra-cheia { background: var(--nu-blue-on-dark); }
 .aqz__topo { display: flex; align-items: center; gap: 14px; padding: 18px 20px 6px; }
 .aqz__icone-btn {
-  display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border: 0; border-radius: 50%;
-  background: var(--nu-white); color: var(--nu-ink); cursor: pointer; box-shadow: var(--nu-shadow-pos-nav); transition: opacity .2s;
+  display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 50%;
+  background: var(--nu-white); color: var(--nu-ink); cursor: pointer; box-shadow: var(--nu-shadow-quente); transition: opacity .2s, background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
 }
+.aqz__icone-btn:hover { background: var(--nu-row-hover); }
+.aqz__icone-btn:active { transform: scale(.94); }
+.aqz__card--escuro .aqz__icone-btn:hover { background: var(--nu-navy-3); }
 .aqz__icone-btn--fora { opacity: 0; pointer-events: none; }
 .aqz__icone-btn:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.aqz__barra { flex: 1; height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-cream-line); overflow: hidden; }
+.aqz__barra { flex: 1; height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-line-2); overflow: hidden; }
 .aqz__barra-cheia { display: block; height: 100%; background: var(--nu-blue); border-radius: inherit; transform-origin: left; transition: transform .45s cubic-bezier(.22, 1, .36, 1); }
 
 .aqz__corpo { flex: 1; overflow-y: auto; overflow-x: hidden; }
 .aqz__passo { display: flex; flex-direction: column; min-height: 100%; padding: 22px clamp(22px, 5vw, 44px) 32px; }
 .aqz__passo--centro { justify-content: center; }
 .aqz__passo--escuro { background: var(--nu-navy); }
-.aqz__conta { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
-.aqz__titulo { margin: 10px 0 0; color: var(--nu-ink); font-size: clamp(28px, 4.4vw, 38px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; text-wrap: balance; }
+.aqz__conta { font-variant-numeric: tabular-nums; }
+.aqz__titulo { margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(28px, 4.4vw, 38px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; text-wrap: balance; }
 .aqz__titulo:focus { outline: none; }
-.aqz__titulo--claro { color: var(--nu-cream-text); margin-top: 18px; }
-.aqz__sub { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
-.aqz__sub--claro { color: var(--nu-cream-text-70); }
+.aqz__titulo--claro { color: var(--nu-white); margin-top: 18px; }
+.aqz__sub { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 17px; font-weight: 500; line-height: 1.5; }
+.aqz__sub--claro { color: var(--nu-on-dark); }
 
 /* a lista */
 .aqz__lista { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
 .aqz__opcao {
   display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; text-align: left;
-  border: 0; border-radius: var(--nu-r-tile); background: var(--nu-white); box-shadow: inset 0 0 0 1.5px transparent, var(--nu-shadow-pos-nav);
-  color: var(--nu-ink); font-family: inherit; cursor: pointer; transition: box-shadow .15s, transform .15s;
+  border: 0; border-radius: var(--nu-r-tile); background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-line-2), var(--nu-shadow-quente);
+  color: var(--nu-ink); font-family: inherit; cursor: pointer; transition: box-shadow .2s, transform .2s cubic-bezier(.2, .8, .2, 1);
 }
-.aqz__opcao:hover { transform: translateY(-1px); }
+.aqz__opcao:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo), var(--nu-shadow-branco); }
 .aqz__opcao:active { transform: scale(.99); }
 .aqz__opcao:focus-visible, .aqz__cartao:focus-visible, .aqz__banco:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.aqz__opcao--sim { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-pos-nav); }
-.aqz__opcao-icone { display: grid; place-items: center; width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px; background: var(--nu-blue-tint); color: var(--nu-blue-text); }
+.aqz__opcao--sim, .aqz__opcao--sim:hover { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
+.aqz__opcao-icone { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--nu-r-chip); background: var(--nu-blue-bg); color: var(--nu-blue-text); transition: background .2s, color .2s; }
 .aqz__opcao--sim .aqz__opcao-icone { background: var(--nu-blue); color: var(--nu-white); }
 .aqz__opcao-t { flex: 1; font-size: var(--nu-fs-lg); font-weight: 700; }
 
 /* o visto da escolha múltipla */
 .aqz__marca {
   display: grid; place-items: center; width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
-  box-shadow: inset 0 0 0 1.5px var(--nu-cream-line); color: transparent; transition: background .15s, color .15s;
+  box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo); color: transparent; transition: background .15s, color .15s;
 }
 .aqz__opcao--sim .aqz__marca, .aqz__banco--sim .aqz__marca { background: var(--nu-blue); color: var(--nu-white); box-shadow: none; }
 
@@ -577,14 +573,14 @@ const ICONES: Record<string, string> = {
 .aqz__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
 .aqz__cartao {
   display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px 12px 20px; text-align: center;
-  border: 0; border-radius: var(--nu-r-card); background: var(--nu-white); box-shadow: inset 0 0 0 1.5px transparent, var(--nu-shadow-pos-nav);
-  font-family: inherit; cursor: pointer; transition: box-shadow .15s, transform .15s;
+  border: 0; border-radius: var(--nu-r-panel); background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-line-2), var(--nu-shadow-quente);
+  font-family: inherit; cursor: pointer; transition: box-shadow .2s, transform .2s cubic-bezier(.2, .8, .2, 1);
 }
-.aqz__cartao:hover { transform: translateY(-2px); }
-.aqz__cartao--sim { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-pos-nav); }
+.aqz__cartao:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo), var(--nu-shadow-branco); }
+.aqz__cartao--sim, .aqz__cartao--sim:hover { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
 .aqz__desenho { display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%; }
-.aqz__desenho--arvore { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.aqz__desenho--broto { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
+.aqz__desenho--arvore { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.aqz__desenho--broto { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .aqz__desenho--semente { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .aqz__cartao-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1.25; }
 
@@ -592,70 +588,55 @@ const ICONES: Record<string, string> = {
 .aqz__bancos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 24px; }
 .aqz__banco {
   display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 8px; text-align: left;
-  border: 0; border-radius: var(--nu-r-tile); background: var(--nu-white); box-shadow: inset 0 0 0 1.5px transparent, var(--nu-shadow-pos-nav);
-  font-family: inherit; cursor: pointer; transition: box-shadow .15s;
+  border: 0; border-radius: var(--nu-r-tile); background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-line-2), var(--nu-shadow-quente);
+  font-family: inherit; cursor: pointer; transition: box-shadow .2s;
 }
 .aqz__banco--texto { padding-left: 16px; min-height: 50px; }
-.aqz__banco--sim { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-pos-nav); }
+.aqz__banco--sim { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
 .aqz__banco :deep(.cil) { border-radius: 10px; }
 .aqz__banco-nome { flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* continuar */
-.aqz__seguir {
-  margin-top: auto; align-self: stretch; min-height: 56px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue); color: var(--nu-white); font-family: inherit; font-size: var(--nu-fs-lg); font-weight: 800; cursor: pointer;
-  transition: background .2s, opacity .2s;
-}
+/* continuar: a pílula com a seta (NuBotaoSeta); aqui fica só o lugar dela */
+.aqz__seguir { margin-top: auto; flex: none; }
 .aqz__lista + .aqz__seguir, .aqz__bancos + .aqz__seguir { margin-top: 24px; }
-.aqz__seguir:disabled { opacity: .35; cursor: default; }
-.aqz__seguir:hover:not(:disabled) { background: var(--nu-blue-hover); }
-.aqz__seguir:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
-.aqz__seguir--claro { background: var(--nu-cream); color: var(--nu-navy); margin-top: 28px; }
-.aqz__seguir--claro:hover:not(:disabled) { background: var(--nu-white); }
+.aqz__seguir--claro { margin-top: 28px; }
 
 /* a conta */
 .aqz__social { margin-top: 26px; }
 .aqz__social + .aqz__form { margin-top: 18px; }
-.aqz__form { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
-.aqz__rotulo { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.aqz__form { display: flex; flex-direction: column; gap: 7px; margin-top: 26px; }
+.aqz__rotulo { color: var(--nu-ink); font-size: 15px; font-weight: 700; }
 .aqz__campo {
-  min-height: 56px; padding: 0 18px; border: 0; border-radius: var(--nu-r-tile); background: var(--nu-white);
-  box-shadow: inset 0 0 0 1.5px var(--nu-cream-line); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-lg); font-weight: 700;
+  height: 56px; box-sizing: border-box; padding: 0 18px; border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input); background: var(--nu-white);
+  color: var(--nu-ink); font-family: inherit; font-size: 17px; font-weight: 500; transition: border-color .2s;
 }
-.aqz__campo:focus { outline: none; box-shadow: inset 0 0 0 2px var(--nu-blue); }
-.aqz__campo--codigo { letter-spacing: .4em; font-variant-numeric: tabular-nums; }
-.aqz__rotulo--depois { margin-top: 8px; }
+.aqz__campo::placeholder { color: var(--nu-placeholder); }
+.aqz__campo:focus { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
+.aqz__campo--codigo { letter-spacing: .4em; font-weight: 800; font-variant-numeric: tabular-nums; }
+.aqz__rotulo--depois { margin-top: 11px; }
 .aqz__rotulo span { color: var(--nu-gray); font-weight: 500; }
 .aqz__miudo--junto { margin-top: 0; }
-.aqz__aceite { display: flex; align-items: flex-start; gap: 10px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; cursor: pointer; }
-.aqz__aceite-caixa { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--nu-blue); cursor: pointer; }
-.aqz__pagar {
-  display: inline-flex; align-items: center; justify-content: center; gap: 11px; width: 100%; min-height: 58px; border: 0;
-  border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white); font-family: inherit;
-  font-size: var(--nu-fs-lg); font-weight: 800; cursor: pointer; transition: background .2s;
-}
-.aqz__pagar:hover:not(:disabled) { background: var(--nu-blue-hover); }
-.aqz__pagar:disabled { opacity: .7; cursor: progress; }
-.aqz__pagar:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
+.aqz__aceite { display: flex; align-items: flex-start; gap: 10px; margin-top: 9px; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.45; cursor: pointer; }
+.aqz__aceite-caixa { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--nu-blue); cursor: pointer; }
 .aqz__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .aqz__form .aqz__seguir { margin-top: 14px; }
-.aqz__erro-claro { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.aqz__miudo { margin: 16px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
+.aqz__erro-claro { margin: 4px 0 0; color: var(--nu-red-text); font-size: 14.5px; font-weight: 700; line-height: 1.5; }
+.aqz__miudo { margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 .aqz__miudo a, .aqz__link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .aqz__link { padding: 0; border: 0; background: none; font-family: inherit; font-size: inherit; cursor: pointer; }
 .aqz__link:disabled { color: var(--nu-gray); text-decoration: none; cursor: default; }
 
 /* o aviso de exemplo */
-.aqz__celular { position: relative; display: flex; flex-direction: column; gap: 10px; margin-top: 32px; padding: 22px 18px; border-radius: 28px; background: var(--nu-navy-2); }
-.aqz__exemplo { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.aqz__celular { position: relative; display: flex; flex-direction: column; gap: 10px; margin-top: 32px; padding: 22px 18px; border-radius: var(--nu-r-card); background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line); }
+.aqz__exemplo { color: var(--nu-on-dark-2); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; }
 .aqz__aviso {
-  display: flex; gap: 12px; padding: 14px; border-radius: 18px; background: rgba(245, 241, 234, 0.95); color: var(--nu-ink);
+  display: flex; gap: 12px; padding: 14px; border-radius: 18px; background: color-mix(in srgb, var(--nu-creme) 96%, transparent); color: var(--nu-ink);
   animation: aqz-aviso .6s cubic-bezier(.22, 1, .36, 1) .25s backwards;
 }
 .aqz__aviso--atras { opacity: .55; transform: scale(.97); animation-delay: .1s; }
-.aqz__aviso-logo { display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; border-radius: 9px; background: var(--nu-blue); color: var(--nu-white); }
 .aqz__aviso-txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .aqz__aviso-topo { display: flex; justify-content: space-between; gap: 8px; font-size: var(--nu-fs-sm); }
+.aqz__aviso-topo strong { font-weight: 800; }
 .aqz__aviso-topo span { color: var(--nu-gray); font-weight: 500; }
 .aqz__aviso-msg { font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.4; }
 @keyframes aqz-aviso { from { opacity: 0; transform: translateY(-14px) scale(.98); } }
@@ -666,7 +647,7 @@ const ICONES: Record<string, string> = {
 .aqz__montagem { list-style: none; margin: 28px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
 .aqz__linha { display: flex; align-items: center; gap: 12px; color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 700; transition: color .3s; }
 .aqz__linha--acesa, .aqz__linha--agora { color: var(--nu-ink); }
-.aqz__linha-marca { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--nu-cream-line); color: var(--nu-white); transition: background .3s, box-shadow .3s; }
+.aqz__linha-marca { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--nu-line); color: var(--nu-white); transition: background .3s, box-shadow .3s; }
 .aqz__linha--acesa .aqz__linha-marca { background: var(--nu-green); box-shadow: none; }
 .aqz__linha--agora .aqz__linha-marca { box-shadow: inset 0 0 0 2px var(--nu-blue); animation: aqz-pulso 1s ease-in-out infinite; }
 @keyframes aqz-pulso { 50% { box-shadow: inset 0 0 0 2px var(--nu-blue), 0 0 0 5px var(--nu-blue-tint); } }
@@ -679,13 +660,13 @@ const ICONES: Record<string, string> = {
 .aqz__item:nth-child(4) { animation-delay: .24s; }
 .aqz__item-marca { display: grid; place-items: center; width: 24px; height: 24px; flex-shrink: 0; margin-top: 1px; border-radius: 50%; background: var(--nu-green); color: var(--nu-white); }
 .aqz__item-t { display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
-.aqz__item-d { display: block; margin-top: 2px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
-.aqz__oferta { display: flex; flex-direction: column; gap: 12px; margin-top: 26px; padding: 22px; border-radius: var(--nu-r-card); background: var(--nu-navy); animation: aqz-entra .5s cubic-bezier(.22, 1, .36, 1) .3s backwards; }
-.aqz__oferta-selo { align-self: flex-start; padding: 5px 12px; border-radius: var(--nu-r-pill); background: color-mix(in srgb, var(--nu-blue-soft) 18%, transparent); color: var(--nu-blue-soft); font-size: var(--nu-fs-xs); font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.aqz__item-d { display: block; margin-top: 2px; color: var(--nu-gray); font-size: 15px; font-weight: 500; line-height: 1.45; }
+.aqz__oferta { display: flex; flex-direction: column; gap: 12px; margin-top: 26px; padding: 22px; border-radius: var(--nu-r-card); background: var(--nu-ink); box-shadow: var(--nu-shadow-escuro); animation: aqz-entra .5s cubic-bezier(.22, 1, .36, 1) .3s backwards; }
+.aqz__oferta-selo { align-self: flex-start; padding: 5px 11px; border-radius: var(--nu-r-tag); background: color-mix(in srgb, var(--nu-blue-soft) 18%, transparent); color: var(--nu-blue-soft); font-size: 13.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .aqz__oferta-preco { display: flex; align-items: baseline; gap: 8px; }
-.aqz__oferta-preco strong { color: var(--nu-cream-text); font-size: clamp(36px, 5vw, 46px); font-weight: 800; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; line-height: 1; }
-.aqz__oferta-preco span { color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 700; }
-.aqz__oferta-letra { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.aqz__oferta-preco strong { color: var(--nu-white); font-size: clamp(36px, 5vw, 46px); font-weight: 800; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; line-height: 1; }
+.aqz__oferta-preco span { color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 700; }
+.aqz__oferta-letra { margin: 0; color: var(--nu-on-dark); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .aqz__erro { margin: 0; color: var(--nu-red-soft); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 @keyframes aqz-entra { from { opacity: 0; transform: translateY(10px); } }
 
@@ -695,15 +676,16 @@ const ICONES: Record<string, string> = {
 .aqz-frente-leave-to { opacity: 0; transform: translateX(-28px); }
 .aqz-tras-enter-from { opacity: 0; transform: translateX(-28px); }
 .aqz-tras-leave-to { opacity: 0; transform: translateX(28px); }
-.aqz-enter-active, .aqz-leave-active { transition: opacity .25s ease; }
-.aqz-enter-active .aqz__card, .aqz-leave-active .aqz__card { transition: transform .3s cubic-bezier(.22, 1, .36, 1); }
-.aqz-enter-from, .aqz-leave-to { opacity: 0; }
-.aqz-enter-from .aqz__card { transform: translateY(24px) scale(.98); }
+/* abrir é a animação do próprio cartão (nu-subir) e do fundo (nu-surgir); fechar é o inverso, em 0,18s */
+.aqz-leave-active { transition: opacity .18s ease; }
+.aqz-leave-active .aqz__card { transition: transform .18s ease; }
+.aqz-leave-to { opacity: 0; }
+.aqz-leave-to .aqz__card { transform: translateY(14px) scale(.985); }
 
 /* no celular, a tela inteira */
 @media (max-width: 640px) {
   .aqz { padding: 0; }
-  .aqz__card { width: 100%; height: 100dvh; border-radius: 0; }
+  .aqz__card { width: 100%; height: 100dvh; border-radius: 0; animation-name: nu-surgir; }
   .aqz__grade { grid-template-columns: minmax(0, 1fr); }
   /* os bancos em duas colunas: o nome inteiro vale mais que o visto (a borda azul já marca) */
   .aqz__banco .aqz__marca { display: none; }
@@ -715,7 +697,7 @@ const ICONES: Record<string, string> = {
 }
 @media (prefers-reduced-motion: reduce) {
   .aqz-frente-enter-active, .aqz-frente-leave-active, .aqz-tras-enter-active, .aqz-tras-leave-active,
-  .aqz-enter-active, .aqz-leave-active, .aqz__barra-cheia { transition: none; }
-  .aqz__aviso, .aqz__item, .aqz__oferta, .aqz__linha--agora .aqz__linha-marca { animation: none; }
+  .aqz-leave-active, .aqz-leave-active .aqz__card, .aqz__barra-cheia { transition: none; }
+  .aqz, .aqz__card, .aqz__aviso, .aqz__item, .aqz__oferta, .aqz__linha--agora .aqz__linha-marca { animation: none; }
 }
 </style>

@@ -21,7 +21,7 @@ withDefaults(defineProps<{
 .chct { position: relative; padding: 22px 72px 18px 28px; color: var(--nu-cream-text); }
 .chct__selo {
   position: absolute; right: 28px; bottom: 18px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px;
-  border-radius: var(--nu-r-pill); background: rgba(143, 240, 181, 0.16); color: var(--nu-green-soft);
+  border-radius: var(--nu-r-tag); background: var(--nu-green-soft-16); color: var(--nu-green-soft);
   font-size: var(--nu-fs-dense); font-weight: 700;
 }
 @media (max-width: 640px) {

@@ -93,14 +93,14 @@ const goRankings = () => clearError({ redirect: '/rankings' })
         <!-- Hero: número + gráfico de queda no MESMO SVG (escalam juntos). -->
         <svg class="nf__svg" viewBox="0 0 1000 440" fill="none" role="img" :aria-label="`Erro ${code}`">
           <defs>
+            <!-- as cores vêm dos tokens (classes nf__stop-*), não de hex no SVG -->
             <linearGradient id="nfNum" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#16233b" />
-              <stop offset="0.62" stop-color="#0c1524" />
-              <stop offset="1" stop-color="#0a1120" />
+              <stop offset="0" class="nf__stop-num-1" />
+              <stop offset="1" class="nf__stop-num-2" />
             </linearGradient>
             <linearGradient id="nfFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#D6323B" stop-opacity="0.16" />
-              <stop offset="1" stop-color="#D6323B" stop-opacity="0" />
+              <stop offset="0" class="nf__stop-queda" stop-opacity="0.16" />
+              <stop offset="1" class="nf__stop-queda" stop-opacity="0" />
             </linearGradient>
           </defs>
 
@@ -115,26 +115,26 @@ const goRankings = () => clearError({ redirect: '/rankings' })
             class="nf__line"
             pathLength="1"
             d="M50,190 L200,100 L320,175 L430,85 L540,192 L620,135 L740,242 L830,214 L912,318 L960,390"
-            stroke="#D6323B"
             stroke-width="9"
             stroke-linejoin="round"
             stroke-linecap="round"
           />
-          <circle class="nf__ping" cx="960" cy="390" r="13" fill="none" stroke="#D6323B" stroke-width="3" />
-          <circle class="nf__dot" cx="960" cy="390" r="13" fill="#D6323B" />
+          <circle class="nf__ping" cx="960" cy="390" r="13" fill="none" stroke-width="3" />
+          <circle class="nf__dot" cx="960" cy="390" r="13" />
         </svg>
 
+        <NuEyebrow class="nf__eyebrow">{{ isGone ? 'Ativo deslistado' : isNotFound ? 'Página não encontrada' : 'Erro do nosso lado' }}</NuEyebrow>
         <h1 class="nf__title">{{ title }}</h1>
         <p class="nf__dek">{{ dek }}</p>
 
         <div class="nf__actions">
           <template v-if="isGone">
-            <button type="button" class="nf__cta" @click="goRankings">Ver os rankings da B3</button>
-            <button type="button" class="nf__ghost" @click="goSearch">Buscar outro ativo</button>
+            <NuBotaoSeta tamanho="m" @click="goRankings">Ver os rankings da B3</NuBotaoSeta>
+            <NuBotaoSeta tamanho="m" variante="contorno" @click="goSearch">Buscar outro ativo</NuBotaoSeta>
           </template>
           <template v-else>
-            <button type="button" class="nf__cta" @click="goHome">Voltar pro mercado</button>
-            <button type="button" class="nf__ghost" @click="goSearch">Buscar um ativo</button>
+            <NuBotaoSeta tamanho="m" @click="goHome">Voltar para o início</NuBotaoSeta>
+            <NuBotaoSeta tamanho="m" variante="contorno" @click="goSearch">Buscar um ativo</NuBotaoSeta>
           </template>
         </div>
       </div>
@@ -144,7 +144,7 @@ const goRankings = () => clearError({ redirect: '/rankings' })
 
 <style scoped>
 .nf {
-  background: var(--nu-cream);
+  background: var(--nu-page);
   min-height: 66vh;
   display: flex;
   align-items: center;
@@ -176,34 +176,42 @@ const goRankings = () => clearError({ redirect: '/rankings' })
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   animation: nf-draw 1.5s cubic-bezier(0.65, 0, 0.35, 1) 0.15s forwards;
-  filter: drop-shadow(0 6px 14px rgba(214, 50, 59, 0.3));
+  stroke: var(--nu-red);
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--nu-red) 30%, transparent));
 }
+.nf__stop-num-1 { stop-color: var(--nu-gray-3); }
+.nf__stop-num-2 { stop-color: var(--nu-ink); }
+.nf__stop-queda { stop-color: var(--nu-red); }
 .nf__area {
   opacity: 0;
   animation: nf-in 1s ease 0.5s forwards;
 }
 .nf__dot {
+  fill: var(--nu-red);
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
   animation: nf-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) 1.35s forwards;
 }
 .nf__ping {
+  stroke: var(--nu-red);
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
-  animation: nf-ping 1.7s ease-out 1.75s infinite;
+  /* três ondas e para: nada de animação sem fim fora do anel e do esqueleto */
+  animation: nf-ping 1.7s ease-out 1.75s 3;
 }
 @keyframes nf-draw { to { stroke-dashoffset: 0; } }
 @keyframes nf-in { to { opacity: 1; } }
 @keyframes nf-pop { 0% { opacity: 0; transform: scale(0.2); } 100% { opacity: 1; transform: scale(1); } }
 @keyframes nf-ping { 0% { opacity: 0.5; transform: scale(0.5); } 70%, 100% { opacity: 0; transform: scale(2.6); } }
 
+.nf__eyebrow { justify-content: center; margin-bottom: 16px; }
 .nf__title {
-  font-size: clamp(26px, 5vw, 42px);
+  font-size: clamp(30px, 5vw, 48px);
   font-weight: 800;
   letter-spacing: -0.03em;
-  line-height: 1.07;
+  line-height: 1.04;
   color: var(--nu-ink);
   margin: 0 auto;
   max-width: 17ch;
@@ -212,8 +220,9 @@ const goRankings = () => clearError({ redirect: '/rankings' })
 .nf__dek {
   font-size: clamp(15px, 2.3vw, 18px);
   line-height: 1.55;
-  color: var(--nu-gray-2);
-  margin: 14px auto 0;
+  color: var(--nu-gray-3);
+  font-weight: 500;
+  margin: 16px auto 0;
   max-width: 50ch;
 }
 .nf__actions {
@@ -223,32 +232,9 @@ const goRankings = () => clearError({ redirect: '/rankings' })
   justify-content: center;
   margin-top: clamp(24px, 4vw, 36px);
 }
-.nf__cta, .nf__ghost {
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: var(--nu-fs-md);
-  font-weight: 800;
-  padding: 15px 26px;
-  border-radius: var(--nu-r-pill);
-  transition: background 0.2s, color 0.2s, transform 0.15s, border-color 0.2s;
-}
-.nf__cta {
-  background: var(--nu-blue);
-  color: var(--nu-white);
-  box-shadow: 0 16px 30px -14px rgba(47, 107, 255, 0.5);
-}
-.nf__cta:hover { background: var(--nu-blue-hover); transform: translateY(-1px); }
-.nf__ghost {
-  background: transparent;
-  color: var(--nu-gray-3);
-  border: 1.5px solid var(--nu-cream-2);
-}
-.nf__ghost:hover { background: var(--nu-cream-hover); color: var(--nu-ink); }
-.nf__cta:focus-visible, .nf__ghost:focus-visible { outline: 2.5px solid var(--nu-blue); outline-offset: 3px; }
-
 /* mobile: botões empilham full-width (padrão de toque) */
 @media (max-width: 520px) {
   .nf__actions { flex-direction: column; align-items: stretch; }
+  .nf__actions :deep(.nbs) { display: flex; }
 }
 </style>

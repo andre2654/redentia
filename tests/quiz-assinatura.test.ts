@@ -72,7 +72,7 @@ test('sempre de três a quatro itens, sem repetir', () => {
 })
 
 test('os respiros respondem ao que a pessoa disse', () => {
-  assert.match(fraseDosAvisos({ frequencia: ['dia'] }).titulo, /todo dia\. A Redentia também/)
+  assert.match(fraseDosAvisos({ frequencia: ['dia'] }).titulo, /todo dia\. A Aportou também/)
   assert.match(fraseDosAvisos({ frequencia: ['nunca'] }).titulo, /não precisa olhar/)
   assert.match(fraseDosCenarios({ queda: ['nao'] }).titulo, /Quase ninguém sabe/)
   assert.match(fraseDosCenarios({ queda: ['sim'] }).titulo, /2\.000/)

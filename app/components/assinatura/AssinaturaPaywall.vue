@@ -12,7 +12,7 @@ defineProps<{ pendente?: boolean }>()
 <template>
   <div class="apw">
     <AssinaturaVitrine
-      :eyebrow="pendente ? 'Pagamento pendente' : ''"
+      :eyebrow="pendente ? 'Pagamento pendente' : 'Sua carteira'"
       :modo="pendente ? 'pendente' : 'comecar'"
     >
       <template #titulo>
@@ -47,5 +47,5 @@ defineProps<{ pendente?: boolean }>()
 </template>
 
 <style scoped>
-.apw__beneficios { background: var(--nu-white); padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); }
+.apw__beneficios { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); }
 </style>

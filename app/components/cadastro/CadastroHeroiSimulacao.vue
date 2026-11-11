@@ -68,13 +68,13 @@ const id = useId()
     <svg v-if="curva" class="chs__grafico" viewBox="0 0 456 120">
       <defs>
         <linearGradient :id="`${id}-area`" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" style="stop-color: var(--nu-serie-5); stop-opacity: 0.26" />
+          <stop offset="0" style="stop-color: var(--nu-blue-on-dark); stop-opacity: 0.3" />
           <stop offset="1" style="stop-color: var(--nu-blue-soft); stop-opacity: 0" />
         </linearGradient>
         <radialGradient :id="`${id}-bola`" cx="0.35" cy="0.3" r="0.75">
-          <stop offset="0" stop-color="#FFFFFF" />
-          <stop offset="0.45" stop-color="#EEF3FF" />
-          <stop offset="1" stop-color="#B9CCFF" />
+          <stop offset="0" style="stop-color: var(--nu-white)" />
+          <stop offset="0.45" style="stop-color: var(--nu-blue-on-blue)" />
+          <stop offset="1" style="stop-color: var(--nu-blue-soft)" />
         </radialGradient>
       </defs>
       <path :d="curva.area" :fill="`url(#${id}-area)`" />
@@ -92,14 +92,14 @@ const id = useId()
 .chs__valor { font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .chs__sub { margin-top: 2px; color: var(--nu-cream-text-60); font-size: var(--nu-fs-dense); font-weight: 500; }
 .chs__selo {
-  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-pill);
-  background: rgba(143, 240, 181, 0.16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
+  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-tag);
+  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
 }
 .chs__grafico { display: block; width: 100%; height: auto; margin-top: 10px; overflow: visible; }
 .chs__reta { stroke: var(--nu-cream-text-35); }
 .chs__aporte { fill: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700; }
-.chs__curva { stroke: #C9B6FF; filter: drop-shadow(0 0 6px rgba(201, 182, 255, 0.55)); }
-.chs__bola { filter: drop-shadow(0 0 10px rgba(185, 162, 255, 0.8)); }
+.chs__curva { stroke: var(--nu-blue-soft); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nu-blue-soft) 55%, transparent)); }
+.chs__bola { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--nu-blue-soft) 80%, transparent)); }
 
 /* o ciclo é o mesmo do rAF da bola: o selo entra quando ela chega e, na
    virada da folha, o herói apaga e volta, para a bola não saltar do fim ao

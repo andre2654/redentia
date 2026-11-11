@@ -59,9 +59,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
         </Transition>
       </div>
       <div class="avt__texto">
-        <span v-if="eyebrow" class="avt__eyebrow" :class="{ 'avt__eyebrow--ambar': modo === 'pendente' }">
-          <span class="avt__ponto" aria-hidden="true" />{{ eyebrow }}
-        </span>
+        <NuEyebrow v-if="eyebrow" class="avt__eyebrow" sobre="escuro">{{ eyebrow }}</NuEyebrow>
         <h1 class="avt__titulo"><slot name="titulo" /></h1>
         <p class="avt__dek"><slot name="dek" /></p>
         <AssinaturaOferta class="avt__oferta" :modo="modo" :cancelado="cancelado" escuro />
@@ -90,20 +88,16 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .avt__frases, .avt__texto { grid-area: 1 / 1; }
 .avt__frases { align-self: start; max-width: 560px; pointer-events: none; }
 .avt__frase {
-  margin: 0; color: var(--nu-cream-text); font-size: clamp(30px, 3.6vw, 48px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; text-wrap: balance;
+  margin: 0; color: var(--nu-white); font-size: clamp(30px, 3.6vw, 48px); font-weight: 800;
+  letter-spacing: -0.03em; line-height: 1.05; text-wrap: balance;
 }
 .avt-frase-enter-active, .avt-frase-leave-active { transition: opacity .45s ease, transform .5s cubic-bezier(.22, 1, .36, 1); }
 .avt-frase-enter-from { opacity: 0; transform: translateY(14px); }
 .avt-frase-leave-to { opacity: 0; transform: translateY(-10px); }
 .avt__texto { max-width: 600px; }
-.avt__eyebrow { display: inline-flex; align-items: center; gap: 9px; color: var(--nu-blue-soft); font-size: var(--nu-fs-md); font-weight: 800; }
-.avt__ponto { width: 9px; height: 9px; border-radius: 50%; background: var(--nu-blue-soft); box-shadow: 0 0 0 4px color-mix(in srgb, var(--nu-blue-soft) 22%, transparent); }
-.avt__eyebrow--ambar { color: var(--nu-amber-fill); }
-.avt__eyebrow--ambar .avt__ponto { background: var(--nu-amber-fill); box-shadow: 0 0 0 4px color-mix(in srgb, var(--nu-amber-fill) 22%, transparent); }
 .avt__eyebrow + .avt__titulo { margin-top: 18px; }
-.avt__titulo { margin: 0; color: var(--nu-cream-text); font-size: clamp(42px, 5vw, 72px); font-weight: 800; letter-spacing: -0.045em; line-height: 0.98; }
-.avt__dek { margin: clamp(18px, 2vw, 24px) 0 0; max-width: 560px; color: var(--nu-cream-text-70); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; }
+.avt__titulo { margin: 0; color: var(--nu-white); font-size: clamp(42px, 5vw, 72px); font-weight: 800; letter-spacing: -0.035em; line-height: 0.98; }
+.avt__dek { margin: clamp(18px, 2vw, 24px) 0 0; max-width: 560px; color: var(--nu-on-dark); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; }
 .avt__oferta { margin-top: clamp(28px, 3.6vw, 40px); }
 
 /* a coreografia: o texto espera o leque; cada parte entra um pouco depois da outra */
@@ -113,6 +107,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .avt--revelado .avt__texto > :nth-child(2) { animation-delay: .1s; }
 .avt--revelado .avt__texto > :nth-child(3) { animation-delay: .2s; }
 .avt--revelado .avt__texto > :nth-child(4) { animation-delay: .32s; }
+.avt--revelado .avt__texto > :nth-child(5) { animation-delay: .42s; }
 @keyframes avt-entra { to { opacity: 1; transform: none; } }
 /* o véu chega junto com o texto */
 .avt--coreografia .avt__veu { opacity: 0; animation: avt-veu .8s ease 6s forwards; }

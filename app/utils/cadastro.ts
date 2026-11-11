@@ -52,8 +52,8 @@ export interface CadastroTexto {
  * As calculadoras (a simulação de juros, a aposentadoria e as outras, pelo gesto
  * `conta`, que traz a pergunta pronta) usam o texto da folha que sobe depois de
  * mexer na conta (dono, 21/10/2026: "saiba como essa conta pode se adaptar à
- * sua vida com a Redentia"): guardar, conectar a carteira pelo Open Finance
- * (existe no /carteira) e perguntar à Redentia.
+ * sua vida com a Redentia", hoje Aportou): guardar, conectar a carteira pelo
+ * Open Finance (existe no /carteira) e perguntar à Aportou.
  */
 export function textoDoGesto(
   gesto: CadastroGesto,
@@ -63,10 +63,10 @@ export function textoDoGesto(
     const t = (dados.ticker ?? '').toUpperCase()
     return {
       titulo: `Siga ${t}.`,
-      apoio: 'A Redentia acompanha o papel por você e conta o que mudou.',
+      apoio: 'A Aportou acompanha o papel por você e conta o que mudou.',
       linhas: [
         { icone: 'envelope', titulo: 'Um resumo às 19h', texto: 'No fim do pregão, só com os ativos que você segue.' },
-        { icone: 'jornal', titulo: 'O porquê de cada movimento', texto: `A notícia que mexeu em ${t}, lida pela Redentia.` },
+        { icone: 'jornal', titulo: 'O porquê de cada movimento', texto: `A notícia que mexeu em ${t}, lida pela Aportou.` },
         { icone: 'calendario', titulo: 'Data-com e pagamento', texto: `Os dividendos de ${t} avisados antes da data.` },
       ],
       botao: `Seguir ${t}`,
@@ -95,11 +95,11 @@ export function textoDoGesto(
       apoio: 'Crie a conta grátis e autorize no app do seu banco, pelo Open Finance.',
       linhas: [
         { icone: 'carteira', titulo: 'Tudo num lugar só', texto: 'Ações, FIIs, renda fixa e ETFs de mais de 110 bancos e corretoras.' },
-        { icone: 'cadeado', titulo: 'Só leitura', texto: 'Regulado pelo Banco Central. A Redentia não movimenta o seu dinheiro.' },
+        { icone: 'cadeado', titulo: 'Só leitura', texto: 'Regulado pelo Banco Central. A Aportou não movimenta o seu dinheiro.' },
         { icone: 'relogio', titulo: 'O resumo fala da sua carteira', texto: 'Às 7h30, o que mexeu no que é seu.' },
       ],
       botao: 'Conectar minha carteira',
-      aceite: 'Ao confirmar, você cria sua conta grátis na Redentia.',
+      aceite: 'Ao confirmar, você cria sua conta grátis na Aportou.',
     }
   }
   if (gesto === 'simulacao' || gesto === 'aposentadoria' || gesto === 'conta') {
@@ -114,10 +114,10 @@ export function textoDoGesto(
       linhas: [
         { icone: 'marcador', titulo: 'Guarde esta conta', texto: 'Reabra e ajuste quando a vida mudar.' },
         { icone: 'carteira', titulo: 'Conecte a sua carteira', texto: 'Pelo Open Finance, o seu patrimônio de verdade ao lado da conta.' },
-        { icone: 'conversa', titulo: 'Pergunte à Redentia', texto: `${pergunta}, com os seus números.` },
+        { icone: 'conversa', titulo: 'Pergunte à Aportou', texto: `${pergunta}, com os seus números.` },
       ],
       botao: 'Guardar a minha conta',
-      aceite: 'Ao confirmar, você cria sua conta grátis na Redentia.',
+      aceite: 'Ao confirmar, você cria sua conta grátis na Aportou.',
     }
   }
   return {
@@ -125,14 +125,14 @@ export function textoDoGesto(
     // a conversa é da assinatura (02/11/2026): quem entra e não assina vê o
     // quiz logo depois do código. A folha diz isso antes, sem preço (a
     // entrada não fala de preço desde 01/11), para o quiz não ser surpresa.
-    apoio: 'Entre na sua conta e a Redentia responde com os números do pregão e da sua carteira.',
+    apoio: 'Entre na sua conta e a Aportou responde com os números do pregão e da sua carteira.',
     linhas: [
       { icone: 'conversa', titulo: 'Pergunte o que quiser', texto: 'Ações, FIIs, dividendos e a sua carteira.' },
       { icone: 'grafico', titulo: 'Com os dados do pregão', texto: 'A resposta usa as cotações e as notícias do dia.' },
       { icone: 'brilho', titulo: '3 dias grátis para testar', texto: 'A conversa é de quem assina, e o teste vem primeiro.' },
     ],
     botao: 'Continuar',
-    aceite: 'Ao confirmar, você cria sua conta grátis na Redentia.',
+    aceite: 'Ao confirmar, você cria sua conta grátis na Aportou.',
   }
 }
 

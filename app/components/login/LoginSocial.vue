@@ -27,8 +27,8 @@ const disponivel = !!(google || apple)
 .lso { display: flex; flex-direction: column; gap: 18px; }
 .lso__caixa { display: flex; flex-direction: column; gap: 10px; }
 .lso__ou {
-  display: flex; align-items: center; gap: 12px; margin: 0;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
+  display: flex; align-items: center; gap: 14px; margin: 0;
+  color: var(--nu-gray); font-size: 14px; font-weight: 600;
 }
-.lso__ou::before, .lso__ou::after { content: ''; flex: 1; height: 1px; background: var(--nu-cream-line); }
+.lso__ou::before, .lso__ou::after { content: ''; flex: 1; height: 1.5px; background: var(--nu-line); }
 </style>

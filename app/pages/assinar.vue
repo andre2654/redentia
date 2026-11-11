@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // /assinar — a página do plano único (decisão do dono, 31/10/2026): uma
-// assinatura só, "Redentia", R$ 19,99 por mês, com 3 dias grátis e cartão no
+// assinatura só (hoje da Aportou), R$ 19,99 por mês, com 3 dias grátis e cartão no
 // Checkout da Stripe. É para cá que o resto do site aponta (o CTA da home, o
 // paywall da /carteira, a folha da conversa).
 //
@@ -71,7 +71,7 @@ else if (['teste', 'ativa', 'atrasada'].includes(assinatura.situacao.value)) {
 const pendente = computed(() => assinatura.situacao.value === 'pendente')
 
 usePageSeo({
-  title: 'Assinatura Redentia',
+  title: 'Assinatura',
   description: 'Sua carteira de qualquer banco pelo Open Finance, testada em 2.000 cenários, com a IA que responde com os seus números. Só leitura, regulado pelo Banco Central.',
   path: '/assinar',
 })
@@ -80,7 +80,7 @@ usePageSeo({
 <template>
   <div class="asn">
     <AssinaturaVitrine
-      :eyebrow="pendente ? 'Pagamento pendente' : ''"
+      :eyebrow="pendente ? 'Pagamento pendente' : 'Assinatura'"
       :modo="pendente ? 'pendente' : 'comecar'"
       :cancelado="cancelado"
     >
@@ -94,7 +94,7 @@ usePageSeo({
           Nada mais muda.
         </template>
         <template v-else>
-          A Redentia junta os seus bancos, testa a sua carteira em 2.000 cenários
+          A Aportou junta os seus bancos, testa a sua carteira em 2.000 cenários
           e te avisa quando importa.
         </template>
       </template>
@@ -116,5 +116,5 @@ usePageSeo({
 </template>
 
 <style scoped>
-.asn__beneficios { background: var(--nu-white); padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); }
+.asn__beneficios { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); }
 </style>

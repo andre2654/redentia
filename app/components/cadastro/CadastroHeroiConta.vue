@@ -64,13 +64,13 @@ const id = useId()
 .chc__sub { color: var(--nu-cream-text-60); font-size: var(--nu-fs-sm); font-weight: 700; }
 .chc__valor { margin-top: 2px; font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .chc__meta-selo {
-  display: inline-flex; margin-top: 10px; padding: 6px 12px; border-radius: var(--nu-r-pill);
-  background: rgba(143, 240, 181, 0.16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
+  display: inline-flex; margin-top: 10px; padding: 6px 12px; border-radius: var(--nu-r-tag);
+  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
 }
-.chc__meta-selo--falta { background: rgba(255, 181, 71, 0.16); color: var(--nu-serie-2); }
+.chc__meta-selo--falta { background: color-mix(in srgb, var(--nu-amber) 22%, transparent); color: var(--nu-amber-soft); }
 .chc__selo {
-  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-pill);
-  background: rgba(143, 240, 181, 0.16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
+  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-tag);
+  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
 }
 .chc__grafico { display: block; width: 100%; height: auto; margin-top: 6px; overflow: visible; }
 .chc__stop-alto { stop-color: var(--nu-blue-soft); stop-opacity: 0.28; }
@@ -79,7 +79,7 @@ const id = useId()
 .chc__rotulo { fill: var(--nu-cream-text); fill-opacity: 0.6; font-size: 14px; font-weight: 700; }
 .chc__linha {
   fill: none; stroke: var(--nu-blue-soft); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
-  filter: drop-shadow(0 0 6px rgba(158, 200, 255, 0.6));
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nu-blue-soft) 60%, transparent));
   stroke-dasharray: 100; stroke-dashoffset: 0; animation: chc-desenha 1.4s cubic-bezier(.5, 0, .2, 1) both;
 }
 .chc__area { animation: chc-surge 1.4s ease both; }

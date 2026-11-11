@@ -66,23 +66,25 @@ defineExpose({ focar: () => campo.value?.focus() })
 </template>
 
 <style scoped>
+/* as seis casas na linguagem do campo da Aportou: brancas, borda de 1,5px,
+   raio 16. A casa da vez acende no cobalto (é o foco visível do campo). */
 .lco { position: relative; display: flex; gap: 8px; cursor: text; }
 .lco__casa {
   flex: 1; min-width: 0; height: 64px; display: grid; place-items: center; box-sizing: border-box;
-  border-bottom: 2px solid var(--nu-cream-line); color: var(--nu-ink);
-  font-size: clamp(34px, 10vw, 44px); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
-  transition: border-color .2s;
+  border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input); background: var(--nu-white); color: var(--nu-ink);
+  font-size: clamp(26px, 7vw, 32px); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+  transition: border-color .2s, transform .2s cubic-bezier(.2, .8, .2, 1);
 }
-.lco__casa--cheia { border-bottom-color: var(--nu-ink-30); }
-.lco__casa--vez { border-bottom-color: var(--nu-blue); }
-.lco--erro .lco__casa { border-bottom-color: var(--nu-red); }
+.lco__casa--cheia { border-color: var(--nu-ink); }
+.lco__casa--vez { border-color: var(--nu-blue); outline: 3px solid var(--nu-blue); outline-offset: 1px; }
+.lco--erro .lco__casa { border-color: var(--nu-red); }
 /* o campo de verdade, invisível por cima das casas */
 .lco__campo {
   position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; outline: none;
   opacity: 0.01; background: transparent; color: transparent; caret-color: transparent; font-size: 16px; letter-spacing: 2em;
 }
 .lco__campo:disabled { cursor: default; }
-/* o foco visível é o traço azul da vez (lco__casa--vez) */
+/* o foco visível é a casa da vez (lco__casa--vez) */
 
 .lco--conferindo .lco__casa { animation: lco-confere 1.1s ease-in-out infinite; }
 .lco--conferindo .lco__casa:nth-child(2) { animation-delay: .08s; }

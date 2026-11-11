@@ -12,7 +12,7 @@ defineProps<{ pergunta: string }>()
       <div class="chp__brilho" />
       <div class="chp__anel">
         <div class="chp__fundo">
-          <img src="/logo-azul.svg" alt="" width="18" height="18">
+          <MarcaCorte :largura="22" />
           <span class="chp__texto">{{ pergunta }}</span>
           <span class="chp__enviar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg></span>
         </div>
@@ -34,14 +34,15 @@ defineProps<{ pergunta: string }>()
 /* o brilho atrás da barra respira, como o do herói da home */
 .chp__brilho {
   position: absolute; inset: -6px; border-radius: var(--nu-r-pill); filter: blur(18px); opacity: .55;
-  background: linear-gradient(90deg, var(--nu-blue), var(--nu-serie-5), var(--nu-serie-4), var(--nu-serie-2));
+  background: var(--nu-anel);
   animation: chp-respira 5s ease-in-out infinite;
 }
 .chp__anel { position: absolute; inset: 0; border-radius: var(--nu-r-pill); overflow: hidden; }
+/* o anel do input mágico da Aportou: cobalto, céu, sálvia e areia, girando devagar */
 .chp__anel::before {
-  content: ''; position: absolute; left: 50%; top: 50%; width: 140%; aspect-ratio: 1; transform: translate(-50%, -50%);
-  background: conic-gradient(from 0deg, var(--nu-blue), var(--nu-serie-5), var(--nu-serie-4), var(--nu-serie-2), var(--nu-serie-6), var(--nu-blue));
-  animation: chp-gira 7s linear infinite;
+  content: ''; position: absolute; inset: 0;
+  background: var(--nu-anel); background-size: 200% 100%;
+  animation: nu-anel 7s linear infinite;
 }
 .chp__fundo {
   position: absolute; inset: 2.5px; display: flex; align-items: center; gap: 12px; padding: 0 8px 0 18px;
@@ -57,11 +58,10 @@ defineProps<{ pergunta: string }>()
   background-size: 200% 100%; animation: chp-brilha 1.8s linear infinite;
 }
 .chp__selo {
-  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-pill);
-  background: rgba(143, 240, 181, 0.16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
+  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-tag);
+  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
   animation: chp-selo 7s cubic-bezier(.2, .8, .2, 1) infinite;
 }
-@keyframes chp-gira { to { transform: translate(-50%, -50%) rotate(360deg); } }
 @keyframes chp-respira { 50% { opacity: .3; } }
 @keyframes chp-brilha { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @keyframes chp-selo { 0%, 12% { opacity: 0; transform: translateY(6px); } 20%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; } }
