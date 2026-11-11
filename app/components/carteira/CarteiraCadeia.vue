@@ -143,7 +143,7 @@ const contexto = computed(() => ({
 <style scoped>
 .cca {
   background: var(--nu-band);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px);
+  padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px));
   scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
   overflow: hidden;
 }

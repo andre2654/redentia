@@ -118,7 +118,9 @@ function abrir(id?: string | null) {
   if (id) nextTick(() => document.getElementById(`cav-${id}`)?.scrollIntoView({ block: 'nearest' }))
 }
 function fechar() { aberto.value = false }
-defineExpose({ abrir })
+// `acionar` roda a primeira ação de um aviso sem abrir o modal: a pílula do cartão de atenção do topo
+// (CarteiraHeroi) faz o mesmo que o botão azul daqui de dentro
+defineExpose({ abrir, acionar: (id: string) => { const a = props.avisos.itens.find((x) => x.id === id); if (a?.acoes[0]) agir(a, a.acoes[0]) } })
 function onKey(e: KeyboardEvent) { if (e.key === 'Escape') fechar() }
 watch(aberto, (o) => {
   if (import.meta.server) return

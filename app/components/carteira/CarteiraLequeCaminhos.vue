@@ -1045,7 +1045,7 @@ onBeforeUnmount(() => {
   display: flex; flex-direction: column; gap: 1px; white-space: nowrap;
 }
 .clc__valor { font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.01em; font-variant-numeric: tabular-nums; line-height: 1.15; }
-.clc__nome { color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 700; }
+.clc__nome { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 700; }
 .clc__rotulo--otimista .clc__valor { color: var(--nu-green-soft); }
 .clc__rotulo--meio .clc__valor { color: var(--nu-cream-text); }
 .clc__rotulo--pessimista .clc__valor { color: var(--nu-red-soft); }

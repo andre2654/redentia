@@ -59,6 +59,11 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
       />
     </div>
 
+    <!-- a legenda da barra: a bolinha, a classe e o percentual (o aria-label da barra já diz o mesmo) -->
+    <ul class="vla__legenda" aria-hidden="true">
+      <li v-for="g in grupos" :key="g.classe" :class="{ 'vla__leg--apagada': aberto && aberto !== g.classe }"><i :style="{ background: g.cor }" />{{ g.nome }} <b>{{ pctTxt(g.pct) }}</b></li>
+    </ul>
+
     <div class="vla__grupos">
       <div v-for="g in grupos" :key="g.classe" class="vla__grupo" @pointerenter="aberto = g.classe" @pointerleave="aberto = null">
         <div class="vla__grupo-cab">
@@ -100,6 +105,11 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
 .vla__seg:first-child { border-top-left-radius: 15px; border-bottom-left-radius: 15px; }
 .vla__seg:last-child { border-top-right-radius: 15px; border-bottom-right-radius: 15px; }
 .vla__seg--apagado { opacity: .3; }
+.vla__legenda { display: flex; flex-wrap: wrap; gap: 8px 24px; list-style: none; margin: 14px 0 0; padding: 0; }
+.vla__legenda li { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray-3); font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; transition: opacity .25s; }
+.vla__legenda i { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.vla__legenda b { color: var(--nu-ink); font-weight: 800; }
+.vla__leg--apagada { opacity: .4; }
 /* cada classe num cartão creme, como a marca veste o dado */
 .vla__grupos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: clamp(14px, 1.6vw, 20px); margin-top: clamp(20px, 2.6vw, 28px); }
 .vla__grupo { padding: clamp(18px, 2.2vw, 26px) clamp(18px, 2.4vw, 28px) clamp(12px, 1.6vw, 18px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); animation: nu-fade .5s ease both; }

@@ -67,6 +67,19 @@ const quandoTxt = computed(() => (periodo.value === 'tudo' && inicio.value ? `De
 const bem = computed(() => (series.value && pedido.value ? contraOCdi(series.value, pedido.value, NOMES[periodo.value][1]) : null))
 const temGrafico = computed(() => linha.value.length >= 2)
 const tituloGrafico = computed(() => `A rentabilidade da carteira contra o CDI, ${quandoTxt.value.toLowerCase()}`)
+/** o rótulo da faixa da marca: 'Você em 12 meses' · 'Você desde 14/05/25' */
+const rotuloFaixa = computed(() => `Você ${quandoTxt.value.charAt(0).toLowerCase()}${quandoTxt.value.slice(1)}`)
+/** a legenda do cartão: você, o CDI e o mesmo mix de classes, os números que a frase já diz */
+const legenda = computed(() => {
+  const b = bem.value
+  if (!b) return []
+  const dir = (n: number) => (n > 0.005 ? 'up' : n < -0.005 ? 'down' : null)
+  return [
+    { rotulo: 'Você', pct: pctComSinal(b.carteira), dir: dir(b.carteira), traco: 'voce' },
+    { rotulo: 'CDI', pct: pctComSinal(b.cdi), dir: null, traco: 'cdi' },
+    ...(b.mix != null ? [{ rotulo: 'Mesmo mix de classes', pct: pctComSinal(b.mix), dir: null, traco: null }] : []),
+  ]
+})
 
 /* ————— o dia ————— */
 // o estado do pregão anda com o relógio: às 10h a bolsa abre e os avisos saem, sem recarregar a página
@@ -132,6 +145,11 @@ const respostas = computed<Resposta[]>(() => {
   }
   return out
 })
+/** a ação que o aviso de atenção já oferece (a primeira do modal: 'Reconectar o Nubank'); vira a pílula do cartão */
+const acaoDoAviso = computed(() => (liberados.value && pedem.value.length ? primeiro.value?.acoes[0] ?? null : null))
+function acionarAviso() {
+  if (primeiro.value) avisosRef.value?.acionar(primeiro.value.id)
+}
 const focoNaRenda = useState('carteira:renda:foco', () => 0)
 function agir(id: Resposta['id']) {
   if (id === 'olhar') avisosRef.value?.abrir(primeiro.value?.id)
@@ -191,32 +209,52 @@ const contexto = computed(() => ({
       <template v-if="bem.destaque">Foram {{ pct2(bem.carteira) }}, contra {{ pct2(bem.cdi) }} do CDI. </template>{{ bem.detalhe }}
     </p>
 
-    <div v-if="temGrafico" class="chv2__palco">
-      <div v-if="opcoes.length > 1" class="chv__periodos chv2__periodos" role="radiogroup" aria-label="Período do gráfico">
-        <button v-for="p in opcoes" :key="p" type="button" role="radio" class="chv__periodo" :class="{ 'chv__periodo--on': periodo === p }" :aria-checked="periodo === p" :aria-label="NOMES[p][1]" @click="periodo = p">{{ NOMES[p][0] }}</button>
+    <!-- o gráfico no cartão carvão com a faixa da marca (como no /asset) e, ao lado, os três fatos em cartões -->
+    <div class="chv2__grade" :class="{ 'chv2__grade--so': !temGrafico && !carregando }">
+      <div v-if="temGrafico" class="chv2__palco">
+        <NuFaixaMarca :rotulo="rotuloFaixa" como="p" :altura="56" class="chv2__cartao">
+          <template v-if="opcoes.length > 1" #acoes>
+            <div class="chv__periodos chv2__periodos" role="radiogroup" aria-label="Período do gráfico">
+              <button v-for="p in opcoes" :key="p" type="button" role="radio" class="chv__periodo" :class="{ 'chv__periodo--on': periodo === p }" :aria-checked="periodo === p" :aria-label="NOMES[p][1]" @click="periodo = p">{{ NOMES[p][0] }}</button>
+            </div>
+          </template>
+          <p v-if="legenda.length" class="chv2__legenda">
+            <span v-for="(l, i) in legenda" :key="l.rotulo" class="chv2__leg" :class="{ 'chv2__leg--1': i === 0 }">
+              <b :class="l.dir ? `chv2__leg--${l.dir}` : ''">{{ l.pct }}</b>
+              <span class="chv2__leg-r"><i v-if="l.traco" class="chv2__traco" :class="{ 'chv2__traco--cdi': l.traco === 'cdi' }" aria-hidden="true" />{{ l.rotulo }}</span>
+            </span>
+          </p>
+          <div class="chv__grafico chv2__grafico">
+            <AtivoGrafico :ativo="linha" :ibov="linhaCdi" ticker="Você" rotulo-hoje="Você no período" :atual="twr != null ? pctAtivo(twr) : ''" unidade="%" comparacao="CDI" tom="luz" :rotulo="tituloGrafico" />
+          </div>
+          <!-- no celular o período desce para baixo do gráfico, largo (o mesmo gesto do /asset) -->
+          <div v-if="opcoes.length > 1" class="chv__periodos chv2__periodos chv2__periodos--pe" role="radiogroup" aria-label="Período do gráfico">
+            <button v-for="p in opcoes" :key="p" type="button" role="radio" class="chv__periodo" :class="{ 'chv__periodo--on': periodo === p }" :aria-checked="periodo === p" :aria-label="NOMES[p][1]" @click="periodo = p">{{ NOMES[p][0] }}</button>
+          </div>
+        </NuFaixaMarca>
       </div>
-      <div class="chv__grafico chv2__grafico">
-        <AtivoGrafico :ativo="linha" :ibov="linhaCdi" ticker="Você" rotulo-hoje="Você no período" :atual="twr != null ? pctAtivo(twr) : ''" unidade="%" comparacao="CDI" tom="claro" :rotulo="tituloGrafico" :rotulo-abaixo-ate="40" />
-      </div>
-    </div>
-    <NuSkeleton v-else-if="carregando" height="clamp(180px, 22vw, 280px)" radius="card" class="chv2__palco" />
+      <NuSkeleton v-else-if="carregando" height="clamp(320px, 34vw, 470px)" radius="card" class="chv2__palco" />
 
-    <dl class="chv2__fatos">
-      <div class="chv2__fato">
-        <dt>Quanto eu tenho?</dt>
-        <dd>{{ patrimonio }}</dd>
-        <dd v-if="diaNum" class="chv2__fato-s"><b :class="`chv__dir--${agora.diaDir}`">{{ diaNum }}</b> {{ quando }}</dd>
-      </div>
-      <div v-for="r in respostas" :key="r.id" class="chv2__fato">
-        <dt>{{ r.pergunta }}</dt>
-        <!-- antes da abertura, os avisos do dia ainda não saíram: o esqueleto no lugar da resposta -->
-        <dd v-if="r.espera" class="chv2__espera" role="status" :aria-label="r.sub"><NuSkeleton width="min(190px, 80%)" height="28px" radius="chip" /></dd>
-        <dd v-else><button type="button" class="chv2__link" @click="agir(r.id)">{{ r.valor }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg><span class="chv__sr">{{ r.acao }}</span></button></dd>
-        <dd class="chv2__fato-s">{{ r.sub }}</dd>
-        <!-- o aviso que ainda espera o preço ou a conexão: a caminho -->
-        <dd v-if="r.aCaminho" class="chv2__fato-s chv2__caminho"><NuSkeleton width="56px" height="10px" radius="pill" aria-hidden="true" />{{ r.aCaminho }}</dd>
-      </div>
-    </dl>
+      <dl class="chv2__fatos">
+        <div class="chv2__fato">
+          <dt>Quanto eu tenho?</dt>
+          <dd>{{ patrimonio }}</dd>
+          <dd v-if="diaNum" class="chv2__fato-s"><b :class="`chv__dir--${agora.diaDir}`">{{ diaNum }}</b> {{ quando }}</dd>
+        </div>
+        <div v-for="r in respostas" :key="r.id" class="chv2__fato" :class="{ 'chv2__fato--clica': !r.espera, 'chv2__fato--atencao': r.id === 'olhar' && !r.espera && pedem.length > 0 }">
+          <dt>{{ r.pergunta }}</dt>
+          <!-- antes da abertura, os avisos do dia ainda não saíram: o esqueleto no lugar da resposta -->
+          <dd v-if="r.espera" class="chv2__espera" role="status" :aria-label="r.sub"><NuSkeleton width="min(190px, 80%)" height="28px" radius="chip" /></dd>
+          <!-- o botão cobre o cartão inteiro (o ::after): o clique segue abrindo os avisos ou levando aos proventos -->
+          <dd v-else><button type="button" class="chv2__link" @click="agir(r.id)">{{ r.valor }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg><span class="chv__sr">{{ r.acao }}</span></button></dd>
+          <dd class="chv2__fato-s">{{ r.sub }}</dd>
+          <!-- o aviso que ainda espera o preço ou a conexão: a caminho -->
+          <dd v-if="r.aCaminho" class="chv2__fato-s chv2__caminho"><NuSkeleton width="56px" height="10px" radius="pill" aria-hidden="true" />{{ r.aCaminho }}</dd>
+          <!-- a ação que o aviso já oferece no modal, à mão no cartão -->
+          <dd v-if="r.id === 'olhar' && acaoDoAviso" class="chv2__fato-acao"><button type="button" class="chv2__pilula" @click="acionarAviso">{{ acaoDoAviso.rotulo }}</button></dd>
+        </div>
+      </dl>
+    </div>
 
     <!-- o pé: de quando é o dado -->
     <footer class="chv__pe">
@@ -237,7 +275,7 @@ const contexto = computed(() => ({
 <style scoped>
 /* ————— a moldura ————— */
 .chv {
-  --g: clamp(22px, 5.5vw, 80px);
+  --g: var(--cvi-g, clamp(20px, 5.5vw, 80px));
   --tinta: var(--nu-ink); --sub: var(--nu-gray); --fio: var(--nu-line); --pilula: var(--nu-cream-2); --sobe: var(--nu-green-text); --cai: var(--nu-red-text);
   position: relative; padding: clamp(24px, 3vw, 40px) var(--g) clamp(28px, 3.4vw, 44px); background: var(--nu-page); color: var(--tinta);
   font-variant-numeric: tabular-nums; scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
@@ -262,14 +300,16 @@ const contexto = computed(() => ({
 .chv__dir--up { color: var(--sobe); }
 .chv__dir--down { color: var(--cai); }
 .chv__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.chv__periodos { display: inline-flex; flex-shrink: 0; padding: 4px; border-radius: var(--nu-r-pill); background: var(--pilula); }
+/* o período sobre o carvão do cartão: a escolhida na pílula creme */
+.chv__periodos { display: inline-flex; flex-shrink: 0; }
 .chv__periodo {
-  height: 44px; min-width: 52px; padding: 0 16px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-gray-3);
+  height: 44px; min-width: 52px; padding: 0 15px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-on-dark);
   font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s, color .2s;
 }
-.chv__periodo:hover { color: var(--tinta); }
-.chv__periodo--on, .chv__periodo--on:hover { background: var(--nu-ink); color: var(--nu-white); }
-.chv__grafico { position: relative; --agr-esq: 44px; --agr-dir: 10px; }
+.chv__periodo:hover { color: var(--nu-white); }
+.chv__periodo--on, .chv__periodo--on:hover { background: var(--nu-creme); color: var(--nu-ink); }
+.chv__periodo:focus-visible { outline-color: var(--nu-blue-on-dark); }
+.chv__grafico { position: relative; }
 .chv__pe { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; margin-top: clamp(24px, 3vw, 36px); color: var(--tinta); font-size: var(--nu-fs-sm); font-weight: 600; }
 .chv__conta { display: inline-flex; align-items: center; gap: 8px; }
 .chv__conta i { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); box-shadow: 0 0 0 3px var(--nu-green-bg); }
@@ -285,31 +325,82 @@ const contexto = computed(() => ({
 .chv2__frase { margin: clamp(22px, 3vw, 36px) 0 0; max-width: min(100%, 1100px); font-size: clamp(40px, 5.6vw, 76px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; text-wrap: balance; animation: nu-fade .5s ease both; }
 .chv2__frase b { color: var(--nu-blue); font-weight: inherit; white-space: nowrap; }
 .chv2__dek { margin: 20px 0 0; max-width: 58ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; animation: nu-fade .5s ease .06s both; }
-.chv2__palco { position: relative; margin-top: clamp(22px, 3vw, 36px); }
-.chv2__periodos { position: absolute; right: 0; top: -6px; z-index: 1; }
-.chv2__grafico { height: clamp(190px, 22vw, 300px); padding-top: 34px; box-sizing: content-box; }
-.chv2__fatos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 clamp(20px, 3vw, 44px); margin: clamp(24px, 3vw, 36px) 0 0; }
-.chv2__fato { padding: 18px 0 4px; border-top: 1.5px solid var(--fio); animation: nu-fade .5s ease both; }
-.chv2__fato:nth-child(2) { animation-delay: 60ms; }
-.chv2__fato:nth-child(3) { animation-delay: 120ms; }
+/* a grade do topo: o cartão do gráfico e, ao lado, os três fatos empilhados (no celular, um embaixo do outro) */
+.chv2__grade { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: clamp(14px, 1.6vw, 20px); margin-top: clamp(26px, 3.4vw, 44px); }
+.chv2__grade--so { grid-template-columns: minmax(0, 1fr); }
+.chv2__palco { position: relative; min-width: 0; animation: nu-fade .5s ease .1s both; }
+/* o cartão carvão com a faixa da marca: o rótulo do período na aba e o seletor à direita dela */
+.chv2__cartao { --pad: clamp(18px, 2.2vw, 30px); height: 100%; box-sizing: border-box; display: flex; flex-direction: column; padding-bottom: clamp(16px, 2vw, 24px); }
+.chv2__cartao :deep(.nfm__acoes) { padding: 6px 10px 0 0; }
+.chv2__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(18px, 2vw, 26px) var(--pad) 0; }
+.chv2__leg { display: inline-flex; align-items: baseline; gap: 10px; }
+.chv2__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.chv2__leg--1 b { font-size: clamp(38px, 4.4vw, 58px); letter-spacing: -0.04em; line-height: 1; }
+.chv2__leg b.chv2__leg--up { color: var(--nu-green-soft); }
+.chv2__leg b.chv2__leg--down { color: var(--nu-red-soft); }
+.chv2__leg-r { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 600; }
+.chv2__traco { width: 14px; height: 2px; border-radius: 1px; background: var(--nu-blue-on-dark); }
+.chv2__traco--cdi { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
+/* o gráfico vai de beira a beira do cartão; o ponto de hoje e o rótulo recuam, as marcas começam na margem do texto (as variáveis do AtivoGrafico, como no /asset) */
+.chv2__grafico {
+  flex: 1 1 auto; min-height: clamp(230px, 24vw, 340px); margin-top: 14px;
+  --agr-esq: var(--pad); --agr-dir: max(var(--pad), 44px); --agr-rotulo-esq: var(--pad);
+  --agr-hoje-bg: var(--nu-creme); --agr-hoje-fg: var(--nu-ink); --agr-hoje-sub: var(--nu-gray);
+}
+/* o cartão estica até a altura dos três fatos, e o gráfico ocupa o que sobra (o AtivoGrafico pede 100% de altura: aqui ele se prende às quatro beiras) */
+.chv2__grafico :deep(.agr) { position: absolute; inset: 0; height: auto; }
+.chv2__periodos--pe { display: none; margin: 16px var(--pad) 0; padding: 4px; border-radius: var(--nu-r-pill); background: var(--nu-dark-chip); }
+.chv2__periodos--pe .chv__periodo { flex: 1; }
+/* os três fatos: cartões creme do contrato; o de atenção, em âmbar */
+.chv2__fatos { display: grid; grid-template-columns: minmax(0, 1fr); align-content: stretch; gap: clamp(12px, 1.4vw, 16px); margin: 0; min-width: 0; }
+.chv2__grade--so .chv2__fatos { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.chv2__fato {
+  position: relative; display: flex; flex-direction: column; justify-content: center; padding: clamp(18px, 2vw, 24px) clamp(20px, 2.2vw, 26px);
+  border-radius: var(--nu-r-card); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s; animation: nu-fade .5s ease .12s both;
+}
+.chv2__fato:nth-child(2) { animation-delay: 180ms; }
+.chv2__fato:nth-child(3) { animation-delay: 240ms; }
+/* cartão clicável: sobe 2px e ganha a sombra de cartão flutuando */
+.chv2__fato--clica:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.chv2__fato--atencao { background: var(--nu-amber-bg); }
+.chv2__fato--atencao dt, .chv2__fato--atencao dd.chv2__fato-s { color: var(--nu-amber-text); }
 .chv2__fato dt { color: var(--sub); font-size: 15px; font-weight: 600; }
-.chv2__fato dd { margin: 6px 0 0; font-size: clamp(26px, 2.4vw, 32px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+.chv2__fato dd { margin: 6px 0 0; font-size: clamp(28px, 2.6vw, 36px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .chv2__fato dd.chv2__fato-s { margin-top: 6px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; letter-spacing: 0; line-height: 1.45; }
+.chv2__fato dd.chv2__fato-acao { position: relative; z-index: 1; margin-top: 14px; font-size: 0; }
+/* a pílula da ação do aviso: carvão sobre o âmbar */
+.chv2__pilula {
+  min-height: 44px; padding: 0 20px; border: 0; border-radius: var(--nu-r-pill); background: var(--nu-ink); color: var(--nu-white);
+  font: inherit; font-size: 15px; font-weight: 700; letter-spacing: 0; cursor: pointer; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+}
+.chv2__pilula:hover { background: var(--nu-ink-hover); }
+.chv2__pilula:active { transform: scale(.98); }
 .chv2__fato-s b { font-weight: 700; }
 .chv2__espera { padding: 2px 0; }
 /* o esqueleto sobre o creme: o tom vem do CarteiraVisao (.cvi), um só para a página */
 .chv2__fato dd.chv2__caminho { display: flex; align-items: center; gap: 8px; }
 .chv2__link { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
-.chv2__link svg { color: var(--nu-blue-text); transition: transform .2s; }
-.chv2__link:hover svg { transform: translateX(3px); }
-.chv2__link:focus-visible { outline-offset: 3px; border-radius: 4px; }
+/* o alvo do clique é o cartão inteiro */
+.chv2__link::after { content: ''; position: absolute; inset: 0; border-radius: var(--nu-r-card); }
+.chv2__link svg { flex: none; color: var(--nu-blue-text); transition: transform .2s; }
+.chv2__fato--atencao .chv2__link svg { color: var(--nu-amber-text); }
+.chv2__fato--clica:hover .chv2__link svg { transform: translateX(3px); }
+.chv2__link:focus-visible { outline: none; }
+.chv2__link:focus-visible::after { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 
+@media (max-width: 1000px) {
+  .chv2__grade { grid-template-columns: minmax(0, 1fr); }
+  .chv2__fatos { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+}
 @media (max-width: 760px) {
-  .chv2__periodos { position: static; margin-bottom: 4px; }
-  .chv2__grafico { padding-top: 0; }
+  /* no celular o período desce para baixo do gráfico, largo */
+  .chv2__cartao :deep(.nfm__acoes) { display: none; }
+  .chv2__periodos--pe { display: flex; }
 }
 @media (prefers-reduced-motion: reduce) {
   .chv2__link svg { transition: none; }
-  .chv2__frase, .chv2__dek, .chv2__fato { animation: none; }
+  .chv2__frase, .chv2__dek, .chv2__fato, .chv2__palco { animation: none; }
+  .chv2__fato { transition: none; }
 }
 </style>

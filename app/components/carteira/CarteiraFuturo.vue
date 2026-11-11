@@ -195,7 +195,7 @@ const apoio = computed(() => {
 /* a seção é a página; o destaque é o cartão carvão com a faixa da marca */
 .cfu {
   background: var(--nu-page);
-  padding: clamp(8px, 2vw, 24px) clamp(10px, 5.5vw, 80px) clamp(56px, 7.5vw, 96px);
+  padding: clamp(8px, 2vw, 24px) var(--cvi-g, clamp(20px, 5.5vw, 80px)) clamp(56px, 7.5vw, 96px);
   animation: nu-fade .5s ease both;
   scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
 }

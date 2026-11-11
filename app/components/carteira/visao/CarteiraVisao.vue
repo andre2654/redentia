@@ -131,9 +131,15 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
    As seções alternam página e faixa quente; branco é só cartão e campo. */
 .cvi {
   --nu-class-etf: var(--nu-sage);
-  --cvi-g: clamp(20px, 5.5vw, 80px);
+  /* a coluna da página: 1240 centrada, 32px de lado (20px no celular), a mesma da home logada.
+     O % resolve na largura de quem usa (as seções vão de ponta a ponta) */
+  --cvi-g: max(32px, calc(50% - 620px));
+  --cvi-v: clamp(64px, 7vw, 100px);
   background: var(--nu-page);
 }
+@media (max-width: 640px) { .cvi { --cvi-g: 20px; } }
+/* o cartão dos 5 anos e o imposto moram os dois na página: o respiro entre eles é o do imposto */
+.cvi :deep(.cfu) { padding-bottom: 0; }
 /* o esqueleto padrão (areia e creme) some sobre a página e a faixa: um tom acima, com o mesmo brilho */
 .cvi :deep(.nusk:not(.nusk--navy)) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-page)); background-image: linear-gradient(100deg, var(--esq) 25%, var(--nu-white) 50%, var(--esq) 75%); }
 .cvi__parcial {

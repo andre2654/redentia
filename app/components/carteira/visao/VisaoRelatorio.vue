@@ -115,6 +115,12 @@ watch(() => route.hash, abrirNaAncora)
           </p>
           <p v-if="r.periodo.historicoCurto" class="vrl__curto-x">Com menos de 12 meses, as taxas ao ano ficam sem nota e aparecem em cinza.</p>
 
+          <!-- o cartão carvão da nota: a nota geral em número-herói (a mesma da frase) e os 4 pilares de que ela é a mediana -->
+          <div class="vrl__nota">
+          <p v-if="r.nota != null" class="vrl__nota-n" aria-hidden="true">
+            <b>{{ Math.round(r.nota) }}</b><span>de 100</span>
+            <small>A mediana dos 4 pilares</small>
+          </p>
           <ul class="vrl__pilares">
             <li v-for="p in r.pilares" :key="p.chave" class="vrl__pilar">
               <span class="vrl__p-n">{{ p.nome }}</span>
@@ -122,6 +128,7 @@ watch(() => route.hash, abrirNaAncora)
               <span class="vrl__barra" role="img" :aria-label="p.nota == null ? `${p.nome}: sem nota` : `${p.nome}: ${p.nota} de 100`"><i :style="{ width: largura(p.nota) }" /></span>
             </li>
           </ul>
+          </div>
 
           <div v-for="g in grupos" :key="g.pilar.chave" class="vrl__grupo">
             <h3 class="vrl__h3">{{ g.pilar.nome }}<span v-if="g.pilar.nota != null">nota {{ g.pilar.nota }}</span></h3>
@@ -172,7 +179,7 @@ watch(() => route.hash, abrirNaAncora)
 <style scoped>
 /* fechado: o mesmo botão-cartão da análise completa (CarteiraAnalise) */
 .vrl__raiz { scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
-.can { background: var(--nu-page); padding: 0 clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
+.can { background: var(--nu-page); padding: 0 var(--cvi-g, clamp(20px, 5.5vw, 80px)) var(--cvi-v, clamp(64px, 7vw, 100px)); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
 .can__botao {
   width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px;
   background: var(--nu-band); border: none; cursor: pointer; font-family: inherit; text-align: left;
@@ -192,7 +199,7 @@ watch(() => route.hash, abrirNaAncora)
 .vrl__sec { scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
 
 /* aberto: no idioma de "Quanto ele te paga" */
-.vrl { background: var(--nu-band); padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
+.vrl { background: var(--nu-band); padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px)); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
 .vrl__frase { margin: 18px 0 0; max-width: 900px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; font-variant-numeric: tabular-nums; text-wrap: balance; }
 .vrl__sub { margin: 16px 0 0; max-width: 760px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .vrl__curto { display: inline-flex; align-items: center; height: 26px; margin-left: 6px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-xs); font-weight: 700; vertical-align: 2px; }
@@ -201,8 +208,13 @@ watch(() => route.hash, abrirNaAncora)
 .vrl__tentar:hover { background: var(--nu-row-hover); }
 .vrl__tentar:active { transform: scale(.98); }
 
-/* os 4 pilares no cartão carvão: a nota é o momento de destaque do relatório */
-.vrl__pilares { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px clamp(20px, 3vw, 40px); list-style: none; margin: clamp(26px, 3.4vw, 40px) 0 0; padding: clamp(22px, 2.8vw, 32px); max-width: 1100px; box-sizing: border-box; border-radius: var(--nu-r-card); background: var(--nu-ink); box-shadow: var(--nu-shadow-escuro); }
+/* a nota e os 4 pilares no cartão carvão: é o momento de destaque do relatório */
+.vrl__nota { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: clamp(24px, 4vw, 56px); margin: clamp(26px, 3.4vw, 40px) 0 0; padding: clamp(22px, 2.8vw, 34px); box-sizing: border-box; border-radius: var(--nu-r-card); background: var(--nu-ink); box-shadow: var(--nu-shadow-escuro); }
+.vrl__nota-n { display: grid; grid-template-columns: auto auto; align-items: baseline; justify-content: start; column-gap: 10px; margin: 0; color: var(--nu-on-dark); font-variant-numeric: tabular-nums; }
+.vrl__nota-n b { color: var(--nu-white); font-size: clamp(72px, 8vw, 112px); font-weight: 800; letter-spacing: -0.045em; line-height: .9; }
+.vrl__nota-n span { font-size: var(--nu-fs-2xl); font-weight: 700; }
+.vrl__nota-n small { grid-column: 1 / -1; margin-top: 10px; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 600; }
+.vrl__pilares { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px clamp(20px, 3vw, 40px); list-style: none; margin: 0; padding: 0; }
 .vrl__pilar { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .vrl__p-n { color: var(--nu-on-dark); font-size: 15px; font-weight: 600; }
 .vrl__p-v { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -210,12 +222,11 @@ watch(() => route.hash, abrirNaAncora)
 .vrl__barra { display: block; height: 8px; border-radius: var(--nu-r-pill); background: var(--nu-line-2); overflow: hidden; }
 .vrl__pilar .vrl__barra { background: var(--nu-dark-chip-line); }
 .vrl__pilar .vrl__barra i { background: var(--nu-blue-on-dark); }
-.vrl__esq .vrl__pilares { background: transparent; box-shadow: none; padding: 0; }
 .vrl__barra i { display: block; height: 100%; border-radius: inherit; background: var(--nu-blue); transform-origin: left; animation: vrl-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
 @keyframes vrl-cresce { from { transform: scaleX(0); } }
 
 /* cada pilar num cartão creme, com a nota num selo carvão */
-.vrl__grupo { margin-top: clamp(14px, 1.6vw, 20px); max-width: 1100px; box-sizing: border-box; padding: clamp(20px, 2.6vw, 30px) clamp(20px, 2.6vw, 30px) clamp(10px, 1.4vw, 16px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
+.vrl__grupo { margin-top: clamp(14px, 1.6vw, 20px); box-sizing: border-box; padding: clamp(20px, 2.6vw, 30px) clamp(20px, 2.6vw, 30px) clamp(10px, 1.4vw, 16px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
 .vrl__h3 { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.025em; }
 .vrl__h3 span { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: 0; font-variant-numeric: tabular-nums; }
 .vrl__inds { list-style: none; margin: 10px 0 0; padding: 0; }
@@ -238,7 +249,7 @@ watch(() => route.hash, abrirNaAncora)
 .vrl__prova p { margin: 0; max-width: 80ch; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.55; }
 .vrl__prova .vrl__prova-c { margin-top: 6px; color: var(--nu-gray-3); font-weight: 500; }
 
-.vrl__bench { margin-top: clamp(14px, 1.6vw, 20px); max-width: 1100px; box-sizing: border-box; padding: clamp(20px, 2.6vw, 30px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
+.vrl__bench { margin-top: clamp(14px, 1.6vw, 20px); box-sizing: border-box; padding: clamp(20px, 2.6vw, 30px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
 .vrl__bench-x { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 600; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .vrl__comp { display: flex; gap: 4px; height: 26px; margin-top: 14px; border-radius: 15px; overflow: hidden; }
 .vrl__comp span { display: block; height: 100%; border-radius: 6px; }
@@ -254,6 +265,7 @@ watch(() => route.hash, abrirNaAncora)
 .vrl__esq-linhas { display: flex; flex-direction: column; gap: 14px; margin-top: 26px; }
 
 @media (max-width: 760px) {
+  .vrl__nota { grid-template-columns: minmax(0, 1fr); }
   .vrl__pilares { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .vrl__ind { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'n v' 'b nota' 'como como' 'prova prova'; gap: 6px 12px; }
   .vrl__ind-nota { grid-template-columns: 72px auto; justify-self: end; }

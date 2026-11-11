@@ -198,7 +198,7 @@ function timeSince(iso: string | null): string {
 </script>
 
 <template>
-  <ContaSection title="Open Finance" subtitle="Conecte corretoras e bancos pra sincronizar sua carteira automaticamente. Suas credenciais nunca passam pela Aportou, tudo regulado pelo Banco Central.">
+  <ContaSection title="Open Finance" subtitle="Conecte corretoras e bancos para sincronizar sua carteira automaticamente. Suas credenciais nunca passam pela Aportou, tudo regulado pelo Banco Central.">
     <div class="of">
       <!-- toolbar -->
       <div class="of__bar">
@@ -240,7 +240,7 @@ function timeSince(iso: string | null): string {
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2" /><path d="M15 7h2a5 5 0 0 1 0 10h-2" /><path d="M8 12h8" /></svg>
         </span>
         <h3 class="of__empty-title">Nenhuma conta conectada</h3>
-        <p class="of__empty-sub">Conecte sua primeira corretora ou banco pra começar a sincronizar sua carteira automaticamente.</p>
+        <p class="of__empty-sub">Conecte sua primeira corretora ou banco para começar a sincronizar sua carteira automaticamente.</p>
         <NuBotaoSeta tamanho="m" :loading="widgetLoading" @click="openConnectFlow">Conectar conta</NuBotaoSeta>
       </div>
 

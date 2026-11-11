@@ -103,7 +103,7 @@ const contexto = computed(() => ({
 /* o mesmo bloco navy do desempenho de antes (NuPortfolioChart), com o gráfico do /asset por dentro */
 .vds {
   background: var(--nu-ink);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
+  padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px));
   animation: nu-fade .5s ease both;
 }
 .vds__cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px 22px; flex-wrap: wrap; }

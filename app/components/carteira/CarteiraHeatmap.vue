@@ -62,7 +62,7 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
 <style scoped>
 .chm {
   background: var(--nu-band);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
+  padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px));
   animation: nu-fade .5s ease both;
 }
 .chm__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }

@@ -53,6 +53,8 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
       · {{ countLabel }}
     </div>
     <div class="cmv__list">
+      <!-- o cabeçalho da tabela, em caixa alta espaçada (cada linha já se lê sozinha no leitor de tela) -->
+      <p v-if="rows.length" class="cmv__cab" aria-hidden="true"><span>Data</span><span>Operação</span><span>Valor</span></p>
       <div v-for="e in rows" :key="e.key" v-contexto-chat="{ id: `carteira:mov:${e.key}`, tipo: 'posicao', rotulo: `${e.badge} ${e.ticker} ${e.d}/${e.m}` }" class="cmv__row">
         <span class="cmv__date-tile">
           <span class="cmv__date-d">{{ e.d }}</span>
@@ -78,7 +80,7 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
 <style scoped>
 .cmv {
   background: var(--nu-page);
-  padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px);
+  padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px));
   animation: nu-fade .5s ease both;
 }
 .cmv__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
@@ -91,8 +93,13 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
 .cmv__saldo--down { color: var(--nu-ink); font-weight: 800; }
 /* as operações num cartão quente, com fios de 1,5px */
 .cmv__list { margin-top: 26px; padding: clamp(6px, 1vw, 12px) clamp(18px, 2.4vw, 28px); border-radius: var(--nu-r-card); background: var(--nu-band); box-shadow: var(--nu-shadow-quente); }
-.cmv__row { display: flex; align-items: center; gap: 16px; padding: 15px 0; border-top: 1.5px solid var(--nu-line); }
-.cmv__row:first-child { border-top-color: transparent; }
+.cmv__cab { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 16px; margin: 0; padding: 14px 0 10px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.cmv__cab span:first-child { text-align: center; }
+/* "Operação" começa onde começa o código do ativo (depois do quadrado do logo) */
+.cmv__cab span:nth-child(2) { padding-left: 64px; }
+.cmv__cab span:last-child { text-align: right; }
+.cmv__row { display: flex; align-items: center; gap: 16px; padding: 15px 10px; margin: 0 -10px; border-top: 1.5px solid var(--nu-line); border-radius: 0; transition: background .18s; }
+.cmv__row:hover { background: var(--nu-cream-2); }
 .cmv__date-tile {
   width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--nu-r-chip);
   background: var(--nu-cream-2); display: flex; flex-direction: column;
