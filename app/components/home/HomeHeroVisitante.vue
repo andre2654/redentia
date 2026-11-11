@@ -1,139 +1,172 @@
 <script setup lang="ts">
-// O herói de quem chega sem conta (11/11/2026, o terceiro). O dono, olhando o
-// palco com o Mac, o relógio e o iPhone: "precisamos pensar em uma hero melhor
-// (que não fale de apps e tals mas que seja boa para trabalhar como CTA)".
+// O herói da home para quem não está logado. Desde 02/11/2026 é "A noite",
+// escolhido pelo dono entre três direções ("pode manter na 3"): estrutura de
+// página de produto, com o nome, o título, uma linha de apoio, a chamada e um
+// objeto. O herói vai do carvão ao preto, com uma linha de luz no horizonte
+// (as cores do anel do input mágico, --nu-anel) e um corte seco para a seção
+// de baixo, sem degradê (dono, 02/11/2026: "prefiro sem o degradê aqui").
 //
-// Uma promessa, uma ação e a prova dela, nessa ordem:
-//  - a promessa é a frase de sempre (o H1 não muda: "Simulamos a sua carteira
-//    em 2.000 cenários para ver se ela é boa."), com o número em cobalto;
-//  - a ação é uma só, a chamada com os bancos dentro do botão (HomeChamada),
-//    sem a linha dos aparelhos; "Ver como funciona" é link, não botão;
-//  - embaixo do botão, o que tira o medo de apertar (só leitura, mais de 100
-//    bancos, um aviso no dia em que importa), com as frases que o site já usa
-//    na régua do /assinar;
-//  - a prova é o próprio teste: o leque dos 2.000 caminhos se desenha ao
-//    chegar (HomeLeque, a ilustração do método, sem R$ de ninguém), dentro do
-//    cartão com a faixa da marca. O cartão inteiro leva ao mesmo lugar do botão.
+// O H1 é o único da página. 84% dos cliques do Google na home vêm da busca
+// pela marca (GSC, 90 dias até 28/10/2026), gente que já ouviu falar e quer
+// saber o que é.
 //
-// Saíram os três aparelhos, o reflexo, os selos da loja e a linha "No site e
-// no iPhone": o que a pessoa compra é o teste, não o app. As imagens de
-// public/img/home ficam no repositório (o /assinar ainda usa).
+// Aportou (11/11/2026): o dono viu o wordmark e o título em 800 sobre este
+// palco e aprovou ("gostei mais da Aportou assim").
 //
-// Promessa, ação e prova cabem na primeira dobra (1440×900): texto à esquerda,
-// o cartão à direita; no celular, um embaixo do outro. Dois tons, para o dono
-// escolher olhando (só no dev, ?hero=escuro):
-//   claro (padrão)  o creme da página, como o quadro Home do canvas;
-//   escuro          o carvão do palco de antes, com o mesmo desenho.
-const route = useRoute()
-const claro = computed(() => !(import.meta.dev && route.query.hero === 'escuro'))
-
-// o que tira o medo de apertar: frases que o site já afirma (NuMarketTicker, a régua do /assinar)
-const GARANTIAS = ['Só leitura: ninguém mexe no seu dinheiro', 'Mais de 100 bancos e corretoras', 'Um aviso no dia em que importa']
+// O OBJETO MUDOU em 11/11/2026. Eram três aparelhos (Mac, relógio, iPhone) com
+// os selos da loja; o dono pediu uma hero "que não fale de apps" e, vendo uma
+// proposta em duas colunas, decidiu: "deixe como estava, só troque a parte dos
+// devices abaixo para mostrar os 2k cenários". Então o texto e a chamada são
+// os de antes, ao centro, e no palco entra o próprio teste: o leque dos 2.000
+// caminhos se desenhando no céu, sem cartão em volta (HomeLeque, a ilustração
+// do método, sem R$ de ninguém), com o selo dos 2.000 futuros embaixo. A
+// chamada vai sem a linha dos aparelhos (HomeChamada sem-apps). O palco
+// inteiro leva ao mesmo lugar do botão.
+//
+// As imagens dos aparelhos (public/img/home) ficam no repositório: o /assinar
+// ainda usa.
 </script>
 
 <template>
-  <section class="hhv" :class="claro ? 'hhv--claro' : 'hhv--palco'" aria-labelledby="hhv-titulo">
-    <div class="hhv__in">
-      <div class="hhv__texto">
-        <NuEyebrow :sobre="claro ? 'claro' : 'escuro'" class="hhv__eyebrow">Uma IA do seu lado</NuEyebrow>
-        <h1 id="hhv-titulo" class="hhv__titulo">Simulamos a sua carteira em <span class="hhv__num">2.000 cenários</span> para ver se ela é boa.</h1>
-        <p class="hhv__dek">Você conecta o banco uma vez. A IA testa a carteira nos próximos cinco anos, vigia todo dia e só chama quando algo pede você.</p>
-        <div class="hhv__acao">
-          <HomeChamada :tom="claro ? 'claro' : 'escuro'" :centro="false" sem-apps class="hhv__chamada" />
-          <a href="#hcf-titulo" class="hhv__como">Ver como funciona</a>
-        </div>
-        <ul class="hhv__garantias">
-          <li v-for="g in GARANTIAS" :key="g">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-            {{ g }}
-          </li>
-        </ul>
-      </div>
-
-      <NuxtLink to="/assinar?quiz=1&de=home-leque" class="hhv__prova" aria-label="Conectar a carteira e ver o teste dos 2.000 cenários">
-        <NuFaixaMarca rotulo="Daqui a 5 anos" como="p" class="hhv__cartao">
-          <HomeLeque tom="carvao" class="hhv__leque" />
-          <p class="hhv__pe">
-            <span class="hhv__selo"><strong>2.000</strong> futuros testados para cada carteira</span>
-            <span class="hhv__nota">Ilustração do método. O resultado da sua carteira aparece depois de conectar.</span>
-          </p>
-        </NuFaixaMarca>
-      </NuxtLink>
+  <section class="hhv" aria-labelledby="hhv-titulo">
+    <div class="hhv__ceu" aria-hidden="true" />
+    <div class="hhv__texto">
+      <p class="hhv__produto"><MarcaAportou :altura="30" sobre="escuro" rotulo="Aportou" /></p>
+      <h1 id="hhv-titulo" class="hhv__titulo">Simulamos a sua carteira em 2.000 cenários para ver se ela é boa.</h1>
+      <p class="hhv__dek">Você conecta o banco uma vez. A IA testa a carteira nos próximos cinco anos, vigia todo dia e só chama quando algo pede você.</p>
+      <HomeChamada tom="escuro" porte="calmo" sem-apps class="hhv__chamada" />
     </div>
-    <div v-if="!claro" class="hhv__horizonte" aria-hidden="true" />
+
+    <NuxtLink to="/assinar?quiz=1&de=home-leque" class="hhv__palco" aria-label="Conectar a carteira e ver o teste dos 2.000 cenários">
+      <div class="hhv__halo" aria-hidden="true" />
+      <HomeLeque tom="carvao" class="hhv__leque" />
+      <p class="hhv__pe">
+        <span class="hhv__selo"><strong>2.000</strong> futuros testados para cada carteira</span>
+        <span class="hhv__nota">Ilustração do método. O resultado da sua carteira aparece depois de conectar.</span>
+      </p>
+      <div class="hhv__horizonte" aria-hidden="true" />
+    </NuxtLink>
   </section>
 </template>
 
 <style scoped>
 .hhv {
-  --g: max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
+  --g: clamp(22px, 5.5vw, 80px);
+  /* o respiro do fim, ainda no escuro */
+  --fim: clamp(48px, 5.5vw, 88px);
   position: relative; isolation: isolate; overflow: hidden;
-  padding: clamp(44px, 5.4vw, 84px) var(--g) clamp(56px, 6vw, 96px);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: clamp(40px, 4.4vw, 60px) var(--g) var(--fim);
+  background: var(--nu-agora-bg);
 }
-.hhv__in { display: flex; flex-wrap: wrap; align-items: center; gap: 48px 64px; }
-.hhv__texto { flex: 1.1 1 480px; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
-.hhv__titulo {
-  margin: 20px 0 0; max-width: 15ch;
-  font-size: clamp(38px, 5vw, 76px); font-weight: 800; letter-spacing: -0.04em; line-height: .98; text-wrap: balance;
-}
-.hhv__dek { margin: 22px 0 0; max-width: 54ch; font-size: clamp(17px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
-.hhv__acao { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 14px 28px; margin-top: 30px; }
-.hhv__como {
-  min-height: 62px; display: inline-flex; align-items: center; font-size: 17px; font-weight: 700;
-  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; transition: opacity .2s;
-}
-.hhv__como:hover { opacity: .75; }
-.hhv__garantias { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 15.5px; font-weight: 600; }
-.hhv__garantias li { display: inline-flex; align-items: center; gap: 8px; }
-.hhv__garantias svg { flex: none; }
-
-/* a prova: o cartão com a faixa da marca e o leque se desenhando */
-.hhv__prova { flex: 1 1 440px; display: block; min-width: 0; color: inherit; border-radius: var(--nu-r-card-lg); transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
-.hhv__prova:hover { transform: translateY(-3px); color: inherit; }
-.hhv__cartao { display: flex; flex-direction: column; border-radius: var(--nu-r-card-lg); }
-.hhv__leque { display: block; width: 100%; height: clamp(240px, 26vw, 340px); margin-top: 6px; }
-.hhv__pe { margin: 0; padding: 4px clamp(20px, 2.6vw, 32px) clamp(20px, 2.4vw, 28px); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
-.hhv__selo { display: inline-flex; align-items: center; gap: 8px; padding: 9px 17px; border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white); font-size: 15px; font-weight: 500; white-space: nowrap; }
-.hhv__selo strong { font-size: 16px; font-weight: 800; }
-.hhv__nota { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 500; line-height: 1.4; }
-
-/* ——— claro: o creme da página ——— */
-.hhv--claro { background: var(--nu-page); color: var(--nu-ink); }
-.hhv--claro .hhv__num { color: var(--nu-blue); }
-.hhv--claro .hhv__dek, .hhv--claro .hhv__garantias { color: var(--nu-gray-3); }
-.hhv--claro .hhv__garantias svg { color: var(--nu-green-text); }
-
-/* ——— escuro: o carvão do palco de antes ——— */
-.hhv--palco { background: var(--nu-ink); color: var(--nu-white); }
-.hhv--palco::before {
-  content: ''; position: absolute; z-index: -1; inset: 0;
+/* o céu: carvão no alto (o mesmo do rodapé), preto onde o leque fica */
+.hhv__ceu {
+  position: absolute; inset: 0; z-index: -2; pointer-events: none;
   background:
-    radial-gradient(60% 70% at 18% 0%, color-mix(in srgb, var(--nu-blue) 24%, transparent), transparent 70%),
-    linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--nu-agora-bg) 55%, transparent));
+    radial-gradient(60% 38% at 50% 0%, color-mix(in srgb, var(--nu-blue) 16%, transparent), transparent),
+    linear-gradient(180deg, var(--nu-navy) 0%, color-mix(in srgb, var(--nu-navy) 55%, var(--nu-agora-bg)) 42%, var(--nu-agora-bg) 72%);
 }
-.hhv--palco .hhv__titulo { color: var(--nu-creme); }
-.hhv--palco .hhv__num { color: var(--nu-blue-on-dark); }
-.hhv--palco .hhv__dek, .hhv--palco .hhv__garantias { color: var(--nu-on-dark); }
-.hhv--palco .hhv__garantias svg { color: var(--nu-green-soft); }
-.hhv--palco .hhv__chamada :deep(.hch__letra) { color: var(--nu-on-dark); }
-.hhv--palco .hhv__chamada :deep(.hch__letra strong) { color: var(--nu-white); }
-/* o cartão sobre o carvão: um tom acima, com fio, para não se confundir com o fundo */
-.hhv--palco .hhv__cartao { background: var(--nu-dark-chip); box-shadow: 0 0 0 1px var(--nu-dark-line), 0 40px 80px -30px color-mix(in srgb, var(--nu-agora-bg) 80%, transparent); }
-/* a linha de luz do horizonte, nas cores do anel */
-.hhv__horizonte { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--nu-anel); opacity: .55; }
-
-.hhv__como:focus-visible, .hhv__prova:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 4px; }
-.hhv--claro .hhv__como:focus-visible, .hhv--claro .hhv__prova:focus-visible { outline-color: var(--nu-blue); }
-
-@media (max-width: 640px) {
-  .hhv { padding-top: 32px; }
-  .hhv__titulo { margin-top: 16px; }
-  .hhv__acao { gap: 4px 28px; align-self: stretch; }
-  .hhv__chamada { align-self: stretch; }
-  .hhv__como { min-height: 44px; }
-  .hhv__garantias { flex-direction: column; gap: 8px; }
-  .hhv__leque { height: 240px; }
-  .hhv__nota { flex-basis: 100%; }
+.hhv__texto { display: flex; flex-direction: column; align-items: center; max-width: 1120px; }
+.hhv__produto {
+  display: inline-flex; align-items: center; gap: 8px; margin: 0;
+  color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: -0.02em;
 }
-@media (prefers-reduced-motion: reduce) { .hhv__prova { transition: none; } .hhv__prova:hover { transform: none; } }
+.hhv__titulo {
+  margin: 22px 0 0; max-width: 22ch;
+  font-size: clamp(36px, 4.8vw, 68px); font-weight: 800; letter-spacing: -0.035em; line-height: 1;
+  text-wrap: balance;
+  color: var(--nu-agora-texto);
+  background: linear-gradient(180deg, var(--nu-white) 45%, var(--nu-cream-text-78) 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hhv__dek {
+  margin: 18px 0 0; max-width: 54ch; color: var(--nu-agora-sub);
+  font-size: clamp(16px, 1.35vw, 19px); font-weight: 500; line-height: 1.5; text-wrap: balance;
+}
+.hhv__chamada { margin-top: clamp(24px, 2.6vw, 32px); }
+.hhv__chamada :deep(.hch__letra) { color: var(--nu-agora-sub); }
+
+/* o palco: o leque dos 2.000 cenários desenhado no próprio céu, sem cartão,
+   com a linha de luz no horizonte embaixo */
+.hhv__palco {
+  --chao: clamp(64px, 6.4vw, 96px); /* o espaço do selo, embaixo do horizonte */
+  position: relative; display: block; width: min(1080px, 84vw); color: inherit;
+  margin-top: clamp(28px, 3.4vw, 48px); padding-bottom: var(--chao);
+}
+.hhv__palco:hover { color: inherit; }
+.hhv__halo {
+  position: absolute; z-index: -1; left: 50%; top: -6%; width: 120%; height: 80%;
+  transform: translateX(-50%); border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--nu-blue) 24%, transparent), transparent);
+  filter: blur(20px);
+}
+/* a caixa do leque tem o tamanho final antes do JavaScript (sem CLS); o fundo é o do céu */
+.hhv__palco .hhv__leque { display: block; width: 100%; height: auto; aspect-ratio: 100 / 40; background: transparent; text-align: left; }
+.hhv__pe {
+  position: absolute; left: 0; right: 0; bottom: 0; height: var(--chao); margin: 0;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 18px; padding-top: 18px;
+}
+.hhv__selo {
+  display: inline-flex; align-items: center; gap: 8px; padding: 9px 17px; border-radius: var(--nu-r-pill);
+  background: var(--nu-blue); color: var(--nu-white); font-size: 15px; font-weight: 500; white-space: nowrap;
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+}
+.hhv__selo strong { font-size: 16px; font-weight: 800; }
+.hhv__palco:hover .hhv__selo { transform: translateY(-2px); }
+.hhv__nota { color: var(--nu-agora-sub); font-size: 13.5px; font-weight: 500; line-height: 1.4; }
+.hhv__palco:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 6px; border-radius: var(--nu-r-card); }
+
+/* a linha de luz: o anel do input mágico (cobalto, céu, sálvia e areia),
+   esticado no horizonte. O fio é o ::before (a máscara apaga as pontas sem
+   cortar o brilho, que é a sombra da caixa de fora) */
+.hhv__horizonte {
+  position: absolute; left: -20%; right: -20%; top: calc(100% - var(--chao)); height: 2px; pointer-events: none;
+  box-shadow: 0 0 60px 14px color-mix(in srgb, var(--nu-blue) 26%, transparent), 0 -40px 120px 20px color-mix(in srgb, var(--nu-blue) 14%, transparent);
+  border-radius: 50%;
+}
+.hhv__horizonte::before, .hhv__horizonte::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: var(--nu-anel); background-size: 100% 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent 6%, var(--nu-agora-bg) 26%, var(--nu-agora-bg) 74%, transparent 94%);
+  mask-image: linear-gradient(90deg, transparent 6%, var(--nu-agora-bg) 26%, var(--nu-agora-bg) 74%, transparent 94%);
+}
+/* o mesmo anel, desfocado, é o halo colorido em volta do fio */
+.hhv__horizonte::after { inset: -7px 0; filter: blur(9px); opacity: .7; }
+
+/* entrada calma: o título fica parado (LCP); o texto sobe do desfoque; o palco só sobe */
+.hhv__dek, .hhv__chamada { animation: hhv-entra 1s cubic-bezier(.2, .8, .2, 1) backwards; }
+.hhv__chamada { animation-delay: .1s; }
+.hhv__palco { animation: hhv-sobe 1.1s cubic-bezier(.2, .8, .2, 1) .1s backwards; }
+@keyframes hhv-entra { from { opacity: 0; filter: blur(8px); transform: translateY(16px); } }
+@keyframes hhv-sobe { from { transform: translateY(28px); } }
+
+/* rolar acende o horizonte (só onde existe) */
+@supports (animation-timeline: view()) {
+  .hhv__horizonte { animation: hhv-acende linear both; animation-timeline: view(); animation-range: entry 40% cover 60%; }
+  @keyframes hhv-acende { from { opacity: .3; transform: scaleX(.6); } to { opacity: 1; transform: none; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hhv__dek, .hhv__chamada, .hhv__palco, .hhv__horizonte { animation: none; }
+  .hhv__selo { transition: none; }
+}
+
+/* tablet: a frase de apoio sai (o "Você não precisa acompanhar tudo." logo
+   abaixo diz o mesmo) e o palco ocupa mais da largura */
+@media (max-width: 1023px) {
+  .hhv__dek { display: none; }
+  .hhv__titulo { max-width: 18ch; }
+  .hhv__palco { width: min(820px, 92vw); }
+  .hhv__palco .hhv__leque { aspect-ratio: 100 / 48; }
+}
+/* celular: o leque na largura toda, mais alto, e a nota embaixo do selo */
+@media (max-width: 560px) {
+  .hhv { padding-top: 30px; }
+  .hhv__produto { display: none; }
+  .hhv__titulo { margin-top: 0; font-size: clamp(31px, 8.6vw, 37px); line-height: 1.05; }
+  .hhv__texto, .hhv__chamada { align-self: stretch; }
+  .hhv__chamada { margin-top: 22px; }
+  .hhv__chamada :deep(.hch__letra strong) { display: inline; }
+  .hhv__palco { --chao: 104px; width: 100%; margin-top: 26px; }
+  .hhv__palco .hhv__leque { aspect-ratio: 100 / 66; }
+}
 </style>
