@@ -34,6 +34,8 @@ withDefaults(defineProps<{
   /** 'calmo': a pílula de 52 px com os bancos menores (o herói do visitante);
    *  'grande' é a de 62 px */
   porte?: 'grande' | 'calmo'
+  /** sem a linha dos aparelhos (o herói do visitante desde 11/11/2026: a entrada não fala de app) */
+  semApps?: boolean
 }>(), { tom: 'claro', centro: true, rotulo: 'Conectar carteira', porte: 'grande' })
 
 // os logos que o site já tem (public/icons), os mesmos da CarteiraMontagem
@@ -66,7 +68,7 @@ const BANCOS = [
       Pelo Open Finance, só leitura.
     </p>
 
-    <p class="hch__apps">
+    <p v-if="!semApps" class="hch__apps">
       <span class="hch__glifos" aria-hidden="true">
         <!-- iPhone, Mac e Apple Watch em traço, sem a marca da Apple -->
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.6" /><path d="M10.5 5.5h3" /></svg>

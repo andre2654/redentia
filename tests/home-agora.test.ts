@@ -76,16 +76,22 @@ test('os apps: só o que está na App Store vira link; o resto diz "em breve" (0
   // a URL da loja só existe na fonte única: o herói e a chamada não a escrevem à mão
   for (const f of ['app/components/home/HomeChamada.vue', 'app/components/home/HomeHeroVisitante.vue', 'app/composables/useMercado.ts'])
     assert.doesNotMatch(ler(f), /apps\.apple\.com|Disponível na App Store/i, f)
-  // o link da loja abre em outra aba sem dar acesso à página (rel=noopener)
+  // o herói do visitante não fala de app nem de loja (11/11/2026, pedido do dono: "uma hero
+  // melhor, que não fale de apps e que seja boa para trabalhar como CTA"): a prova é o leque,
+  // a ação é uma só, e a chamada vai sem a linha dos aparelhos
   const heroi = ler('app/components/home/HomeHeroVisitante.vue')
-  assert.match(heroi, /target: '_blank', rel: 'noopener'/)
-  assert.match(heroi, /target="_blank" rel="noopener"/)
+  const tela = heroi.slice(heroi.indexOf('<template>'), heroi.lastIndexOf('</template>'))
+  assert.doesNotMatch(tela, /iPhone|Apple|App Store|\bMac\b|Watch|fraseDosApps|seloDoApp/)
+  assert.match(tela, /<HomeChamada[^>]*sem-apps/)
+  assert.match(tela, /<HomeLeque\b/)
+  assert.equal((tela.match(/<HomeChamada\b/g) ?? []).length, 1)
 })
 
 test('a home tem um H1 por variante e as três seções que o dono tirou não voltam', () => {
   const visitante = ler('app/components/home/HomeHeroVisitante.vue')
   assert.equal((visitante.match(/<h1\b/g) ?? []).length, 1)
-  assert.match(visitante, /Simulamos a sua carteira em 2\.000 cenários para ver se ela é boa\./)
+  // o número vai num <span> (cobalto): a frase é conferida sem as tags
+  assert.match(visitante.replace(/<[^>]+>/g, ''), /Simulamos a sua carteira em 2\.000 cenários para ver se ela é boa\./)
   const conteudo = ler('app/components/home/HomeContent.vue')
   for (const saiu of ['MercadoHeroPergunta', 'MercadoCarteiraConectada', 'NuTeseStrip'])
     assert.doesNotMatch(conteudo, new RegExp(`<${saiu}\\b`), saiu)
