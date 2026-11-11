@@ -29,6 +29,7 @@ export default defineNuxtConfig({
         // único: o H1 da home usa o peso 800 e não pode esperar um CSS de terceiro.
         { rel: 'preload', href: '/fonts/figtree-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
         { rel: 'icon', type: 'image/svg+xml', href: '/icone-aportou.svg' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
       ],
       meta: [{ name: 'theme-color', content: '#F9F3EC' }],
     },
