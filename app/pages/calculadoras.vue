@@ -184,7 +184,7 @@ usePageSeo({
           :class="{ 'chb__card--blue': c.featured }"
           :style="{ '--i': i }"
         >
-          <MarcaCorte v-if="c.featured" class="chb__card-corte" :largura="230" cor="var(--nu-white)" />
+          <MarcaCorte v-if="c.featured" class="chb__card-corte nu-corte-fundo" :largura="230" cor="var(--nu-white)" />
           <span class="chb__card-top">
             <svg class="chb__card-icon" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path v-for="d in c.icon" :key="d" :d="d" /></svg>
             <span class="chb__card-eyebrow">{{ c.eyebrow }}</span>
@@ -247,7 +247,7 @@ usePageSeo({
     <!-- CTA final (texto antigo verbatim, só a marca muda) -->
     <section class="chb__band">
       <div class="chb__cta">
-        <MarcaCorte class="chb__cta-corte" :largura="520" cor="var(--nu-white)" />
+        <MarcaCorte class="chb__cta-corte nu-corte-fundo" :largura="520" cor="var(--nu-white)" />
         <h2 class="chb__cta-title">Pronto pra começar a investir?</h2>
         <p class="chb__cta-sub">Cadastre-se na Aportou pra ter análises com IA, acompanhamento de carteira e mais.</p>
         <div class="chb__cta-actions">

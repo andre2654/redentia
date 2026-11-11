@@ -28,7 +28,7 @@ const NAO_E = [
 
 <template>
   <section ref="secao" class="hne" :class="revealClass" aria-labelledby="hne-titulo">
-    <MarcaCorte class="hne__corte" :largura="760" cor="var(--nu-ink)" />
+    <MarcaCorte class="hne__corte nu-corte-fundo" :largura="760" cor="var(--nu-ink)" />
     <div class="hne__texto">
       <p class="nu-eyebrow hne__eyebrow"><MarcaCorte cor="var(--nu-ink)" /><span>Sem letra miúda</span></p>
       <h2 id="hne-titulo" class="hne__titulo">O que a Aportou não é.</h2>
@@ -100,6 +100,6 @@ const NAO_E = [
   .hne { padding-inline: 20px; gap: 32px; }
   .hne__dados { margin-top: 0; }
   /* no celular o corte gigante vira uma parede no meio da faixa: sai */
-  .hne__corte { display: none; }
+  .hne__corte { --corte-l: 300px; }
 }
 </style>

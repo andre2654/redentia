@@ -18,7 +18,7 @@ const apps = [
 <template>
   <section class="cmb" aria-label="Aportou MCP">
     <NuxtLink to="/conta#mcp" class="cmb__card">
-      <span class="cmb__corte" aria-hidden="true"><MarcaCorte :largura="360" cor="var(--nu-white)" /></span>
+      <span class="cmb__corte nu-corte-fundo" aria-hidden="true"><MarcaCorte :largura="360" cor="var(--nu-white)" /></span>
 
       <div class="cmb__txt">
         <NuEyebrow sobre="azul">Aportou MCP</NuEyebrow>

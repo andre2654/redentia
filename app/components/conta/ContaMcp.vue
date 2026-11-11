@@ -117,7 +117,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 
 <template>
   <section class="mcp" :class="{ 'mcp--off': !mcpOn }">
-    <span class="mcp__corte" aria-hidden="true"><MarcaCorte :largura="420" cor="var(--nu-white)" /></span>
+    <span class="mcp__corte nu-corte-fundo" aria-hidden="true"><MarcaCorte :largura="420" cor="var(--nu-white)" /></span>
 
     <div class="mcp__head">
       <div class="mcp__head-txt">

@@ -254,7 +254,7 @@ usePageSeo({
     <!-- ============ CTA ============ -->
     <CalcBand tone="white" tight>
       <div class="rks__cta">
-        <MarcaCorte :largura="420" cor="var(--nu-white)" class="rks__cta-corte" />
+        <MarcaCorte :largura="420" cor="var(--nu-white)" class="rks__cta-corte nu-corte-fundo" />
         <!-- o nome próprio (Aportou Score) não vai para a caixa baixa -->
         <h2 class="rks__cta-title">Acompanhe {{ isScore ? `o ${meta.title}` : meta.title.toLowerCase() }} na sua carteira</h2>
         <p class="rks__cta-sub">Cadastre-se na Aportou e receba análises automáticas sobre os ativos que você acompanha, com dados atualizados diariamente.</p>

@@ -86,6 +86,20 @@ a:hover { color: inherit; }
 }
 .nu-eyebrow--claro { color: var(--nu-white); }
 
+/* O corte gigante de fundo (a "bandeira" da marca atrás de um painel ou de uma
+   seção). Regra do dono (11/11/2026): nunca no meio nem solto à direita; sai
+   SEMPRE do canto de cima à esquerda, como a aba da faixa da marca. A peça
+   escolhe só a cor e a opacidade; posição e tamanho são daqui (os !important
+   vencem o posicionamento antigo de cada componente). --corte-l ajusta a
+   largura quando o painel pede. */
+.nu-corte-fundo {
+  position: absolute !important; left: 0 !important; top: 0 !important;
+  right: auto !important; bottom: auto !important; transform: none !important;
+  width: min(var(--corte-l, 420px), 58%) !important; height: auto !important;
+  pointer-events: none;
+}
+.nu-corte-fundo > svg { display: block; width: 100%; height: auto; }
+
 /* Foco visível, um só no site: anel cobalto de 3px (o do campo do login). */
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
   outline: 3px solid var(--nu-blue); outline-offset: 2px;

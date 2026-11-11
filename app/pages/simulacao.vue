@@ -737,7 +737,7 @@ const readingHtml = computed(() => {
          no mercado" (pedido do dono, 25/08) ============ -->
     <section v-if="phase === 'result' && result" class="sim__blue">
       <div class="sim__blue-painel">
-      <MarcaCorte class="sim__blue-corte" :largura="520" cor="var(--nu-white)" />
+      <MarcaCorte class="sim__blue-corte nu-corte-fundo" :largura="520" cor="var(--nu-white)" />
       <div class="sim__blue-body">
         <NuEyebrow sobre="azul" class="sim__blue-eyebrow">Leitura da Aportou</NuEyebrow>
         <p class="sim__blue-lead">{{ result.scenario.lead }}</p>

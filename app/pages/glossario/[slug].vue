@@ -77,7 +77,7 @@ usePageSeo({
 
       <!-- backlink forte pra plataforma -->
       <NuxtLink :to="term.backlink.to" class="gt__cta">
-        <MarcaCorte class="gt__cta-corte" :largura="300" cor="var(--nu-white)" />
+        <MarcaCorte class="gt__cta-corte nu-corte-fundo" :largura="300" cor="var(--nu-white)" />
         <div class="gt__cta-text">
           <span class="gt__cta-kicker">Na plataforma</span>
           <span class="gt__cta-label">{{ term.backlink.label }}</span>

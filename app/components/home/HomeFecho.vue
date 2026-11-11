@@ -16,7 +16,7 @@ const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
 <template>
   <section ref="secao" class="hfe" :class="revealClass" aria-labelledby="hfe-titulo">
     <div class="hfe__painel">
-      <MarcaCorte class="hfe__corte" :largura="620" cor="var(--nu-white)" />
+      <MarcaCorte class="hfe__corte nu-corte-fundo" :largura="620" cor="var(--nu-white)" />
       <NuEyebrow como="p" sobre="azul">Aportou?</NuEyebrow>
       <h2 id="hfe-titulo" class="hfe__titulo">A sua carteira é boa?</h2>
       <p class="hfe__dek">Em três dias você descobre. Conecte o banco e veja a carteira em 2.000 cenários, com a IA vigiando por você.</p>

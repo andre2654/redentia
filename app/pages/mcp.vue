@@ -102,7 +102,7 @@ usePageSeo({
          leva o verde claro (o acento do MCP) -->
     <section class="mdoc__band">
       <div class="mdoc__painel">
-        <MarcaCorte class="mdoc__painel-corte" :largura="520" cor="var(--nu-white)" />
+        <MarcaCorte class="mdoc__painel-corte nu-corte-fundo" :largura="520" cor="var(--nu-white)" />
         <div class="mdoc__band-in">
           <NuEyebrow como="p" sobre="azul">Como funciona</NuEyebrow>
           <h2 class="mdoc__band-title">Três passos e a sua IA<br>fica do lado de dentro.</h2>

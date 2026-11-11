@@ -143,7 +143,7 @@ const selo = computed(() => {
 
       <!-- todos os rankings: o painel azul da marca -->
       <NuxtLink to="/rankings" class="hrk__cartao hrk__todos">
-        <MarcaCorte class="hrk__todos-corte" :largura="300" cor="var(--nu-white)" />
+        <MarcaCorte class="hrk__todos-corte nu-corte-fundo" :largura="300" cor="var(--nu-white)" />
         <span class="hrk__todos-num">{{ totalDeRankings }}</span>
         <span class="hrk__todos-txt">rankings da bolsa, de dividendos a preço justo, atualizados todo dia.</span>
         <span class="hrk__ver hrk__ver--cheio">

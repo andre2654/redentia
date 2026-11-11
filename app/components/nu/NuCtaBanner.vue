@@ -9,7 +9,7 @@ defineProps<{ title: string; subtitle: string; to: string }>()
 
 <template>
   <NuxtLink :to="to" class="ncb">
-    <MarcaCorte class="ncb__corte" :largura="230" cor="var(--nu-white)" />
+    <MarcaCorte class="ncb__corte nu-corte-fundo" :largura="230" cor="var(--nu-white)" />
     <span class="ncb__main">
       <span class="ncb__title">{{ title }}</span>
       <span class="ncb__sub">{{ subtitle }}</span>
