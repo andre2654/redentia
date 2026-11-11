@@ -78,6 +78,10 @@ function groupByLetter(list: typeof allTerms) {
 const activeLetters = computed(() => new Set(sections.value.map((s) => s.letter)))
 
 const totalShown = computed(() => filtered.value.length)
+
+// "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
+// mora no painel desde 02/11, e a /busca não é mais onde se conversa.
+const painel = useChatPainel()
 </script>
 
 <template>
@@ -128,7 +132,7 @@ const totalShown = computed(() => filtered.value.length)
 
       <p v-if="totalShown === 0" class="glx__empty">
         Tente outra palavra, ou pergunte direto à
-        <NuxtLink to="/busca" class="glx__empty-link">IA da Aportou</NuxtLink>.
+        <button type="button" class="glx__empty-link" @click="painel.preencher(`O que é ${query}?`)">IA da Aportou</button>.
       </p>
 
       <section v-for="sec in sections" :id="`letra-${sec.letter}`" :key="sec.letter" class="glx__section">
@@ -218,6 +222,8 @@ const totalShown = computed(() => filtered.value.length)
   font-variant-numeric: tabular-nums; margin-bottom: 12px;
 }
 .glx__empty { color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 24px; }
+.glx__empty-link { padding: 0; border: 0; background: none; font: inherit; cursor: pointer;
+}
 .glx__empty-link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
 .glx__section { margin-top: clamp(36px, 4.5vw, 56px); scroll-margin-top: calc(var(--nuh-h, 76px) + 116px); }

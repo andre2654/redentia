@@ -7,6 +7,10 @@ import { BENCH_DISCLAIMER } from '~/content/benchmark-ia/metodologia'
 import type { NuFaqItem } from '~/types/market'
 
 defineProps<{ faq: NuFaqItem[] }>()
+
+// "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
+// mora no painel desde 02/11, e a /busca não é mais onde se conversa.
+const painel = useChatPainel()
 </script>
 
 <template>
@@ -16,7 +20,7 @@ defineProps<{ faq: NuFaqItem[] }>()
         <NuEyebrow como="p">Como medimos</NuEyebrow>
         <h2 id="bdu-titulo" class="bdu__titulo">Ficou com alguma<br>dúvida?</h2>
         <p class="bdu__copy">Como o ranking é feito, o que ele mede e o que ele não diz.</p>
-        <NuBotaoSeta to="/busca" variante="carvao" tamanho="m" class="bdu__cta">Perguntar à IA</NuBotaoSeta>
+        <NuBotaoSeta variante="carvao" tamanho="m" class="bdu__cta" @click="painel.abrir()">Perguntar à IA</NuBotaoSeta>
       </div>
       <div class="bdu__right">
         <NuFaqAccordion :items="faq" :default-open="-1" surface="white" />

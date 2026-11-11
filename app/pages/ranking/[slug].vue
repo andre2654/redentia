@@ -117,6 +117,10 @@ usePageSeo({
     },
   ],
 })
+
+// "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
+// mora no painel desde 02/11, e a /busca não é mais onde se conversa.
+const painel = useChatPainel()
 </script>
 
 <template>
@@ -259,7 +263,7 @@ usePageSeo({
     <CalcSplit v-if="copy.faqItems.length" tone="cream" wide>
       <template #title>{{ copy.faqTitle || 'Perguntas Frequentes' }}</template>
       <template #left>
-        <NuBotaoSeta to="/busca" variante="azul" tamanho="m" class="rks__pill">Perguntar à IA</NuBotaoSeta>
+        <NuBotaoSeta variante="azul" tamanho="m" class="rks__pill" @click="painel.abrir()">Perguntar à IA</NuBotaoSeta>
       </template>
       <NuFaqAccordion :items="copy.faqItems" surface="white" />
     </CalcSplit>

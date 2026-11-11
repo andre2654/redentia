@@ -71,6 +71,10 @@ usePageSeo({
 
 // Title antigo já traz a marca + cauda de SEO — opt-out do sufixo global (igual /login).
 useHead({ titleTemplate: null })
+
+// "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
+// mora no painel desde 02/11, e a /busca não é mais onde se conversa.
+const painel = useChatPainel()
 </script>
 
 <template>
@@ -109,7 +113,7 @@ useHead({ titleTemplate: null })
         <div class="cfq__left">
           <NuSectionHeading eyebrow="Dúvidas">Ficou com alguma<br>dúvida?</NuSectionHeading>
           <div class="cfq__copy">Respostas para as principais dúvidas sobre a Aportou. Se preferir, pergunte direto à nossa IA.</div>
-          <NuBotaoSeta to="/busca" variante="carvao" tamanho="m" class="cfq__cta">Perguntar à IA</NuBotaoSeta>
+          <NuBotaoSeta variante="carvao" tamanho="m" class="cfq__cta" @click="painel.abrir()">Perguntar à IA</NuBotaoSeta>
         </div>
         <div class="cfq__right">
           <NuFaqAccordion :items="faqs" />

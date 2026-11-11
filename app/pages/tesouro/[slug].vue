@@ -127,6 +127,10 @@ usePageSeo({
     { name: titulo.value.hero.name, path: `/tesouro/${slug}` },
   ],
 })
+
+// "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
+// mora no painel desde 02/11, e a /busca não é mais onde se conversa.
+const painel = useChatPainel()
 </script>
 
 <template>
@@ -189,7 +193,7 @@ usePageSeo({
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas frequentes sobre o {{ shortName }}</template>
       <template #left>
-        <NuBotaoSeta to="/busca" variante="azul" tamanho="m" class="tsd__pill">Perguntar à IA</NuBotaoSeta>
+        <NuBotaoSeta variante="azul" tamanho="m" class="tsd__pill" @click="painel.abrir()">Perguntar à IA</NuBotaoSeta>
       </template>
       <NuFaqAccordion :items="titulo.faq" surface="white" />
     </CalcSplit>

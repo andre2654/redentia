@@ -64,6 +64,10 @@ usePageSeo({
     { name: doc.title, path: `/guias/${doc.slug}` },
   ],
 })
+
+// "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
+// mora no painel desde 02/11, e a /busca não é mais onde se conversa.
+const painel = useChatPainel()
 </script>
 
 <template>
@@ -84,7 +88,7 @@ usePageSeo({
           <NuAiPromptCard
             kicker="IA da Aportou"
             text="Dúvida no meio do guia? Pergunte à IA."
-            to="/busca"
+            @click="painel.abrir()"
           />
         </NuTocSidebar>
 

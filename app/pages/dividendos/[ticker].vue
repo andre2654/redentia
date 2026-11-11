@@ -118,6 +118,10 @@ if (data.value) {
     ],
   })
 }
+
+// "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
+// mora no painel desde 02/11, e a /busca não é mais onde se conversa.
+const painel = useChatPainel()
 </script>
 
 <template>
@@ -213,7 +217,7 @@ if (data.value) {
     <CalcSplit :tone="faqTone" wide>
       <template #title>Dúvidas sobre os {{ div.isFii ? 'rendimentos' : 'dividendos' }} de {{ ticker }}.</template>
       <template #left>
-        <NuBotaoSeta to="/busca" variante="azul" tamanho="m" class="dvt__pill">Perguntar à IA</NuBotaoSeta>
+        <NuBotaoSeta variante="azul" tamanho="m" class="dvt__pill" @click="painel.abrir()">Perguntar à IA</NuBotaoSeta>
       </template>
       <NuFaqAccordion :items="div.faq" :surface="faqTone === 'cream' ? 'white' : undefined" />
     </CalcSplit>
