@@ -29,12 +29,15 @@ import type {
   TeseEvalVM,
   TeseHeroVM,
   TeseNumbersVM,
+  TeseAtivoVM,
+  TeseMonitoringVM,
   TesePayload,
   TeseReportPartVM,
   TeseReportSourceVM,
   TeseReportTocItemVM,
   TeseReportVM,
   TeseStudyVM,
+  TeseVerdictVM,
   ThesisFullApi,
   ThesisPerformanceApi,
   ThesisReportApi,
@@ -42,6 +45,7 @@ import type {
   ThesisStudyApi,
 } from '~/types/tese'
 import type { AcaoStatRow, PriceMode, PricePointApi } from '~/types/acao'
+import { marcaNoTexto } from '~/utils/marcaNoTexto'
 
 /* ————— helpers ————— */
 
@@ -449,6 +453,19 @@ function buildDiary(d: ThesisFullApi, conv: ConvictionHistoryApi | null): TeseDi
         .filter((f) => !!f.title)
         .map((f) => ({ title: f.title, url: f.url, meta: [f.type, f.publisher].filter(Boolean).join(' · ') })),
       rowDate: rowDateFmt(s.date),
+      // apresentação: o selo da tag, o tempo de leitura e a tabela de ativos do leitor
+      tag: s.tag?.trim() || null,
+      minutes: s.minutes != null && s.minutes > 0 ? s.minutes : null,
+      assets: (s.assets ?? [])
+        .filter((a) => !!a?.ticker)
+        .map((a) => ({
+          ticker: a.ticker,
+          name: a.name ?? '',
+          assessment: a.assessment ?? '',
+          decision: a.decision ?? '',
+          variant: evalBadge(a.decision ?? '', false).variant,
+          why: a.why ?? '',
+        })),
     }
   })
 
@@ -539,6 +556,7 @@ function buildReport(d: ThesisFullApi): TeseReportVM | null {
 
   return {
     metaLine: metaParts.length ? metaParts.join(' · ') : null,
+    version: typeof r.version === 'number' ? r.version : null,
     toc,
     opportunityHtml,
     thesisHtml,
@@ -566,6 +584,103 @@ function reportWordCount(r: ThesisReportApi | null | undefined): number | null {
   ]
   const n = texts.reduce((acc, t) => acc + (stripMarks(t ?? '').match(/\S+/g)?.length ?? 0), 0)
   return n > 0 ? n : null
+}
+
+/* ————— campos de apresentação da tela repensada (11/11/2026) —————
+ * Sem conta e sem chamada: o que já vinha no detail e a tela não usava. */
+
+/** data.companies[] → os ativos da lista "O que está na tese" (texto cru; a tela reparte). */
+function buildAtivos(d: ThesisFullApi): TeseAtivoVM[] {
+  return (d.companies ?? [])
+    .filter((c) => !!c?.ticker)
+    .map((c) => ({
+      ticker: c.ticker,
+      name: c.name ?? '',
+      role: c.role?.trim() ?? '',
+      status: c.status?.trim() ?? '',
+      rationale: c.rationale?.trim() ?? '',
+      catalyst: c.catalyst?.trim() ?? '',
+    }))
+}
+
+/** data.verdicts[] com título e corpo separados (os três cartões de "A ideia em 1 minuto"). */
+function buildVerdicts(d: ThesisFullApi): TeseVerdictVM[] {
+  return (d.verdicts ?? [])
+    .filter((v) => !!v?.kind && (!!v.title?.trim() || !!v.body?.trim()))
+    .map((v) => ({ kind: v.kind, title: v.title?.trim() ?? '', body: v.body?.trim() ?? '' }))
+}
+
+/** data.monitoring (a API local devolve [] quando não há): só vale com corpo. */
+function buildMonitoring(d: ThesisFullApi): TeseMonitoringVM | null {
+  const m = d.monitoring as Partial<TeseMonitoringVM> | null | undefined
+  if (!m || typeof m.body !== 'string' || !m.body.trim()) return null
+  return { eyebrow: m.eyebrow?.trim() ?? '', body: m.body.trim(), ctaLabel: m.ctaLabel?.trim() ?? '' }
+}
+
+/** O mês do lançamento: o startLabel da série ('set 2025'), senão o do detail. */
+function buildLaunchLabel(d: ThesisFullApi, perf: ThesisPerformanceApi | null): string | null {
+  const daSerie = perf?.startLabel?.trim()
+  if (daSerie) return daSerie
+  const mes = d.publishedLabel?.trim().toLowerCase()
+  return mes && d.publishedYear != null ? `${mes} ${d.publishedYear}` : null
+}
+
+/**
+ * O nome da marca nos textos que vão à tela (docs/aportou/tese.md): o backend
+ * ainda grava "Redentia" em parte do texto ("A Redentia vigia por você"). Só
+ * exibição: o SEO (buildSeo) lê o detail como veio; título, fontes e links não
+ * passam por aqui.
+ */
+function comMarca(d: ThesisFullApi): ThesisFullApi {
+  const t = marcaNoTexto
+  const lista = (l: string[] | null | undefined) => (l ? l.map((x) => t(x)) : l)
+  const m = d.monitoring as Partial<TeseMonitoringVM> | null | undefined
+  const r = d.report
+  return {
+    ...d,
+    description: t(d.description),
+    statementHtml: t(d.statementHtml),
+    statementSubHtml: t(d.statementSubHtml),
+    verdicts: d.verdicts ? d.verdicts.map((v) => ({ ...v, title: t(v.title), body: t(v.body) })) : d.verdicts,
+    companies: d.companies
+      ? d.companies.map((c) => ({ ...c, role: t(c.role), status: t(c.status), catalyst: t(c.catalyst), rationale: t(c.rationale) }))
+      : d.companies,
+    monitoring: m && typeof m.body === 'string'
+      ? { ...(m as TeseMonitoringVM), eyebrow: t(m.eyebrow ?? ''), body: t(m.body), ctaLabel: t(m.ctaLabel ?? '') }
+      : d.monitoring,
+    studies: d.studies
+      ? d.studies.map((s) => ({
+          ...s,
+          title: t(s.title),
+          summary: t(s.summary),
+          assets: s.assets ? s.assets.map((a) => ({ ...a, assessment: t(a.assessment), why: t(a.why) })) : s.assets,
+          decisions: s.decisions ? s.decisions.map((x) => ({ ...x, detail: t(x.detail) })) : s.decisions,
+        }))
+      : d.studies,
+    report: r
+      ? {
+          ...r,
+          opportunity: r.opportunity ? { ...r.opportunity, paragraphs: lista(r.opportunity.paragraphs) ?? [] } : r.opportunity,
+          thesis: lista(r.thesis) ?? null,
+          risks: lista(r.risks) ?? null,
+          parts: r.parts ? r.parts.map((p) => ({ ...p, heading: t(p.heading), paragraphs: lista(p.paragraphs) ?? [] })) : r.parts,
+          valuation: r.valuation
+            ? {
+                ...r.valuation,
+                intro: t(r.valuation.intro),
+                math: lista(r.valuation.math) ?? null,
+                vsPrice: t(r.valuation.vsPrice),
+                assumptions: r.valuation.assumptions
+                  ? r.valuation.assumptions.map((a) => ({ ...a, label: t(a.label), note: t(a.note) }))
+                  : r.valuation.assumptions,
+              }
+            : r.valuation,
+          conclusion: r.conclusion
+            ? { ...r.conclusion, paragraphs: lista(r.conclusion.paragraphs) ?? [], milestones: lista(r.conclusion.milestones) ?? null }
+            : r.conclusion,
+        }
+      : r,
+  }
 }
 
 /* ————— SEO ————— */
@@ -767,10 +882,30 @@ function statusOf(e: unknown): number | null {
   return err?.statusCode ?? err?.status ?? err?.response?.status ?? null
 }
 
-async function loadTese(base: string, slug: string): Promise<TesePayload> {
+/* ————— dado de exemplo, só no dev (?tese-exemplo=1) —————
+ * A API local de teste devolve a tese quase vazia (sem verdicts, studies,
+ * report, statementHtml). Para VER a tela com dado cheio, `?tese-exemplo=1` lê
+ * app/dev/tese-exemplo.local.json (cópia crua de uma tese de produção, fora do
+ * git) no lugar do detail da API, e o resto segue o MESMO caminho (os mesmos
+ * builders; desempenho, convicção e IBOV continuam vindo da API). Mesmo padrão
+ * do ?folha-estado= e do ?entrar-estado=: `import.meta.dev` é falso no build
+ * de produção e o glob some do bundle. */
+const exemplosDeTese = import.meta.dev
+  ? import.meta.glob<{ data?: ThesisFullApi } | ThesisFullApi>('~/dev/tese-exemplo.local.json', { import: 'default' })
+  : {}
+
+async function detalheDeExemplo(): Promise<ThesisFullApi | null> {
+  const carregar = Object.values(exemplosDeTese)[0]
+  if (!carregar) return null
+  const cru = await carregar()
+  // o arquivo é o JSON cru da API: o payload vem dentro de `data`
+  return ((cru as { data?: ThesisFullApi }).data ?? cru) as ThesisFullApi
+}
+
+async function loadTese(base: string, slug: string, exemplo = false): Promise<TesePayload> {
   let detail: ThesisFullApi
   try {
-    detail = (await teseFetchDetail(base, slug)).data
+    detail = (exemplo ? await detalheDeExemplo() : null) ?? (await teseFetchDetail(base, slug)).data
   } catch (e) {
     const status = statusOf(e)
     if (status === 404) {
@@ -826,17 +961,24 @@ async function loadTese(base: string, slug: string): Promise<TesePayload> {
     revalBadge: null,
   }
 
+  // os textos que vão à tela, com o nome da marca de hoje (só exibição; o SEO lê o detail cru)
+  const tela = safe(() => comMarca(detail), detail, 'marca')
+
   return {
     slug,
     title: detail.title,
-    hero: safe(() => buildHero(detail, perf, conv, latestStudy), heroFallback, 'hero'),
-    editorial: safe(() => buildEditorial(detail), null, 'editorial'),
-    numbers: safe(() => buildNumbers(detail, perf, conv, ibov), null, 'numbers'),
-    evalSection: safe(() => buildEval(detail), null, 'eval'),
+    ativos: safe(() => buildAtivos(tela), [], 'ativos'),
+    verdicts: safe(() => buildVerdicts(tela), [], 'verdicts'),
+    monitoring: safe(() => buildMonitoring(tela), null, 'monitoring'),
+    launchLabel: safe(() => buildLaunchLabel(detail, perf), null, 'launch'),
+    hero: safe(() => buildHero(tela, perf, conv, latestStudy), heroFallback, 'hero'),
+    editorial: safe(() => buildEditorial(tela), null, 'editorial'),
+    numbers: safe(() => buildNumbers(tela, perf, conv, ibov), null, 'numbers'),
+    evalSection: safe(() => buildEval(tela), null, 'eval'),
     studiesCount: detail.studiesCount ?? 0,
-    drivers: safe(() => buildDrivers(detail), null, 'drivers'),
-    diary: safe(() => buildDiary(detail, conv), null, 'diary'),
-    report: safe(() => buildReport(detail), null, 'report'),
+    drivers: safe(() => buildDrivers(tela), null, 'drivers'),
+    diary: safe(() => buildDiary(tela, conv), null, 'diary'),
+    report: safe(() => buildReport(tela), null, 'report'),
     seo: buildSeo(detail),
   }
 }
@@ -850,9 +992,12 @@ export async function useTese(slug: string) {
   const serverBase = (config.backendDirectBase as string) || 'https://redentia-api.saraivada.com/api'
   const clientBase = '/api/backend'
 
+  // só no dev: ?tese-exemplo=1 troca o detail pelo arquivo local (ver detalheDeExemplo)
+  const exemplo = import.meta.dev && String(useRoute().query['tese-exemplo'] ?? '') === '1'
+
   const { data, error } = await useAsyncData<TesePayload>(
-    `tese:${slug}`,
-    () => loadTese(import.meta.server ? serverBase : clientBase, slug),
+    exemplo ? `tese:${slug}:exemplo` : `tese:${slug}`,
+    () => loadTese(import.meta.server ? serverBase : clientBase, slug, exemplo),
   )
 
   return { data, error }

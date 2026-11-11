@@ -261,6 +261,16 @@ export interface TeseConvBadgeVM {
   changed: boolean
 }
 
+/** Linha da tabela de ativos do leitor de estudo (studies[].assets[], apresentação). */
+export interface TeseStudyAssetVM {
+  ticker: string
+  name: string
+  assessment: string
+  decision: string // 'Mantém' | 'Em observação' | 'Entra'…
+  variant: TeseEvalBadgeVariant
+  why: string
+}
+
 export interface TeseStudyVM {
   id: number | string
   dateBadge: string // 'Hoje · 11 jul 2026' | '8 jul 2026'
@@ -271,6 +281,10 @@ export interface TeseStudyVM {
   decisions: TeseDecisionVM[]
   sources: TeseSourceVM[]
   rowDate: string // '10 jul'
+  /* apresentação (tela repensada, 11/11/2026) — ausentes no seed do design */
+  tag?: string | null // 'FUNDAMENTO' | 'MACRO' | 'DADOS' | 'RISCO'
+  minutes?: number | null // minutos de leitura
+  assets?: TeseStudyAssetVM[]
 }
 
 export interface TeseDiaryVM {
@@ -318,6 +332,8 @@ export interface TeseReportTocItemVM {
 export interface TeseReportVM {
   /** 'Leitura de 18 min · Publicado em 1 ago 2026' (partes ausentes somem) */
   metaLine: string | null
+  /** versão do relatório (apresentação: 'versão 1' no cabeçalho) */
+  version?: number | null
   toc: TeseReportTocItemVM[] // só seções presentes (âncoras simples)
   opportunityHtml: string[] // HTML escapado
   thesisHtml: string[] // pilares (HTML escapado)
@@ -329,9 +345,45 @@ export interface TeseReportVM {
   sources: TeseReportSourceVM[] // fontes consolidadas
 }
 
+/* ————— tela repensada (11/11/2026, docs/aportou/tese.md): campos de apresentação —————
+ * O mesmo dado do detail, sem conta nova: só passa pela tela o que antes ficava
+ * de fora (o papel do ativo, o texto cru de status/rationale/catalyst que a
+ * tela reparte com utils/teseTexto, os vereditos com título e corpo separados,
+ * o monitoring). O nome da marca nesses textos passa por marcaNoTexto. */
+
+/** Um ativo da tese (data.companies[]), com os textos crus. */
+export interface TeseAtivoVM {
+  ticker: string
+  name: string
+  role: string
+  status: string
+  rationale: string
+  catalyst: string
+}
+
+/** Um veredito (data.verdicts[]): 'favor' | 'sinal' | 'risco'. */
+export interface TeseVerdictVM {
+  kind: string
+  title: string
+  body: string
+}
+
+/** data.monitoring: o que a Aportou acompanha nesta tese. */
+export interface TeseMonitoringVM {
+  eyebrow: string
+  body: string
+  ctaLabel: string
+}
+
 export interface TesePayload {
   slug: string
   title: string
+  /* apresentação (ausentes no seed do design: a tela cai nos campos de sempre) */
+  ativos?: TeseAtivoVM[]
+  verdicts?: TeseVerdictVM[]
+  monitoring?: TeseMonitoringVM | null
+  /** 'set 2025' — o mês do lançamento (o rótulo da série de desempenho) */
+  launchLabel?: string | null
   hero: TeseHeroVM
   editorial: TeseEditorialVM | null
   numbers: TeseNumbersVM | null
