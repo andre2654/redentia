@@ -113,18 +113,18 @@ const frase = computed(() => {
 <style scoped>
 .rbpt { display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; animation: nu-fade .5s ease both; }
 .rbpt__main { flex: 1.2 1 460px; min-width: min(320px, 100%); }
-.rbpt__eyebrow { display: block; color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; letter-spacing: -.2px; }
+.rbpt__eyebrow { display: block; color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .rbpt__num {
-  margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero); font-weight: 800;
+  margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display);
   letter-spacing: -.045em; line-height: .98; font-variant-numeric: tabular-nums;
 }
-.rbpt__un { display: block; margin-top: 10px; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
-.rbpt__frase-h { margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -.04em; line-height: 1.02; }
+.rbpt__un { display: block; margin-top: 10px; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -.03em; line-height: 1.1; }
+.rbpt__frase-h { margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -.04em; line-height: 1.02; }
 .rbpt__frase { margin: 20px 0 0; max-width: 34ch; color: var(--nu-gray); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; }
 .rbpt__acoes { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
 .rbpt__btn {
   min-height: 52px; padding: 0 28px; border: 0; border-radius: var(--nu-r-pill); cursor: pointer;
-  background: var(--nu-blue); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-md); font-weight: 800;
+  background: var(--nu-blue); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte);
   transition: background .2s, transform .15s;
 }
 .rbpt__btn:hover { background: var(--nu-blue-hover); }
@@ -140,7 +140,7 @@ const frase = computed(() => {
 .rbpt__linha { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 20px 0; border-top: 1px solid var(--nu-sand-2); }
 .rbpt__linha:first-child { border-top: 0; }
 .rbpt__rot { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
-.rbpt__val { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.rbpt__val { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .rbpt__val small { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; letter-spacing: 0; }
 
 .rbpt__cartao { transition: box-shadow .25s ease; }

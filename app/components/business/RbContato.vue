@@ -384,7 +384,7 @@ watch(estado, async (v) => {
   margin: 0;
   color: var(--nu-navy);
   font-size: var(--nu-fs-h2);
-  font-weight: 800;
+  font-weight: var(--nu-w-display);
   letter-spacing: -0.04em;
   line-height: 1.05;
 }
@@ -414,7 +414,7 @@ watch(estado, async (v) => {
 .rbct__rotulo {
   color: var(--nu-navy);
   font-size: var(--nu-fs-sm);
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   line-height: 1.3;
 }
 .rbct__opc { color: var(--nu-gray); font-weight: 500; }
@@ -476,7 +476,7 @@ watch(estado, async (v) => {
   margin: 0;
   color: var(--nu-navy);
   font-size: var(--nu-fs-dense);
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   line-height: 1.4;
 }
 .rbct__nota {
@@ -509,7 +509,7 @@ watch(estado, async (v) => {
 .rbct__aceite-texto label { cursor: pointer; }
 .rbct__aceite-texto a {
   color: var(--nu-blue);
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -529,7 +529,7 @@ watch(estado, async (v) => {
 .rbct__falha:focus { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .rbct__falha a {
   color: var(--nu-blue);
-  font-weight: 800;
+  font-weight: var(--nu-w-forte);
   text-decoration: underline;
   text-underline-offset: 3px;
   overflow-wrap: anywhere;
@@ -548,7 +548,7 @@ watch(estado, async (v) => {
   color: var(--nu-white);
   font-family: inherit;
   font-size: var(--nu-fs-md);
-  font-weight: 800;
+  font-weight: var(--nu-w-forte);
   line-height: 1.2;
   cursor: pointer;
   transition: background .2s;
@@ -567,7 +567,7 @@ watch(estado, async (v) => {
   margin: 0;
   color: var(--nu-navy);
   font-size: var(--nu-fs-2xl);
-  font-weight: 800;
+  font-weight: var(--nu-w-forte);
   letter-spacing: -0.03em;
   line-height: 1.15;
 }

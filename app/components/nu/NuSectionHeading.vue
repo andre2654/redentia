@@ -20,7 +20,7 @@ defineProps<{ eyebrow?: string; dark?: boolean }>()
 <style scoped>
 .nsh__title {
   margin: 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2); font-weight: 800;
+  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display);
   letter-spacing: -0.03em; line-height: 1.02;
 }
 .nsh__title--after-eyebrow { margin: 18px 0 0; }
@@ -29,7 +29,7 @@ defineProps<{ eyebrow?: string; dark?: boolean }>()
   color: var(--nu-gray-3); font-size: var(--nu-fs-dek); font-weight: 500;
   line-height: 1.55; margin-top: 20px; max-width: 620px;
 }
-.nsh__dek :deep(strong) { color: var(--nu-ink); font-weight: 800; }
+.nsh__dek :deep(strong) { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .nsh__dek--dark { color: var(--nu-cream-text-70); }
 .nsh__dek--dark :deep(strong) { color: var(--nu-cream-text); }
 </style>

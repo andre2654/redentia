@@ -88,22 +88,22 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .avt__frases, .avt__texto { grid-area: 1 / 1; }
 .avt__frases { align-self: start; max-width: 560px; pointer-events: none; }
 .avt__frase {
-  margin: 0; color: var(--nu-white); font-size: clamp(30px, 3.6vw, 48px); font-weight: 800;
+  margin: 0; color: var(--nu-white); font-size: clamp(30px, 3.6vw, 48px); font-weight: var(--nu-w-display);
   letter-spacing: -0.03em; line-height: 1.05; text-wrap: balance;
 }
-.avt-frase-enter-active, .avt-frase-leave-active { transition: opacity .45s ease, transform .5s cubic-bezier(.22, 1, .36, 1); }
+.avt-frase-enter-active, .avt-frase-leave-active { transition: opacity .45s ease, transform .5s var(--nu-ease-saida); }
 .avt-frase-enter-from { opacity: 0; transform: translateY(14px); }
 .avt-frase-leave-to { opacity: 0; transform: translateY(-10px); }
 .avt__texto { max-width: 600px; }
 .avt__eyebrow + .avt__titulo { margin-top: 18px; }
-.avt__titulo { margin: 0; color: var(--nu-white); font-size: clamp(42px, 5vw, 72px); font-weight: 800; letter-spacing: -0.035em; line-height: 0.98; }
+.avt__titulo { margin: 0; color: var(--nu-white); font-size: clamp(42px, 5vw, 72px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 0.98; }
 .avt__dek { margin: clamp(18px, 2vw, 24px) 0 0; max-width: 560px; color: var(--nu-on-dark); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; }
 .avt__oferta { margin-top: clamp(28px, 3.6vw, 40px); }
 
 /* a coreografia: o texto espera o leque; cada parte entra um pouco depois da outra */
-.avt--coreografia .avt__texto > * { opacity: 0; transform: translateY(18px); animation: avt-entra .6s cubic-bezier(.22, 1, .36, 1) 6s forwards; }
+.avt--coreografia .avt__texto > * { opacity: 0; transform: translateY(18px); animation: avt-entra .6s var(--nu-ease-saida) 6s forwards; }
 .avt--coreografia.avt--js:not(.avt--revelado) .avt__texto > *, .avt--coreografia.avt--js:not(.avt--revelado) .avt__veu { animation: none; }
-.avt--revelado .avt__texto > * { animation: avt-entra .6s cubic-bezier(.22, 1, .36, 1) forwards; }
+.avt--revelado .avt__texto > * { animation: avt-entra .6s var(--nu-ease-saida) forwards; }
 .avt--revelado .avt__texto > :nth-child(2) { animation-delay: .1s; }
 .avt--revelado .avt__texto > :nth-child(3) { animation-delay: .2s; }
 .avt--revelado .avt__texto > :nth-child(4) { animation-delay: .32s; }

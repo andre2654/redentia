@@ -169,7 +169,7 @@ function aoClicarNoMiolo(e: MouseEvent) {
 .cid__selo {
   position: absolute; top: -3px; right: -5px; display: grid; place-items: center; min-width: 19px; height: 19px; padding: 0 5px;
   border-radius: var(--nu-r-pill); background: var(--nu-amber-fill); color: var(--nu-ink);
-  font-size: var(--nu-fs-xs); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1;
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; line-height: 1;
   box-shadow: 0 0 0 2px var(--nu-ink);
 }
 
@@ -187,7 +187,7 @@ function aoClicarNoMiolo(e: MouseEvent) {
   width: min(720px, 92vw); max-height: 86vh; overflow: auto; box-sizing: border-box; overscroll-behavior: contain;
   background: var(--nu-page); border-radius: var(--nu-r-card-lg);
   padding: 32px 40px 28px; box-shadow: var(--nu-shadow-day-modal);
-  animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both;
+  animation: nu-subir .32s var(--nu-ease-saida) both;
 }
 .cid__card:focus { outline: none; }
 .cid__alca { display: none; }
@@ -195,7 +195,7 @@ function aoClicarNoMiolo(e: MouseEvent) {
 .cid__assinatura { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin: 0; min-width: 0; }
 .cid__marca {
   display: inline-flex; align-items: center; gap: 10px;
-  color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap;
+  color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap;
 }
 .cid__olhou { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
 .cid__fechar {
@@ -203,14 +203,14 @@ function aoClicarNoMiolo(e: MouseEvent) {
   background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer; transition: background .2s, transform .2s;
 }
 .cid__fechar:hover { background: var(--nu-line-2); transform: rotate(90deg); }
-.cid__h2 { margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.08; text-wrap: pretty; }
+.cid__h2 { margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.08; text-wrap: pretty; }
 .cid__corpo { margin-top: 8px; }
-.cid__pe { margin-top: 22px; padding-top: 18px; border-top: 1.5px solid var(--nu-line); }
+.cid__pe { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--nu-line); }
 
 /* a contagem do título: os números em destaque, no tom do que contam */
 .cah__n {
   display: inline-grid; place-items: center; min-width: 1.4em; height: 1.4em; padding: 0 .36em; margin: 0 .06em 0 0;
-  border-radius: var(--nu-r-tag); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; vertical-align: .06em;
+  border-radius: var(--nu-r-tag); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; line-height: 1; vertical-align: .06em;
 }
 .cah__cola { white-space: nowrap; }
 .cah__n--atencao { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
@@ -218,11 +218,11 @@ function aoClicarNoMiolo(e: MouseEvent) {
 /* ——— as linhas: o acabamento que o dono preferiu (o idioma dos indicadores do /asset) ——— */
 .cah :deep(.cah__frase) { margin: 14px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 .cah :deep(.cah__cols) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
-.cah :deep(.cah__grupo) { display: flex; align-items: baseline; gap: 8px; margin: 18px 0 4px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cah :deep(.cah__grupo) { display: flex; align-items: baseline; gap: 8px; margin: 18px 0 4px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .cah :deep(.cah__lista) { list-style: none; margin: 0; padding: 0; }
 .cah :deep(.cah__item) {
   position: relative; margin: 0 0 -1px; padding: 14px 0 8px;
-  border-top: 1.5px solid var(--nu-line); border-bottom: 1.5px solid var(--nu-line);
+  border-top: 1px solid var(--nu-line); border-bottom: 1px solid var(--nu-line);
 }
 .cah :deep(.cah__item::before) {
   content: ''; position: absolute; inset: 0 -12px; z-index: -1; border-radius: 12px;
@@ -232,21 +232,21 @@ function aoClicarNoMiolo(e: MouseEvent) {
 .cah :deep(.cah__linha) { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 0; }
 .cah :deep(.cah__t) {
   display: inline-flex; align-items: baseline; gap: 10px; min-width: 0;
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; line-height: 1.4;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); line-height: 1.4;
 }
 /* o marcador: a cor da gravidade, sempre ao lado de um rótulo (o grupo, o "Vale olhar") */
 .cah :deep(.cah__t::before) { content: ''; flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--nu-gray); transform: translateY(-1px); }
 .cah :deep(.cah__item--alta .cah__t::before) { background: var(--nu-red-text); }
 .cah :deep(.cah__item--media .cah__t::before) { background: var(--nu-amber); }
 .cah :deep(.cah__item--forca .cah__t::before) { background: var(--nu-green); }
-.cah :deep(.cah__v) { flex-shrink: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.cah :deep(.cah__v) { flex-shrink: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
 .cah :deep(.cah__x) { margin: 4px 0 0 18px; max-width: 72ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
 .cah :deep(.cah__pe) { display: flex; align-items: center; justify-content: space-between; gap: 4px 16px; flex-wrap: wrap; min-height: 30px; margin: 2px 0 0 18px; }
 /* o "Perguntar à IA" da linha: surge no hover e no foco */
 .cah :deep(.cah__perg) {
   display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 4px 0; border: 0; background: none; cursor: pointer;
-  color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
-  opacity: 0; transform: translateX(-4px); transition: opacity .2s ease, transform .25s cubic-bezier(.22, 1, .36, 1), gap .2s ease, color .2s ease;
+  color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap;
+  opacity: 0; transform: translateX(-4px); transition: opacity .2s ease, transform .25s var(--nu-ease-saida), gap .2s ease, color .2s ease;
 }
 .cah :deep(.cah__perg::after) {
   content: ''; width: 13px; height: 13px; background: currentColor;
@@ -268,7 +268,7 @@ function aoClicarNoMiolo(e: MouseEvent) {
   .cid__card {
     width: 100%; max-height: 90vh; max-height: 90dvh; border-radius: var(--nu-r-card-lg) var(--nu-r-card-lg) 0 0;
     padding: 12px 20px calc(20px + env(safe-area-inset-bottom));
-    animation: cidsobe .32s cubic-bezier(.2, .8, .2, 1);
+    animation: cidsobe .32s var(--nu-ease-saida);
   }
   .cid__alca { display: block; width: 40px; height: 4px; margin: 0 auto 14px; border-radius: 2px; background: var(--nu-line); }
   .cid__h2 { margin-top: 16px; font-size: var(--nu-fs-2xl); }

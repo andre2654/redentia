@@ -95,7 +95,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .nsr-wrap {
-  background: var(--nu-page); border-bottom: 1.5px solid var(--nu-line-2);
+  background: var(--nu-page); border-bottom: 1px solid var(--nu-line-2);
   /* MESMO mecanismo do NuMarketTicker: gruda abaixo do header sticky; --nuh-h
      vive no <html> (76px normal, 58px encolhido). */
   position: sticky; top: var(--nuh-h, 76px); z-index: 40;
@@ -108,19 +108,19 @@ onBeforeUnmount(() => {
   color: var(--nu-ink);
 }
 .nsr__head { display: inline-flex; align-items: baseline; gap: 10px; min-width: 0; }
-.nsr__title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap; }
+.nsr__title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); white-space: nowrap; }
 .nsr__count { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 600; white-space: nowrap; }
-.nsr__chev { flex-shrink: 0; color: var(--nu-ink); transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.nsr__chev { flex-shrink: 0; color: var(--nu-ink); transition: transform .25s var(--nu-ease-saida); }
 .nsr__chev--open { transform: rotate(180deg); }
 
 .nsr__panel {
   position: absolute; top: calc(100% + 1.5px); left: 0; right: 0; z-index: 41;
   background: var(--nu-page);
-  border-bottom: 1.5px solid var(--nu-line-2);
+  border-bottom: 1px solid var(--nu-line-2);
   box-shadow: var(--nu-shadow-card);
   display: flex; flex-direction: column;
   max-height: min(62vh, 480px); overflow-y: auto;
-  animation: nu-fade .22s cubic-bezier(.2, .8, .2, 1) both;
+  animation: nu-fade .22s var(--nu-ease-saida) both;
 }
 .nsr__row {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
@@ -129,10 +129,10 @@ onBeforeUnmount(() => {
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600;
   transition: background .15s;
 }
-.nsr__row + .nsr__row { border-top: 1.5px solid var(--nu-line-2); }
+.nsr__row + .nsr__row { border-top: 1px solid var(--nu-line-2); }
 .nsr__row:hover { background: var(--nu-band); }
-.nsr__row svg { color: var(--nu-gray); flex-shrink: 0; transition: transform .2s cubic-bezier(.2, .8, .2, 1); }
+.nsr__row svg { color: var(--nu-gray); flex-shrink: 0; transition: transform .2s var(--nu-ease-saida); }
 .nsr__row:hover svg { transform: translateX(3px); }
-.nsr__row--active { color: var(--nu-blue-text); font-weight: 700; }
+.nsr__row--active { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); }
 .nsr__row--active svg { color: var(--nu-blue); }
 </style>

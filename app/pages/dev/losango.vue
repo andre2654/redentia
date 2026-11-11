@@ -109,21 +109,21 @@ const propsDe = (c: Caso) => ({
   padding: clamp(24px, 4vw, 56px) clamp(16px, 5.5vw, 80px) 96px;
 }
 .dva__topo { max-width: 72ch; }
-.dva__sobre { margin: 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 700; }
-.dva__titulo { margin: 10px 0 0; font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; }
+.dva__sobre { margin: 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.dva__titulo { margin: 10px 0 0; font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1.05; }
 .dva__sub { margin: 12px 0 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-lg); font-weight: 500; }
 .dva__bloco { margin-top: clamp(48px, 6vw, 88px); padding-top: 28px; border-top: 1px solid var(--nu-agora-linha); }
-.dva__h2 { margin: 0; font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; }
-.dva__rotulo { margin: 0 0 14px; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 700; }
+.dva__h2 { margin: 0; font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.03em; }
+.dva__rotulo { margin: 0 0 14px; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 
 /* o painel da home (HomeAgora): o texto à esquerda, o losango à direita, até 620 */
 .dva__painel {
   margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 24px clamp(24px, 3vw, 48px);
 }
 .dva__anel { justify-self: end; width: min(100%, 620px); }
-.dva__p-sobre { margin: 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-eyebrow); font-weight: 700; }
-.dva__p-frase { margin: 12px 0 0; font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
-.dva__p-veredito { margin: 18px 0 0; font-size: var(--nu-fs-h3); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.dva__p-sobre { margin: 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-eyebrow); font-weight: var(--nu-w-medio); }
+.dva__p-frase { margin: 12px 0 0; font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: -0.05em; line-height: 1; }
+.dva__p-veredito { margin: 18px 0 0; font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.02em; line-height: 1.2; }
 .dva__p-apoio { margin: 16px 0 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-xl); font-weight: 500; line-height: 1.5; }
 
 .dva__casos { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 48px clamp(24px, 3vw, 48px); }

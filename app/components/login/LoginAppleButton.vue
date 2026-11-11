@@ -51,7 +51,7 @@ async function clicar() {
   padding: 0 20px; border: 0; border-radius: var(--nu-r-pill);
   /* preto e branco do guia da Apple, não são tokens do tema */
   background: #000000; color: #FFFFFF;
-  font-family: inherit; font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer; transition: background .2s;
+  font-family: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s;
 }
 .lab__pilula:hover { background: #1D1D1F; }
 .lab__pilula:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }

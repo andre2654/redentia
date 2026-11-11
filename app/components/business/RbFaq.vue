@@ -129,7 +129,7 @@ function teclado(e: KeyboardEvent, i: number) {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   width: 100%; min-height: 44px; padding: 8px 16px; border-radius: 12px;
   background: transparent; color: var(--nu-gray-2);
-  font-size: var(--nu-fs-md); font-weight: 700; line-height: 1.3;
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); line-height: 1.3;
   transition: background .2s, color .2s;
 }
 .rbfq__aba:hover { background: var(--nu-white); color: var(--nu-ink); }
@@ -139,7 +139,7 @@ function teclado(e: KeyboardEvent, i: number) {
 .rbfq__aba:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .rbfq__qtd {
   flex-shrink: 0; color: var(--nu-gray);
-  font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 .rbfq__aba--on .rbfq__qtd { color: var(--nu-white-75); }
 

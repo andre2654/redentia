@@ -76,7 +76,7 @@ useMarcaRedentia()
   color: #f5f1ea;
   font-family: var(--nu-font);
   font-size: 20px;
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   letter-spacing: -0.03em;
 }
 .jt-brand img { display: block; width: 22px; height: 22px; }

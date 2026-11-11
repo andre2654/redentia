@@ -30,16 +30,16 @@ withDefaults(defineProps<{
 <style scoped>
 .cnu__legenda { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; }
 .cnu__valor {
-  margin: 6px 0 0; color: var(--nu-ink); font-size: clamp(46px, 5.2vw, 68px); font-weight: 800;
+  margin: 6px 0 0; color: var(--nu-ink); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display);
   letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 /* o número que muda: fade de 0,2s a cada conta nova */
 .cnu__troca { display: inline-block; animation: cnu-troca .2s ease both; }
 @keyframes cnu-troca { from { opacity: .35; transform: translateY(3px); } }
-.cnu__unidade { margin-left: 4px; color: var(--nu-gray); font-size: var(--nu-fs-h3); font-weight: 700; letter-spacing: -0.02em; }
+.cnu__unidade { margin-left: 4px; color: var(--nu-gray); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.02em; }
 .cnu__selo {
   display: inline-flex; margin-top: 16px; padding: 6px 11px; border-radius: var(--nu-r-tag);
-  font-size: var(--nu-fs-sm); font-weight: 700; animation: nu-fade .3s ease both;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); animation: nu-fade .3s ease both;
 }
 .cnu__selo--azul { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .cnu__selo--ok { background: var(--nu-green-bg); color: var(--nu-green-text); }

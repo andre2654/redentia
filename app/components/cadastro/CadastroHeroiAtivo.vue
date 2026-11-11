@@ -74,19 +74,19 @@ const id = useId()
 .cha--sobe { --cha-hoje: var(--nu-green-soft); }
 .cha__topo { display: flex; align-items: center; gap: 10px; padding-right: 44px; }
 .cha__logo { width: 30px; height: 30px; border-radius: 9px; flex: none; object-fit: cover; }
-.cha__logo--letra { display: grid; place-items: center; background: var(--nu-navy-3); font-size: var(--nu-fs-sm); font-weight: 800; }
+.cha__logo--letra { display: grid; place-items: center; background: var(--nu-navy-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); }
 .cha__nome { display: flex; flex-direction: column; line-height: 1.15; }
-.cha__nome b { font-size: var(--nu-fs-md); font-weight: 800; }
+.cha__nome b { font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .cha__nome span { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 500; }
 .cha__seguindo {
   display: inline-flex; align-items: center; gap: 5px; margin-left: 6px;
-  color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
+  color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
 }
 .cha__porque {
   align-self: flex-end; max-width: min(300px, 70%); margin-top: 2px; text-align: right;
   display: flex; flex-direction: column; gap: 2px;
 }
-.cha__porque b { color: var(--cha-hoje); font-size: var(--nu-fs-md); font-weight: 800; }
+.cha__porque b { color: var(--cha-hoje); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .cha__porque span {
   color: var(--nu-cream-text-78); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.4;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -112,7 +112,7 @@ const id = useId()
 .cha__area { animation: cha-surge var(--cha-ciclo) ease infinite; }
 .cha__ponto { animation: cha-ponto var(--cha-ciclo) ease infinite; }
 .cha__guia { animation: cha-guia var(--cha-ciclo) ease infinite; }
-.cha__porque { animation: cha-porque var(--cha-ciclo) cubic-bezier(.2, .8, .2, 1) infinite; }
+.cha__porque { animation: cha-porque var(--cha-ciclo) var(--nu-ease-saida) infinite; }
 .cha__seguindo { animation: cha-seguindo var(--cha-ciclo) ease infinite; }
 /* depois do cadastro o herói para no quadro final, com o "Seguindo" fixo */
 .cha--seguindo, .cha--seguindo .cha__linha, .cha--seguindo .cha__hoje, .cha--seguindo .cha__area,

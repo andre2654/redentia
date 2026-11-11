@@ -118,23 +118,23 @@ usePageSeo({
 .sth__card {
   display: flex; flex-direction: column; gap: 10px;
   background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-quente);
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
   /* entrada em cascata (60ms por cartão) */
   animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
 }
 .sth__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .sth__card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.sth__card-title { margin: 0; color: var(--nu-ink); font-size: clamp(20px, 1.8vw, 24px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; transition: color .2s ease; }
+.sth__card-title { margin: 0; color: var(--nu-ink); font-size: clamp(20px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.1; transition: color .2s ease; }
 .sth__card:hover .sth__card-title { color: var(--nu-blue-text); }
 .sth__card-count {
   display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink);
-  color: var(--nu-white); font-size: 13.5px; font-weight: 800; letter-spacing: .02em;
+  color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .02em;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .sth__card-desc {
   margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5;
 }
-.sth__card-cta { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.sth__card-cta { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); }
 .sth__card-cta svg { transition: transform .2s ease; }
 .sth__card:hover .sth__card-cta svg { transform: translateX(3px); }
 @media (prefers-reduced-motion: reduce) {

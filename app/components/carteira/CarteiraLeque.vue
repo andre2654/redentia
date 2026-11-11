@@ -216,7 +216,7 @@ onBeforeUnmount(() => { io?.disconnect(); ro?.disconnect() })
 <style scoped>
 .clq { position: relative; width: 100%; }
 .clq__svg { display: block; overflow: visible; }
-.clq__eixo { position: absolute; left: 0; right: 0; height: 20px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.clq__eixo { position: absolute; left: 0; right: 0; height: 20px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .clq__eixo-hoje { position: absolute; left: 0; white-space: nowrap; }
 .clq__eixo-ano { position: absolute; transform: translateX(-50%); white-space: nowrap; color: var(--nu-cream-text-35); font-weight: 500; }
 .clq__eixo-fim { position: absolute; transform: translateX(-50%); white-space: nowrap; }
@@ -265,8 +265,8 @@ onBeforeUnmount(() => { io?.disconnect(); ro?.disconnect() })
   position: absolute; left: 0; transform: translateY(-50%);
   display: flex; flex-direction: column; gap: 1px; white-space: nowrap;
 }
-.clq__valor { font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.01em; font-variant-numeric: tabular-nums; line-height: 1.15; }
-.clq__nome { color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 700; }
+.clq__valor { font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.01em; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.clq__nome { color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .clq__rotulo--otimista .clq__valor { color: var(--nu-green-soft); }
 .clq__rotulo--meio .clq__valor { color: var(--nu-cream-text); }
 .clq__rotulo--pessimista .clq__valor { color: var(--nu-red-soft); }

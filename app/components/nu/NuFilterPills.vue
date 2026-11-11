@@ -19,9 +19,9 @@ defineEmits<{ (e: 'update:modelValue', value: string): void }>()
 <style scoped>
 .nfp { display: flex; gap: 8px; flex-wrap: wrap; }
 .nfp__pill {
-  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: 700;
-  cursor: pointer; border: 1.5px solid var(--nu-line); background: var(--nu-white);
-  color: var(--nu-gray-3); transition: background .2s, color .2s, border-color .2s, transform .15s cubic-bezier(.2, .8, .2, 1); white-space: nowrap;
+  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
+  cursor: pointer; border: 1px solid var(--nu-line); background: var(--nu-white);
+  color: var(--nu-gray-3); transition: background .2s, color .2s, border-color .2s, transform .15s var(--nu-ease-saida); white-space: nowrap;
 }
 .nfp__pill:hover { border-color: var(--nu-ink); color: var(--nu-ink); }
 .nfp__pill:active { transform: scale(.98); }

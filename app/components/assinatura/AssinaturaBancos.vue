@@ -52,10 +52,10 @@ const SEGURANCA = [
 <style scoped>
 .abc { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
 .abc__cols { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
-.abc__titulo { margin: 18px 0 0; max-width: 17ch; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
+.abc__titulo { margin: 18px 0 0; max-width: 17ch; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
 .abc__titulo span { display: block; margin-top: 6px; color: var(--nu-blue); }
 .abc__dek { margin: 20px 0 0; max-width: 56ch; color: var(--nu-gray-3); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; }
-.abc__dek strong { color: var(--nu-ink); font-weight: 700; }
+.abc__dek strong { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .abc__acao { margin-top: clamp(26px, 3.2vw, 36px); }
 .abc__lado { display: flex; justify-content: center; }
 
@@ -68,13 +68,13 @@ const SEGURANCA = [
 .abc__seguranca { list-style: none; margin: clamp(36px, 4.5vw, 56px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: clamp(12px, 1.6vw, 20px); }
 .abc__ponto {
   display: flex; flex-direction: column; gap: 8px; padding: clamp(20px, 2.2vw, 26px); border-radius: var(--nu-r-panel); background: var(--nu-white); box-shadow: var(--nu-shadow-branco);
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida);
 }
 .abc__ponto:hover { transform: translateY(-2px); }
 .abc__escudo { display: grid; place-items: center; width: 38px; height: 38px; border-radius: var(--nu-r-chip); background: var(--nu-green-bg); color: var(--nu-green-text); }
-.abc__ponto-t { margin-top: 6px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em; }
+.abc__ponto-t { margin-top: 6px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -0.01em; }
 .abc__ponto-d { color: var(--nu-gray); font-size: 15px; font-weight: 500; line-height: 1.5; }
-.abc__ava--mais { background: var(--nu-blue); color: var(--nu-white); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: -0.02em; }
+.abc__ava--mais { background: var(--nu-blue); color: var(--nu-white); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); letter-spacing: -0.02em; }
 
 @media (max-width: 900px) {
   .abc__cols { grid-template-columns: minmax(0, 1fr); }

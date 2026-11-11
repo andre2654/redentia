@@ -486,7 +486,7 @@ usePageSeo({
 
 <style scoped>
 /* ——— tipografia compartilhada ——— */
-.jc__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.jc__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .jc__h4--accent { color: var(--nu-blue-text); }
 .jc__h4--negative { color: var(--nu-red-text); }
 .jc__small { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
@@ -499,10 +499,10 @@ usePageSeo({
   line-height: 1.7;
 }
 .jc__prose p:last-child { margin-bottom: 0; }
-.jc__prose strong { color: var(--nu-ink); font-weight: 800; }
+.jc__prose strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.jc__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.jc__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
 .jc__sub-p { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 420px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
@@ -516,10 +516,10 @@ usePageSeo({
 .jc__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .jc__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.jc__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.jc__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
 .jc__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
@@ -538,7 +538,7 @@ usePageSeo({
 .jc__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
 .jc__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
 .jc__result-box--negative { background: var(--nu-red-tint); }
-.jc__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.jc__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .jc__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— exemplos práticos (cards brancos na banda creme) ——— */
@@ -547,7 +547,7 @@ usePageSeo({
   gap: 18px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.jc__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.jc__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .jc__ex-title--center { text-align: center; margin: clamp(36px, 5vw, 56px) 0 0; }
 .jc__ex-title--center + .jc__ex-grid { margin-top: 20px; }
 .jc__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
@@ -565,16 +565,16 @@ usePageSeo({
 .jc__card-link {
   background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .jc__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.jc__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.jc__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 .jc__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.jc__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.jc__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .jc__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 .jc__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 </style>

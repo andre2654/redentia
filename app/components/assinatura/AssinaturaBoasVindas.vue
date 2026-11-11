@@ -57,7 +57,7 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
   display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
   animation: nu-fade .5s ease both;
 }
-.abv__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero-xl); font-weight: 800; letter-spacing: -0.04em; line-height: 0.96; }
+.abv__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero-xl); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 0.96; }
 .abv__linha { margin: clamp(16px, 2vw, 24px) 0 0; max-width: 620px; color: var(--nu-gray-2); font-size: clamp(18px, 2vw, 24px); font-weight: 500; line-height: 1.45; }
 .abv__linha--analisando {
   background: linear-gradient(100deg, var(--nu-gray-2) 0%, var(--nu-gray-2) 38%, var(--nu-sand) 50%, var(--nu-gray-2) 62%, var(--nu-gray-2) 100%);
@@ -80,12 +80,12 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
   display: inline-flex; align-items: center; justify-content: center;
 }
 .abf__texto { flex: 1; min-width: min(260px, 100%); display: flex; flex-direction: column; gap: 2px; color: var(--nu-green-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
-.abf__texto strong { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.abf__texto strong { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .abf__ok {
   border: none; cursor: pointer; font-family: inherit;
   background: var(--nu-white); color: var(--nu-ink);
-  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 22px; font-size: 15px; font-weight: 700;
-  box-shadow: inset 0 0 0 1.5px var(--nu-ink); transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 22px; font-size: 15px; font-weight: var(--nu-w-medio);
+  box-shadow: inset 0 0 0 1.5px var(--nu-ink); transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .abf__ok:hover { background: var(--nu-row-hover); }
 .abf__ok:active { transform: scale(.98); }
@@ -94,5 +94,5 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
   .abv__titulo br { display: none; }
 }
 .abv__jornada { margin-top: clamp(32px, 4vw, 48px); width: min(760px, 100%); }
-.abf__falta { color: var(--nu-blue-text); font-weight: 700; }
+.abf__falta { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); }
 </style>

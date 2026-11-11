@@ -95,15 +95,15 @@ const pronto = computed(() => (comEmail.value
 }
 .sgg__title {
   margin: 0; color: var(--nu-ink); font-size: clamp(17px, 1.6vw, 20px);
-  font-weight: 800; letter-spacing: -0.015em; line-height: 1.3; padding-top: 6px;
+  font-weight: var(--nu-w-forte); letter-spacing: -0.015em; line-height: 1.3; padding-top: 6px;
 }
 
 .sgg__chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
 .sgg__chip {
   display: inline-flex; align-items: center; gap: 7px; border: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 16px; font-size: 15px; font-weight: 800; letter-spacing: 0.02em;
+  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 16px; font-size: 15px; font-weight: var(--nu-w-forte); letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums; color: var(--nu-ink);
-  transition: background .2s, color .2s, transform .2s cubic-bezier(.2, .8, .2, 1), box-shadow .2s;
+  transition: background .2s, color .2s, transform .2s var(--nu-ease-saida), box-shadow .2s;
 }
 .sgg--on-cream .sgg__chip { background: var(--nu-cream-2); }
 .sgg--on-white .sgg__chip { background: var(--nu-white); box-shadow: var(--nu-shadow-quente); }
@@ -120,19 +120,19 @@ const pronto = computed(() => (comEmail.value
 .sgg__seg { width: 30px; height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-line-2); transition: background .3s; }
 .sgg--on-white .sgg__seg { background: var(--nu-line); }
 .sgg .sgg__seg--on { background: var(--nu-blue); }
-.sgg__count { margin-left: 6px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.sgg__count { margin-left: 6px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .sgg__later {
   background: none; border: none; cursor: pointer; min-height: 44px; padding: 0 4px;
-  color: var(--nu-gray-3); font-size: 15px; font-weight: 700; transition: color .2s;
+  color: var(--nu-gray-3); font-size: 15px; font-weight: var(--nu-w-medio); transition: color .2s;
 }
 .sgg__later:hover { color: var(--nu-ink); text-decoration: underline; text-underline-offset: 3px; }
 
-.sgg__done { display: flex; align-items: center; gap: 12px; margin: 0; color: var(--nu-ink); font-size: clamp(16px, 1.5vw, 18px); font-weight: 800; line-height: 1.4; }
+.sgg__done { display: flex; align-items: center; gap: 12px; margin: 0; color: var(--nu-ink); font-size: clamp(16px, 1.5vw, 18px); font-weight: var(--nu-w-forte); line-height: 1.4; }
 .sgg__check {
   width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--nu-green-bg); color: var(--nu-green-text);
-  animation: sgg-pousa .45s cubic-bezier(.2, .8, .2, 1) backwards;
+  animation: sgg-pousa .45s var(--nu-ease-saida) backwards;
 }
 /* o check se desenha, uma vez */
 .sgg__check path { stroke-dasharray: 1; animation: sgg-desenha .5s cubic-bezier(.65, 0, .35, 1) .2s backwards; }

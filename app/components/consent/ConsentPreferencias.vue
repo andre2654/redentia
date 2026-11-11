@@ -26,10 +26,10 @@ const { reabrir } = useConsent()
   color: var(--nu-ink);
   font-family: inherit;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   line-height: 1.2;
   cursor: pointer;
-  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .ckp__btn:hover { background: var(--nu-row-hover); }
 .ckp__btn:active { transform: scale(.98); }

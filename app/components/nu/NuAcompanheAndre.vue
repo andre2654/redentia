@@ -85,7 +85,7 @@ const hrefThreads = urlAcompanhe('threads', props.lugar)
   align-items: center;
   gap: 0.28em;
   color: var(--nu-blue-text);
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   line-height: 1.2;
   white-space: nowrap;
   text-decoration: underline;

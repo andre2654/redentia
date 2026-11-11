@@ -146,7 +146,7 @@ onBeforeUnmount(() => {
   width: min(460px, 92vw);
   background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
   padding: 34px 34px 30px; box-shadow: var(--nu-shadow-day-modal);
-  animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both;
+  animation: nu-subir .32s var(--nu-ease-saida) both;
 }
 /* fechar: o inverso, em .18s */
 /* (a animação de entrada segura opacity e transform com fill both: sai antes) */
@@ -159,11 +159,11 @@ onBeforeUnmount(() => {
    próprio foco de teclado. Mesma regra do NuDayModal/NuBriefingModal. */
 .nam__card:focus { outline: none; }
 .nam__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
-.nam__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.nam__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; }
 .nam__sub { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 .nam__close {
   flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; border: none;
-  background: var(--nu-day-close); color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
+  background: var(--nu-day-close); color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte);
   cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
 .nam__close:hover { background: var(--nu-day-close-hover); }
@@ -176,19 +176,19 @@ onBeforeUnmount(() => {
 }
 .nam__field:focus-within { border-color: var(--nu-blue); outline: 3px solid var(--nu-blue); outline-offset: 1px; }
 .nam__field--err { border-color: var(--nu-red); }
-.nam__prefix { color: var(--nu-gray); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; }
+.nam__prefix { color: var(--nu-gray); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
 .nam__input {
   flex: 1; min-width: 0; border: none; outline: none; background: transparent;
-  color: var(--nu-ink); font-size: 32px; font-weight: 800; letter-spacing: -0.03em;
+  color: var(--nu-ink); font-size: 32px; font-weight: var(--nu-w-forte); letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums; font-family: inherit;
 }
 .nam__input::placeholder { color: var(--nu-gray); opacity: .5; }
-.nam__err { margin: 10px 2px 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.nam__err { margin: 10px 2px 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 
 .nam__foot { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 28px; }
 .nam__cancel {
   background: transparent; color: var(--nu-gray-3); border: none;
-  border-radius: var(--nu-r-pill); min-height: 52px; padding: 0 20px; font-size: var(--nu-fs-md); font-weight: 700;
+  border-radius: var(--nu-r-pill); min-height: 52px; padding: 0 20px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
   font-family: inherit; cursor: pointer; transition: color .2s;
 }
 .nam__cancel:hover { color: var(--nu-ink); }

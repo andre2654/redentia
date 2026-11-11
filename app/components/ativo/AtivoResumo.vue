@@ -82,7 +82,7 @@ onBeforeUnmount(() => clearTimeout(fim))
 .ars2__sum {
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
   min-height: 68px; padding: 14px var(--ars2-m); cursor: pointer; list-style: none;
-  color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 700; line-height: 1.3;
+  color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-medio); line-height: 1.3;
   transition: background .2s ease;
 }
 .ars2__sum::-webkit-details-marker { display: none; }
@@ -92,38 +92,38 @@ onBeforeUnmount(() => clearTimeout(fim))
 .ars2__chev {
   display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
   background: var(--nu-ink); color: var(--nu-white);
-  transition: transform .3s cubic-bezier(.2, .8, .2, 1), background .2s ease;
+  transition: transform .3s var(--nu-ease-saida), background .2s ease;
 }
 .ars2__sum:hover .ars2__chev { background: var(--nu-ink-hover); }
 .ars2__mais[open] .ars2__chev { transform: rotate(45deg); }
-.ars2__mais[open] .ars2__sum { border-bottom: 1.5px solid var(--nu-line-2); }
+.ars2__mais[open] .ars2__sum { border-bottom: 1px solid var(--nu-line-2); }
 
 /* dentro: a largura toda, nas mesmas margens da barra */
 .ars2__corpo { padding: 20px var(--ars2-m) 26px; }
 .ars2__corpo :deep(.ars2__frase) { margin: 0 0 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; font-variant-numeric: tabular-nums; }
-.ars2__corpo :deep(b) { color: var(--nu-ink); font-weight: 700; white-space: nowrap; }
+.ars2__corpo :deep(b) { color: var(--nu-ink); font-weight: var(--nu-w-medio); white-space: nowrap; }
 /* a lista corre em fileiras na largura toda (uma coluna no celular): segue lista simples */
 .ars2__corpo :deep(.ars2__ind) { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 40px; margin: 18px 0 0; padding: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.75; font-variant-numeric: tabular-nums; }
 .ars2__corpo :deep(.ars2__ind li) { margin-left: 18px; }
 .ars2__corpo :deep(.ars2__ind li::marker) { color: var(--nu-gray); }
 .ars2__corpo :deep(.ars2__nota) { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
 .ars2__corpo :deep(.ars2__prov) { margin-top: 20px; }
-.ars2__corpo :deep(.ars2__anos) { display: flex; flex-wrap: wrap; margin: 12px 0 0; border-top: 1.5px solid var(--nu-line-2); border-bottom: 1.5px solid var(--nu-line-2); font-variant-numeric: tabular-nums; }
+.ars2__corpo :deep(.ars2__anos) { display: flex; flex-wrap: wrap; margin: 12px 0 0; border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2); font-variant-numeric: tabular-nums; }
 .ars2__corpo :deep(.ars2__ano) { display: flex; flex-direction: column; gap: 2px; padding: 10px 18px 10px 0; margin-right: 18px; }
 .ars2__corpo :deep(.ars2__ano dt) { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; }
 .ars2__corpo :deep(.ars2__ano dd) { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600; }
 .ars2__corpo :deep(.ars2__ano--atual dt) { color: var(--nu-blue-text); }
-.ars2__corpo :deep(.ars2__ano--doze) { padding-left: 18px; border-left: 1.5px solid var(--nu-line-2); }
+.ars2__corpo :deep(.ars2__ano--doze) { padding-left: 18px; border-left: 1px solid var(--nu-line-2); }
 .ars2__corpo :deep(.ars2__fontes) { margin: 20px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 
 /* a palavra surgindo do desfoque, como no chat (ChatMensagem) */
-.ars2__corpo :deep(.rp) { display: inline-block; animation: nu-palavra .52s cubic-bezier(.22, 1, .36, 1) backwards; }
+.ars2__corpo :deep(.rp) { display: inline-block; animation: nu-palavra .52s var(--nu-ease-saida) backwards; }
 .ars2__corpo :deep(.rp--ja) { animation: none; }
 
 @media (max-width: 560px) {
   .ars2__corpo :deep(.ars2__ano) { padding-right: 12px; margin-right: 12px; }
   /* no celular, os 12 meses viram a última fileira, com o fio em cima */
-  .ars2__corpo :deep(.ars2__ano--doze) { flex-basis: 100%; margin-right: 0; padding-left: 0; border-left: 0; border-top: 1.5px solid var(--nu-line-2); }
+  .ars2__corpo :deep(.ars2__ano--doze) { flex-basis: 100%; margin-right: 0; padding-left: 0; border-left: 0; border-top: 1px solid var(--nu-line-2); }
 }
 @media (prefers-reduced-motion: reduce) {
   .ars2__sum, .ars2__chev { transition: none; }

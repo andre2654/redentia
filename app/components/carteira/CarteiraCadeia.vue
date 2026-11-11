@@ -148,16 +148,16 @@ const contexto = computed(() => ({
   overflow: hidden;
 }
 .cca__cabeca { max-width: 860px; }
-.cca__eyebrow { display: block; color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+.cca__eyebrow { display: block; color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.2em; text-transform: uppercase; }
 .cca__frase {
   margin: 18px 0 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04;
+  font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04;
   font-variant-numeric: tabular-nums; text-wrap: balance;
 }
 .cca__palavra { display: inline-block; }
 .cca__frase--esperando .cca__palavra { opacity: 0; }
 .cca__frase--revelando .cca__palavra {
-  animation: cca-palavra 520ms cubic-bezier(.22, 1, .36, 1) both;
+  animation: cca-palavra 520ms var(--nu-ease-saida) both;
   animation-delay: min(calc(var(--i) * 38ms), 900ms);
 }
 @keyframes cca-palavra { from { opacity: 0; filter: blur(8px); transform: translateY(6px); } }
@@ -171,7 +171,7 @@ const contexto = computed(() => ({
 .cca__esq { aspect-ratio: 16 / 8; max-width: 860px; }
 .cca__esq-bloco { display: block; }
 
-.cca__provas { padding: 0; border: 0; background: none; font: inherit; color: var(--nu-blue-text); font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cca__provas { padding: 0; border: 0; background: none; font: inherit; color: var(--nu-blue-text); font-weight: var(--nu-w-medio); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .cca__provas:hover { color: var(--nu-blue); }
 .cca__provas:focus-visible { border-radius: 4px; }
 
@@ -181,8 +181,8 @@ const contexto = computed(() => ({
 .cca__chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .cca__chip {
   display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: 4px 12px 4px 5px; border-radius: var(--nu-r-tag);
-  background: var(--nu-page); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 800; letter-spacing: 0.02em; box-shadow: var(--nu-shadow-quente);
-  transition: background .2s, transform .25s cubic-bezier(.2, .8, .2, 1);
+  background: var(--nu-page); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); letter-spacing: 0.02em; box-shadow: var(--nu-shadow-quente);
+  transition: background .2s, transform .25s var(--nu-ease-saida);
 }
 .cca__chip:hover { background: var(--nu-white); transform: translateY(-2px); color: var(--nu-ink); }
 

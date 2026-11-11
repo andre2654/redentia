@@ -478,7 +478,7 @@ function aoTeclar(e: KeyboardEvent) {
 .agr--lendo .agr__hoje { opacity: 0; }
 .agr__hoje--baixo { transform: translateY(14px); }
 .agr__hoje-r { font-size: var(--nu-fs-xs); font-weight: 600; }
-.agr__hoje-v { font-size: var(--nu-fs-sm); font-weight: 700; }
+.agr__hoje-v { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .agr--claro .agr__hoje { background: var(--nu-white); color: var(--nu-ink); box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); }
 .agr--claro .agr__hoje-r { color: var(--nu-gray); }
 /* quem hospeda o gráfico pode vestir o rótulo de hoje (--agr-hoje-*): no cartão
@@ -507,8 +507,8 @@ function aoTeclar(e: KeyboardEvent) {
 .agr--claro .agr__dica { background: var(--nu-navy); }
 .agr__dica-d { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 600; }
 .agr__dica-l { display: flex; align-items: baseline; gap: 8px; }
-.agr__dica-p { font-size: var(--nu-fs-md); font-weight: 700; }
-.agr__dica-v { font-size: var(--nu-fs-sm); font-weight: 700; }
+.agr__dica-p { font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
+.agr__dica-v { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .agr__dica-v--up { color: var(--nu-green-soft); }
 .agr__dica-v--down { color: var(--nu-red-soft); }
 .agr__dica-i { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 600; }

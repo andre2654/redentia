@@ -72,8 +72,8 @@ defineExpose({ focar: () => campo.value?.focus() })
 .lco__casa {
   flex: 1; min-width: 0; height: 64px; display: grid; place-items: center; box-sizing: border-box;
   border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input); background: var(--nu-white); color: var(--nu-ink);
-  font-size: clamp(26px, 7vw, 32px); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
-  transition: border-color .2s, transform .2s cubic-bezier(.2, .8, .2, 1);
+  font-size: clamp(26px, 7vw, 32px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+  transition: border-color .2s, transform .2s var(--nu-ease-saida);
 }
 .lco__casa--cheia { border-color: var(--nu-ink); }
 .lco__casa--vez { border-color: var(--nu-blue); outline: 3px solid var(--nu-blue); outline-offset: 1px; }

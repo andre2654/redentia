@@ -44,7 +44,7 @@ function toggle() {
 .ntg:disabled { opacity: .5; cursor: default; }
 .ntg__knob {
   width: 24px; height: 24px; border-radius: 50%; background: var(--nu-white);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .22); transition: transform .2s cubic-bezier(.2, .8, .2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .22); transition: transform .2s var(--nu-ease-saida);
 }
 .ntg--on .ntg__knob { transform: translateX(22px); }
 </style>

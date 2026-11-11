@@ -42,10 +42,10 @@ const terms = computed(() =>
   gap: 7px;
   padding: 20px 22px;
   background: var(--nu-white);
-  border: 1.5px solid var(--nu-line);
+  border: 1px solid var(--nu-line);
   border-radius: var(--nu-r-panel);
   text-decoration: none;
-  transition: border-color .2s, transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: border-color .2s, transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .cgl__item:hover {
   border-color: var(--nu-ink);
@@ -55,7 +55,7 @@ const terms = computed(() =>
 .cgl__term {
   color: var(--nu-blue-text);
   font-size: var(--nu-fs-md);
-  font-weight: 800;
+  font-weight: var(--nu-w-forte);
   letter-spacing: -.2px;
 }
 .cgl__short {

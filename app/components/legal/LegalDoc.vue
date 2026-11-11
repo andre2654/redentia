@@ -63,7 +63,7 @@ const tocItems = computed(() =>
 
 .lgd__h2 {
   margin: clamp(40px, 4.5vw, 56px) 0 0; color: var(--nu-ink);
-  font-size: clamp(26px, 2.6vw, 32px); font-weight: 800;
+  font-size: clamp(26px, 2.6vw, 32px); font-weight: var(--nu-w-forte);
   letter-spacing: -0.025em; line-height: 1.08;
   /* o topo e a régua do mercado grudam (~100px): a âncora para abaixo deles */
   scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);

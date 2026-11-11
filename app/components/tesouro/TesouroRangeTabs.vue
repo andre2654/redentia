@@ -36,7 +36,7 @@ function select(value: TesouroRange) {
 .trt { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; }
 .trt__tab {
   min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-on-dark); font: inherit; font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
+  color: var(--nu-on-dark); font: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer;
   transition: color .2s, background .2s;
 }
 .trt__tab:hover { color: var(--nu-white); }

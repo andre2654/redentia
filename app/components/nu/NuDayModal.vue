@@ -107,7 +107,7 @@ onBeforeUnmount(() => {
   width: min(680px, 92vw); max-height: 86vh; overflow: auto;
   background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
   padding: 44px 46px 42px; box-shadow: var(--nu-shadow-day-modal);
-  animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both;
+  animation: nu-subir .32s var(--nu-ease-saida) both;
 }
 /* fechar: o inverso, em .18s */
 /* (a animação de entrada segura opacity e transform com fill both: sai antes) */
@@ -117,17 +117,17 @@ onBeforeUnmount(() => {
 .ndm-sai-leave-to .ndm__card { transform: translateY(12px) scale(.985); }
 .ndm__card:focus { outline: none; }
 .ndm__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
-.ndm__title { margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.ndm__title { margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; }
 .ndm__date { margin-top: 8px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 .ndm__close {
   flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; border: none;
-  background: var(--nu-day-close); color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
+  background: var(--nu-day-close); color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte);
   cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
 .ndm__close:hover { background: var(--nu-day-close-hover); }
 .ndm__divider { height: 1.5px; background: var(--nu-line); margin: 26px 0; }
 .ndm__blocks { display: flex; flex-direction: column; gap: 22px; }
-.ndm__label { font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.ndm__label { font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
 .ndm__p {
   margin: 8px 0 0; color: var(--nu-day-body); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.62; text-wrap: pretty;
@@ -135,8 +135,8 @@ onBeforeUnmount(() => {
 .ndm__foot { display: flex; justify-content: flex-end; margin-top: 30px; }
 .ndm__done {
   background: var(--nu-ink); color: var(--nu-white); border: none; border-radius: var(--nu-r-pill);
-  min-height: 48px; padding: 0 26px; font-family: inherit; font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
-  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  min-height: 48px; padding: 0 26px; font-family: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer;
+  transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .ndm__done:hover { background: var(--nu-ink-hover); }
 .ndm__done:active { transform: scale(.98); }

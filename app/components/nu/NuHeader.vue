@@ -149,7 +149,7 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
   background: var(--nu-white); border-bottom: 1px solid var(--nu-cream-line);
 }
 .nuh {
-  --mov: .32s cubic-bezier(.2, .8, .2, 1);
+  --mov: .32s var(--nu-ease-saida);
   display: flex; align-items: center; height: 72px; padding: 0 clamp(16px, 3vw, 40px);
   transition: height var(--mov);
 }
@@ -159,12 +159,12 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 .nuh__item {
   position: relative; display: inline-flex; align-items: center; gap: 5px; height: 100%; padding: 0 10px;
   border: 0; background: transparent; cursor: pointer; font-family: inherit;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700; letter-spacing: -0.01em; white-space: nowrap;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); letter-spacing: -0.01em; white-space: nowrap;
   transition: color .2s;
 }
 .nuh__item::after {
   content: ''; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px; border-radius: 2px;
-  background: var(--nu-blue); transform: scaleX(0); transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+  background: var(--nu-blue); transform: scaleX(0); transition: transform .3s var(--nu-ease-saida);
 }
 .nuh__item--grupo::after { right: 27px; }
 .nuh__item:hover, .nuh__item--aberto { color: var(--nu-ink); }
@@ -184,12 +184,12 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 .nuh__busca svg { flex-shrink: 0; color: var(--nu-gray-2); }
 .nuh__entrar {
   display: inline-flex; align-items: center; height: 40px; padding: 0 12px 0 14px;
-  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; border-radius: var(--nu-r-pill);
+  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap; border-radius: var(--nu-r-pill);
 }
 .nuh__entrar:hover { color: var(--nu-blue-text); }
 .nuh__cta {
   display: inline-flex; align-items: center; height: 40px; padding: 0 20px; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 800; white-space: nowrap; transition: background .2s;
+  background: var(--nu-blue); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); white-space: nowrap; transition: background .2s;
 }
 .nuh__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .nuh__cta:active, .nuh__busca:active, .nuh__burger:active, .nuh__avatar:active { transform: translateY(1px); }
@@ -199,7 +199,7 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 }
 .nuh__avatar span {
   width: 38px; height: 38px; border-radius: 50%; background: var(--nu-blue); color: var(--nu-white);
-  display: flex; align-items: center; justify-content: center; font-size: var(--nu-fs-sm); font-weight: 700; transition: background .2s;
+  display: flex; align-items: center; justify-content: center; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); transition: background .2s;
 }
 .nuh__avatar:hover span { background: var(--nu-blue-hover); }
 .nuh__burger {
@@ -249,11 +249,11 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 .nuh-wrap--ap .nuh__item--ativo { color: var(--nu-blue-text); }
 .nuh-wrap--ap .nuh__item::after { height: 3px; bottom: 12px; }
 .nuh-wrap--ap .nuh__entrar { height: 44px; font-size: var(--nu-fs-md); }
-.nuh-wrap--ap .nuh__cta { height: 44px; background: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.nuh-wrap--ap .nuh__cta { height: 44px; background: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .nuh-wrap--ap .nuh__cta:hover { background: var(--nu-ink-hover); }
 .nuh-wrap--ap .nuh__busca { height: 44px; background: var(--nu-band); color: var(--nu-gray); font-weight: 600; }
 .nuh-wrap--ap .nuh__busca:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
-.nuh-wrap--ap .nuh__avatar span { background: var(--nu-ink); font-weight: 800; }
+.nuh-wrap--ap .nuh__avatar span { background: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .nuh-wrap--ap .nuh__avatar:hover span { background: var(--nu-blue); }
 .nuh-wrap--ap .nuh__burger:hover { background: var(--nu-band); }
 @container topo (max-width: 1160px) {
@@ -269,7 +269,7 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 /* ——— a landing /business (o print do dono) ——— */
 /* a nav do print: caixa alta espaçada, mais miúda */
 .nuh-wrap--biz .nuh__nav { justify-content: center; gap: 2px; }
-.nuh-wrap--biz .nuh__item { font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: 0 14px; }
+.nuh-wrap--biz .nuh__item { font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .14em; text-transform: uppercase; padding: 0 14px; }
 .nuh-wrap--biz .nuh__item::after { left: 14px; right: 14px; }
 .nuh__cta--biz { padding: 0 18px; }
 /* navy: o fio vira luz, a marca e a nav ficam claras, o botão é claro */

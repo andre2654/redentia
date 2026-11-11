@@ -132,14 +132,14 @@ const painel = useChatPainel()
 }
 .gdp__cols {
   display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start;
-  border-top: 1.5px solid var(--nu-line-2); padding-top: clamp(32px, 4.4vw, 56px);
+  border-top: 1px solid var(--nu-line-2); padding-top: clamp(32px, 4.4vw, 56px);
 }
 /* a coluna de leitura: ~720px, 18px com entrelinha 1,65 */
 .gdp__article { flex: 1; min-width: 0; max-width: 720px; animation: nu-fade .5s ease both; }
 
 .gdp__h2 {
   margin: clamp(44px, 5vw, 64px) 0 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h3); font-weight: 800;
+  font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display);
   letter-spacing: -0.025em; line-height: 1.05; text-wrap: balance;
   /* o topo e a régua do mercado grudam (~100px): a âncora para abaixo deles */
   scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
@@ -151,10 +151,10 @@ const painel = useChatPainel()
   font-weight: 500; line-height: 1.65; text-wrap: pretty;
 }
 .gdp__p + .gdp__p { margin-top: 16px; }
-.gdp__p :deep(strong) { color: var(--nu-ink); font-weight: 800; }
+.gdp__p :deep(strong) { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 /* cross-links inline (v-html, href interno) — cor de marca + sublinhado sutil */
 .gdp__article :deep(a) {
-  color: var(--nu-blue-text); font-weight: 700;
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio);
   text-decoration: underline; text-underline-offset: 3px;
   text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
   transition: text-decoration-color .2s;

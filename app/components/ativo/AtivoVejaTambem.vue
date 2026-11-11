@@ -15,12 +15,12 @@ defineProps<{ links: { href: string; label: string }[] }>()
 </template>
 
 <style scoped>
-.avt__r { margin: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.avt__r { margin: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
 .avt__lista { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .avt__lista a {
   display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: var(--nu-r-pill);
   background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14.5px; font-weight: 600;
-  transition: background .2s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s ease, transform .15s var(--nu-ease-saida);
 }
 .avt__lista a:hover { background: var(--nu-line-2); color: var(--nu-ink); }
 .avt__lista a:active { transform: scale(.98); }

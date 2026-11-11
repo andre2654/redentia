@@ -47,7 +47,7 @@ defineProps<{
 .csp__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .csp__title {
   margin: 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2); font-weight: 800;
+  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display);
   letter-spacing: -0.03em; line-height: 1.02;
 }
 .csp__title--sm { font-size: var(--nu-fs-h2-sm); }

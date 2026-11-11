@@ -82,7 +82,7 @@ function go(e: MouseEvent, id: string) {
 .csb__item {
   display: flex; align-items: center; gap: 13px; min-height: 48px;
   padding: 0 18px; border-radius: var(--nu-r-pill);
-  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 700;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
   transition: background .2s, color .2s;
 }
 .csb__item:hover { color: var(--nu-ink); background: var(--nu-cream-2); }

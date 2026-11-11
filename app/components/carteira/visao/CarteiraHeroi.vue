@@ -285,8 +285,8 @@ const contexto = computed(() => ({
 .chv__id { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; min-width: 0; }
 /* o nome da tela é o eyebrow da marca (o corte + caixa alta), e os dois selos de raio 8 ao lado */
 .chv__nome { margin-right: 4px; }
-.chv__chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; }
-.chv__estado { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-cream-2); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 700; }
+.chv__chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.chv__estado { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-cream-2); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .chv__estado i { width: 8px; height: 8px; border-radius: 50%; background: var(--sub); opacity: .55; }
 .chv__estado--aberta { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .chv__estado--aberta i { background: var(--nu-green); opacity: 1; }
@@ -294,7 +294,7 @@ const contexto = computed(() => ({
 .chv__estado--atencao i { background: var(--nu-amber-fill); opacity: 1; }
 .chv__olho {
   display: inline-grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 50%;
-  background: var(--nu-white); color: var(--tinta); box-shadow: inset 0 0 0 1.5px var(--nu-ink); cursor: pointer; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  background: var(--nu-white); color: var(--tinta); box-shadow: inset 0 0 0 1.5px var(--nu-ink); cursor: pointer; transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .chv__olho:hover { background: var(--nu-row-hover); }
 .chv__olho:active { transform: scale(.96); }
@@ -305,7 +305,7 @@ const contexto = computed(() => ({
 .chv__periodos { display: inline-flex; flex-shrink: 0; }
 .chv__periodo {
   height: 44px; min-width: 52px; padding: 0 15px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-on-dark);
-  font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s, color .2s;
+  font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s, color .2s;
 }
 .chv__periodo:hover { color: var(--nu-white); }
 .chv__periodo--on, .chv__periodo--on:hover { background: var(--nu-creme); color: var(--nu-ink); }
@@ -316,14 +316,14 @@ const contexto = computed(() => ({
 .chv__conta i { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); box-shadow: 0 0 0 3px var(--nu-green-bg); }
 .chv__conta--velha i, .chv__conta--caida i { background: var(--nu-amber-fill); box-shadow: none; }
 .chv__quando { color: var(--sub); font-weight: 500; }
-.chv__reconectar { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
-.chv__mais { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--nu-gray-3); font: inherit; font-weight: 700; cursor: pointer; transition: color .2s; }
+.chv__reconectar { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; }
+.chv__mais { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--nu-gray-3); font: inherit; font-weight: var(--nu-w-medio); cursor: pointer; transition: color .2s; }
 .chv__mais:hover { color: var(--tinta); }
 
 /* ————— a frase, o gráfico e os fatos ————— */
 .chv2__esq { display: grid; gap: 12px; margin-top: clamp(28px, 4vw, 52px); }
 /* a frase em 800, um degrau acima do h2 de seção: é o título da tela */
-.chv2__frase { margin: clamp(22px, 3vw, 36px) 0 0; max-width: min(100%, 1100px); font-size: clamp(40px, 5.6vw, 76px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; text-wrap: balance; animation: nu-fade .5s ease both; }
+.chv2__frase { margin: clamp(22px, 3vw, 36px) 0 0; max-width: min(100%, 1100px); font-size: clamp(40px, 5.6vw, 76px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1; text-wrap: balance; animation: nu-fade .5s ease both; }
 .chv2__frase b { color: var(--nu-blue); font-weight: inherit; white-space: nowrap; }
 .chv2__dek { margin: 20px 0 0; max-width: 58ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; animation: nu-fade .5s ease .06s both; }
 /* a grade do topo: o cartão do gráfico e, ao lado, os três fatos empilhados (no celular, um embaixo do outro) */
@@ -335,7 +335,7 @@ const contexto = computed(() => ({
 .chv2__cartao :deep(.nfm__acoes) { padding: 6px 10px 0 0; }
 .chv2__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(18px, 2vw, 26px) var(--pad) 0; }
 .chv2__leg { display: inline-flex; align-items: baseline; gap: 10px; }
-.chv2__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.chv2__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .chv2__leg--1 b { font-size: clamp(38px, 4.4vw, 58px); letter-spacing: -0.04em; line-height: 1; }
 .chv2__leg b.chv2__leg--up { color: var(--nu-green-soft); }
 .chv2__leg b.chv2__leg--down { color: var(--nu-red-soft); }
@@ -358,7 +358,7 @@ const contexto = computed(() => ({
 .chv2__fato {
   position: relative; display: flex; flex-direction: column; justify-content: center; padding: clamp(18px, 2vw, 24px) clamp(20px, 2.2vw, 26px);
   border-radius: var(--nu-r-card); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s; animation: nu-fade .5s ease .12s both;
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s; animation: nu-fade .5s ease .12s both;
 }
 .chv2__fato:nth-child(2) { animation-delay: 180ms; }
 .chv2__fato:nth-child(3) { animation-delay: 240ms; }
@@ -367,17 +367,17 @@ const contexto = computed(() => ({
 .chv2__fato--atencao { background: var(--nu-amber-bg); }
 .chv2__fato--atencao dt, .chv2__fato--atencao dd.chv2__fato-s { color: var(--nu-amber-text); }
 .chv2__fato dt { color: var(--sub); font-size: 15px; font-weight: 600; }
-.chv2__fato dd { margin: 6px 0 0; font-size: clamp(28px, 2.6vw, 36px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.chv2__fato dd { margin: 6px 0 0; font-size: clamp(28px, 2.6vw, 36px); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.1; }
 .chv2__fato dd.chv2__fato-s { margin-top: 6px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; letter-spacing: 0; line-height: 1.45; }
 .chv2__fato dd.chv2__fato-acao { position: relative; z-index: 1; margin-top: 14px; font-size: 0; }
 /* a pílula da ação do aviso: carvão sobre o âmbar */
 .chv2__pilula {
   min-height: 44px; padding: 0 20px; border: 0; border-radius: var(--nu-r-pill); background: var(--nu-ink); color: var(--nu-white);
-  font: inherit; font-size: 15px; font-weight: 700; letter-spacing: 0; cursor: pointer; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  font: inherit; font-size: 15px; font-weight: var(--nu-w-medio); letter-spacing: 0; cursor: pointer; transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .chv2__pilula:hover { background: var(--nu-ink-hover); }
 .chv2__pilula:active { transform: scale(.98); }
-.chv2__fato-s b { font-weight: 700; }
+.chv2__fato-s b { font-weight: var(--nu-w-medio); }
 .chv2__espera { padding: 2px 0; }
 /* o esqueleto sobre o creme: o tom vem do CarteiraVisao (.cvi), um só para a página */
 .chv2__fato dd.chv2__caminho { display: flex; align-items: center; gap: 8px; }

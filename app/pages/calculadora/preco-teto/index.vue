@@ -996,31 +996,31 @@ usePageSeo({
 .pt__dados { margin-top: 16px; }
 /* cada dado é um bloco que não se parte: a linha quebra entre um dado e outro */
 .pt__dado { display: inline-block; white-space: nowrap; }
-.pt__dado b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
+.pt__dado b { color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .pt__dado:not(:last-child)::after { content: '·'; margin: 0 9px; color: var(--nu-gray); }
 /* com "Usar meus números", cada valor é um selo da frase: mais ar entre as linhas */
 .pt__dados--edita .pt__dado { line-height: 2.1; }
-.pt__dado .cfc { font-weight: 800; }
+.pt__dado .cfc { font-weight: var(--nu-w-forte); }
 .pt__dica { margin: 8px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 
 /* embaixo do número: o preço e a margem */
 .pt__legenda { display: flex; gap: 8px 24px; flex-wrap: wrap; margin: 16px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; }
 .pt__legenda span { display: inline-flex; align-items: center; gap: 8px; }
-.pt__legenda b { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.pt__legenda b { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .pt__legenda .pt__legenda-azul { color: var(--nu-blue-text); }
 .pt__ponto { width: 11px; height: 11px; border-radius: 50%; background: var(--nu-blue); flex: none; }
 .pt__ponto--preco { background: var(--nu-ink); }
 
 .pt__asset-link {
   display: inline-flex; align-items: center; min-height: 44px; margin-top: 10px;
-  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
 }
 .pt__asset-link:hover { color: var(--nu-blue-hover); }
 
 /* no pé do cartão: o alerta e a newsletter lado a lado, a fonte como aviso curto */
 :deep(.cco__premissas .cct) { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); margin-top: 0; }
 .pt__insight { margin-top: 14px; max-width: 900px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
-.pt__insight strong { color: var(--nu-gray-3); font-weight: 700; }
+.pt__insight strong { color: var(--nu-gray-3); font-weight: var(--nu-w-medio); }
 
 /* embaixo do cartão: o que cada método deu (cartão branco sobre o creme, o veredito no selo) */
 .pt__methods {
@@ -1029,16 +1029,16 @@ usePageSeo({
 }
 .pt__method { background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 18px 20px; box-shadow: var(--nu-shadow-quente); }
 .pt__method-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-.pt__method-title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1.3; }
+.pt__method-title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); line-height: 1.3; }
 .pt__method-badge {
   flex: none; background: var(--nu-cream-2); border-radius: var(--nu-r-tag);
-  padding: 3px 8px; color: var(--nu-gray-3); font-size: 13.5px; font-weight: 700; white-space: nowrap;
+  padding: 3px 8px; color: var(--nu-gray-3); font-size: 13.5px; font-weight: var(--nu-w-medio); white-space: nowrap;
 }
 .pt__method--positive .pt__method-badge { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .pt__method--neutral .pt__method-badge { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .pt__method--negative .pt__method-badge { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .pt__method-value {
-  margin: 10px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800;
+  margin: 10px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte);
   letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums;
 }
 .pt__method-margin { margin: 4px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
@@ -1058,7 +1058,7 @@ usePageSeo({
 /* Um padrão de card só na página (out/2026): título 18/800 em tinta, sem
    cor de destaque no título. O sinal de "limitação" é o filete vermelho do
    card, não o título vermelho nem o fundo rosa. */
-.pt__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.pt__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .pt__prose p {
@@ -1066,11 +1066,11 @@ usePageSeo({
   line-height: 1.7;
 }
 .pt__prose p:last-child { margin-bottom: 0; }
-.pt__prose strong { color: var(--nu-ink); font-weight: 800; }
+.pt__prose strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .pt__prose--gap { margin-top: 20px; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.pt__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.pt__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .pt__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -1086,7 +1086,7 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .pt__ticker:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pt__ticker-code { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.pt__ticker-code { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
 .pt__ticker-name { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— fórmulas ——— */
@@ -1122,7 +1122,7 @@ usePageSeo({
 .pt__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
 .pt__ind-list { margin: 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.75; }
 .pt__ind-list li + li { margin-top: 8px; }
-.pt__ind-list strong { color: var(--nu-ink); font-weight: 800; }
+.pt__ind-list strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* ——— exemplos práticos (cards brancos na banda creme) ——— */
 .pt__ex-grid {
@@ -1130,18 +1130,18 @@ usePageSeo({
   gap: 18px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pt__ex-title { margin: 0 0 16px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.pt__ex-title { margin: 0 0 16px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .pt__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px; }
 .pt__ex-boxes {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 12px; margin-top: 16px;
 }
 .pt__ex-box { background: var(--nu-cream); border-radius: var(--nu-r-input); padding: 14px 16px; }
-.pt__ex-label { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .4px; text-transform: uppercase; }
-.pt__ex-value { margin: 6px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.pt__ex-label { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .4px; text-transform: uppercase; }
+.pt__ex-value { margin: 6px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .pt__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 16px; }
 .pt__result-box--positive { background: var(--nu-green-tint); }
-.pt__result-main { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.pt__result-main { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .pt__result-main--positive { color: var(--nu-green-text); }
 .pt__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
 
@@ -1161,12 +1161,12 @@ usePageSeo({
    cartão ficava creme sobre a faixa creme (sumia). Agora é branco na faixa. */
 .cbd--cream .pt__card-link { background: var(--nu-white); }
 .pt__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pt__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.pt__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 /* ——— pills / CTA ——— */
 .pt__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
   margin-top: 30px; transition: background .2s;
 }
 .pt__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -1175,7 +1175,7 @@ usePageSeo({
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pt__cta-title { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.pt__cta-title { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.1; }
 .pt__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .pt__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .pt__cta .pt__pill { margin-top: 0; }

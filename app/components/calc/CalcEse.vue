@@ -25,13 +25,13 @@ defineProps<{
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
   margin: 0; padding: 0; list-style: none;
 }
-.cese__rotulo { color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.cese__rotulo { color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
 /* o chip dos quadros: creme mais escuro sobre o creme da página */
 .cese__capsula {
   display: inline-flex; align-items: baseline; gap: 8px; padding: 10px 16px; border-radius: var(--nu-r-pill);
   background: var(--nu-cream-2); color: var(--nu-gray-3); font-size: 14.5px; font-weight: 600; white-space: nowrap;
 }
-.cese__capsula b { color: var(--nu-blue-text); font-weight: 800; font-variant-numeric: tabular-nums; }
+.cese__capsula b { color: var(--nu-blue-text); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .cese__aviso { margin: 14px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; text-align: center; }
 @media (max-width: 640px) {
   .cese__lista { justify-content: flex-start; gap: 8px; }

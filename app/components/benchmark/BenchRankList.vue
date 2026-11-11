@@ -67,24 +67,24 @@ const sub = (r: BenchRankingRow) => r.extra ?? (r.hi > r.lo ? `de ${fmt(r.lo)} a
   padding: 10px 0;
 }
 .brl--plain .brl__row { grid-template-columns: 32px 1fr auto; }
-.brl__row + .brl__row { border-top: 1.5px solid var(--nu-line-2); }
+.brl__row + .brl__row { border-top: 1px solid var(--nu-line-2); }
 .brl__pos { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
 .brl__tile {
   width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center;
-  background: var(--nu-tile-blue-bg); color: var(--nu-blue-deep); font-size: var(--nu-fs-sm); font-weight: 800;
+  background: var(--nu-tile-blue-bg); color: var(--nu-blue-deep); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte);
 }
 .brl__who { display: flex; flex-direction: column; min-width: 0; }
 .brl__name {
   display: flex; align-items: center; gap: 6px; min-width: 0;
-  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px;
+  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px;
 }
 .brl__tie {
   flex-shrink: 0; border-radius: var(--nu-r-tag); padding: 1px 7px;
-  background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0;
+  background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0;
 }
 .brl__prov { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
 .brl__num { display: flex; flex-direction: column; align-items: flex-end; }
-.brl__val { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.brl__val { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 /* `pre`: não quebra sozinho, mas o \n do `extra` vira linha (Carteira própria: total e maior queda) */
 .brl__sub { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; white-space: pre; text-align: right; }
 
@@ -104,7 +104,7 @@ const sub = (r: BenchRankingRow) => r.extra ?? (r.hi > r.lo ? `de ${fmt(r.lo)} a
 
 @container (max-width: 600px) {
   .brl { grid-template-columns: 1fr; }
-  .brl__col + .brl__col .brl__row:first-child { border-top: 1.5px solid var(--nu-line-2); }
+  .brl__col + .brl__col .brl__row:first-child { border-top: 1px solid var(--nu-line-2); }
   .brl__row { grid-template-columns: 18px 30px 1fr auto; gap: 10px; }
   .brl--plain .brl__row { grid-template-columns: 30px 1fr auto; }
   .brl__tile { width: 30px; height: 30px; border-radius: 9px; }

@@ -791,11 +791,11 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 
 <style scoped>
 .dys__modos { margin-bottom: 18px; }
-.dys__ticker { color: var(--nu-ink); font-weight: 800; }
+.dys__ticker { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* a régua do DY: o nome da faixa em cima, as quatro faixas e a marca do número */
-.dys__regua-titulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.dys__regua-faixa { margin: 2px 0 0; font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; }
+.dys__regua-titulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.dys__regua-faixa { margin: 2px 0 0; font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.03em; }
 .dys__regua-faixa--baixo { color: var(--nu-gray-2); }
 .dys__regua-faixa--bom, .dys__regua-faixa--otimo { color: var(--nu-blue-text); }
 .dys__regua-faixa--alto { color: var(--nu-amber-text); }
@@ -804,21 +804,21 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 .dys__marca {
   position: absolute; top: 0; height: 54px; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-  transition: left .35s cubic-bezier(.22, 1, .36, 1);
+  transition: left .35s var(--nu-ease-saida);
 }
 .dys__marca::after { content: ''; width: 2px; height: 14px; margin-top: 4px; border-radius: 2px; background: var(--nu-blue); }
 .dys__marca-txt {
   padding: 4px 9px; border-radius: var(--nu-r-tag); background: var(--nu-blue); color: var(--nu-white);
-  font-size: var(--nu-fs-sm); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); white-space: nowrap; font-variant-numeric: tabular-nums;
 }
-.dys__marca-txt small { margin-left: 4px; font-size: var(--nu-fs-xs); font-weight: 700; opacity: .85; }
+.dys__marca-txt small { margin-left: 4px; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); opacity: .85; }
 /* a do preço de hoje (on cost): embaixo da régua, em cinza; os nomes das faixas descem */
 .dys__marca--hoje { top: 68px; height: auto; justify-content: flex-start; }
 .dys__marca--hoje::after { display: none; }
 .dys__marca--hoje::before { content: ''; width: 2px; height: 14px; margin-bottom: 4px; border-radius: 2px; background: var(--nu-gray); }
 .dys__marca--hoje .dys__marca-txt { background: var(--nu-cream-2); color: var(--nu-gray-3); }
 .dys__regua--dupla .dys__nomes { margin-top: 56px; }
-.dys__faixas { display: flex; gap: 4px; height: 14px; transform-origin: left center; animation: dys-cresce .6s cubic-bezier(.2, .8, .2, 1) both; }
+.dys__faixas { display: flex; gap: 4px; height: 14px; transform-origin: left center; animation: dys-cresce .6s var(--nu-ease-saida) both; }
 /* a régua cresce da esquerda na entrada (microtransição da Aportou) */
 @keyframes dys-cresce { from { transform: scaleX(0); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .dys__faixas { animation: none; } }
@@ -831,7 +831,7 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 .dys__faixa--on.dys__faixa--otimo { background: var(--nu-blue); }
 .dys__faixa--on.dys__faixa--alto { background: var(--nu-amber); }
 .dys__nomes { display: flex; gap: 4px; margin-top: 10px; }
-.dys__nomes > span { flex-basis: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
+.dys__nomes > span { flex-basis: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
 .dys__nomes small { display: block; font-size: var(--nu-fs-xs); font-weight: 500; }
 .dys__nome--on { color: var(--nu-ink) !important; }
 </style>

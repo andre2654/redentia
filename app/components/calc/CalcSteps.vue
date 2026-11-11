@@ -56,11 +56,11 @@ const nums = computed(() => props.steps.map((_, i) => String(i + 1).padStart(2, 
 }
 .cst__step { display: flex; align-items: flex-start; gap: clamp(22px, 4vw, 54px); padding: 16px 0; }
 .cst__num {
-  color: var(--nu-blue); font-size: clamp(23px, 2.2vw, 29px); font-weight: 800; letter-spacing: -0.02em;
+  color: var(--nu-blue); font-size: clamp(23px, 2.2vw, 29px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em;
   width: 52px; flex-shrink: 0; font-variant-numeric: tabular-nums;
 }
 .cst__body { max-width: 840px; padding-top: 3px; }
-.cst__title { margin: 0 0 4px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.cst__title { margin: 0 0 4px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .cst__text { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
-.cst__text :deep(strong) { font-weight: 800; color: var(--nu-ink); }
+.cst__text :deep(strong) { font-weight: var(--nu-w-forte); color: var(--nu-ink); }
 </style>

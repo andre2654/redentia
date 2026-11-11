@@ -20,17 +20,17 @@ const tag = computed(() => (props.to ? resolveComponent('NuxtLink') : 'button'))
 .napc {
   display: block; width: 100%; border: 0; text-align: left; font-family: inherit; cursor: pointer; background: var(--nu-card); border-radius: var(--nu-r-panel);
   padding: 20px; box-shadow: var(--nu-shadow-quente);
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .napc:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .napc__kicker {
-  display: flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700;
+  display: flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   letter-spacing: 0.16em; text-transform: uppercase;
 }
 .napc__text {
-  display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
   line-height: 1.4; margin-top: 10px;
 }
-.napc__seta { display: block; margin-top: 12px; color: var(--nu-blue); transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.napc__seta { display: block; margin-top: 12px; color: var(--nu-blue); transition: transform .25s var(--nu-ease-saida); }
 .napc:hover .napc__seta { transform: translateX(3px); }
 </style>

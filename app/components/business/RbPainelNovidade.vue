@@ -42,9 +42,9 @@ defineEmits<{ (e: 'ver'): void }>()
 <style scoped>
 .rbpn { background: var(--nu-navy); color: var(--nu-cream-text); padding: 12px clamp(22px, 5.5vw, 80px); }
 .rbpn__in { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
-.rbpn__selo { flex: none; padding: 4px 10px; border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.rbpn__selo { flex: none; padding: 4px 10px; border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-forte); letter-spacing: .04em; text-transform: uppercase; }
 .rbpn__t { flex: 1; margin: 0; font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; color: var(--nu-cream-text-85); }
-.rbpn__link { flex: none; color: var(--nu-blue-soft); font-size: var(--nu-fs-sm); font-weight: 800; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .2s, color .2s; }
+.rbpn__link { flex: none; color: var(--nu-blue-soft); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .2s, color .2s; }
 .rbpn__link:hover { color: var(--nu-white); border-bottom-color: currentColor; }
 .rbpn__x {
   flex: none; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; cursor: pointer;

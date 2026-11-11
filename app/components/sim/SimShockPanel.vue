@@ -147,8 +147,8 @@ const iPetroleo = computed(() => Math.abs(model.value.petroleo) / 60)
   display: inline-flex; align-items: baseline; gap: 7px; min-height: 44px;
   border: none; border-radius: var(--nu-r-pill);
   background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-quente);
-  padding: 11px 20px; font-size: 14.5px; font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: transform 0.25s cubic-bezier(.2, .8, .2, 1), box-shadow 0.25s cubic-bezier(.2, .8, .2, 1);
+  padding: 11px 20px; font-size: 14.5px; font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
+  transition: transform 0.25s var(--nu-ease-saida), box-shadow 0.25s var(--nu-ease-saida);
 }
 .ssp__replay:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .ssp__replay:active { transform: scale(.98); }

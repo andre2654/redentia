@@ -483,11 +483,11 @@ usePageSeo({
 
 <style scoped>
 /* ——— tipografia compartilhada ——— */
-.qi__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.qi__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .qi__h4--accent { color: var(--nu-blue-text); }
 .qi__link { text-decoration: underline; }
 .qi__link:hover { color: var(--nu-blue-text); }
-.qi__link--accent { color: var(--nu-blue-text); font-weight: 700; }
+.qi__link--accent { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); }
 .qi__link--accent:hover { color: var(--nu-blue-hover); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
@@ -496,7 +496,7 @@ usePageSeo({
   line-height: 1.7;
 }
 .qi__prose p:last-child { margin-bottom: 0; }
-.qi__prose strong { color: var(--nu-ink); font-weight: 800; }
+.qi__prose strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .qi__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -509,10 +509,10 @@ usePageSeo({
 .qi__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .qi__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.qi__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.qi__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
 .qi__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
@@ -537,7 +537,7 @@ usePageSeo({
 }
 .qi__reserve li:first-child { border-top: none; padding-top: 0; }
 .qi__reserve li:last-child { padding-bottom: 0; }
-.qi__reserve strong { color: var(--nu-ink); font-weight: 800; }
+.qi__reserve strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* ——— metas por tipo (cards brancos na banda creme, família jc__ex-*) ——— */
 .qi__meta-grid {
@@ -546,7 +546,7 @@ usePageSeo({
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .qi__meta-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
-.qi__meta-title { margin: 0 0 10px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.qi__meta-title { margin: 0 0 10px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .qi__meta-p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65; }
 
 /* ——— cards-link (rankings / outras calculadoras) ——— */
@@ -558,10 +558,10 @@ usePageSeo({
 .qi__card-link {
   background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .qi__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.qi__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.qi__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .qi__card-link .qi__card-p { margin: 0; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
@@ -569,7 +569,7 @@ usePageSeo({
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.qi__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.qi__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .qi__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 .qi__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 </style>

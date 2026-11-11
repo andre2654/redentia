@@ -74,24 +74,24 @@ else if (props.resumo?.faq.length) useFaqSchema(props.resumo.faq)
 .apg__linha { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .apg__linha + .apg__linha { margin-top: clamp(48px, 6vw, 80px); }
 .apg__esq { flex: 1 1 300px; min-width: min(280px, 100%); }
-.apg__dir { flex: 1.6 1 480px; min-width: min(340px, 100%); border-bottom: 1.5px solid var(--nu-line); }
-.apg__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
+.apg__dir { flex: 1.6 1 480px; min-width: min(340px, 100%); border-bottom: 1px solid var(--nu-line); }
+.apg__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
 /* o segundo bloco é a continuação: sem eyebrow, título um degrau menor */
 .apg__linha + .apg__linha .apg__h2 { margin-top: 0; font-size: var(--nu-fs-h2-sm); }
 .apg__frase { margin: 20px 0 0; max-width: 420px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
 .apg__cta { margin-top: 28px; }
 
-.apg__item { border-top: 1.5px solid var(--nu-line); }
+.apg__item { border-top: 1px solid var(--nu-line); }
 .apg__q {
   display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 76px; padding: 18px 0;
-  cursor: pointer; list-style: none; color: var(--nu-ink); font-size: clamp(19px, 1.6vw, 22px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.3;
+  cursor: pointer; list-style: none; color: var(--nu-ink); font-size: clamp(19px, 1.6vw, 22px); font-weight: var(--nu-w-medio); letter-spacing: -0.01em; line-height: 1.3;
 }
 .apg__q::-webkit-details-marker { display: none; }
 .apg__q-t, .apg__h3 { margin: 0; font: inherit; color: inherit; transition: color .2s ease; }
 .apg__q:hover .apg__q-t, .apg__q:hover .apg__h3 { color: var(--nu-blue-text); }
 .apg__mais {
   flex-shrink: 0; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--nu-ink);
-  transition: transform .3s cubic-bezier(.2, .8, .2, 1), background .2s ease;
+  transition: transform .3s var(--nu-ease-saida), background .2s ease;
 }
 .apg__mais svg { width: 16px; height: 16px; fill: none; stroke: var(--nu-white); stroke-width: 2.6; stroke-linecap: round; }
 .apg__q:hover .apg__mais { background: var(--nu-ink-hover); }

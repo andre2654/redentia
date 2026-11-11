@@ -14,7 +14,7 @@ withDefaults(defineProps<{ tamanho?: number; sobre?: 'claro' | 'escuro' }>(), { 
 <style scoped>
 .tma {
   flex: none; display: inline-grid; place-items: center; border-radius: 50%; background: var(--nu-ink);
-  transition: transform .3s cubic-bezier(.2, .8, .2, 1), background .2s ease;
+  transition: transform .3s var(--nu-ease-saida), background .2s ease;
 }
 .tma svg { display: block; fill: none; stroke: var(--nu-white); stroke-width: 2.6; stroke-linecap: round; }
 .tma--escuro { background: var(--nu-creme); }

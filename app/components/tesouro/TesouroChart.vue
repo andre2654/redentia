@@ -187,11 +187,11 @@ const hov = computed(() => {
   white-space: nowrap; box-shadow: var(--nu-shadow-chart-pill);
 }
 .tch__endpill-label {
-  display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   letter-spacing: .12em; text-transform: uppercase;
 }
 .tch__endpill-val {
-  display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte);
   font-variant-numeric: tabular-nums; margin-top: 2px;
 }
 .tch__cross {
@@ -209,12 +209,12 @@ const hov = computed(() => {
   background: var(--nu-creme); border-radius: var(--nu-r-tile); padding: 12px 17px;
   box-shadow: var(--nu-shadow-chart-tip); pointer-events: none; z-index: 4; white-space: nowrap;
 }
-.tch__tip-date { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
+.tch__tip-date { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 .tch__tip-val {
-  color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; margin-top: 3px;
+  color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); margin-top: 3px;
   font-variant-numeric: tabular-nums;
 }
-.tch__tip-delta { font-size: var(--nu-fs-dense); font-weight: 700; margin-top: 2px; }
+.tch__tip-delta { font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); margin-top: 2px; }
 .tch__tip-delta--up { color: var(--nu-green-text); }
 .tch__tip-delta--down { color: var(--nu-red-text); }
 

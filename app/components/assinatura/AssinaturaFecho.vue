@@ -44,20 +44,20 @@ const bancos = VITRINE.map((s) => INSTITUICOES.find((i) => i.slug === s)).filter
 .afc__banco {
   display: grid; place-items: center; width: 50px; height: 50px; margin-left: -10px; border-radius: 50%;
   background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-band), var(--nu-shadow-pos-nav);
-  animation: afc-entra .5s cubic-bezier(.22, 1, .36, 1) calc(var(--i) * 50ms) backwards;
+  animation: afc-entra .5s var(--nu-ease-saida) calc(var(--i) * 50ms) backwards;
 }
 .afc__banco :deep(.cil) { border: 0; border-radius: 8px; }
 .afc__linha {
   width: clamp(40px, 7vw, 96px); height: 2px; margin: 0 10px 0 14px; border-radius: 2px;
   background: linear-gradient(90deg, var(--nu-line), var(--nu-blue));
 }
-.afc__marca { display: block; flex-shrink: 0; border-radius: 16px; box-shadow: 0 18px 36px -18px var(--nu-blue-30); animation: nu-subir .5s cubic-bezier(.2, .8, .2, 1) .45s backwards; }
+.afc__marca { display: block; flex-shrink: 0; border-radius: 16px; box-shadow: 0 18px 36px -18px var(--nu-blue-30); animation: nu-subir .5s var(--nu-ease-saida) .45s backwards; }
 .afc__eyebrow { margin-top: clamp(32px, 4vw, 48px); }
 @keyframes afc-entra { from { opacity: 0; transform: translateX(-12px); } }
 
 .afc__titulo {
   margin: 18px 0 0; max-width: 22ch; color: var(--nu-ink);
-  font-size: clamp(36px, 5.2vw, 72px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; text-wrap: balance;
+  font-size: clamp(36px, 5.2vw, 72px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1; text-wrap: balance;
 }
 .afc__titulo span { display: block; color: var(--nu-blue); }
 .afc__dek { margin: 20px 0 0; max-width: 44ch; color: var(--nu-gray-3); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; text-wrap: balance; }

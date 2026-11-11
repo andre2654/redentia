@@ -117,20 +117,20 @@ const style = computed(() => ({
 
 .sdc__label {
   position: relative;
-  color: var(--nu-on-dark); font-size: 13.5px; font-weight: 700;
+  color: var(--nu-on-dark); font-size: 13.5px; font-weight: var(--nu-w-medio);
   letter-spacing: 0.16em; text-transform: uppercase;
 }
 .sdc__value {
   position: relative;
-  color: var(--nu-white); font-size: clamp(38px, 3.8vw, 52px); font-weight: 800;
+  color: var(--nu-white); font-size: clamp(38px, 3.8vw, 52px); font-weight: var(--nu-w-display);
   letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 /* o selo do delta: o chip sobre carvão, raio 8 */
 .sdc__delta {
   position: relative;
-  padding: 5px 11px; border: 1.5px solid var(--nu-dark-chip-line); border-radius: var(--nu-r-tag);
+  padding: 5px 11px; border: 1px solid var(--nu-dark-chip-line); border-radius: var(--nu-r-tag);
   background: var(--nu-dark-chip);
-  color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700;
+  color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio);
   font-variant-numeric: tabular-nums;
   transition: color 0.3s, border-color 0.3s;
 }
@@ -146,14 +146,14 @@ const style = computed(() => ({
 /* "acontece em [ano]" — só quando o dial saiu de hoje */
 .sdc__year {
   position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 30px;
-  color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700;
+  color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio);
   animation: nu-fade 0.25s ease both;
 }
 .sdc__year-select {
   appearance: none; -webkit-appearance: none;
   border: none; border-bottom: 1.5px dashed var(--nu-on-dark-2); border-radius: 0;
   background: transparent; color: var(--nu-white);
-  padding: 3px 18px 4px 2px; font-size: 14.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  padding: 3px 18px 4px 2px; font-size: 14.5px; font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
 }
 .sdc__year-seta { position: absolute; right: 3px; top: 50%; margin-top: -5px; color: var(--nu-white); pointer-events: none; }
 .sdc__year-select option { color: var(--nu-ink); background: var(--nu-white); }

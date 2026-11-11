@@ -220,14 +220,14 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
 /* 58px em repouso; no foco cresce para 62 (o input mágico do quadro) */
 .cba__linha {
   display: flex; align-items: center; gap: 12px; height: 58px; padding: 0 9px 0 20px; cursor: text;
-  transition: height .25s cubic-bezier(.2, .8, .2, 1), padding .25s cubic-bezier(.2, .8, .2, 1);
+  transition: height .25s var(--nu-ease-saida), padding .25s var(--nu-ease-saida);
 }
 .cba--foco .cba__linha { height: 62px; padding-right: 10px; }
 .cba__marca { flex-shrink: 0; display: block; }
 
 /* o lado esquerdo: o corte em repouso; no foco, os dois botões (mola) */
 .cba__lado {
-  --mola: cubic-bezier(.34, 1.56, .64, 1);
+  --mola: var(--nu-ease-saida);
   position: relative; flex-shrink: 0;
   width: 26px; height: 38px; margin-left: 0;
   transition: width .42s var(--mola), margin-left .42s var(--mola);
@@ -267,11 +267,11 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
 .cba__enviar {
   flex-shrink: 0; width: 40px; height: 40px; border: 0; border-radius: 50%; padding: 0; cursor: pointer;
   display: grid; place-items: center; background: var(--nu-blue); color: var(--nu-white);
-  transition: transform .2s ease, background .2s ease, width .25s cubic-bezier(.2, .8, .2, 1), height .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .2s ease, background .2s ease, width .25s var(--nu-ease-saida), height .25s var(--nu-ease-saida);
 }
 .cba--foco .cba__enviar { width: 42px; height: 42px; }
 .cba__enviar:hover { background: var(--nu-blue-hover); }
-.cba__enviar:hover svg { animation: cba-seta .45s cubic-bezier(.2, .8, .2, 1); }
+.cba__enviar:hover svg { animation: cba-seta .45s var(--nu-ease-saida); }
 .cba__enviar:active { transform: scale(.94); }
 
 /* as sugestões: chips brancos com sombra, soltos acima da barra */
@@ -281,14 +281,14 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
   list-style: none; margin: 0; padding: 0;
   display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
 }
-.cba__sugs li { animation: nu-fade .32s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--k) * 50ms); }
+.cba__sugs li { animation: nu-fade .32s var(--nu-ease-saida) both; animation-delay: calc(var(--k) * 50ms); }
 .cba__sug {
   display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; padding: 8px 16px;
   border: 0; border-radius: 22px; background: var(--nu-white); cursor: pointer; text-align: left;
   color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; line-height: 1.3;
   /* pedido para a base: a sombra do chip branco do quadro (0 2px 8px a 8% do carvão) */
   box-shadow: 0 2px 8px color-mix(in srgb, var(--nu-ink) 10%, transparent), 0 0 0 1px var(--nu-navy-07);
-  transition: background .2s ease, color .2s ease, transform .2s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s ease, color .2s ease, transform .2s var(--nu-ease-saida);
 }
 /* a escolhida vira cobalto: os chips flutuam sobre qualquer fundo, e o carvão sumiria nas seções escuras */
 .cba__sug--ativa { background: var(--nu-blue); color: var(--nu-white); transform: translateY(-2px); }
@@ -301,9 +301,9 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
   100% { transform: translateY(0); opacity: 1; }
 }
 
-.cba-enter-active, .cba-leave-active { transition: opacity .25s ease, transform .3s cubic-bezier(.2, .8, .2, 1); }
+.cba-enter-active, .cba-leave-active { transition: opacity .25s ease, transform .3s var(--nu-ease-saida); }
 .cba-enter-from, .cba-leave-to { opacity: 0; transform: translate(-50%, 16px); }
-.cba-sug-enter-active, .cba-sug-leave-active { transition: opacity .18s ease, transform .22s cubic-bezier(.2, .8, .2, 1); }
+.cba-sug-enter-active, .cba-sug-leave-active { transition: opacity .18s ease, transform .22s var(--nu-ease-saida); }
 .cba-sug-enter-from, .cba-sug-leave-to { opacity: 0; transform: translate(-50%, 8px); }
 
 @media (max-width: 760px) {
@@ -315,7 +315,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
   .cba--foco .cba__linha { height: 56px; }
   /* 16px no campo: abaixo disso o iOS dá zoom no foco */
   .cba__campo { font-size: 16px; text-overflow: ellipsis; }
-  .cba__enviar { transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .2s ease, width .35s ease, background .2s ease; }
+  .cba__enviar { transition: transform .35s var(--nu-ease-saida), opacity .2s ease, width .35s ease, background .2s ease; }
   .cba__sugs { justify-content: flex-start; width: 100%; max-width: 100%; }
 
   /* em repouso: a cápsula, estreita, com a pergunta se escrevendo */

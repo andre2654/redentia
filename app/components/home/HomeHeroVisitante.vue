@@ -69,11 +69,11 @@
 .hhv__texto { display: flex; flex-direction: column; align-items: center; max-width: 1120px; }
 .hhv__produto {
   display: inline-flex; align-items: center; gap: 8px; margin: 0;
-  color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: -0.02em;
+  color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); letter-spacing: -0.02em;
 }
 .hhv__titulo {
   margin: 22px 0 0; max-width: 22ch;
-  font-size: clamp(36px, 4.8vw, 68px); font-weight: 800; letter-spacing: -0.035em; line-height: 1;
+  font-size: clamp(36px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1;
   text-wrap: balance;
   color: var(--nu-agora-texto);
   background: linear-gradient(180deg, var(--nu-white) 45%, var(--nu-cream-text-78) 100%);
@@ -109,9 +109,9 @@
 .hhv__selo {
   display: inline-flex; align-items: center; gap: 8px; padding: 9px 17px; border-radius: var(--nu-r-pill);
   background: var(--nu-blue); color: var(--nu-white); font-size: 15px; font-weight: 500; white-space: nowrap;
-  transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .3s var(--nu-ease-saida);
 }
-.hhv__selo strong { font-size: 16px; font-weight: 800; }
+.hhv__selo strong { font-size: 16px; font-weight: var(--nu-w-forte); }
 .hhv__palco:hover .hhv__selo { transform: translateY(-2px); }
 .hhv__nota { color: var(--nu-agora-sub); font-size: 13.5px; font-weight: 500; line-height: 1.4; }
 .hhv__palco:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 6px; border-radius: var(--nu-r-card); }
@@ -134,9 +134,9 @@
 .hhv__horizonte::after { inset: -7px 0; filter: blur(9px); opacity: .7; }
 
 /* entrada calma: o título fica parado (LCP); o texto sobe do desfoque; o palco só sobe */
-.hhv__dek, .hhv__chamada { animation: hhv-entra 1s cubic-bezier(.2, .8, .2, 1) backwards; }
+.hhv__dek, .hhv__chamada { animation: hhv-entra 1s var(--nu-ease-saida) backwards; }
 .hhv__chamada { animation-delay: .1s; }
-.hhv__palco { animation: hhv-sobe 1.1s cubic-bezier(.2, .8, .2, 1) .1s backwards; }
+.hhv__palco { animation: hhv-sobe 1.1s var(--nu-ease-saida) .1s backwards; }
 @keyframes hhv-entra { from { opacity: 0; filter: blur(8px); transform: translateY(16px); } }
 @keyframes hhv-sobe { from { transform: translateY(28px); } }
 

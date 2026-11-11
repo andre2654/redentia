@@ -89,12 +89,12 @@ function teclar(e: KeyboardEvent) {
 .voe__abas::-webkit-scrollbar { display: none; }
 .voe__aba {
   height: 44px; padding: 0 18px; border: 0; border-radius: var(--nu-r-pill); background: transparent; white-space: nowrap;
-  color: var(--nu-gray-3); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+  color: var(--nu-gray-3); font: inherit; font-size: 15px; font-weight: var(--nu-w-medio); cursor: pointer;
   transition: background .2s, color .2s;
 }
 .voe__aba:hover { color: var(--nu-ink); }
 .voe__aba--on, .voe__aba--on:hover { background: var(--nu-ink); color: var(--nu-white); }
-.voe__lente { margin-top: clamp(18px, 2.4vw, 28px); min-height: 420px; animation: nu-fade .4s cubic-bezier(.22, 1, .36, 1) both; }
+.voe__lente { margin-top: clamp(18px, 2.4vw, 28px); min-height: 420px; animation: nu-fade .4s var(--nu-ease-saida) both; }
 
 /* Mundo e Cadeia sem a moldura deles: a seção é esta */
 .voe__lente :deep(.cmu), .voe__lente :deep(.cca) { padding: 0; background: transparent; overflow: visible; }

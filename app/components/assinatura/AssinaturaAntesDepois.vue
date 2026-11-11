@@ -50,17 +50,17 @@ const LINHAS = [
 
 <style scoped>
 .aad { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
-.aad__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
+.aad__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
 .aad__quadro { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 1.8vw, 24px); margin-top: clamp(36px, 4.5vw, 56px); }
 .aad__coluna { border-radius: var(--nu-r-card-lg); }
 .aad__coluna--sem { background: var(--nu-band); box-shadow: var(--nu-shadow-quente); }
 /* o rótulo da coluna "sem" tem a altura da aba da faixa: as duas listas começam na mesma linha */
 .aad__rotulo {
   display: flex; align-items: center; height: 52px; margin: 0; padding: 0 clamp(26px, 3vw, 40px);
-  color: var(--nu-gray); font-size: 15px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--nu-gray); font-size: 15px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase;
 }
 .aad__lista { list-style: none; margin: 0; padding: clamp(22px, 2.6vw, 30px) clamp(26px, 3vw, 40px) clamp(28px, 3vw, 40px); display: flex; flex-direction: column; gap: 18px; }
-.aad__item { display: flex; align-items: flex-start; gap: 14px; font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -0.015em; line-height: 1.3; }
+.aad__item { display: flex; align-items: flex-start; gap: 14px; font-size: var(--nu-fs-xl); font-weight: var(--nu-w-medio); letter-spacing: -0.015em; line-height: 1.3; }
 .aad__coluna--sem .aad__item { color: var(--nu-gray); }
 .aad__coluna--com .aad__item { color: var(--nu-white); }
 .aad__marca { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; margin-top: 1px; border-radius: 50%; }

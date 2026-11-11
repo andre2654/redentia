@@ -180,7 +180,7 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
   padding: clamp(56px, 8vw, 112px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(44px, 6vw, 80px);
   animation: nu-fade .5s ease both;
 }
-.cvz__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero-xl); font-weight: 800; letter-spacing: -0.04em; line-height: 0.96; }
+.cvz__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero-xl); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 0.96; }
 .cvz__linha { margin: clamp(18px, 2vw, 26px) 0 0; max-width: 640px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
 
 .cvz__bancos { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); }
@@ -189,7 +189,7 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
 .cvz__logo {
   display: grid; place-items: center; width: 44px; height: 44px; margin-left: -5px;
   border-radius: 50%; overflow: hidden; background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-page), var(--nu-shadow-pos-nav);
-  transition: transform .2s cubic-bezier(.22, 1, .36, 1);
+  transition: transform .2s var(--nu-ease-saida);
 }
 .cvz__logo :deep(.cil) { border: 0; border-radius: 7px; }
 @media (max-width: 420px) {
@@ -232,9 +232,9 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
 .cvz__passo:nth-child(3) { animation-delay: 120ms; }
 .cvz__num {
   padding-bottom: 10px; margin-bottom: 10px; border-bottom: 3px solid var(--nu-ink);
-  color: var(--nu-blue); font-size: clamp(64px, 7vw, 88px); font-weight: 800; letter-spacing: -0.04em; line-height: .9; font-variant-numeric: tabular-nums;
+  color: var(--nu-blue); font-size: clamp(64px, 7vw, 88px); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: .9; font-variant-numeric: tabular-nums;
 }
-.cvz__passo-t { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.cvz__passo-t { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
 .cvz__passo-d { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 @media (prefers-reduced-motion: reduce) { .cvz__passo { animation: none; } }
 </style>

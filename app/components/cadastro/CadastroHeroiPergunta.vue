@@ -59,8 +59,8 @@ defineProps<{ pergunta: string }>()
 }
 .chp__selo {
   flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-tag);
-  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
-  animation: chp-selo 7s cubic-bezier(.2, .8, .2, 1) infinite;
+  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
+  animation: chp-selo 7s var(--nu-ease-saida) infinite;
 }
 @keyframes chp-respira { 50% { opacity: .3; } }
 @keyframes chp-brilha { from { background-position: 200% 0; } to { background-position: -200% 0; } }

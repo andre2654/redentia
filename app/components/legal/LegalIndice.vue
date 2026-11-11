@@ -35,16 +35,16 @@ withDefaults(defineProps<{
   .lgi__topo::-webkit-details-marker { display: none; }
   .lgi__rotulo {
     display: inline-flex; align-items: center; gap: 9px; color: var(--nu-ink);
-    font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase;
   }
   .lgi__mais {
     display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;
-    border-radius: 50%; background: var(--nu-ink); color: var(--nu-white); transition: transform .25s cubic-bezier(.2, .8, .2, 1);
+    border-radius: 50%; background: var(--nu-ink); color: var(--nu-white); transition: transform .25s var(--nu-ease-saida);
   }
   .lgi__mais svg { width: 15px; height: 15px; }
   .lgi[open] .lgi__mais { transform: rotate(45deg); }
   .lgi__lista { list-style: none; margin: 0; padding: 0 20px 10px; animation: nu-fade .3s ease both; }
-  .lgi__lista li { border-top: 1.5px solid var(--nu-line-2); }
+  .lgi__lista li { border-top: 1px solid var(--nu-line-2); }
   .lgi__lista a {
     display: flex; align-items: center; min-height: 48px; padding: 8px 0; color: var(--nu-ink);
     font-size: var(--nu-fs-md); font-weight: 600; line-height: 1.35; text-decoration: none; transition: color .2s;

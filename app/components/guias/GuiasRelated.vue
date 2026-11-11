@@ -38,7 +38,7 @@ defineProps<{ items: { title: string; tag: GuideTag; minutes: number; to: string
 }
 .grl__title {
   margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
+  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
 }
 .grl__grid {
   /* auto-fill: um cartão sozinho mantém a largura de coluna, não estica a faixa inteira */

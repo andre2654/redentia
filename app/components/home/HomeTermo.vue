@@ -62,6 +62,6 @@ function saiuDoFoco(e: FocusEvent) {
 }
 .hte__caixa--dir { left: auto; right: 0; }
 .hte__def { color: var(--nu-ink); }
-.hte__link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.hte__link { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; }
 .hte__link:hover { color: var(--nu-blue-hover); }
 </style>

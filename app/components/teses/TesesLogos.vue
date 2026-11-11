@@ -39,7 +39,7 @@ withDefaults(defineProps<{
 .tlg__logo + .tlg__logo { margin-left: -6px; }
 .tlg--escuro .tlg__logo { box-shadow: 0 0 0 2px var(--nu-navy); }
 .tlg__nomes {
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.02em;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0.02em;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; font-variant-numeric: tabular-nums;
 }
 .tlg--escuro .tlg__nomes { color: var(--nu-cream-text-60); }

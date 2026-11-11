@@ -94,7 +94,7 @@ function onKey(e: KeyboardEvent) {
   display: flex; flex-direction: column;
   background: var(--nu-white); border-radius: 18px; box-shadow: var(--nu-shadow-float);
   overflow: hidden; outline: none;
-  animation: cc-entrar .32s cubic-bezier(.2, .8, .2, 1) both;
+  animation: cc-entrar .32s var(--nu-ease-saida) both;
 }
 @keyframes cc-entrar { from { opacity: 0; transform: translateY(12px) scale(.985); } to { opacity: 1; transform: none; } }
 
@@ -114,7 +114,7 @@ function onKey(e: KeyboardEvent) {
 .cc__centro { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; text-align: center; }
 .cc__rotulo {
   display: inline-flex; align-items: center; gap: 6px; color: var(--nu-gray);
-  font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .9px; white-space: nowrap;
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: .9px; white-space: nowrap;
 }
 
 .cc__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }

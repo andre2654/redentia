@@ -284,12 +284,12 @@ if (linkDeChat.tipo === 'login') {
   margin-bottom: 8px;
 }
 .bp__cab-titulo {
-  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.025em;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.025em;
 }
-.bp__cab-n { margin-left: 6px; color: var(--nu-gray); font-weight: 700; font-variant-numeric: tabular-nums; }
+.bp__cab-n { margin-left: 6px; color: var(--nu-gray); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .bp__link {
   display: inline-flex; align-items: center; gap: 5px; min-height: 44px;
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); white-space: nowrap;
   text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
 }
 .bp__link:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
@@ -299,16 +299,16 @@ if (linkDeChat.tipo === 'login') {
 
 .bp__vazio { padding: 8px 0 28px; }
 .bp__vazio-titulo {
-  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05;
   overflow-wrap: anywhere;
 }
 .bp__vazio-txt { margin: 12px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
-.bp__sug-rotulo { margin: 28px 0 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.bp__sug-rotulo { margin: 28px 0 0; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
 .bp__sug { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; }
 .bp__sug-chip {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: var(--nu-r-pill);
   background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14.5px; font-weight: 600; white-space: nowrap;
-  transition: background .2s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s ease, transform .15s var(--nu-ease-saida);
 }
 .bp__sug-chip svg { color: var(--nu-blue-text); transition: transform .2s ease; }
 .bp__sug-chip:hover { background: var(--nu-line-2); color: var(--nu-ink); }
@@ -321,7 +321,7 @@ if (linkDeChat.tipo === 'login') {
   align-self: flex-start; width: auto; margin-top: 18px; min-height: 48px; padding: 0 24px;
   background: var(--nu-white); color: var(--nu-ink);
   border: 1.5px solid var(--nu-ink); border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .bp__outline:hover { background: var(--nu-row-hover); }
 .bp__outline:active { transform: scale(.98); }
@@ -333,7 +333,7 @@ if (linkDeChat.tipo === 'login') {
 .bp__dica span { margin: 0 6px; }
 .bp__dica kbd {
   display: inline-block; min-width: 22px; margin-right: 4px; padding: 1px 6px; text-align: center;
-  border: 1.5px solid var(--nu-line); border-radius: 6px;
-  font: inherit; font-weight: 700; color: var(--nu-gray-3);
+  border: 1px solid var(--nu-line); border-radius: 6px;
+  font: inherit; font-weight: var(--nu-w-medio); color: var(--nu-gray-3);
 }
 </style>

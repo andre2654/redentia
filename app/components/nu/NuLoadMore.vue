@@ -18,12 +18,12 @@ defineEmits<{ (e: 'more'): void }>()
 .nlm {
   display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 26px;
   background: transparent; color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
-  font-size: var(--nu-fs-md); font-weight: 700; border-radius: var(--nu-r-pill);
-  border: none; cursor: pointer; transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); border-radius: var(--nu-r-pill);
+  border: none; cursor: pointer; transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
 }
 .nlm:hover { background: var(--nu-ink); color: var(--nu-white); }
 .nlm:active { transform: scale(.98); }
-.nlm:disabled { cursor: default; background: transparent; color: var(--nu-gray); box-shadow: inset 0 0 0 1.5px var(--nu-line); }
+.nlm:disabled { cursor: default; background: transparent; color: var(--nu-gray); box-shadow: inset 0 0 0 1px var(--nu-line); }
 .nlm__pontos { display: inline-flex; gap: 3px; }
 .nlm__pontos i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: nu-ponto 1.2s infinite; }
 .nlm__pontos i:nth-child(2) { animation-delay: .2s; }

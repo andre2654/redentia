@@ -131,7 +131,7 @@ const colunas = computed(() => (business.value ? COLUMNS_BUSINESS : COLUMNS))
   background: var(--nu-navy-2); border-radius: var(--nu-r-panel);
 }
 .nuf__news-texto { flex: 1.3 1 360px; min-width: min(280px, 100%); }
-.nuf__news-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.14; }
+.nuf__news-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.14; }
 .nuf__news-sub { margin: 12px 0 0; max-width: 52ch; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 .nuf__news-form { flex: 1 1 340px; min-width: min(280px, 100%); }
 /* o que abre o rodapé não leva margem por cima (os cards de produto saíram em 31/10/2026) */
@@ -143,18 +143,18 @@ const colunas = computed(() => (business.value ? COLUMNS_BUSINESS : COLUMNS))
   margin-top: clamp(72px, 9vw, 128px);
 }
 .nuf__marca { display: flex; flex-direction: column; align-items: flex-start; }
-.nuf__marca-nome { display: flex; align-items: center; gap: 12px; color: var(--nu-cream-text); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.nuf__marca-nome { display: flex; align-items: center; gap: 12px; color: var(--nu-cream-text); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
 .nuf__marca-biz { margin-left: -4px; color: var(--nu-blue-soft); }
 .nuf__marca-logo { width: 30px; height: 30px; display: block; object-fit: contain; }
 .nuf__marca-frase { margin: 16px 0 0; max-width: 34ch; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 .nuf__social-row { display: flex; align-items: center; gap: 20px; margin-top: 24px; }
 .nuf__soc { color: var(--nu-cream-text); transition: opacity .2s, transform .2s; }
 .nuf__soc:hover { opacity: 0.6; color: var(--nu-cream-text); transform: translateY(-2px); }
-.nuf__mail { margin-top: 28px; color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 700; transition: color .2s; }
+.nuf__mail { margin-top: 28px; color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); transition: color .2s; }
 .nuf__mail:hover { color: var(--nu-white); }
 .nuf__hours { margin-top: 6px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .nuf__grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(36px, 4vw, 56px) clamp(20px, 2.4vw, 36px); }
-.nuf__col-title { color: var(--nu-blue-soft); font-size: var(--nu-fs-md); font-weight: 800; margin-bottom: 18px; }
+.nuf__col-title { color: var(--nu-blue-soft); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); margin-bottom: 18px; }
 .nuf__col-links { display: flex; flex-direction: column; gap: 13px; }
 .nuf__link { color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; transition: color .2s; }
 .nuf__link:hover { color: var(--nu-white); }
@@ -175,7 +175,7 @@ const colunas = computed(() => (business.value ? COLUMNS_BUSINESS : COLUMNS))
   margin-left: auto; display: inline-flex; align-items: center;
   background: var(--nu-navy); color: var(--nu-cream-text); border: 1px solid var(--nu-cream-text-22);
   border-radius: var(--nu-r-pill); padding: 10px 20px;
-  font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; transition: background .2s, border-color .2s;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap; transition: background .2s, border-color .2s;
 }
 .nuf__biz:hover { background: var(--nu-navy-2); border-color: var(--nu-cream-text-45); color: var(--nu-white); }
 .nuf__biz:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }

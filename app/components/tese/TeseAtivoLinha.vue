@@ -142,7 +142,7 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
 <style scoped>
 .tal {
   background: var(--nu-card); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-quente);
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
   animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
   interpolate-size: allow-keywords;
 }
@@ -159,9 +159,9 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
 .tal__nomes { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .tal__ticker {
   display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag);
-  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: 800; letter-spacing: .04em;
+  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .04em;
 }
-.tal__nome { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; transition: color .2s ease; }
+.tal__nome { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.2; transition: color .2s ease; }
 .tal__cab:hover .tal__nome { color: var(--nu-blue-text); }
 .tal__papel { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.35; }
 .tal__selos { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
@@ -175,27 +175,27 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
 
 /* ——— a linha aberta ——— */
 /* a altura anima onde o navegador sabe (::details-content); nos outros, o miolo surge */
-.tal::details-content { block-size: 0; overflow: clip; transition: block-size .32s cubic-bezier(.2, .8, .2, 1), content-visibility .32s allow-discrete; }
+.tal::details-content { block-size: 0; overflow: clip; transition: block-size .32s var(--nu-ease-saida), content-visibility .32s allow-discrete; }
 .tal[open]::details-content { block-size: auto; }
 .tal[open] > .tal__corpo { animation: nu-fade .3s ease both; }
 .tal__corpo {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px clamp(28px, 4vw, 56px);
-  margin: 0 clamp(16px, 2vw, 24px); padding: 24px 0 22px; border-top: 1.5px solid var(--nu-line-2);
+  margin: 0 clamp(16px, 2vw, 24px); padding: 24px 0 22px; border-top: 1px solid var(--nu-line-2);
 }
 .tal__col { min-width: 0; display: flex; flex-direction: column; gap: 26px; }
-.tal__rotulo { margin: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
-.tal__sub { margin: 14px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 700; }
+.tal__rotulo { margin: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
+.tal__sub { margin: 14px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: var(--nu-w-medio); }
 .tal__sub--tempo { margin-top: 22px; }
 .tal__p { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; text-wrap: pretty; }
 .tal__rotulo + .tal__p { margin-top: 12px; }
 .tal__bloco--ultima { background: var(--nu-page); border-radius: var(--nu-r-tile); padding: 16px 18px; }
 .tal__ultima { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 12px 0 0; }
-.tal__ultima b { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; line-height: 1.35; }
+.tal__ultima b { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); line-height: 1.35; }
 
 /* "Ler tudo": o resto do texto, que entra na sequência (o botão some depois de abrir) */
 .tal__ler-b {
   display: inline-flex; align-items: center; min-height: 44px; list-style: none; cursor: pointer;
-  color: var(--nu-ink); font-size: 15px; font-weight: 700;
+  color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-medio);
   text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
   transition: color .2s ease, text-decoration-color .2s ease;
 }
@@ -215,15 +215,15 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
 .tal__tempo:not(.tal__tempo--antes) .tal__rev:first-child::before { background: var(--nu-blue); box-shadow: none; }
 .tal__rev:last-child { padding-bottom: 4px; }
 .tal__rev:last-child::after { display: none; }
-.tal__rev-d { display: block; color: var(--nu-ink); font-size: 14.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.tal__rev-d { display: block; color: var(--nu-ink); font-size: 14.5px; font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .tal__rev-t { margin: 4px 0 0; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.6; text-wrap: pretty; }
 
 .tal__antes { margin-top: 10px; interpolate-size: allow-keywords; }
-.tal__antes::details-content { block-size: 0; overflow: clip; transition: block-size .32s cubic-bezier(.2, .8, .2, 1), content-visibility .32s allow-discrete; }
+.tal__antes::details-content { block-size: 0; overflow: clip; transition: block-size .32s var(--nu-ease-saida), content-visibility .32s allow-discrete; }
 .tal__antes[open]::details-content { block-size: auto; }
 .tal__antes-b {
   display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 8px 0 18px; list-style: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14.5px; font-weight: 700;
+  border-radius: var(--nu-r-pill); background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14.5px; font-weight: var(--nu-w-medio);
   transition: background .2s ease;
 }
 .tal__antes-b::-webkit-details-marker { display: none; }
@@ -237,11 +237,11 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
 /* o pé da linha */
 .tal__pe {
   grid-column: 1 / -1; display: flex; align-items: center; gap: 8px 24px; flex-wrap: wrap;
-  margin: 0; padding-top: 14px; border-top: 1.5px solid var(--nu-line-2);
+  margin: 0; padding-top: 14px; border-top: 1px solid var(--nu-line-2);
 }
 .tal__ver, .tal__ia {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: none;
-  color: var(--nu-ink); font: inherit; font-size: 15.5px; font-weight: 700; cursor: pointer; transition: color .2s ease;
+  color: var(--nu-ink); font: inherit; font-size: 15.5px; font-weight: var(--nu-w-medio); cursor: pointer; transition: color .2s ease;
 }
 .tal__ver svg { transition: transform .2s ease; }
 .tal__ver:hover, .tal__ia:hover { color: var(--nu-blue-text); }

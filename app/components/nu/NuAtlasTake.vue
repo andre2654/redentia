@@ -21,7 +21,7 @@ withDefaults(defineProps<{ text: string; label?: string }>(), { label: 'A leitur
 .nat { background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 20px 22px; box-shadow: var(--nu-shadow-quente); }
 .nat__head { display: flex; align-items: center; gap: 9px; }
 .nat__label {
-  color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   letter-spacing: 0.16em; text-transform: uppercase;
 }
 .nat__body { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; margin-top: 10px; }

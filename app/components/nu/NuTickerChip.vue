@@ -18,7 +18,7 @@ defineProps<{ ticker: string; dir: NoticiasDir }>()
 
 <style scoped>
 .ntk {
-  display: inline-flex; align-items: center; gap: 6px; font-size: var(--nu-fs-dense); font-weight: 800; letter-spacing: 0.04em;
+  display: inline-flex; align-items: center; gap: 6px; font-size: var(--nu-fs-dense); font-weight: var(--nu-w-forte); letter-spacing: 0.04em;
   padding: 6px 11px; border-radius: var(--nu-r-tag); white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }

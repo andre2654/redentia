@@ -44,12 +44,12 @@ useNuScrollFrame(() => {
 }
 .ntoc__label {
   display: flex; align-items: center; gap: 8px;
-  color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700;
+  color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
   letter-spacing: 0.16em; text-transform: uppercase;
 }
 .ntoc__list {
   display: flex; flex-direction: column; margin-top: 16px;
-  border-left: 1.5px solid var(--nu-line);
+  border-left: 1px solid var(--nu-line);
 }
 .ntoc__item {
   display: block; padding: 10px 0 10px 18px; margin-left: -2.25px;
@@ -60,7 +60,7 @@ useNuScrollFrame(() => {
 .ntoc__item:hover { color: var(--nu-ink); }
 .ntoc__item--active {
   border-left-color: var(--nu-blue);
-  color: var(--nu-ink); font-weight: 700;
+  color: var(--nu-ink); font-weight: var(--nu-w-medio);
 }
 .ntoc__extra { margin-top: 28px; }
 

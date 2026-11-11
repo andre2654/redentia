@@ -81,9 +81,9 @@ const emit = defineEmits<{ continuar: [], termo: [] }>()
 
 .cci__h1 {
   margin: 22px 0 0; text-align: center; color: var(--nu-ink);
-  font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -.03em; line-height: 1.22; text-wrap: balance; outline: none;
+  font-size: var(--nu-fs-xl); font-weight: var(--nu-w-medio); letter-spacing: -.03em; line-height: 1.22; text-wrap: balance; outline: none;
 }
-.cci__h1 strong { font-weight: 800; }
+.cci__h1 strong { font-weight: var(--nu-w-forte); }
 .cci__sub { margin: 8px 0 0; text-align: center; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .cci__lista { list-style: none; margin: 26px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
@@ -97,7 +97,7 @@ const emit = defineEmits<{ continuar: [], termo: [] }>()
 .cci__erro { margin: 0 0 14px; padding: 12px 14px; border-radius: 10px; background: var(--nu-red-tint); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .cci__termos { margin: 0 0 12px; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
 .cci__link {
-  padding: 0; border: none; background: none; color: var(--nu-blue-text); font: inherit; font-weight: 800; cursor: pointer;
+  padding: 0; border: none; background: none; color: var(--nu-blue-text); font: inherit; font-weight: var(--nu-w-forte); cursor: pointer;
   text-decoration: underline; text-decoration-color: var(--nu-blue-30); text-underline-offset: 2px;
 }
 .cci__link:hover { color: var(--nu-blue-hover); }

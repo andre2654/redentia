@@ -42,7 +42,7 @@ const id = useId()
 
 <style scoped>
 .cfl { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
-.cfl__label { color: var(--nu-ink); font-size: 15px; font-weight: 700; }
+.cfl__label { color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-medio); }
 .cfl__box { position: relative; display: flex; align-items: center; }
 .cfl__input {
   width: 100%; height: 56px; background: var(--nu-white); color: var(--nu-ink);

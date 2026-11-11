@@ -86,39 +86,39 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
 .cmv__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .cmv__title {
   margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
+  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
 }
 .cmv__sub { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; margin-top: 14px; }
-.cmv__saldo--up { color: var(--nu-green-text); font-weight: 800; }
-.cmv__saldo--down { color: var(--nu-ink); font-weight: 800; }
+.cmv__saldo--up { color: var(--nu-green-text); font-weight: var(--nu-w-forte); }
+.cmv__saldo--down { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 /* as operações num cartão quente, com fios de 1,5px */
 .cmv__list { margin-top: 26px; padding: clamp(6px, 1vw, 12px) clamp(18px, 2.4vw, 28px); border-radius: var(--nu-r-card); background: var(--nu-band); box-shadow: var(--nu-shadow-quente); }
-.cmv__cab { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 16px; margin: 0; padding: 14px 0 10px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.cmv__cab { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 16px; margin: 0; padding: 14px 0 10px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
 .cmv__cab span:first-child { text-align: center; }
 /* "Operação" começa onde começa o código do ativo (depois do quadrado do logo) */
 .cmv__cab span:nth-child(2) { padding-left: 64px; }
 .cmv__cab span:last-child { text-align: right; }
-.cmv__row { display: flex; align-items: center; gap: 16px; padding: 15px 10px; margin: 0 -10px; border-top: 1.5px solid var(--nu-line); border-radius: 0; transition: background .18s; }
+.cmv__row { display: flex; align-items: center; gap: 16px; padding: 15px 10px; margin: 0 -10px; border-top: 1px solid var(--nu-line); border-radius: 0; transition: background .18s; }
 .cmv__row:hover { background: var(--nu-cream-2); }
 .cmv__date-tile {
   width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--nu-r-chip);
   background: var(--nu-cream-2); display: flex; flex-direction: column;
   align-items: center; justify-content: center;
 }
-.cmv__date-d { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1; }
-.cmv__date-m { color: var(--nu-gray); font-size: 9px; font-weight: 800; letter-spacing: .5px; margin-top: 2px; }
+.cmv__date-d { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); line-height: 1; }
+.cmv__date-m { color: var(--nu-gray); font-size: 9px; font-weight: var(--nu-w-forte); letter-spacing: .5px; margin-top: 2px; }
 .cmv__main { flex: 1; min-width: 0; overflow: hidden; }
 .cmv__ticker-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; }
-.cmv__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; white-space: nowrap; }
+.cmv__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); white-space: nowrap; }
 .cmv__badge {
-  display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: 700;
+  display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   padding: 3px 9px; border-radius: var(--nu-r-tag); white-space: nowrap; flex-shrink: 0;
 }
 .cmv__badge--provento { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .cmv__badge--compra { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .cmv__badge--venda { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 /* o selo do imposto da venda: contorno, para não brigar com o tipo */
-.cmv__selo { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap; box-shadow: inset 0 0 0 1px currentColor; }
+.cmv__selo { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); white-space: nowrap; box-shadow: inset 0 0 0 1px currentColor; }
 .cmv__selo--isento { color: var(--nu-green-text); }
 .cmv__selo--pago { color: var(--nu-blue-text); }
 .cmv__selo--a_conferir, .cmv__selo--custo_desconhecido { color: var(--nu-amber-text); }
@@ -126,7 +126,7 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
   display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 3px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.cmv__val { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.cmv__val { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
 .cmv__val--pos { color: var(--nu-green-text); }
 .cmv__empty { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; padding: 22px 0; }
 .cmv__more { margin-top: 24px; }

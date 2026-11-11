@@ -36,16 +36,16 @@ const sobre = useSobreDoContexto()
   content: ''; position: absolute; left: calc(clamp(24px, 3vw, 44px) / -2); top: 6px; bottom: 6px; width: 1.5px; background: var(--nu-dark-line);
 }
 .tsc__label {
-  margin: 0; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700;
+  margin: 0; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio);
   text-transform: uppercase; letter-spacing: .16em;
 }
 .tsc__price {
   margin: 12px 0 0; color: var(--nu-white); font-size: clamp(30px, 3.2vw, 44px);
-  font-weight: 800; letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums;
+  font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .tsc__rate {
   display: inline-flex; align-items: center; min-height: 28px; margin: 14px 0 0; padding: 0 10px; border-radius: var(--nu-r-tag);
-  background: color-mix(in srgb, var(--nu-blue-on-dark) 18%, transparent); color: var(--nu-blue-soft); font-size: 14.5px; font-weight: 700;
+  background: color-mix(in srgb, var(--nu-blue-on-dark) 18%, transparent); color: var(--nu-blue-soft); font-size: 14.5px; font-weight: var(--nu-w-medio);
   font-variant-numeric: tabular-nums;
 }
 .tsc__note { margin: 12px 0 0; color: var(--nu-on-dark); font-size: 14.5px; font-weight: 500; line-height: 1.5; }

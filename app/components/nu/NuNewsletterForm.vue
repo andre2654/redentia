@@ -90,8 +90,8 @@ watch(jaAssina, (v) => {
 }
 .nnf__cta {
   background: var(--nu-blue); color: var(--nu-white); border: none;
-  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 24px; font-size: var(--nu-fs-md); font-weight: 700;
-  cursor: pointer; white-space: nowrap; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 24px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
+  cursor: pointer; white-space: nowrap; transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .nnf__cta:hover { background: var(--nu-blue-hover); }
 .nnf__cta:active { transform: scale(.98); }
@@ -99,11 +99,11 @@ watch(jaAssina, (v) => {
 .nnf__legal { margin: 12px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
 .nnf__legal a { color: inherit; text-decoration: underline; }
 .nnf__passo { margin: 0 0 12px; color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 500; }
-.nnf__ok { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-lg); font-weight: 700; line-height: 1.45; }
-.nnf__erro { margin: 12px 0 0; color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; }
+.nnf__ok { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); line-height: 1.45; }
+.nnf__erro { margin: 12px 0 0; color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .nnf__trocar {
   margin: 10px 0 0; padding: 0; background: none; border: none; cursor: pointer;
-  color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 700; text-decoration: underline;
+  color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-decoration: underline;
 }
 .nnf__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 </style>

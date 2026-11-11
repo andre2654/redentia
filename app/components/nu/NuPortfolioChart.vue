@@ -144,21 +144,21 @@ const pillValue = computed(() => (hidden.value ? 'R$ ••••' : props.chart
 .hch__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .hch__title {
   margin: 0; color: var(--nu-cream-text); font-size: clamp(36px, 5vw, 64px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1.02;
 }
 .hch__periods { display: flex; gap: 6px; flex-shrink: 0; }
 .hch__period {
   padding: 11px 20px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
+  color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer;
   transition: color .2s, background .2s;
 }
 .hch__period:hover { color: var(--nu-cream-text-85); }
-.hch__period--active { background: var(--nu-cream); color: var(--nu-navy); font-weight: 800; }
+.hch__period--active { background: var(--nu-cream); color: var(--nu-navy); font-weight: var(--nu-w-forte); }
 .hch__period--active:hover { color: var(--nu-navy); }
 .hch__legend { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; margin-top: 20px; }
 .hch__leg { display: inline-flex; align-items: baseline; gap: 9px; }
-.hch__leg-label { color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 700; }
-.hch__leg-val { color: var(--nu-cream-text-85); font-size: var(--nu-fs-2xl); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hch__leg-label { color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
+.hch__leg-val { color: var(--nu-cream-text-85); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .hch__leg-val--you { color: var(--nu-blue-legend); }
 .hch__leg-meta { color: var(--nu-cream-text-50); font-size: var(--nu-fs-sm); font-weight: 600; }
 .hch__chart {
@@ -170,7 +170,7 @@ const pillValue = computed(() => (hidden.value ? 'R$ ••••' : props.chart
 @media (min-width: 1401px) { .hch__chart { margin-left: 0; margin-right: 0; } }
 .hch__collecting { margin-top: 34px; max-width: 640px; }
 .hch__collecting-kicker {
-  color: var(--nu-blue-soft); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-blue-soft); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   letter-spacing: 1.4px; text-transform: uppercase;
 }
 .hch__collecting-body {

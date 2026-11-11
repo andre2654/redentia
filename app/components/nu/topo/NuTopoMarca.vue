@@ -22,9 +22,9 @@ defineProps<{ tamanho?: number; business?: boolean }>()
   display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0;
   color: var(--nu-ink); border-radius: var(--nu-r-chip); padding: 4px 6px 4px 2px; margin-left: -2px;
 }
-.ntm__marca { display: block; flex-shrink: 0; transition: transform .35s cubic-bezier(.2, .8, .2, 1); }
+.ntm__marca { display: block; flex-shrink: 0; transition: transform .35s var(--nu-ease-saida); }
 .ntm:hover .ntm__marca { transform: rotate(-8deg) scale(1.04); }
-.ntm__nome { font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+.ntm__nome { font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1; }
 .ntm__biz { color: var(--nu-blue-text); white-space: nowrap; }
 .ntm--aportou { padding: 6px 6px 6px 2px; min-height: 44px; }
 .ntm:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }

@@ -51,7 +51,7 @@ defineProps<{
 .nah__crumb:hover { color: var(--nu-blue-text); }
 .nah__title {
   margin: 20px 0 0; color: var(--nu-ink);
-  font-size: clamp(36px, 5vw, 68px); font-weight: 800;
+  font-size: clamp(36px, 5vw, 68px); font-weight: var(--nu-w-display);
   letter-spacing: -0.035em; line-height: 1.02;
 }
 .nah__dek {
@@ -59,6 +59,6 @@ defineProps<{
   line-height: 1.45; margin-top: 22px; max-width: 760px;
 }
 .nah__byline { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 28px; }
-.nah__author { display: block; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
+.nah__author { display: block; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .nah__meta { display: block; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; margin-top: 1px; }
 </style>

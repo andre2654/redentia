@@ -51,16 +51,16 @@ const vencendo = computed(() => conectados.value.filter((c) => {
 
 <style scoped>
 .rbpk { display: flex; flex-direction: column; height: 100%; padding: 28px; border-radius: var(--nu-r-card); background: var(--rbp-painel); }
-.rbpk__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.02em; }
+.rbpk__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.02em; }
 .rbpk__dek { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .rbpk__numeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0 0; padding: 20px 0; border-top: 1px solid var(--rbp-linha); border-bottom: 1px solid var(--rbp-linha); }
 .rbpk__numeros div { display: grid; gap: 4px; }
-.rbpk__numeros b { color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.rbpk__numeros b { color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
 .rbpk__numeros span { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .rbpk__btn {
   align-self: flex-start; margin-top: auto; padding-top: 0; display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px;
   border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white); text-decoration: none;
-  font-size: var(--nu-fs-md); font-weight: 800; transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); transition: background .2s;
 }
 .rbpk__numeros + .rbpk__btn, .rbpk__dek + .rbpk__btn { margin-top: 24px; }
 .rbpk__btn:hover { background: var(--nu-blue-hover); }

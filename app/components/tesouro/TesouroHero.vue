@@ -44,20 +44,20 @@ const sobre = useSobreDoContexto()
 .thr__volta:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
 .thr__title {
   margin: 20px 0 0; color: var(--nu-ink); font-size: clamp(30px, 3.2vw, 44px);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance;
+  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance;
 }
 .thr__rate { display: flex; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; margin-top: 18px; }
 .thr__rate-num {
-  color: var(--nu-ink); font-size: clamp(48px, 6.4vw, 88px); font-weight: 800;
+  color: var(--nu-ink); font-size: clamp(48px, 6.4vw, 88px); font-weight: var(--nu-w-display);
   letter-spacing: -0.045em; line-height: .95; font-variant-numeric: tabular-nums;
 }
-.thr__rate-suffix { color: var(--nu-gray); font-size: clamp(18px, 1.8vw, 22px); font-weight: 700; }
+.thr__rate-suffix { color: var(--nu-gray); font-size: clamp(18px, 1.8vw, 22px); font-weight: var(--nu-w-medio); }
 .thr__badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
 .thr__selo {
   display: inline-flex; align-items: center; min-height: 30px; padding: 5px 11px; border-radius: var(--nu-r-tag);
-  background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums;
+  background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14px; font-weight: var(--nu-w-medio); line-height: 1.2; font-variant-numeric: tabular-nums;
 }
 .thr__selo--azul { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
-.thr__selo--contorno { background: transparent; color: var(--nu-gray-3); box-shadow: inset 0 0 0 1.5px var(--nu-line); }
+.thr__selo--contorno { background: transparent; color: var(--nu-gray-3); box-shadow: inset 0 0 0 1px var(--nu-line); }
 @media (prefers-reduced-motion: reduce) { .thr { animation: none; } }
 </style>

@@ -71,26 +71,26 @@ const plano = computed(() => (ent.value?.plan?.slug && ent.value.plan.slug !== '
 .cas { animation: nu-fade .25s ease both; }
 .cas__linha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 /* o selo da marca: raio 8, 13,5px, 700 */
-.cas__selo { border-radius: var(--nu-r-tag); padding: 6px 11px; font-size: 13.5px; font-weight: 700; line-height: 1.3; }
+.cas__selo { border-radius: var(--nu-r-tag); padding: 6px 11px; font-size: 13.5px; font-weight: var(--nu-w-medio); line-height: 1.3; }
 .cas__selo--verde { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .cas__selo--azul { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .cas__selo--ambar { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .cas__selo--neutro { background: var(--nu-cream-2); color: var(--nu-gray-tag); }
-.cas__plano { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.cas__plano { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .cas__texto { margin: 14px 0 0; max-width: 560px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
 .cas__acoes { display: flex; align-items: center; gap: 14px 22px; flex-wrap: wrap; margin-top: 24px; }
 .cas__botao {
   display: inline-flex; align-items: center; gap: 10px; min-height: 48px;
   border: none; cursor: pointer; font-family: inherit;
   background: var(--nu-ink); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 0 24px; font-size: var(--nu-fs-md); font-weight: 700;
-  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  border-radius: var(--nu-r-pill); padding: 0 24px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
+  transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .cas__botao:hover:not(:disabled) { background: var(--nu-ink-hover); }
 .cas__botao:active { transform: scale(.98); }
 .cas__botao--quieto { background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink); }
 .cas__botao--quieto:hover:not(:disabled) { background: var(--nu-row-hover); }
-.cas__link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.cas__link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; }
 .cas__link:hover { color: var(--nu-blue-hover); }
 .cas__link svg { transition: transform .2s; }
 .cas__link:hover svg { transform: translateX(3px); }

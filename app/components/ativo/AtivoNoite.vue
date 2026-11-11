@@ -240,7 +240,7 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
      mercado (--nut-h, NuMarketTicker): os dois publicam a altura no <html> */
   --cola: calc(var(--nuh-h, 72px) + var(--nut-h, 0px));
   --barra-h: 61px;
-  --mola: cubic-bezier(.2, .8, .2, 1);
+  --mola: var(--nu-ease-saida);
   --a-h2: var(--nu-fs-h3); --a-h2-peso: 800;
   /* a margem da coluna de 1240px (a do topo): a barra e as seções alinham nela */
   --lado: max(var(--g), calc((100% - 1240px) / 2));
@@ -252,9 +252,9 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
   position: sticky; top: var(--cola); z-index: 30;
   background: color-mix(in srgb, var(--nu-page) 94%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px);
-  border-top: 1.5px solid var(--nu-line-2); border-bottom: 1.5px solid var(--nu-line-2);
+  border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2);
   /* o mesmo passo da régua e do header quando o header encolhe */
-  transition: top .32s cubic-bezier(.2, .8, .2, 1);
+  transition: top .32s var(--nu-ease-saida);
   /* compacta: o papel à esquerda, as seções à direita */
   display: flex; align-items: center;
 }
@@ -262,9 +262,9 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
 .an__ident { display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-left: var(--lado); animation: an-ident .22s ease both; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @keyframes an-ident { from { opacity: 0; transform: translateY(4px); } }
 /* o papel na barra: a etiqueta carvão da marca */
-.an__ident-t { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 800; letter-spacing: 0.04em; }
-.an__ident-p { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
-.an__ident-v { font-size: var(--nu-fs-sm); font-weight: 700; }
+.an__ident-t { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); letter-spacing: 0.04em; }
+.an__ident-p { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
+.an__ident-v { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .an__ident-v--up { color: var(--nu-green-text); }
 .an__ident-v--down { color: var(--nu-red-text); }
 .an__barra--compacta .an__chip--ativo { display: none; }
@@ -277,10 +277,10 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
   background: transparent; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 600;
   transition: background .2s ease, color .2s ease, transform .15s var(--mola);
 }
-.an__chip--ativo { font-weight: 800; }
+.an__chip--ativo { font-weight: var(--nu-w-forte); }
 .an__chip:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
 .an__chip:active { transform: scale(.97); }
-.an__chip--on, .an__chip--on:hover { background: var(--nu-ink); color: var(--nu-white); font-weight: 700; }
+.an__chip--on, .an__chip--on:hover { background: var(--nu-ink); color: var(--nu-white); font-weight: var(--nu-w-medio); }
 
 /* ——— cada seção: o eyebrow e o título à esquerda, o conteúdo embaixo ——— */
 .an__sec { scroll-margin-top: calc(var(--cola) + var(--barra-h)); padding: clamp(64px, 7vw, 100px) var(--g); }
@@ -295,7 +295,7 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
 .an__sec--fim { padding-bottom: clamp(40px, 5vw, 64px); }
 .an__cab { display: flex; flex-direction: column; align-items: flex-start; max-width: 1240px; margin: 0 auto; }
 .an__cab--estreito { max-width: 760px; }
-.an__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
+.an__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
 .an__q { margin: 14px 0 0; max-width: 60ch; color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5; }
 .an__estreito { max-width: 760px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
 .an__largo { max-width: 1240px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
@@ -308,7 +308,7 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
    peso da página, a cor na alternância e o cartão que sobe. A cadeia
    (CadeiaRazao) já recebe o tom da alternância. */
 .an__embutida { scroll-margin-top: calc(var(--cola) + var(--barra-h) - 20px); }
-.an__embutida :deep(.axb__title), .an__embutida :deep(.afi__title) { font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; }
+.an__embutida :deep(.axb__title), .an__embutida :deep(.afi__title) { font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; }
 .an__embutida--inverte :deep(.axb--white), .an__embutida--inverte :deep(.afi) { background: var(--nu-band); }
 .an__embutida--inverte :deep(.axb--cream) { background: var(--nu-page); }
 .an__embutida :deep(.axb__row) { transition: background .2s ease; border-radius: 8px; }
@@ -324,7 +324,7 @@ onBeforeUnmount(() => obsSecoes?.disconnect())
 /* colada numa banda da mesma cor (a conta pintaria as perguntas da cor da
    página): um fio no lugar do segundo respiro */
 .an__sec--creme + .an__sec--faq, .an__embutida:has(.crz--creme) + .an__sec--faq { padding-top: 0; }
-.an__sec--creme + .an__sec--faq .an__faq, .an__embutida:has(.crz--creme) + .an__sec--faq .an__faq { padding-top: clamp(56px, 7vw, 96px); border-top: 1.5px solid var(--nu-line); }
+.an__sec--creme + .an__sec--faq .an__faq, .an__embutida:has(.crz--creme) + .an__sec--faq .an__faq { padding-top: clamp(56px, 7vw, 96px); border-top: 1px solid var(--nu-line); }
 .an__veja { margin-top: 40px; }
 
 @media (max-width: 680px) {

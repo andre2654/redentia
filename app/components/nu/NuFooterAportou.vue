@@ -81,16 +81,16 @@ const ano = new Date().getFullYear()
   padding: clamp(24px, 3vw, 40px); border-radius: var(--nu-r-card); background: var(--nu-dark-chip);
 }
 .nfa__news-texto { flex: 1.3 1 360px; min-width: min(280px, 100%); display: flex; flex-direction: column; gap: 12px; }
-.nfa__news-titulo { margin: 0; color: var(--nu-creme); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.nfa__news-titulo { margin: 0; color: var(--nu-creme); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; }
 .nfa__news-sub { margin: 0; max-width: 52ch; font-size: 17px; line-height: 1.45; }
 .nfa__news-form { flex: 1 1 340px; min-width: min(280px, 100%); }
 
 .nfa__mapa { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 36px 64px; }
 .nfa__marca { flex: 1 1 320px; max-width: 480px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
-.nfa__frase { margin: 0; color: var(--nu-creme); font-size: clamp(34px, 4.4vw, 56px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; text-wrap: balance; }
+.nfa__frase { margin: 0; color: var(--nu-creme); font-size: clamp(34px, 4.4vw, 56px); font-weight: var(--nu-w-display); line-height: 1; letter-spacing: -0.03em; text-wrap: balance; }
 .nfa__legal { margin: 0; font-size: 13.5px; line-height: 1.5; }
 .nfa__contato { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
-.nfa__mail { min-height: 44px; display: inline-flex; align-items: center; color: var(--nu-creme); font-size: var(--nu-fs-md); font-weight: 700; transition: color .2s; }
+.nfa__mail { min-height: 44px; display: inline-flex; align-items: center; color: var(--nu-creme); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); transition: color .2s; }
 .nfa__mail:hover { color: var(--nu-white); }
 .nfa__horas { font-size: 13.5px; color: var(--nu-on-dark-2); }
 .nfa__redes { display: flex; gap: 6px; margin-left: -11px; }
@@ -99,7 +99,7 @@ const ano = new Date().getFullYear()
 
 .nfa__grid { flex: 1.6 1 520px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 28px 40px; align-content: start; }
 .nfa__col { display: flex; flex-direction: column; gap: 0; align-items: flex-start; }
-.nfa__col-titulo { padding-bottom: 6px; color: var(--nu-creme); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.nfa__col-titulo { padding-bottom: 6px; color: var(--nu-creme); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
 .nfa__link {
   min-height: 40px; display: inline-flex; align-items: center; color: var(--nu-on-dark);
   font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.25; transition: color .2s, transform .2s;

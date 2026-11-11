@@ -64,9 +64,9 @@ function fmtMaturity(iso: string | null): string {
 .rkt__table { width: 100%; min-width: 680px; border-collapse: separate; border-spacing: 0; }
 .rkt__th {
   padding: 18px 16px 14px; text-align: right; white-space: nowrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 700;
+  color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio);
   text-transform: uppercase; letter-spacing: .16em;
-  border-bottom: 1.5px solid var(--nu-line-2);
+  border-bottom: 1px solid var(--nu-line-2);
 }
 .rkt__th--pos { width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px); }
 .rkt__th--asset { text-align: left; }
@@ -75,7 +75,7 @@ function fmtMaturity(iso: string | null): string {
 .rkt__row { cursor: pointer; transition: background .15s; }
 .rkt__row:hover { background: var(--nu-page); }
 .rkt__row:hover .rkt__link { color: var(--nu-blue-text); }
-.rkt__row + .rkt__row .rkt__cell { border-top: 1.5px solid var(--nu-line-2); }
+.rkt__row + .rkt__row .rkt__cell { border-top: 1px solid var(--nu-line-2); }
 .rkt__cell {
   padding: 14px 16px; text-align: right; white-space: nowrap;
   color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 600;
@@ -83,16 +83,16 @@ function fmtMaturity(iso: string | null): string {
 }
 .rkt__cell--pos {
   width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px);
-  color: var(--nu-gray); font-size: 14.5px; font-weight: 700;
+  color: var(--nu-gray); font-size: 14.5px; font-weight: var(--nu-w-medio);
 }
-.rkt__cell--asset { text-align: left; font-weight: 800; letter-spacing: -.01em; }
+.rkt__cell--asset { text-align: left; font-weight: var(--nu-w-forte); letter-spacing: -.01em; }
 .rkt__link { color: var(--nu-ink); transition: color .2s ease; }
 .rkt__link:hover { color: var(--nu-blue-text); }
-.rkt__cell--rate { color: var(--nu-ink); font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+.rkt__cell--rate { color: var(--nu-ink); font-size: 17px; font-weight: var(--nu-w-forte); letter-spacing: -0.01em; }
 .rkt__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 .rkt__badge {
   display: inline-flex; align-items: center; min-height: 26px; background: var(--nu-cream-2); color: var(--nu-gray-3);
-  border-radius: var(--nu-r-tag); padding: 0 9px; font-size: 13.5px; font-weight: 700;
+  border-radius: var(--nu-r-tag); padding: 0 9px; font-size: 13.5px; font-weight: var(--nu-w-medio);
 }
 @media (max-width: 760px) {
   .rkt__table { min-width: 0; }

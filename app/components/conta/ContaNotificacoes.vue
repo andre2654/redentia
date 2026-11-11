@@ -127,7 +127,7 @@ const em = computed({
    (raio 22, a sombra do branco); as linhas de canal e de aviso ficam no creme
    da página, com raio 16. */
 .nt__topic { background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-branco); padding: clamp(18px, 2.4vw, 24px); }
-.nt__topic-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.02em; }
+.nt__topic-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.02em; }
 .nt__topic-desc { margin: 6px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .nt__channels { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
@@ -139,7 +139,7 @@ const em = computed({
 .nt__ch-ic--wa { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .nt__ch-ic--mail { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .nt__ch-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.nt__ch-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.nt__ch-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .nt__ch-meta { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .nt__note { margin: 18px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
@@ -150,11 +150,11 @@ const em = computed({
 .nt__aviso { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; background: var(--nu-page); border-radius: var(--nu-r-tile); padding: 14px 16px; }
 .nt__erro--linha { flex-basis: 100%; margin: 0; }
 .nt__aviso-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.nt__aviso-n { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.nt__aviso-n { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .nt__aviso-q { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 600; }
 .nt__aviso-ex { color: var(--nu-gray-3); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .nt__aviso-ch { flex-shrink: 0; display: flex; align-items: center; gap: 16px; }
-.nt__aviso-c { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; cursor: pointer; }
+.nt__aviso-c { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap; cursor: pointer; }
 .nt__aviso-c--off { color: var(--nu-gray); cursor: not-allowed; }
 /* sobre o creme da página o esqueleto padrão quase some: um tom acima, com o mesmo brilho */
 .nt__aviso-ch :deep(.nusk) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-page)); background-image: linear-gradient(100deg, var(--esq) 25%, var(--nu-white) 50%, var(--esq) 75%); }
@@ -167,7 +167,7 @@ const em = computed({
   /* três cartões um dentro do outro deixavam o texto com 230px: o assunto perde a caixa branca
      (vira título + fio) e são as linhas que sobem para o branco, na largura toda do painel */
   .nt__topic { background: transparent; box-shadow: none; border-radius: 0; padding: 0; }
-  .nt__carteira { margin-top: 26px; padding-top: 24px; border-top: 1.5px solid var(--nu-line); }
+  .nt__carteira { margin-top: 26px; padding-top: 24px; border-top: 1px solid var(--nu-line); }
   .nt__ch, .nt__aviso { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
   .nt__aviso-ch :deep(.nusk) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-white)); }
   /* o canal em duas linhas: ícone, nome e interruptor em cima; o contato embaixo, na largura toda

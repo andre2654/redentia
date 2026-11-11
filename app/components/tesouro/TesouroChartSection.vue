@@ -86,13 +86,13 @@ const MODES: { value: TesouroChartMode; label: string }[] = [
 .tcs__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .tcs__title {
   margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h2);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
+  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
 }
 .tcs__controls { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
 .tcs__modes { display: flex; gap: 4px; background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line); border-radius: var(--nu-r-pill); padding: 4px; }
 .tcs__mode {
   min-height: 36px; padding: 0 16px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-on-dark); font: inherit; font-size: 14.5px; font-weight: 700; cursor: pointer;
+  color: var(--nu-on-dark); font: inherit; font-size: 14.5px; font-weight: var(--nu-w-medio); cursor: pointer;
   transition: color .2s, background .2s;
 }
 .tcs__mode:hover { color: var(--nu-white); }

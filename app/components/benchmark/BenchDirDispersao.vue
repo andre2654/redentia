@@ -95,7 +95,7 @@ const lado = (p: { cost: number }) => (x(p.cost) > 62 ? 'esq' : 'dir')
 .bdd__p:focus-visible .bdd__tile { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .bdd__tile {
   position: absolute; left: 0; top: 0; width: 28px; height: 28px; transform: translate(-50%, -50%); border-radius: 50%;
-  display: grid; place-items: center; background: var(--nu-white); color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700;
+  display: grid; place-items: center; background: var(--nu-white); color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   box-shadow: inset 0 0 0 1px var(--nu-cream-line), 0 6px 16px -6px var(--nu-navy-14);
   transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
 }

@@ -175,7 +175,7 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(24px, 3vw, 36px) clamp(36px, 5vw, 88px);
 }
 .tdi__cab { min-width: 0; animation: nu-fade .5s ease both; }
-.tdi__h2 { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
+.tdi__h2 { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
 .tdi__meta { margin: 18px 0 0; max-width: 30ch; color: var(--nu-on-dark); font-size: clamp(17px, 1.4vw, 19px); font-weight: 500; line-height: 1.45; }
 .tdi__sig { display: flex; align-items: flex-start; gap: 10px; margin: 20px 0 0; max-width: 34ch; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 600; line-height: 1.45; }
 .tdi__sig :deep(.mkc) { margin-top: 2px; }
@@ -203,11 +203,11 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
 }
 .tdi__estudo:hover { background: var(--nu-dark-chip); }
 .tdi__linha { display: flex; align-items: center; gap: 6px 12px; flex-wrap: wrap; }
-.tdi__data { color: var(--nu-white); font-size: 14.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tdi__data { color: var(--nu-white); font-size: 14.5px; font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .tdi__dado { color: var(--nu-on-dark-2); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .tdi__dado::before { content: '·'; margin-right: 12px; }
 .tdi__titulo {
-  margin: 0; color: var(--nu-white); font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.35; text-wrap: pretty;
+  margin: 0; color: var(--nu-white); font-size: 18px; font-weight: var(--nu-w-medio); letter-spacing: -0.01em; line-height: 1.35; text-wrap: pretty;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .tdi__resumo {
@@ -223,13 +223,13 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
 
 /* "Ver os N anteriores" */
 .tdi__antes { margin: 12px 0 0; interpolate-size: allow-keywords; }
-.tdi__antes::details-content { block-size: 0; overflow: clip; transition: block-size .4s cubic-bezier(.2, .8, .2, 1), content-visibility .4s allow-discrete; }
+.tdi__antes::details-content { block-size: 0; overflow: clip; transition: block-size .4s var(--nu-ease-saida), content-visibility .4s allow-discrete; }
 .tdi__antes[open]::details-content { block-size: auto; }
 .tdi__antes-b {
   /* o botão recua até o texto dos estudos; a lista de dentro segue no fio da linha do tempo */
   display: inline-flex; align-items: center; gap: 12px; min-height: 44px; margin-left: 28px; padding: 0 8px 0 18px; list-style: none; cursor: pointer;
   border-radius: var(--nu-r-pill); background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line);
-  color: var(--nu-white); font-size: 14.5px; font-weight: 700; transition: background .2s ease;
+  color: var(--nu-white); font-size: 14.5px; font-weight: var(--nu-w-medio); transition: background .2s ease;
 }
 .tdi__antes-b::-webkit-details-marker { display: none; }
 .tdi__antes-b:hover { background: var(--nu-dark-chip-line); }
@@ -262,24 +262,24 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
 
 <!-- o miolo do leitor (NuDayModal): o HTML entra por v-html num Teleport, fora do escopo -->
 <style>
-.tdl-titulo { display: block; margin-bottom: 12px; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; line-height: 1.25; }
+.tdl-titulo { display: block; margin-bottom: 12px; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.25; }
 .tdl-ativos { display: block; margin-top: 4px; }
-.tdl-ativo { display: block; padding: 14px 0; border-top: 1.5px solid var(--nu-line-2); }
+.tdl-ativo { display: block; padding: 14px 0; border-top: 1px solid var(--nu-line-2); }
 .tdl-ativo:first-child { border-top: 0; padding-top: 4px; }
 .tdl-ativo-topo { display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; }
-.tdl-ticker { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: 800; letter-spacing: .04em; }
+.tdl-ticker { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .04em; }
 .tdl-nome { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
-.tdl-selo { display: inline-flex; align-items: center; min-height: 26px; padding: 0 9px; margin-left: auto; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: 700; line-height: 1.2; }
+.tdl-selo { display: inline-flex; align-items: center; min-height: 26px; padding: 0 9px; margin-left: auto; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: var(--nu-w-medio); line-height: 1.2; }
 .tdl-selo--verde { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .tdl-selo--azul { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .tdl-selo--vermelho { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .tdl-selo--neutro { background: var(--nu-cream-2); color: var(--nu-ink); }
-.tdl-avaliacao { display: block; margin-top: 10px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; line-height: 1.4; }
+.tdl-avaliacao { display: block; margin-top: 10px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); line-height: 1.4; }
 .tdl-porque { display: block; margin-top: 4px; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.55; }
 .tdl-fontes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .tdl-fonte {
   display: inline-flex; flex-direction: column; gap: 2px; max-width: 100%; padding: 9px 14px; border-radius: var(--nu-r-chip);
-  box-shadow: inset 0 0 0 1.5px var(--nu-line); color: var(--nu-ink); font-size: 14px; font-weight: 700; line-height: 1.35; text-decoration: none;
+  box-shadow: inset 0 0 0 1px var(--nu-line); color: var(--nu-ink); font-size: 14px; font-weight: var(--nu-w-medio); line-height: 1.35; text-decoration: none;
   transition: box-shadow .2s ease, color .2s ease;
 }
 a.tdl-fonte:hover { box-shadow: inset 0 0 0 1.5px var(--nu-blue); color: var(--nu-blue-text); }

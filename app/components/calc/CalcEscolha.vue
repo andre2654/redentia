@@ -30,11 +30,11 @@ const escolhida = defineModel<T>({ required: true })
 
 <style scoped>
 .ces { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.ces__rotulo { margin-right: 4px; color: var(--nu-ink); font-size: 15px; font-weight: 700; }
+.ces__rotulo { margin-right: 4px; color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-medio); }
 .ces__opcao {
-  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-line);
-  background: var(--nu-white); color: var(--nu-gray-3); font-family: inherit; font-size: 14.5px; font-weight: 700;
-  white-space: nowrap; cursor: pointer; transition: background .2s, border-color .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); border: 1px solid var(--nu-line);
+  background: var(--nu-white); color: var(--nu-gray-3); font-family: inherit; font-size: 14.5px; font-weight: var(--nu-w-medio);
+  white-space: nowrap; cursor: pointer; transition: background .2s, border-color .2s, color .2s, transform .15s var(--nu-ease-saida);
 }
 .ces__opcao:active { transform: scale(.98); }
 .ces__opcao:hover { border-color: var(--nu-ink); color: var(--nu-ink); }

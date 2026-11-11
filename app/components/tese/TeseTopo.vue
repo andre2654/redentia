@@ -125,7 +125,7 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
 }
 .tto__volta:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
 .tto__h1 {
-  margin: 20px 0 0; font-size: clamp(42px, 5vw, 72px); font-weight: 800;
+  margin: 20px 0 0; font-size: clamp(42px, 5vw, 72px); font-weight: var(--nu-w-display);
   letter-spacing: -0.035em; line-height: .98; text-wrap: balance;
 }
 .tto__hi { color: var(--nu-blue-text); }
@@ -138,8 +138,8 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
 /* a pílula carvão da IA, com o corte */
 .tto__ia {
   display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 24px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-ink); color: var(--nu-white); font: inherit; font-size: 16.5px; font-weight: 700; white-space: nowrap; cursor: pointer;
-  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  background: var(--nu-ink); color: var(--nu-white); font: inherit; font-size: 16.5px; font-weight: var(--nu-w-medio); white-space: nowrap; cursor: pointer;
+  transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .tto__ia:hover { background: var(--nu-ink-hover); }
 .tto__ia:active { transform: scale(.98); }
@@ -149,7 +149,7 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
 .tto__cartao { --pad: clamp(18px, 2.2vw, 30px); padding-bottom: clamp(16px, 2vw, 22px); overflow: hidden; }
 .tto__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(18px, 2vw, 26px) var(--pad) 0; }
 .tto__leg { display: inline-flex; align-items: baseline; gap: 10px; }
-.tto__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.tto__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .tto__leg--1 b { font-size: clamp(38px, 4.4vw, 58px); letter-spacing: -0.04em; line-height: 1; }
 .tto__leg b.tto__leg--up { color: var(--nu-green-soft); }
 .tto__leg b.tto__leg--down { color: var(--nu-red-soft); }
@@ -159,11 +159,11 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
 .tto__grafico { position: relative; height: clamp(220px, 23vw, 320px); margin-top: 14px; }
 .tto__pe {
   display: flex; flex-wrap: wrap; gap: 4px 28px; margin: 16px var(--pad) 0; padding-top: 14px;
-  border-top: 1.5px solid var(--nu-dark-line);
+  border-top: 1px solid var(--nu-dark-line);
 }
 .tto__pe-i { display: inline-flex; align-items: baseline; gap: 8px; }
 .tto__pe dt { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 500; }
-.tto__pe dd { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.tto__pe dd { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 
 /* duas colunas: a ideia à esquerda, o cartão do gráfico à direita */
 @media (min-width: 1080px) {

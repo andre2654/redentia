@@ -81,24 +81,24 @@ const daLista = computed(() => props.risksHtml.length > 0)
   display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "cab" "dir" "vigia"; gap: clamp(24px, 3vw, 32px) clamp(36px, 5vw, 88px);
 }
 .trs__esq { grid-area: cab; min-width: 0; animation: nu-fade .5s ease both; }
-.trs__h2 { margin: 18px 0 0; font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
+.trs__h2 { margin: 18px 0 0; font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
 .trs__dir { grid-area: dir; min-width: 0; }
 
 /* a lista numerada: um risco por linha, sobre um fio */
-.trs__lista { list-style: none; margin: 0; padding: 0; border-bottom: 1.5px solid var(--nu-sage-line); }
+.trs__lista { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--nu-sage-line); }
 .trs__risco {
-  display: flex; align-items: baseline; gap: clamp(14px, 2vw, 24px); padding: 16px 0; border-top: 1.5px solid var(--nu-sage-line);
+  display: flex; align-items: baseline; gap: clamp(14px, 2vw, 24px); padding: 16px 0; border-top: 1px solid var(--nu-sage-line);
   animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
 }
-.trs__n { flex: none; min-width: 1.6em; font-size: clamp(24px, 2.4vw, 32px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.trs__n { flex: none; min-width: 1.6em; font-size: clamp(24px, 2.4vw, 32px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
 .trs__t { font-size: clamp(16.5px, 1.3vw, 18px); font-weight: 600; line-height: 1.5; text-wrap: pretty; }
-.trs__t :deep(.tse-hi) { font-weight: 800; }
+.trs__t :deep(.tse-hi) { font-weight: var(--nu-w-forte); }
 
 /* sem a lista do relatório: o veredito de risco */
 .trs__central { padding-top: 22px; border-top: 3px solid var(--nu-ink); }
 .trs__central-topo { display: flex; align-items: center; gap: 12px; margin: 0; }
 .trs__cadeado { flex: none; }
-.trs__central-t { margin: 18px 0 0; font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.trs__central-t { margin: 18px 0 0; font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; }
 .trs__central-p { margin: 12px 0 0; max-width: 60ch; font-size: clamp(17px, 1.4vw, 19px); font-weight: 500; line-height: 1.5; }
 .trs__trancado { filter: blur(7px); opacity: .55; pointer-events: none; user-select: none; }
 
@@ -107,7 +107,7 @@ const daLista = computed(() => props.risksHtml.length > 0)
   grid-area: vigia; align-self: start; min-width: 0; background: var(--nu-card); border-radius: var(--nu-r-card);
   box-shadow: var(--nu-shadow-quente); padding: clamp(22px, 2.4vw, 30px); animation: nu-fade .5s ease .12s both;
 }
-.trs__vigia-r { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 13.5px; font-weight: 700; letter-spacing: .16em; line-height: 1.3; text-transform: uppercase; }
+.trs__vigia-r { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; line-height: 1.3; text-transform: uppercase; }
 .trs__vigia-p { margin: 14px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
 .trs__vigia-m { display: flex; align-items: center; gap: 8px; margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
 .trs__vigia > .trs__vigia-m:first-child { margin-top: 0; }

@@ -51,22 +51,22 @@ const id = useId()
 <style scoped>
 .cha2 { display: flex; flex-direction: column; padding: 22px 28px 12px; color: var(--nu-cream-text); }
 .cha2__topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 44px; }
-.cha2__sub { color: var(--nu-cream-text-60); font-size: var(--nu-fs-sm); font-weight: 700; }
-.cha2__valor { margin-top: 2px; font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.cha2__sub { color: var(--nu-cream-text-60); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.cha2__valor { margin-top: 2px; font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .cha2__meta-selo {
   display: inline-flex; margin-top: 10px; padding: 6px 12px; border-radius: var(--nu-r-tag);
-  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
+  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
 }
 .cha2__meta-selo--falta { background: color-mix(in srgb, var(--nu-amber) 22%, transparent); color: var(--nu-amber-soft); }
 .cha2__selo {
   flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-tag);
-  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
+  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
 }
 .cha2__grafico { display: block; width: 100%; height: auto; margin-top: 6px; overflow: visible; }
 .cha2__stop-alto { stop-color: var(--nu-blue-soft); stop-opacity: 0.28; }
 .cha2__stop-baixo { stop-color: var(--nu-blue-soft); stop-opacity: 0; }
 .cha2__meta { stroke: var(--nu-cream-text); stroke-opacity: 0.4; stroke-width: 1.5; stroke-dasharray: 5 6; }
-.cha2__rotulo { fill: var(--nu-cream-text); fill-opacity: 0.6; font-size: 14px; font-weight: 700; }
+.cha2__rotulo { fill: var(--nu-cream-text); fill-opacity: 0.6; font-size: 14px; font-weight: var(--nu-w-medio); }
 .cha2__linha {
   fill: none; stroke: var(--nu-blue-soft); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nu-blue-soft) 60%, transparent));

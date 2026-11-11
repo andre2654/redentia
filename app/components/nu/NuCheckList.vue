@@ -19,5 +19,5 @@ defineProps<{ items: string[] }>()
 .ncl__row { display: flex; align-items: flex-start; gap: 13px; padding: 12px 0; }
 .ncl__check { flex-shrink: 0; margin-top: 3px; color: var(--nu-green-text); }
 .ncl__text { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
-.ncl__text :deep(strong) { font-weight: 800; }
+.ncl__text :deep(strong) { font-weight: var(--nu-w-forte); }
 </style>

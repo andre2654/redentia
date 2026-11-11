@@ -182,12 +182,12 @@ useCampoAVista(bloco)
 .lmi__topo :deep(.ntm) { padding-left: 0; margin-left: 0; }
 .lmi__coluna {
   width: 100%; max-width: 440px; margin: auto; padding: 40px 0; display: flex; flex-direction: column; gap: 26px;
-  animation: nu-fade .5s cubic-bezier(.2, .8, .2, 1) both;
+  animation: nu-fade .5s var(--nu-ease-saida) both;
 }
 .lmi__cabeca { display: flex; flex-direction: column; gap: 14px; }
-.lmi__titulo { margin: 0; font-size: clamp(44px, 4.6vw, 60px); font-weight: 800; line-height: 1; letter-spacing: -0.035em; text-wrap: balance; }
+.lmi__titulo { margin: 0; font-size: clamp(44px, 4.6vw, 60px); font-weight: var(--nu-w-display); line-height: 1; letter-spacing: -0.035em; text-wrap: balance; }
 .lmi__lead { margin: 0; color: var(--nu-gray-3); font-size: 18px; font-weight: 500; }
-.lmi__lead b { color: var(--nu-ink); font-weight: 700; overflow-wrap: anywhere; }
+.lmi__lead b { color: var(--nu-ink); font-weight: var(--nu-w-medio); overflow-wrap: anywhere; }
 .lmi__lead .lmi__fone { white-space: nowrap; }
 
 /* as marcas: pílula branca de 58px com a borda carvão de 1,5px (o quadro) */
@@ -195,8 +195,8 @@ useCampoAVista(bloco)
 .lmi__marcas:empty { display: none; }
 .lmi__marcas--ocupado :deep(.lgb) { opacity: .6; }
 .lmi__marcas :deep(.lab__pilula), .lmi__marcas :deep(.lgb__pilula) {
-  min-height: 58px; font-size: 17px; font-weight: 700; color: var(--nu-ink);
-  background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-ink); transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  min-height: 58px; font-size: 17px; font-weight: var(--nu-w-medio); color: var(--nu-ink);
+  background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-ink); transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .lmi__marcas :deep(.lab__pilula:hover), .lmi__marcas :deep(.lgb:hover .lgb__pilula) { background: var(--nu-row-hover); }
 .lmi__marcas :deep(.lab__pilula:active) { transform: scale(.98); }
@@ -206,14 +206,14 @@ useCampoAVista(bloco)
 .lmi__form { display: flex; flex-direction: column; gap: 18px; }
 .lmi__campo-bloco { display: flex; flex-direction: column; gap: 7px; }
 .lmi__rotulos { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.lmi__rotulo { font-size: 15px; font-weight: 700; }
+.lmi__rotulo { font-size: 15px; font-weight: var(--nu-w-medio); }
 .lmi__troca {
   display: inline-flex; align-items: center; min-height: 44px; margin: -12px 0; padding: 0 2px; border: 0; border-radius: 6px; background: none; cursor: pointer;
-  color: var(--nu-blue-text); font: inherit; font-size: 15px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;
+  color: var(--nu-blue-text); font: inherit; font-size: 15px; font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px;
   transition: color .2s;
 }
 .lmi__troca:hover { color: var(--nu-blue-deep); }
-.lmi__fora { color: var(--nu-amber-text); font-size: 14px; font-weight: 700; }
+.lmi__fora { color: var(--nu-amber-text); font-size: 14px; font-weight: var(--nu-w-medio); }
 .lmi__campo {
   width: 100%; height: 56px; box-sizing: border-box; padding: 0 18px; border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input);
   background: var(--nu-white); color: var(--nu-ink); font: inherit; font-size: 17px; font-weight: 500;
@@ -223,8 +223,8 @@ useCampoAVista(bloco)
 .lmi__campo:focus { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .lmi__campo--erro, .lmi__campo--erro:focus { border-color: var(--nu-red); outline-color: var(--nu-red); }
 .lmi__nota { margin: 0; min-height: 1.5em; color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.5; }
-.lmi__nota--erro { color: var(--nu-red-text); font-weight: 700; }
-.lmi__nota--aviso { color: var(--nu-amber-text); font-weight: 700; }
+.lmi__nota--erro { color: var(--nu-red-text); font-weight: var(--nu-w-medio); }
+.lmi__nota--aviso { color: var(--nu-amber-text); font-weight: var(--nu-w-medio); }
 .lmi__form :deep(.nbs) { margin-top: 6px; }
 
 /* a caixinha de quem ainda não tem conta (ou já tem) */
@@ -233,7 +233,7 @@ useCampoAVista(bloco)
 .lmi__caixa .lmi__plano { margin-top: 8px; color: var(--nu-gray); font-size: 14px; }
 .lmi__link {
   display: inline; padding: 0; border: 0; border-radius: 4px; background: none; cursor: pointer;
-  color: var(--nu-blue-text); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; transition: color .2s;
+  color: var(--nu-blue-text); font: inherit; font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; transition: color .2s;
 }
 .lmi__link:hover:not(:disabled) { color: var(--nu-blue-deep); }
 .lmi__link:disabled { color: var(--nu-gray); cursor: default; }
@@ -258,18 +258,18 @@ useCampoAVista(bloco)
 }
 .lmi__painel-texto { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 20px; padding: clamp(36px, 4.4vw, 64px); }
 /* o corte chega com um aceno, uma vez */
-.lmi__corte { display: block; width: 44px; transform-origin: 0 100%; animation: lmi-corte .7s cubic-bezier(.2, .8, .2, 1) .25s both; }
+.lmi__corte { display: block; width: 44px; transform-origin: 0 100%; animation: lmi-corte .7s var(--nu-ease-saida) .25s both; }
 @keyframes lmi-corte { from { opacity: 0; transform: translate(-8px, 8px) rotate(-10deg); } to { opacity: 1; transform: none; } }
-.lmi__frase { margin: 0; max-width: 520px; font-size: clamp(48px, 5.6vw, 84px); font-weight: 800; line-height: .98; letter-spacing: -0.035em; animation: nu-fade-lg .6s cubic-bezier(.2, .8, .2, 1) .1s both; }
+.lmi__frase { margin: 0; max-width: 520px; font-size: clamp(48px, 5.6vw, 84px); font-weight: var(--nu-w-display); line-height: .98; letter-spacing: -0.035em; animation: nu-fade-lg .6s var(--nu-ease-saida) .1s both; }
 .lmi__apoio { margin: 0; max-width: 420px; color: var(--nu-blue-on-blue); font-size: 19px; font-weight: 500; animation: nu-fade .6s ease .22s both; }
 .lmi__leque { position: relative; flex: 1; min-height: 300px; }
 .lmi__leque img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; animation: nu-surgir 1.1s ease .3s both; }
 .lmi__selo {
   position: absolute; left: clamp(36px, 4.4vw, 64px); bottom: clamp(28px, 3.4vw, 44px);
   display: inline-flex; align-items: center; gap: 8px; padding: 9px 17px; border-radius: var(--nu-r-pill);
-  background: var(--nu-ink); font-size: 15px; font-weight: 500; white-space: nowrap; animation: nu-subir .5s cubic-bezier(.2, .8, .2, 1) .7s both;
+  background: var(--nu-ink); font-size: 15px; font-weight: 500; white-space: nowrap; animation: nu-subir .5s var(--nu-ease-saida) .7s both;
 }
-.lmi__selo strong { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.lmi__selo strong { font-size: 16px; font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 
 .lmi__ou-celular { display: none; }
 

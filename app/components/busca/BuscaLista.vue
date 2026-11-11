@@ -102,28 +102,28 @@ const total = computed(() => props.grupos.reduce((n, g) => n + g.itens.length, 0
   min-height: 24px; margin-bottom: 4px;
 }
 .bli__rotulo {
-  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio);
   letter-spacing: .16em; text-transform: uppercase;
 }
 .bli__limpar {
   background: none; border: none; padding: 8px 0 8px 12px; margin: -8px 0;
-  color: var(--nu-ink); font-size: 14.5px; font-weight: 700; cursor: pointer;
+  color: var(--nu-ink); font-size: 14.5px; font-weight: var(--nu-w-medio); cursor: pointer;
   text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
 }
 .bli__limpar:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
 .bli__limpar:focus-visible { border-radius: 6px; }
 
 .bli__linhas { list-style: none; margin: 0; padding: 0; }
-.bli__linhas > li + li { border-top: 1.5px solid var(--nu-line-2); }
+.bli__linhas > li + li { border-top: 1px solid var(--nu-line-2); }
 
 /* skeleton espelha a linha: tile 40, ticker + nome, preço + variação */
 .bli__sk { display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px 0; }
-.bli__sk + .bli__sk { border-top: 1.5px solid var(--nu-line-2); }
+.bli__sk + .bli__sk { border-top: 1px solid var(--nu-line-2); }
 .bli__sk-id { flex: 1; display: flex; flex-direction: column; gap: 7px; }
 .bli__sk-num { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
 
 /* a pergunta: última linha, separada da lista por um fio */
-.bli__grupo--pergunta { border-top: 1.5px solid var(--nu-line-2); padding-top: 8px; margin-top: -12px; }
+.bli__grupo--pergunta { border-top: 1px solid var(--nu-line-2); padding-top: 8px; margin-top: -12px; }
 .bli__perguntar {
   display: flex; align-items: center; gap: 14px; width: calc(100% + 24px);
   min-height: 64px; padding: 10px 12px; margin: 0 -12px;
@@ -138,7 +138,7 @@ const total = computed(() => props.grupos.reduce((n, g) => n + g.itens.length, 0
 }
 .bli__perg-id { flex: 1; min-width: 0; }
 .bli__perg-titulo {
-  display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1.3;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); line-height: 1.3;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bli__perg-q { color: var(--nu-ink); quotes: '“' '”'; }

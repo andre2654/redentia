@@ -55,7 +55,7 @@ const vazio = computed(() => !props.carregando && props.sessions.length === 0)
 .chi__sk { display: flex; flex-direction: column; gap: 8px; padding: 14px 14px; }
 .chi__vazio { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 /* as conversas entram em cascata */
-.chi__item-wrap { position: relative; animation: nu-fade .3s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--k, 0) * 40ms); }
+.chi__item-wrap { position: relative; animation: nu-fade .3s var(--nu-ease-saida) both; animation-delay: calc(var(--k, 0) * 40ms); }
 .chi__item {
   display: block; width: 100%; text-align: left; padding: 12px 52px 12px 14px; border: 0; border-radius: var(--nu-r-tile);
   background: transparent; cursor: pointer; font: inherit; transition: background .2s ease, box-shadow .2s ease;
@@ -66,7 +66,7 @@ const vazio = computed(() => !props.carregando && props.sessions.length === 0)
 .chi__item--ativa, .chi__item--ativa:hover { background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-line-2), inset 4px 0 0 var(--nu-blue); }
 .chi__item-titulo {
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  color: var(--nu-ink); font-size: 15px; font-weight: 700; line-height: 1.35;
+  color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-medio); line-height: 1.35;
 }
 .chi__item-meta { display: block; margin-top: 3px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .chi__apagar {

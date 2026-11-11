@@ -155,9 +155,9 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): '' | 'up' | 'down'
 .rkt__table { width: 100%; min-width: 720px; border-collapse: separate; border-spacing: 0; }
 .rkt__th {
   padding: 18px 16px 14px; text-align: right; white-space: nowrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 700;
+  color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio);
   text-transform: uppercase; letter-spacing: .16em;
-  border-bottom: 1.5px solid var(--nu-line-2);
+  border-bottom: 1px solid var(--nu-line-2);
 }
 .rkt__th--pos { width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px); }
 .rkt__th--asset { text-align: left; }
@@ -169,7 +169,7 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): '' | 'up' | 'down'
 .rkt__row:hover .rkt__asset-name { color: var(--nu-ink); }
 /* :not(:first-child) e não sibling: a linha de breakdown expandida não pode
    quebrar a cadeia de bordas entre linhas. */
-.rkt__row:not(:first-child) .rkt__cell { border-top: 1.5px solid var(--nu-line-2); }
+.rkt__row:not(:first-child) .rkt__cell { border-top: 1px solid var(--nu-line-2); }
 
 .rkt__cell {
   padding: 13px 16px; text-align: right; white-space: nowrap;
@@ -178,16 +178,16 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): '' | 'up' | 'down'
 }
 .rkt__cell--pos {
   width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px);
-  color: var(--nu-gray); font-size: 14.5px; font-weight: 700;
+  color: var(--nu-gray); font-size: 14.5px; font-weight: var(--nu-w-medio);
 }
 .rkt__cell--asset { text-align: left; }
 /* a métrica do ranking: o número que a pessoa veio ver */
-.rkt__cell--main { color: var(--nu-ink); font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+.rkt__cell--main { color: var(--nu-ink); font-size: 17px; font-weight: var(--nu-w-forte); letter-spacing: -0.01em; }
 .rkt__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 /* a variação no selo de raio 8 */
 .rkt__selo {
   display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: var(--nu-r-tag);
-  font-size: 14.5px; font-weight: 700; letter-spacing: 0;
+  font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: 0;
 }
 .rkt__selo--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .rkt__selo--down { background: var(--nu-red-bg); color: var(--nu-red-text); }
@@ -196,16 +196,16 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): '' | 'up' | 'down'
 /* ——— breakdown expansível (redentia-score) ——— */
 .rkt__toggle {
   background: none; border: 0; padding: 0; cursor: pointer;
-  color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; min-height: 44px;
+  color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); min-height: 44px;
   font-family: inherit; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px;
 }
 .rkt__breakdown-cell {
   padding: 16px clamp(16px, 2vw, 28px) 20px;
-  background: var(--nu-page); border-top: 1.5px solid var(--nu-line-2);
+  background: var(--nu-page); border-top: 1px solid var(--nu-line-2);
 }
 .rkt__breakdown-label {
   display: block; margin-bottom: 12px;
-  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio);
   text-transform: uppercase; letter-spacing: .16em;
 }
 .rkt__breakdown-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -213,11 +213,11 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): '' | 'up' | 'down'
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--nu-white); box-shadow: var(--nu-shadow-quente);
   border-radius: var(--nu-r-pill); min-height: 36px; padding: 6px 14px;
-  color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio);
   white-space: nowrap; transition: background .2s;
 }
 .rkt__chip:hover { background: var(--nu-cream-2); }
-.rkt__chip-pos { color: var(--nu-blue-text); font-weight: 800; font-variant-numeric: tabular-nums; }
+.rkt__chip-pos { color: var(--nu-blue-text); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .rkt__breakdown-empty { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 .rkt__asset { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -225,7 +225,7 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): '' | 'up' | 'down'
 /* o ticker na etiqueta carvão */
 .rkt__asset-ticker {
   display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: var(--nu-r-tag);
-  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: 800; letter-spacing: .04em; line-height: 1;
+  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .04em; line-height: 1;
   transition: background .2s ease;
 }
 .rkt__row:hover .rkt__asset-ticker { background: var(--nu-blue-text); }

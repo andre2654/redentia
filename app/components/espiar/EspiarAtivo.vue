@@ -362,8 +362,8 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .esp {
-  --mola: cubic-bezier(.34, 1.56, .64, 1);
-  --entra: cubic-bezier(.2, .8, .2, 1);
+  --mola: var(--nu-ease-saida);
+  --entra: var(--nu-ease-saida);
   position: fixed; z-index: 48; right: 16px; bottom: 20px;
   width: min(384px, calc(100vw - 32px)); max-height: calc(100dvh - 32px);
   display: flex; flex-direction: column; overflow: hidden;
@@ -389,7 +389,7 @@ onBeforeUnmount(() => {
 /* o ticker no selo da marca: carvão, letra branca em 800, raio 8 */
 .esp__ticker {
   display: inline-block; margin: 0; padding: 3px 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white);
-  font-size: 15px; font-weight: 800; letter-spacing: 0.04em; line-height: 1.3;
+  font-size: 15px; font-weight: var(--nu-w-forte); letter-spacing: 0.04em; line-height: 1.3;
 }
 .esp__nome {
   margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
@@ -411,8 +411,8 @@ onBeforeUnmount(() => {
 /* ——— corpo ——— */
 .esp__corpo { padding: 14px 18px 18px; overflow-y: auto; overscroll-behavior: contain; }
 .esp__preco-linha { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin: 0; }
-.esp__preco { font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.esp__var { display: inline-flex; align-items: center; gap: 5px; font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.esp__preco { font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.esp__var { display: inline-flex; align-items: center; gap: 5px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .esp__var--up { color: var(--nu-green-text); }
 .esp__var--down { color: var(--nu-red-text); }
 .esp__tri--baixo { transform: rotate(180deg); }
@@ -427,7 +427,7 @@ onBeforeUnmount(() => {
 }
 .esp__linha-leg {
   display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 8px;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase;
 }
 .esp__linha-leg b { font-size: var(--nu-fs-dense); letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
 .esp__leg--up { color: var(--nu-green-text); }
@@ -436,14 +436,14 @@ onBeforeUnmount(() => {
 
 .esp__nums {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px;
-  margin: 16px 0 0; padding: 14px 0 0; border-top: 1.5px solid var(--nu-line-2);
+  margin: 16px 0 0; padding: 14px 0 0; border-top: 1px solid var(--nu-line-2);
 }
 .esp__num { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .esp__num dt { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; line-height: 1.3; }
-.esp__num dd { margin: 0; font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.esp__num dd { margin: 0; font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -0.01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .esp__porque { margin-top: 16px; padding: 12px 14px; border-radius: var(--nu-r-tile); background: var(--nu-page); }
-.esp__rotulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.esp__rotulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
 .esp__porque-texto { margin: 6px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .esp__fonte { display: flex; align-items: center; gap: 7px; margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; }
 .esp__sk-texto { margin-top: 18px; }
@@ -454,7 +454,7 @@ onBeforeUnmount(() => {
 .esp__botoes { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 /* o Seguir é a mesma pílula de contorno da base (NuFollowButton), na altura deste cartão */
 .esp__botoes :deep(.nfb) {
-  height: 40px; min-height: 40px; padding: 0 16px; gap: 8px; font-size: var(--nu-fs-sm); font-weight: 700;
+  height: 40px; min-height: 40px; padding: 0 16px; gap: 8px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
   background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
   transition: background .2s ease, transform .45s var(--mola);
 }
@@ -465,7 +465,7 @@ onBeforeUnmount(() => {
 .esp__secundario {
   display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border: 0; border-radius: var(--nu-r-pill);
   background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink);
-  font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; text-decoration: none;
+  font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer; text-decoration: none;
   transition: background .2s ease, box-shadow .2s ease, transform .45s var(--mola);
 }
 .esp__secundario:hover { background: var(--nu-row-hover); transform: translateY(-1px); }

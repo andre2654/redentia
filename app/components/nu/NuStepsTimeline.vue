@@ -49,12 +49,12 @@ const nums = computed(() => props.steps.map((_, i) => String(i + 1).padStart(2, 
 }
 .nst__step { display: flex; align-items: flex-start; gap: clamp(18px, 3vw, 38px); padding: 14px 0; }
 .nst__num {
-  color: var(--nu-blue); font-size: clamp(24px, 2.4vw, 32px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.1;
+  color: var(--nu-blue); font-size: clamp(24px, 2.4vw, 32px); font-weight: var(--nu-w-forte); letter-spacing: -0.035em; line-height: 1.1;
   width: 48px; flex-shrink: 0; font-variant-numeric: tabular-nums;
 }
 .nst__text {
   color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500;
   line-height: 1.6; padding-top: 4px;
 }
-.nst__text :deep(strong) { font-weight: 800; }
+.nst__text :deep(strong) { font-weight: var(--nu-w-forte); }
 </style>

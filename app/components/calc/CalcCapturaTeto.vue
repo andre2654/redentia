@@ -114,11 +114,11 @@ const isca = ref('')
   position: relative;
   background: var(--nu-cream); border-radius: 18px; padding: 18px 22px;
 }
-.cct__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.1px; }
+.cct__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.1px; }
 .cct__texto { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .cct__btn {
   margin-top: 14px; background: var(--nu-blue); color: var(--nu-white); border: none;
-  border-radius: var(--nu-r-pill); padding: 11px 20px; font-size: var(--nu-fs-sm); font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 11px 20px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte);
   cursor: pointer; transition: background .2s;
 }
 .cct__btn:hover { background: var(--nu-blue-hover); }
@@ -134,14 +134,14 @@ const isca = ref('')
 .cct__input:focus { outline: 2px solid var(--nu-blue); outline-offset: 1px; }
 .cct__legal { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 500; }
 .cct__legal a { color: inherit; text-decoration: underline; }
-.cct__ok { margin: 12px 0 0; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.5; }
-.cct__nota { margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.5; }
+.cct__ok { margin: 12px 0 0; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; }
+.cct__nota { margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; }
 .cct__texto--cheio { flex: 1 1 100%; margin: 0; }
-.cct__erro { margin: 10px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cct__erro { margin: 10px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .cct__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .cct__trocar {
   flex: 1 1 100%; justify-self: start; margin: 0; padding: 0; background: none; border: none;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 700; text-align: left;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-align: left;
   text-decoration: underline; cursor: pointer;
 }
 </style>

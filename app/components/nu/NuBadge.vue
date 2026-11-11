@@ -23,10 +23,10 @@ defineProps<{
 
 <style scoped>
 .nb {
-  display: inline-flex; align-items: center; gap: 7px; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 7px; font-weight: var(--nu-w-medio);
   border-radius: var(--nu-r-tag); white-space: nowrap; font-variant-numeric: tabular-nums;
 }
-.marca-redentia .nb { font-weight: 800; border-radius: var(--nu-r-pill); }
+.marca-redentia .nb { font-weight: var(--nu-w-forte); border-radius: var(--nu-r-pill); }
 .nb--s-hero { font-size: var(--nu-fs-dense); padding: 7px 14px; gap: 6px; }
 .nb--s-card { font-size: var(--nu-fs-dense); padding: 7px 15px; }
 .nb--s-row { font-size: var(--nu-fs-dense); padding: 6px 13px; }

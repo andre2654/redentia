@@ -69,7 +69,7 @@ const NAO_E = [
 .hne__corte { z-index: -1; opacity: .07; }
 .hne__texto { flex: 1.2 1 460px; min-width: 0; }
 .hne__eyebrow { color: var(--nu-ink); }
-.hne__titulo { margin: 18px 0 0; font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
+.hne__titulo { margin: 18px 0 0; font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
 .hne__lista { list-style: none; margin: 30px 0 0; padding: 0; display: flex; flex-direction: column; gap: 22px; }
 .hne__item { display: flex; align-items: flex-start; gap: 16px; }
 .hne__x {
@@ -77,7 +77,7 @@ const NAO_E = [
   border-radius: 50%; background: var(--nu-ink); color: var(--nu-white);
 }
 .hne__frase { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.hne__frase strong { font-size: clamp(22px, 2.2vw, 28px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.hne__frase strong { font-size: clamp(22px, 2.2vw, 28px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.15; }
 .hne__frase span { color: var(--nu-ink); font-size: 17px; font-weight: 500; line-height: 1.45; }
 
 /* o cartão carvão com a faixa da marca */
@@ -88,14 +88,14 @@ const NAO_E = [
 }
 .hne__checks li { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-on-dark); font-size: 17px; font-weight: 500; line-height: 1.4; }
 .hne__checks svg { flex: none; color: var(--nu-green-soft); }
-.hne__checks strong { color: var(--nu-white); font-weight: 700; }
+.hne__checks strong { color: var(--nu-white); font-weight: var(--nu-w-medio); }
 
 /* entrada: o texto, as três linhas em cascata e o cartão subindo */
 .hne.is-in .hne__eyebrow, .hne.is-in .hne__titulo, .hne.is-in .hne__item { animation: nu-fade .5s ease backwards; }
 .hne.is-in .hne__item:nth-child(1) { animation-delay: .06s; }
 .hne.is-in .hne__item:nth-child(2) { animation-delay: .12s; }
 .hne.is-in .hne__item:nth-child(3) { animation-delay: .18s; }
-.hne.is-in .hne__dados { animation: nu-subir .5s cubic-bezier(.2, .8, .2, 1) .12s backwards; }
+.hne.is-in .hne__dados { animation: nu-subir .5s var(--nu-ease-saida) .12s backwards; }
 
 @media (max-width: 760px) {
   .hne { padding-inline: 20px; gap: 32px; }

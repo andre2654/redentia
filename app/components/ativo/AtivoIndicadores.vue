@@ -116,13 +116,13 @@ const atual = computed(() => (aberto.value == null ? null : metricas.value[abert
 </template>
 
 <style scoped>
-.ain { --mola: cubic-bezier(.2, .8, .2, 1); }
+.ain { --mola: var(--nu-ease-saida); }
 .ain__perfil { list-style: none; margin: 0 0 20px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .ain__dim { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 8px 0 14px; border-radius: var(--nu-r-chip); background: var(--nu-card); box-shadow: var(--nu-shadow-quente); transition: background .2s ease; }
 .ain__dim:hover { background: var(--nu-white); }
-.ain__dim-n { color: var(--nu-ink); font-size: 14.5px; font-weight: 700; }
+.ain__dim-n { color: var(--nu-ink); font-size: 14.5px; font-weight: var(--nu-w-medio); }
 /* o selo da marca: raio 8, 13,5px, 700 */
-.ain__tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: 700; white-space: nowrap; }
+.ain__tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: var(--nu-w-medio); white-space: nowrap; }
 .ain__tag--green { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .ain__tag--amber { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .ain__tag--gray { background: var(--nu-cream-2); color: var(--nu-gray-3); }
@@ -131,11 +131,11 @@ const atual = computed(() => (aberto.value == null ? null : metricas.value[abert
 .ain__lista { list-style: none; margin: 0; padding: 0; }
 .ain__m { outline: none; cursor: default; }
 /* tabela: indicador · valor · leitura, uma linha por número */
-.ain--tabela .ain__m { display: grid; grid-template-columns: minmax(0, 1fr) auto 96px; align-items: center; gap: 16px; min-height: 52px; border-top: 1.5px solid var(--nu-line-2); transition: background .2s ease; }
-.ain--tabela .ain__m:last-child { border-bottom: 1.5px solid var(--nu-line-2); }
+.ain--tabela .ain__m { display: grid; grid-template-columns: minmax(0, 1fr) auto 96px; align-items: center; gap: 16px; min-height: 52px; border-top: 1px solid var(--nu-line-2); transition: background .2s ease; }
+.ain--tabela .ain__m:last-child { border-bottom: 1px solid var(--nu-line-2); }
 .ain--tabela .ain__m:hover, .ain--tabela .ain__m:focus-visible { background: var(--nu-cream-2); }
 .ain--tabela .ain__m-l { color: var(--nu-gray-3); font-size: 14.5px; font-weight: 600; }
-.ain--tabela .ain__m-v { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
+.ain--tabela .ain__m-v { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; text-align: right; }
 .ain--tabela .ain__m .ain__tag { justify-self: end; }
 /* grade: tiles brancos sobre a banda (um plano só); o hover levanta o tile */
 .ain--grade .ain__lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -151,7 +151,7 @@ const atual = computed(() => (aberto.value == null ? null : metricas.value[abert
 .ain--grade .ain__m:focus-visible { box-shadow: 0 0 0 3px var(--nu-blue), var(--nu-shadow-card); }
 .ain--grade .ain__m-l { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; transition: color .2s ease; }
 .ain--grade .ain__m--on .ain__m-l { color: var(--nu-blue-text); }
-.ain--grade .ain__m-v { color: var(--nu-ink); font-size: clamp(24px, 2.2vw, 30px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.ain--grade .ain__m-v { color: var(--nu-ink); font-size: clamp(24px, 2.2vw, 30px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
 
 .ain__balao {
   position: absolute; z-index: 5; transform: translateY(calc(-100% - 10px)); pointer-events: auto;
@@ -160,18 +160,18 @@ const atual = computed(() => (aberto.value == null ? null : metricas.value[abert
   animation: ain-entra .2s ease both;
 }
 @keyframes ain-entra { from { opacity: 0; transform: translateY(calc(-100% - 4px)); } }
-.ain__balao-t { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0; font-size: var(--nu-fs-md); font-weight: 700; }
+.ain__balao-t { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .ain__balao-d { margin: 6px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.ain__balao-l { display: inline-block; margin-top: 8px; color: var(--nu-blue-soft); text-decoration: underline; text-underline-offset: 3px; font-size: var(--nu-fs-sm); font-weight: 700; }
+.ain__balao-l { display: inline-block; margin-top: 8px; color: var(--nu-blue-soft); text-decoration: underline; text-underline-offset: 3px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .ain__balao-l:hover { color: var(--nu-white); }
 
 /* a nota da IA: a linha "Em claro" da marca, com o corte azul */
 .ain__notas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; margin-top: 20px; }
 .ain__nota { margin: 0; padding: 18px 20px; border-radius: var(--nu-r-tile); background: var(--nu-card); box-shadow: var(--nu-shadow-quente); }
-.ain__nota-r { display: flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.ain__nota-r { display: flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
 .ain__nota-t { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
-.ain__nota-t b { color: var(--nu-ink); font-weight: 800; }
-.ain__nota-cta { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin: 4px 0 -10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.ain__nota-t b { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
+.ain__nota-cta { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin: 4px 0 -10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); }
 .ain__nota-cta svg { transition: transform .2s ease; }
 .ain__nota-cta:hover { color: var(--nu-blue-text); text-decoration: underline; text-underline-offset: 3px; }
 .ain__nota-cta:hover svg { transform: translateX(3px); }

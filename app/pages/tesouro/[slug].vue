@@ -228,7 +228,7 @@ const painel = useChatPainel()
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .tsd__reading { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-branco); border-top: 3px solid var(--nu-ink); }
-.tsd__reading-title { margin: 0 0 8px; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; }
+.tsd__reading-title { margin: 0 0 8px; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
 .tsd__reading-body { margin: 0; color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.5; }
 
 /* ——— ferramentas relacionadas ——— */
@@ -240,13 +240,13 @@ const painel = useChatPainel()
 .tsd__card-link {
   background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 26px; box-shadow: var(--nu-shadow-quente);
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .tsd__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; transition: color .2s ease; }
+.tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; transition: color .2s ease; }
 .tsd__card-link:hover .tsd__card-link-title { color: var(--nu-blue-text); }
 .tsd__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
-.tsd__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; }
+.tsd__card-link-ir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); }
 .tsd__card-link-ir svg { transition: transform .2s ease; }
 .tsd__card-link:hover .tsd__card-link-ir svg { transform: translateX(3px); }
 @media (prefers-reduced-motion: reduce) { .tsd__card-link, .tsd__card-link-ir svg { transition: none; } .tsd__card-link:hover, .tsd__card-link:hover .tsd__card-link-ir svg { transform: none; } }

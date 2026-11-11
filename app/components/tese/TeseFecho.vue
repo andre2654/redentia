@@ -42,7 +42,7 @@ const emit = defineEmits<{ acompanhar: [] }>()
 /* o corte gigante, branco a 8%, no canto (posição e tamanho: a classe global .nu-corte-fundo) */
 .tfe__corte { --corte-l: 520px; opacity: .08; }
 .tfe__texto { position: relative; flex: 1 1 420px; min-width: min(300px, 100%); }
-.tfe__h2 { margin: 16px 0 0; font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
+.tfe__h2 { margin: 16px 0 0; font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
 .tfe__p { margin: 14px 0 0; max-width: 44ch; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
 .tfe__acao { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .tfe__micro { color: var(--nu-blue-on-blue-2); font-size: 13.5px; font-weight: 500; }

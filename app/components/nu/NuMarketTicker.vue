@@ -98,30 +98,30 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
 
 <style scoped>
 .nut-wrap {
-  background: var(--nu-page); border-bottom: 1.5px solid var(--nu-line-2);
+  background: var(--nu-page); border-bottom: 1px solid var(--nu-line-2);
   /* gruda ABAIXO do header sticky (UX do dono 2026-07-11): --nuh-h vive no
      <html>, setada pelo NuHeader (72px normal, 60px encolhido; no celular
      52 e 46). .nut-wrap é a classe que o ChatSeletor conta como topo. */
   position: sticky; top: var(--nuh-h, 72px); z-index: 40;
-  transition: top .32s cubic-bezier(.2, .8, .2, 1);
+  transition: top .32s var(--nu-ease-saida);
 }
 .nut { display: flex; align-items: center; gap: 26px; padding: 14px max(22px, calc((100% - 1240px) / 2)); }
-.nut__label { color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+.nut__label { color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 .nut__marquee { flex: 1; min-width: 0; overflow: hidden; }
 .nut__track { display: inline-flex; width: max-content; animation: nut-scroll 55s linear infinite; }
 .nut__marquee:hover .nut__track { animation-play-state: paused; }
 .nut__group { display: inline-flex; align-items: center; gap: 26px; padding-right: 26px; }
 @keyframes nut-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .nut__item { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.nut__value { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.nut__value { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .nut__visto { color: var(--nu-green-text); flex-shrink: 0; }
 .nut__conectar {
   display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; padding: 8px 14px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue); color: var(--nu-white); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
-  min-height: 36px; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  background: var(--nu-blue); color: var(--nu-white); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer;
+  min-height: 36px; transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .nut__conectar:hover { background: var(--nu-blue-hover); }
-.nut__conectar:hover svg { animation: nu-seta .45s cubic-bezier(.4, 0, .2, 1); }
+.nut__conectar:hover svg { animation: nu-seta .45s var(--nu-ease-cor); }
 .nut__conectar:active { transform: scale(.98); }
 
 /* no celular a faixa de venda fica só com os itens e o botão */
@@ -139,7 +139,7 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
   font-size: var(--nu-fs-dense);
 }
 .nut-regua__sk { display: flex; align-items: center; gap: 28px; overflow: hidden; }
-.nut-regua__estado { flex-shrink: 0; padding-right: 22px; border-right: 1.5px solid var(--nu-line-2); height: 16px; }
+.nut-regua__estado { flex-shrink: 0; padding-right: 22px; border-right: 1px solid var(--nu-line-2); height: 16px; }
 .nut-regua__cot { flex: 1 1 0; --ntc-gap: 28px; }
 .nut-regua__relogio { display: none; margin-right: 3px; vertical-align: -1px; }
 .nut-regua__nota { flex-shrink: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; white-space: nowrap; }

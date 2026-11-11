@@ -90,18 +90,18 @@ const renda = computed(() => {
 .apv { display: grid; gap: 28px clamp(28px, 4vw, 56px); }
 .apv--lado { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); align-items: start; }
 @media (max-width: 860px) { .apv--lado { grid-template-columns: minmax(0, 1fr); } }
-.apv__sub { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.apv__sub { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-medio); letter-spacing: -0.01em; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .apv__linhas { margin: 16px 0 0; }
-.apv__linha { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; min-height: 50px; padding: 13px 0; border-top: 1.5px solid var(--nu-line-2); }
-.apv__linha:last-child { border-bottom: 1.5px solid var(--nu-line-2); }
+.apv__linha { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; min-height: 50px; padding: 13px 0; border-top: 1px solid var(--nu-line-2); }
+.apv__linha:last-child { border-bottom: 1px solid var(--nu-line-2); }
 .apv__linha dt { color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; }
-.apv__linha dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
+.apv__linha dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; text-align: right; }
 .apv__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 24px; }
 /* a chamada da seção é a pílula com a seta (NuBotaoSeta); as outras, chips */
 .apv__cta {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill);
   background: var(--nu-white); color: var(--nu-ink); font-size: 14.5px; font-weight: 600; box-shadow: var(--nu-shadow-quente);
-  transition: background .2s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s ease, transform .15s var(--nu-ease-saida);
 }
 .apv__cta:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
 .apv__cta:active { transform: scale(.98); }
@@ -124,19 +124,19 @@ const renda = computed(() => {
 .apv__dica--esq { left: 0; }
 .apv__dica--dir { right: 0; }
 .apv__dica-a { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 600; }
-.apv__dica-v { font-size: var(--nu-fs-sm); font-weight: 700; }
-.apv__val { color: var(--nu-gray-3); font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.apv__dica-v { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.apv__val { color: var(--nu-gray-3); font-size: 13.5px; font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .apv__trilho { flex: 1; width: 100%; display: flex; align-items: flex-end; }
-.apv__barra { display: block; width: 100%; border-radius: 10px 10px 4px 4px; background: var(--nu-line); transform-origin: 50% 100%; transition: background .2s ease, transform .25s cubic-bezier(.2, .8, .2, 1); animation: apv-cresce .6s cubic-bezier(.2, .8, .2, 1) both; }
+.apv__barra { display: block; width: 100%; border-radius: 10px 10px 4px 4px; background: var(--nu-line); transform-origin: 50% 100%; transition: background .2s ease, transform .25s var(--nu-ease-saida); animation: apv-cresce .6s var(--nu-ease-saida) both; }
 @keyframes apv-cresce { from { transform: scaleY(0); } }
 .apv__col--atual .apv__barra { background: var(--nu-blue); }
-.apv__col--atual .apv__val { color: var(--nu-blue-text); font-weight: 800; }
+.apv__col--atual .apv__val { color: var(--nu-blue-text); font-weight: var(--nu-w-forte); }
 .apv__ano { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.apv__col--atual .apv__ano { color: var(--nu-ink); font-weight: 800; }
+.apv__col--atual .apv__ano { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .apv__nota { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 .apv__renda {
   grid-column: 1 / -1; justify-self: start; margin: 0; padding: 8px 14px; border-radius: var(--nu-r-tag);
-  background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: 14.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+  background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 @media (prefers-reduced-motion: reduce) {
   .apv__col, .apv__barra, .apv__cta { transition: none; }

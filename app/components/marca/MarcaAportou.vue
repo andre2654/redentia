@@ -36,7 +36,7 @@ withDefaults(defineProps<{
 
 <style scoped>
 .mka { display: block; flex: none; color: inherit; }
-.mka__corte { fill: var(--nu-blue); transition: transform .5s cubic-bezier(.2, .8, .2, 1); transform-origin: 408px 20px; transform-box: view-box; }
+.mka__corte { fill: var(--nu-blue); transition: transform .5s var(--nu-ease-saida); transform-origin: 408px 20px; transform-box: view-box; }
 .mka--escuro .mka__corte { fill: var(--nu-blue-on-dark); }
 .mka--azul .mka__corte { fill: var(--nu-white); }
 /* o corte dá um aceno quando o link em volta recebe o ponteiro */

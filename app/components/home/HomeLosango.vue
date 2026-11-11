@@ -271,15 +271,15 @@ function ir(destino: string, e: MouseEvent) {
 .hlo__link:focus-visible .hlo__grupo { filter: drop-shadow(0 0 3px var(--nu-agora-azul)); }
 
 /* o texto do desenho cresce com o quadro, como nos anéis (o quadro é de 320) */
-.hlo__nome { font-size: 12px; font-weight: 800; letter-spacing: -0.01em; }
-.hlo__num { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.hlo__pp { font-size: 12px; font-weight: 800; fill: var(--nu-agora-texto); font-variant-numeric: tabular-nums; }
-.hlo__relacao { font-size: 11px; font-weight: 800; }
-.hlo__marca { font-size: 11px; font-weight: 700; fill: var(--nu-agora-sub); font-variant-numeric: tabular-nums; }
-.hlo__cifrao { font-size: 12px; font-weight: 800; }
+.hlo__nome { font-size: 12px; font-weight: var(--nu-w-forte); letter-spacing: -0.01em; }
+.hlo__num { font-size: 18px; font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.hlo__pp { font-size: 12px; font-weight: var(--nu-w-forte); fill: var(--nu-agora-texto); font-variant-numeric: tabular-nums; }
+.hlo__relacao { font-size: 11px; font-weight: var(--nu-w-forte); }
+.hlo__marca { font-size: 11px; font-weight: var(--nu-w-medio); fill: var(--nu-agora-sub); font-variant-numeric: tabular-nums; }
+.hlo__cifrao { font-size: 12px; font-weight: var(--nu-w-forte); }
 .hlo__cifrao--aceso { font-size: 14px; }
 .hlo__prov { font-size: 12px; font-variant-numeric: tabular-nums; }
-.hlo__prov-sub { fill: var(--nu-agora-sub); font-weight: 700; }
+.hlo__prov-sub { fill: var(--nu-agora-sub); font-weight: var(--nu-w-medio); }
 .hlo__prov-sub--aceso { fill: var(--nu-agora-texto); }
 
 /* a aba acesa: um brilho verde leve em volta, sem roubar a cena; no hover,
@@ -319,7 +319,7 @@ function ir(destino: string, e: MouseEvent) {
   position: absolute; transform: translate(-50%, 0); pointer-events: none; width: max-content; max-width: 60%; text-align: center; text-wrap: balance; z-index: 1;
   padding: 7px 12px; border-radius: var(--nu-r-chip); background: var(--nu-agora-cartao); color: var(--nu-agora-texto);
   box-shadow: 0 0 0 1px var(--nu-agora-linha), 0 12px 28px -12px var(--nu-agora-bg);
-  font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {

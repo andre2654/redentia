@@ -74,8 +74,8 @@ const id = useId()
 .ccv__area { animation: ccv-surge 1.1s ease both; }
 .ccv__halo { fill: var(--nu-blue); fill-opacity: 0.15; }
 .ccv__ponto { fill: var(--nu-blue); }
-.ccv__rotulo, .ccv__eixo { fill: var(--nu-gray); font-size: 13px; font-weight: 700; }
-.ccv__fim { fill: var(--nu-ink); font-size: 14px; font-weight: 800; }
+.ccv__rotulo, .ccv__eixo { fill: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-medio); }
+.ccv__fim { fill: var(--nu-ink); font-size: 14px; font-weight: var(--nu-w-forte); }
 .ccv__legenda {
   display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin: 6px 0 0;
   color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;

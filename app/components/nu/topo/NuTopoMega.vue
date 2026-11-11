@@ -46,21 +46,21 @@ const unico = computed(() => props.filhos.length === 1)
   position: fixed; z-index: 60; width: 700px; padding: 8px;
   display: flex; align-items: stretch; gap: 8px;
   background: var(--nu-page); border-radius: var(--nu-r-panel);
-  box-shadow: 0 0 0 1.5px var(--nu-line-2), var(--nu-shadow-card);
+  box-shadow: 0 0 0 1px var(--nu-line-2), var(--nu-shadow-card);
   animation: nu-surgir .2s ease both;
 }
-.ntg__lista { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 4px; animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both; }
+.ntg__lista { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 4px; animation: nu-subir .32s var(--nu-ease-saida) both; }
 .ntg__item { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-radius: var(--nu-r-tile); transition: background .15s; }
 .ntg__item--quente { background: var(--nu-band); }
 .ntg__item:focus-visible { outline-offset: -3px; }
-.ntg__rotulo { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.ntg__rotulo { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .ntg__item--ativo .ntg__rotulo { color: var(--nu-blue-text); }
 .ntg__tag {
   padding: 3px 8px; border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); color: var(--nu-blue-text);
-  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0.06em; text-transform: uppercase;
 }
 .ntg__desc { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.4; }
-.ntg__vista { width: 400px; min-height: 280px; flex-shrink: 0; border-radius: var(--nu-r-tile); background: var(--nu-band); position: relative; overflow: hidden; animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) .04s both; }
+.ntg__vista { width: 400px; min-height: 280px; flex-shrink: 0; border-radius: var(--nu-r-tile); background: var(--nu-band); position: relative; overflow: hidden; animation: nu-subir .32s var(--nu-ease-saida) .04s both; }
 .ntgv-enter-active { transition: opacity .3s ease, transform .3s ease; }
 .ntgv-leave-active { transition: opacity .16s ease; }
 .ntgv-enter-from { opacity: 0; transform: translateY(8px) scale(.985); }

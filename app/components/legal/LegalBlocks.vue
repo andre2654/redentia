@@ -62,12 +62,12 @@ withDefaults(defineProps<{
   color: var(--nu-gray-3); font-size: 17px; font-weight: 500; line-height: 1.65;
   padding-left: 4px;
 }
-.lgb__li::marker { color: var(--nu-blue-text); font-weight: 700; }
+.lgb__li::marker { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); }
 
 .lgb__sub { margin-top: 4px; }
 .lgb__h3 {
   margin: clamp(24px, 2.6vw, 32px) 0 0; color: var(--nu-ink);
-  font-size: clamp(19px, 1.7vw, 22px); font-weight: 800;
+  font-size: clamp(19px, 1.7vw, 22px); font-weight: var(--nu-w-forte);
   letter-spacing: -0.02em; line-height: 1.2;
   scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
 }

@@ -443,7 +443,7 @@ usePageSeo({
 
 <style scoped>
 /* ——— tipografia compartilhada (classes do exemplar jc__, mesmos valores) ——— */
-.dy__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.dy__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .dy__h4--accent { color: var(--nu-blue-text); }
 .dy__link { text-decoration: underline; }
 .dy__link:hover { color: var(--nu-blue-text); }
@@ -454,11 +454,11 @@ usePageSeo({
   line-height: 1.7;
 }
 .dy__prose p:last-child { margin-bottom: 0; }
-.dy__prose strong { color: var(--nu-ink); font-weight: 800; }
+.dy__prose strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .dy__prose--mt { margin-top: 18px; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.dy__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.dy__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .dy__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -471,10 +471,10 @@ usePageSeo({
 .dy__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .dy__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.dy__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.dy__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
 .dy__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— tiles (cards do conteúdo; creme em banda branca, branco em banda creme) ——— */
@@ -485,14 +485,14 @@ usePageSeo({
 .dy__card-p--mt { margin-top: 12px; }
 .dy__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
 .dy__list li + li { margin-top: 8px; }
-.dy__list :deep(strong) { color: var(--nu-ink); font-weight: 800; }
+.dy__list :deep(strong) { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* ——— fórmula (exemplo centrado abaixo do card) ——— */
 .dy__formula-block { margin-top: 22px; }
 .dy__formula-example { margin-top: 14px; text-align: center; }
 .dy__formula-example p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
-.dy__formula-example p strong { color: var(--nu-ink); font-weight: 800; }
-.dy__formula-accent { color: var(--nu-blue-text) !important; font-weight: 700 !important; margin-top: 4px !important; font-variant-numeric: tabular-nums; }
+.dy__formula-example p strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
+.dy__formula-accent { color: var(--nu-blue-text) !important; font-weight: var(--nu-w-medio) !important; margin-top: 4px !important; font-variant-numeric: tabular-nums; }
 
 /* ——— cards-link (rankings / outras ferramentas) ——— */
 .dy__grid-cards {
@@ -504,18 +504,18 @@ usePageSeo({
 .dy__card-link {
   background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .cbd--cream .dy__card-link { background: var(--nu-white); }
 .dy__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.dy__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.dy__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
 .dy__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.dy__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.dy__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .dy__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 .dy__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 </style>

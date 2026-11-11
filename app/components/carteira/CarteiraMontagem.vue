@@ -156,30 +156,30 @@ onBeforeUnmount(() => {
   box-shadow: 0 40px 90px -40px color-mix(in srgb, var(--nu-ink) 55%, transparent), 0 0 0 1px var(--nu-white-60);
 }
 .cmo__topo { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.cmo__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cmo__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .cmo__meta { color: var(--cmo-sub); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 /* um tom abaixo do título da banda: a frase manda, a carteira prova */
 .cmo__valor {
-  margin-top: 6px; font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.05em; line-height: 1;
+  margin-top: 6px; font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.05em; line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 .cmo__hoje {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 6px 12px; border-radius: var(--nu-r-pill);
-  background: var(--nu-green-bg); color: var(--nu-green-text); font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums;
-  transition: opacity .4s ease, transform .5s cubic-bezier(.2, .8, .2, 1);
+  background: var(--nu-green-bg); color: var(--nu-green-text); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
+  transition: opacity .4s ease, transform .5s var(--nu-ease-saida);
 }
 .cmo:not(.cmo--pronta) .cmo__hoje { opacity: 0; transform: translateY(6px); }
 
 /* a alocação: as fatias crescem conforme as contas chegam; o trilho é o que falta */
 .cmo__barra { display: flex; gap: 3px; height: 12px; margin-top: 22px; border-radius: 999px; background: var(--cmo-trilho); overflow: hidden; }
-.cmo__fatia { display: block; height: 100%; border-radius: 999px; transition: width .6s cubic-bezier(.22, 1, .36, 1); }
+.cmo__fatia { display: block; height: 100%; border-radius: 999px; transition: width .6s var(--nu-ease-saida); }
 .cmo__fatia--rf { background: var(--nu-alloc-fixed); }
 .cmo__fatia--acoes { background: var(--nu-alloc-stock); }
 .cmo__fatia--fiis { background: var(--nu-alloc-fii); }
 .cmo__fatia--etfs { background: var(--nu-class-etf); }
 .cmo__legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0 0; padding: 0; list-style: none; }
 .cmo__legenda li { display: inline-flex; align-items: center; gap: 6px; color: var(--cmo-sub); font-size: var(--nu-fs-dense); font-weight: 500; }
-.cmo__legenda b { color: var(--cmo-texto); font-weight: 700; font-variant-numeric: tabular-nums; }
+.cmo__legenda b { color: var(--cmo-texto); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .cmo__ponto { width: 8px; height: 8px; border-radius: 50%; }
 
 /* as contas, uma a uma */
@@ -187,13 +187,13 @@ onBeforeUnmount(() => {
 .cmo__conta {
   display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 11px 0;
   border-bottom: 1px solid var(--cmo-linha);
-  transition: opacity .45s ease, transform .55s cubic-bezier(.22, 1, .36, 1), filter .45s ease;
+  transition: opacity .45s ease, transform .55s var(--nu-ease-saida), filter .45s ease;
 }
 .cmo__conta--fora { opacity: 0; transform: translateX(-18px); filter: blur(4px); }
 .cmo__logo { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px var(--nu-navy-06); }
-.cmo__nome { display: flex; flex-direction: column; min-width: 0; font-size: var(--nu-fs-sm); font-weight: 700; }
+.cmo__nome { display: flex; flex-direction: column; min-width: 0; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .cmo__nome small { color: var(--cmo-sub); font-size: var(--nu-fs-dense); font-weight: 500; }
-.cmo__quanto { font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.cmo__quanto { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .cmo__mais { margin: 12px 0 0; color: var(--cmo-sub); font-size: var(--nu-fs-dense); font-weight: 500; text-align: center; }
 
 /* ——— sobre o navy (o herói da folha): sem cartão, as contas em duas colunas ——— */
@@ -211,7 +211,7 @@ onBeforeUnmount(() => {
 .cmo--escuro .cmo__logo { grid-row: span 2; width: 26px; height: 26px; }
 .cmo--escuro .cmo__nome { font-size: var(--nu-fs-dense); }
 .cmo--escuro .cmo__nome small { display: none; }
-.cmo--escuro .cmo__quanto { grid-column: 2; margin-top: -4px; color: var(--cmo-sub); font-size: var(--nu-fs-xs); font-weight: 700; }
+.cmo--escuro .cmo__quanto { grid-column: 2; margin-top: -4px; color: var(--cmo-sub); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 .cmo--escuro .cmo__mais { display: none; }
 
 /* no laço da folha, a carteira apaga antes de recomeçar (a volta não salta) */

@@ -37,11 +37,11 @@ defineProps<{
 }
 .cto__voltar { width: fit-content; min-height: 44px; text-align: left; }
 .cto__voltar:hover { color: var(--nu-ink); }
-.cto__seta { flex: none; margin-right: -4px; color: var(--nu-gray); transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.cto__seta { flex: none; margin-right: -4px; color: var(--nu-gray); transition: transform .25s var(--nu-ease-saida); }
 .cto__voltar:hover .cto__seta { transform: translateX(-3px); }
 .cto__h1 {
   margin: 10px auto 0; max-width: 1180px; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
+  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
   text-wrap: balance;
 }
 .cto__desc { margin: 16px auto 0; max-width: 56ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }

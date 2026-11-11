@@ -91,7 +91,7 @@ onBeforeUnmount(() => io?.disconnect())
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
 }
 .bsr__cab { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 14px; border-bottom: 1px solid var(--nu-cream-text-14); }
-.bsr__titulo { color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.bsr__titulo { color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .14em; text-transform: uppercase; }
 .bsr__pontos { display: flex; gap: 5px; }
 .bsr__pontos i { width: 6px; height: 6px; border-radius: 50%; background: var(--nu-cream-text-18); }
 
@@ -139,7 +139,7 @@ onBeforeUnmount(() => io?.disconnect())
 /* ——— o gesto de entrada: as linhas entram uma vez, em sequência ——— */
 @media (prefers-reduced-motion: no-preference) {
   .bsr--armada .bsr__linha { opacity: 0; }
-  .bsr--viu .bsr__linha { animation: bsr-entra .52s cubic-bezier(.22, 1, .36, 1) backwards; animation-delay: calc(.12s + var(--i) * .14s); }
+  .bsr--viu .bsr__linha { animation: bsr-entra .52s var(--nu-ease-saida) backwards; animation-delay: calc(.12s + var(--i) * .14s); }
 }
 @keyframes bsr-entra { from { opacity: 0; transform: translateY(6px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
 @media (prefers-reduced-motion: reduce) {

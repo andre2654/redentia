@@ -65,25 +65,25 @@ if (props.schema) useFaqSchema(props.items)
 </template>
 
 <style scoped>
-.nfa { display: flex; flex-direction: column; border-top: 1.5px solid var(--nu-line); }
-.nfa__item { border-bottom: 1.5px solid var(--nu-line); }
+.nfa { display: flex; flex-direction: column; border-top: 1px solid var(--nu-line); }
+.nfa__item { border-bottom: 1px solid var(--nu-line); }
 .nfa__q {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   width: 100%; min-height: 44px; padding: 18px 0; background: transparent; border: none; cursor: pointer; text-align: left;
   font-family: inherit; color: var(--nu-ink);
 }
-.nfa__q-text { color: var(--nu-ink); font-size: clamp(19px, 1.7vw, 22px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; transition: color .2s; }
+.nfa__q-text { color: var(--nu-ink); font-size: clamp(19px, 1.7vw, 22px); font-weight: var(--nu-w-medio); letter-spacing: -0.01em; line-height: 1.25; transition: color .2s; }
 .nfa__q:hover .nfa__q-text { color: var(--nu-blue-text); }
 .nfa__mais {
   flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--nu-ink); color: var(--nu-white);
   display: flex; align-items: center; justify-content: center;
-  transition: transform .3s cubic-bezier(.2, .8, .2, 1), background .2s;
+  transition: transform .3s var(--nu-ease-saida), background .2s;
 }
 .nfa__q:hover .nfa__mais { background: var(--nu-blue); }
 .nfa__item--open .nfa__mais { transform: rotate(45deg); }
 .nfa__icon { display: block; width: 16px; height: 16px; stroke-width: 2.6; }
 /* a altura anima de 0 ao conteúdo (grid 0fr → 1fr) */
-.nfa__dobra { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .32s cubic-bezier(.2, .8, .2, 1); }
+.nfa__dobra { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .32s var(--nu-ease-saida); }
 .nfa__item--open .nfa__dobra { grid-template-rows: 1fr; }
 .nfa__dobra-dentro { min-height: 0; overflow: hidden; }
 .nfa__a {
@@ -103,7 +103,7 @@ if (props.schema) useFaqSchema(props.items)
 .marca-redentia .nfa { gap: 14px; border-top: 0; }
 .marca-redentia .nfa__item { background: var(--nu-cream); border-radius: 18px; padding: 26px 28px; border-bottom: 0; }
 .marca-redentia .nfa__q { align-items: flex-start; gap: 20px; min-height: 0; padding: 0; }
-.marca-redentia .nfa__q-text, .marca-redentia .nfa__q:hover .nfa__q-text { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; line-height: 1.35; }
+.marca-redentia .nfa__q-text, .marca-redentia .nfa__q:hover .nfa__q-text { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; line-height: 1.35; }
 .marca-redentia .nfa__mais, .marca-redentia .nfa__q:hover .nfa__mais {
   width: 21px; height: 21px; margin-top: 3px; border-radius: 0; background: transparent; color: var(--nu-ink);
   transition: transform .25s;

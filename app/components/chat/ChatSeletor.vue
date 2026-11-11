@@ -289,15 +289,15 @@ onBeforeUnmount(() => {
   background: var(--nu-anel); background-size: 200% 100%;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
-  transition: transform .16s cubic-bezier(.2, .8, .2, 1), width .16s cubic-bezier(.2, .8, .2, 1), height .16s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .16s var(--nu-ease-saida), width .16s var(--nu-ease-saida), height .16s var(--nu-ease-saida);
   animation: nu-anel 4s linear infinite;
 }
-.cse__contorno--pulso { animation: nu-anel 4s linear infinite, cse-pulso .5s cubic-bezier(.2, .8, .2, 1); }
+.cse__contorno--pulso { animation: nu-anel 4s linear infinite, cse-pulso .5s var(--nu-ease-saida); }
 /* a etiqueta "+ PETR4": a pílula carvão, com o "+" no círculo cobalto */
 .cse__rotulo {
   position: absolute; left: 0; top: 0; will-change: transform;
   display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: var(--nu-r-pill);
-  background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-dense); font-weight: 700; white-space: nowrap;
+  background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); white-space: nowrap;
   box-shadow: var(--nu-chat-sombra-rotulo);
 }
 .cse__mais { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--nu-blue); font-size: 13px; line-height: 1; }

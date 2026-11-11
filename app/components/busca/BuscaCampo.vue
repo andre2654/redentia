@@ -101,7 +101,7 @@ defineExpose({ focus: () => input.value?.focus() })
 }
 .bc__titulo {
   margin: 18px 0 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.035em; line-height: .98;
+  font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: .98;
 }
 
 .bc__campo {
@@ -130,8 +130,8 @@ defineExpose({ focus: () => input.value?.focus() })
 .bc__limpar:hover { background: var(--nu-line-2); }
 .bc__kbd {
   flex: none; margin-right: 12px; padding: 3px 9px;
-  border: 1.5px solid var(--nu-line); border-radius: var(--nu-r-tag);
-  color: var(--nu-gray); font: inherit; font-size: var(--nu-fs-dense); font-weight: 700;
+  border: 1px solid var(--nu-line); border-radius: var(--nu-r-tag);
+  color: var(--nu-gray); font: inherit; font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
 }
 
 /* os tipos: o trilho (MercadoTrilho); no celular ele rola de lado por dentro */

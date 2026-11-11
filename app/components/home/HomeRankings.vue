@@ -160,13 +160,13 @@ const selo = computed(() => {
 <style scoped>
 /* a faixa quente da marca, no contêiner de 1.240 px */
 .hrk { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1240px) / 2)); }
-.hrk__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
+.hrk__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
 .hrk__sub { margin: 20px 0 0; max-width: 620px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
 /* o estado da bolsa: selo de raio 8 e, ao lado, de quando são os números */
 .hrk__selo { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin: 22px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; }
 .hrk__selo strong {
   display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: var(--nu-r-tag);
-  background: var(--nu-white); color: var(--nu-ink); font-size: 13.5px; font-weight: 700; line-height: 1.3;
+  background: var(--nu-white); color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); line-height: 1.3;
 }
 .hrk__ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-sand); }
 .hrk__selo--vivo strong { background: var(--nu-green-bg); color: var(--nu-green-text); }
@@ -177,28 +177,28 @@ const selo = computed(() => {
 @media (max-width: 640px) { .hrk__grade { grid-template-columns: 1fr; } }
 /* o cartão branco sobre a faixa */
 .hrk__cartao { display: flex; flex-direction: column; padding: 24px 24px 20px; border-radius: var(--nu-r-card); background: var(--nu-white); box-shadow: var(--nu-shadow-quente); }
-.hrk__nome { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.hrk__nome { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
 .hrk__cartao-sub { margin: 4px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; }
 .hrk__linhas { list-style: none; margin: 12px 0 0; padding: 0; }
 .hrk__logo { flex: none; }
 .hrk__linha {
   display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 10px; margin: 0 -10px;
-  border-top: 1.5px solid var(--nu-line-2); color: var(--nu-ink); transition: background .2s;
+  border-top: 1px solid var(--nu-line-2); color: var(--nu-ink); transition: background .2s;
 }
 .hrk__linhas > li:first-child .hrk__linha { border-top-color: transparent; }
 .hrk__linha:hover { background: var(--nu-row-hover); border-radius: var(--nu-r-chip); color: var(--nu-ink); }
-.hrk__pos { width: 16px; flex: none; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hrk__pos { width: 16px; flex: none; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .hrk__id { flex: 1; min-width: 0; }
-.hrk__empresa { display: block; font-size: 16.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hrk__empresa { display: block; font-size: 16.5px; font-weight: var(--nu-w-medio); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hrk__ticker { display: block; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; letter-spacing: .04em; }
-.hrk__valor { flex: none; font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hrk__valor { flex: none; font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 /* a variação do dia é o selo de raio 8 da marca */
-.hrk__valor--up, .hrk__valor--down { padding: 4px 9px; border-radius: var(--nu-r-tag); font-size: 14.5px; font-weight: 700; }
+.hrk__valor--up, .hrk__valor--down { padding: 4px 9px; border-radius: var(--nu-r-tag); font-size: 14.5px; font-weight: var(--nu-w-medio); }
 .hrk__valor--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .hrk__valor--down { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .hrk__ver {
   align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 12px; min-height: 44px;
-  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
 }
 .hrk__ver:hover { color: var(--nu-blue-hover); }
 .hrk__ver svg { transition: transform .2s ease; }
@@ -207,13 +207,13 @@ const selo = computed(() => {
 .hrk__todos {
   position: relative; isolation: isolate; overflow: hidden; justify-content: flex-start; gap: 8px;
   background: var(--nu-grad-cobalto); color: var(--nu-white); box-shadow: none;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .hrk__todos:hover { color: var(--nu-white); transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .hrk__todos:active { transform: scale(.99); }
 /* posição e tamanho são da classe global .nu-corte-fundo (sempre no canto de cima à esquerda) */
 .hrk__todos-corte { z-index: -1; opacity: .08; }
-.hrk__todos-num { font-size: clamp(46px, 5.2vw, 68px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; }
+.hrk__todos-num { font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1; }
 .hrk__todos-txt { max-width: 28ch; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.4; }
 .hrk__ver--cheio, .hrk__todos:hover .hrk__ver--cheio { color: var(--nu-white); }
 

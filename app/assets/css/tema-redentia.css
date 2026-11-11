@@ -163,6 +163,11 @@
   --nu-chat-luz-2: rgba(180, 140, 255, 0.40);
   --nu-chat-luz-3: rgba(255, 107, 138, 0.30);
   --nu-page: #ffffff;
+  /* pesos e curvas da Redentia: os de antes da robustez da Aportou */
+  --nu-w-display: 800;
+  --nu-w-forte: 800;
+  --nu-w-medio: 700;
+  --nu-ease-saida: cubic-bezier(.2, .8, .2, 1);
   /* os tokens que nasceram com a Aportou, no equivalente da Redentia: componente
      compartilhado que use um deles não muda a tela de escritório sem querer */
   --nu-card: #F5F1EA;
@@ -192,15 +197,15 @@
 
 /* O eyebrow da Redentia continua o de antes: texto azul em caixa baixa, sem o
    corte do "t" (que é sinal da Aportou). */
-.marca-redentia .nu-eyebrow {
+body.marca-redentia .nu-eyebrow {
   color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800;
   letter-spacing: 0; text-transform: none; line-height: inherit;
 }
-.marca-redentia .nu-eyebrow--claro { color: var(--nu-blue-soft); }
-.marca-redentia .nu-eyebrow > svg { display: none; }
+body.marca-redentia .nu-eyebrow--claro { color: var(--nu-blue-soft); }
+body.marca-redentia .nu-eyebrow > svg { display: none; }
 /* o corte do "t" é sinal da Aportou: peça compartilhada que o desenha (o aviso
    de cookies, por exemplo) não o mostra nas telas de escritório */
-.marca-redentia .mkc { display: none; }
+body.marca-redentia .mkc { display: none !important; }
 
 /* A fonte da Redentia B2B segue a Plus Jakarta Sans. O arquivo só baixa nas
    telas que usam a família (as de .marca-redentia). */

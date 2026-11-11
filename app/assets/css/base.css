@@ -26,12 +26,12 @@
   size-adjust: 94.8%; ascent-override: 100.21%; descent-override: 26.37%; line-gap-override: 0%;
 }
 @font-face {
-  font-family: 'Figtree Reserva'; font-weight: 700;
+  font-family: 'Figtree Reserva'; font-weight: var(--nu-w-medio);
   src: local('Arial Bold'), local('Arial-BoldMT');
   size-adjust: 95.63%; ascent-override: 99.34%; descent-override: 26.14%; line-gap-override: 0%;
 }
 @font-face {
-  font-family: 'Figtree Reserva'; font-weight: 800;
+  font-family: 'Figtree Reserva'; font-weight: var(--nu-w-forte);
   src: local('Arial Bold'), local('Arial-BoldMT');
   size-adjust: 96.76%; ascent-override: 98.18%; descent-override: 25.84%; line-gap-override: 0%;
 }
@@ -50,6 +50,9 @@ button, input { font-family: inherit; }
 /* Títulos equilibram as linhas: sem palavra órfã na última ("...da / mesa.").
    Respeita os <br> manuais; navegador sem suporte só ignora. */
 h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
+/* o destaque no meio do texto pesa 600, não o "bolder" do navegador (700+) */
+b, strong { font-weight: var(--nu-w-medio); }
 a { color: inherit; text-decoration: none; }
 a:hover { color: inherit; }
 
@@ -81,7 +84,7 @@ a:hover { color: inherit; }
    para quem não usa o componente NuEyebrow. */
 .nu-eyebrow {
   display: flex; align-items: center; gap: 10px; margin: 0;
-  font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.2em;
+  font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.2em;
   text-transform: uppercase; color: var(--nu-ink); line-height: 1.3;
 }
 .nu-eyebrow--claro { color: var(--nu-white); }

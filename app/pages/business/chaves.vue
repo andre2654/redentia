@@ -419,7 +419,7 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
 .rbk-falha__btn {
   min-height: 44px; border: none; cursor: pointer;
   background: var(--nu-blue); color: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 13px 26px; font-size: var(--nu-fs-md); font-weight: 800; font-family: inherit;
+  padding: 13px 26px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-family: inherit;
   transition: background .2s, opacity .2s;
 }
 .rbk-falha__btn:hover:not(:disabled) { background: var(--nu-blue-hover); }

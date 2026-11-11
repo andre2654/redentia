@@ -45,7 +45,7 @@ const curva = computed(() => {
 .nfm--plano { box-shadow: none; border-radius: 0; }
 .nfm__topo { display: flex; justify-content: space-between; align-items: flex-start; }
 .nfm__aba { position: relative; flex: none; padding: 0 26px 0 28px; display: flex; align-items: center; background: var(--nu-blue); }
-.nfm__rotulo { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--nu-white); white-space: nowrap; }
+.nfm__rotulo { margin: 0; font-size: 15px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; color: var(--nu-white); white-space: nowrap; }
 .nfm__curva, .nfm__pe { position: absolute; display: block; fill: var(--nu-blue); pointer-events: none; }
 .nfm__curva { left: calc(100% - 1px); }
 .nfm__pe { left: 0; top: calc(100% - 1px); }

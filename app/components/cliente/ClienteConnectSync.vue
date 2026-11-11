@@ -48,13 +48,13 @@ const emit = defineEmits<{ tentar: [], recarregar: [], inicio: [] }>()
 
 <style scoped>
 .ccs { flex: 1 1 auto; display: flex; flex-direction: column; }
-.ccs__h1 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.025em; line-height: 1.28; outline: none; }
+.ccs__h1 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.025em; line-height: 1.28; outline: none; }
 .ccs__p { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .ccs__etapas { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-direction: column; }
 .ccs__e { display: flex; align-items: center; gap: 14px; min-height: 48px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; transition: color .25s; }
 .ccs__e + .ccs__e { border-top: 1px solid var(--nu-cream-2); }
-.ccs__e--andamento { color: var(--nu-ink); font-weight: 700; }
+.ccs__e--andamento { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .ccs__e--feito { color: var(--nu-ink); }
 .ccs__ico { width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
 .ccs__ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-cream-2); }
@@ -71,7 +71,7 @@ const emit = defineEmits<{ tentar: [], recarregar: [], inicio: [] }>()
 
 .ccs__erro { margin: 18px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--nu-red-tint); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .ccs__foot { margin-top: auto; padding-top: 22px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
-.ccs__inicio { padding: 8px 12px; border: none; background: none; color: var(--nu-gray); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; }
+.ccs__inicio { padding: 8px 12px; border: none; background: none; color: var(--nu-gray); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer; }
 .ccs__inicio:hover { color: var(--nu-ink); }
 .ccs__inicio:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 6px; }
 </style>

@@ -503,7 +503,7 @@ usePageSeo({
 
 <style scoped>
 /* ——— tipografia compartilhada (mesmos valores do exemplar jc__) ——— */
-.sa__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.sa__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .sa__h4--accent { color: var(--nu-blue-text); }
 .sa__h4--positive { color: var(--nu-green-text); }
 .sa__small { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
@@ -515,11 +515,11 @@ usePageSeo({
   line-height: 1.7;
 }
 .sa__prose p:last-child { margin-bottom: 0; }
-.sa__prose strong { color: var(--nu-ink); font-weight: 800; }
+.sa__prose strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .sa__prose--gap { margin-top: 22px; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.sa__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.sa__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .sa__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -533,10 +533,10 @@ usePageSeo({
 .sa__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .sa__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.sa__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.sa__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
 .sa__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
@@ -556,7 +556,7 @@ usePageSeo({
 .sa__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
 .sa__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
 .sa__result-box--negative { background: var(--nu-red-tint); }
-.sa__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.sa__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .sa__result-note { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
 .sa__result-note:first-child { margin-top: 0; }
 .sa__result-note--spaced { margin-top: 8px; }
@@ -567,7 +567,7 @@ usePageSeo({
   gap: 18px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.sa__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.sa__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .sa__ex-title--center { text-align: center; margin: clamp(36px, 5vw, 56px) 0 0; }
 .sa__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
 .sa__ex-note {
@@ -584,10 +584,10 @@ usePageSeo({
 .sa__card-link {
   background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .cbd--cream .sa__card-link { background: var(--nu-white); }
 .sa__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.sa__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.sa__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 </style>

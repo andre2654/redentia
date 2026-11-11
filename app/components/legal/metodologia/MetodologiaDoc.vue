@@ -94,7 +94,7 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 
 .met-doc__h2 {
   margin: clamp(40px, 4.5vw, 56px) 0 0; color: var(--nu-ink);
-  font-size: clamp(26px, 2.6vw, 32px); font-weight: 800;
+  font-size: clamp(26px, 2.6vw, 32px); font-weight: var(--nu-w-forte);
   letter-spacing: -0.025em; line-height: 1.08;
   scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
 }
@@ -112,18 +112,18 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 .met-doc__table th,
 .met-doc__table td {
   padding: 14px 18px; text-align: left; vertical-align: top;
-  border-bottom: 1.5px solid var(--nu-line-2);
+  border-bottom: 1px solid var(--nu-line-2);
 }
 .met-doc__table tbody tr:last-child td { border-bottom: 0; }
 .met-doc__table th {
-  color: var(--nu-gray); font-weight: 700; font-size: var(--nu-fs-dense);
+  color: var(--nu-gray); font-weight: var(--nu-w-medio); font-size: var(--nu-fs-dense);
   letter-spacing: 0.14em; text-transform: uppercase;
 }
 .met-doc__table td {
   color: var(--nu-gray-3); font-weight: 500; line-height: 1.55;
   font-variant-numeric: tabular-nums;
 }
-.met-doc__table td:first-child { color: var(--nu-ink); font-weight: 700; }
+.met-doc__table td:first-child { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 
 /* box de disclaimer educacional (§7): faixa quente com o fio cobalto */
 .met-doc__callout {

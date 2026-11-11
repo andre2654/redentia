@@ -28,10 +28,10 @@ import { ESTUDO } from '~/content/business/landing'
   min-height: 40px; padding: 8px 16px; font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.3; text-align: center;
   transition: background .2s ease, color .2s ease;
 }
-.bfe__titulo { font-weight: 700; white-space: nowrap; }
+.bfe__titulo { font-weight: var(--nu-w-medio); white-space: nowrap; }
 .bfe__frase { min-width: 0; }
-.bfe__acao { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
-.bfe__acao svg { transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.bfe__acao { display: inline-flex; align-items: center; gap: 4px; font-weight: var(--nu-w-medio); white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.bfe__acao svg { transition: transform .25s var(--nu-ease-saida); }
 .bfe__link:hover .bfe__acao svg { transform: translateX(3px); }
 .bfe__link:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: -4px; }
 .bfe__ponto { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: currentColor; opacity: .55; }

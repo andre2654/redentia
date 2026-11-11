@@ -24,7 +24,7 @@ const casas = computed(() => [...props.valor].map((c, i) => ({ c, k: `${i}-${c}`
 .tpr__casa { position: relative; display: inline-block; overflow: hidden; }
 .tpr__c { display: inline-block; }
 .tpr__c--ponto { transform: scale(.55); margin: 0 -.09em; opacity: .85; }
-.tpr-enter-active, .tpr-leave-active { transition: transform .22s cubic-bezier(.2, .8, .2, 1), opacity .22s ease; }
+.tpr-enter-active, .tpr-leave-active { transition: transform .22s var(--nu-ease-saida), opacity .22s ease; }
 .tpr-leave-active { position: absolute; left: 0; top: 0; }
 .tpr-enter-from { transform: translateY(40%); opacity: 0; }
 .tpr-leave-to { transform: translateY(-40%); opacity: 0; }

@@ -196,7 +196,7 @@ const painel = useChatPainel()
   position: sticky; top: calc(var(--nuh-h, 76px) + 39px); z-index: 20;
   background: color-mix(in srgb, var(--nu-page) 92%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px);
-  border-top: 1.5px solid var(--nu-line-2); border-bottom: 1.5px solid var(--nu-line-2);
+  border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2);
   transition: top .28s ease;
 }
 /* uma linha só, na coluna: quando não cabe (tablet, celular) rola de lado */
@@ -208,8 +208,8 @@ const painel = useChatPainel()
 .glx__az-item {
   flex: 0 0 auto; min-width: 38px; height: 38px; padding: 0 4px;
   display: inline-flex; align-items: center; justify-content: center;
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
-  border-radius: var(--nu-r-tag); transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
+  border-radius: var(--nu-r-tag); transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
   font-variant-numeric: tabular-nums;
 }
 .glx__az-item:active { transform: scale(.96); }
@@ -224,13 +224,13 @@ const painel = useChatPainel()
 .glx__empty { color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 24px; }
 .glx__empty-link { padding: 0; border: 0; background: none; font: inherit; cursor: pointer;
 }
-.glx__empty-link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.glx__empty-link { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; }
 
 .glx__section { margin-top: clamp(36px, 4.5vw, 56px); scroll-margin-top: calc(var(--nuh-h, 76px) + 116px); }
 .glx__section:first-of-type { margin-top: 8px; }
 /* a letra: número-herói cobalto sobre um fio carvão de 3px */
 .glx__letter {
-  color: var(--nu-blue); font-size: clamp(46px, 5.2vw, 68px); font-weight: 800;
+  color: var(--nu-blue); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display);
   letter-spacing: -0.035em; line-height: 1; margin-bottom: 20px;
   padding-bottom: 12px; border-bottom: 3px solid var(--nu-ink);
 }
@@ -243,18 +243,18 @@ const painel = useChatPainel()
   background: var(--nu-card); border-radius: var(--nu-r-panel);
   box-shadow: var(--nu-shadow-quente);
   padding: 22px 24px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
   animation: nu-fade .4s ease both;
 }
 .glx__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-quente), var(--nu-shadow-card); }
-.glx__card-term { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; padding-right: 28px; }
+.glx__card-term { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; padding-right: 28px; }
 .glx__card-short {
   color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
   display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .glx__card-arrow {
   position: absolute; top: 22px; right: 20px; color: var(--nu-blue);
-  opacity: 0; transform: translateX(-4px); transition: opacity .2s, transform .25s cubic-bezier(.2, .8, .2, 1);
+  opacity: 0; transform: translateX(-4px); transition: opacity .2s, transform .25s var(--nu-ease-saida);
 }
 .glx__card:hover .glx__card-arrow { opacity: 1; transform: none; }
 

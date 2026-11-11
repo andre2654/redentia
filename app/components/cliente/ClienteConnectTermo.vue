@@ -52,12 +52,12 @@ function onKey(e: KeyboardEvent) {
 .cct__card {
   width: 100%; max-width: 560px; max-height: min(80vh, 760px); display: flex; flex-direction: column;
   background: var(--nu-white); border-radius: 18px; box-shadow: var(--nu-shadow-float); outline: none;
-  animation: cct-sobe .26s cubic-bezier(.2, .8, .2, 1) both;
+  animation: cct-sobe .26s var(--nu-ease-saida) both;
 }
 @keyframes cct-sobe { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 .cct__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 18px 12px 22px; border-bottom: 1px solid var(--nu-cream-2); }
-.cct__h2 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.02em; }
-.cct__v { display: block; margin-top: 2px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
+.cct__h2 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.02em; }
+.cct__v { display: block; margin-top: 2px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .cct__fechar {
   width: 36px; height: 36px; flex-shrink: 0; border: none; border-radius: 10px; background: transparent; color: var(--nu-ink);
   display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s;

@@ -263,17 +263,17 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
    /login: as três telas ficam alinhadas quando abertas lado a lado. */
 .rbcv { animation: nu-fade .5s ease both; }
 
-.rbcv__eyebrow { display: block; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.01em; }
+.rbcv__eyebrow { display: block; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.01em; }
 .rbcv__h1 {
   margin: 10px 0 0; color: var(--nu-ink);
-  font-size: clamp(32px, 3.4vw, 44px); font-weight: 800; letter-spacing: -.04em; line-height: 1.05;
+  font-size: clamp(32px, 3.4vw, 44px); font-weight: var(--nu-w-display); letter-spacing: -.04em; line-height: 1.05;
 }
 .rbcv__sub { margin: 16px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 
 .rbcv__skel { margin-top: clamp(28px, 4vh, 44px); display: flex; flex-direction: column; gap: 18px; }
 
 .rbcv__label { margin-top: clamp(28px, 4vh, 44px); }
-.rbcv__erro { margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.55; }
+.rbcv__erro { margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.55; }
 .rbcv__cta { margin-top: clamp(32px, 4.5vh, 48px); }
 .rbcv__divider { margin-top: 30px; }
 
@@ -283,7 +283,7 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
   width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px;
   display: flex; align-items: center; justify-content: center;
   background: var(--nu-tile-blue-bg); color: var(--nu-blue-text); border-radius: 7px;
-  font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 
 .rbcv__nota { margin: 26px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
@@ -295,7 +295,7 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
   background: var(--nu-navy); border-radius: var(--nu-r-card-lg); padding: clamp(22px, 3vw, 30px);
   box-shadow: var(--nu-shadow-card); animation: nu-fade .45s ease both;
 }
-.rbcv__secret-l { display: block; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
+.rbcv__secret-l { display: block; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: 1.2px; }
 .rbcv__code {
   display: block; margin-top: 14px;
   background: var(--nu-navy-2); border: 1px solid var(--nu-cream-text-12); border-radius: var(--nu-r-input);
@@ -307,14 +307,14 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
 .rbcv__copy {
   min-height: 44px; padding: 0 22px; border: none; cursor: pointer;
   background: var(--nu-blue); color: var(--nu-white); border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-sm); font-weight: 700; font-family: inherit; transition: background .2s;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-family: inherit; transition: background .2s;
 }
 .rbcv__copy:hover { background: var(--nu-blue-hover); }
 .rbcv__copy:focus-visible { outline: 2px solid var(--nu-cream-text); outline-offset: 2px; }
 .rbcv__how {
   min-height: 44px; padding: 0 22px; cursor: pointer;
   background: transparent; border: 1.5px solid var(--nu-cream-text-22); color: var(--nu-cream-text);
-  border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: 700; font-family: inherit;
+  border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-family: inherit;
   transition: background .2s;
 }
 .rbcv__how:hover { background: var(--nu-cream-text-12); }

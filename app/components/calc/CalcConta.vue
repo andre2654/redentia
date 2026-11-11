@@ -63,7 +63,7 @@ defineProps<{
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   box-shadow: var(--nu-shadow-quente), var(--nu-shadow-branco);
 }
-.cco--branco .cco__cartao { box-shadow: 0 0 0 1.5px var(--nu-line-2); }
+.cco--branco .cco__cartao { box-shadow: 0 0 0 1px var(--nu-line-2); }
 .cco__cabeca { grid-area: frase; display: flex; align-items: flex-start; gap: 20px; }
 .cco__frase { flex: 1; min-width: 0; }
 .cco__topo { flex: none; }
@@ -71,7 +71,7 @@ defineProps<{
 .cco__resultado { grid-area: resultado; min-width: 0; }
 .cco__acoes { grid-area: acoes; align-self: end; margin-top: 18px; }
 .cco__grafico { grid-area: grafico; min-width: 0; align-self: end; }
-.cco__premissas { grid-area: premissas; margin-top: 18px; padding-top: 14px; border-top: 1.5px solid var(--nu-line-2); }
+.cco__premissas { grid-area: premissas; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--nu-line-2); }
 .cco__depois { margin-top: clamp(20px, 2.6vw, 32px); }
 
 @media (max-width: 900px) {

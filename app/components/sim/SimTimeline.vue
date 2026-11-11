@@ -64,7 +64,7 @@ const cursorLabel = computed(() => (cursor.value === null ? null : props.dates[c
 .stl { margin-top: 34px; }
 .stl__track { position: relative; height: 58px; cursor: ew-resize; touch-action: none; }
 .stl__rail { position: absolute; left: 0; right: 0; top: 18px; height: 3px; border-radius: 999px; background: var(--nu-dark-line); }
-.stl__year { position: absolute; top: 26px; transform: translateX(-50%); color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 5px; font-variant-numeric: tabular-nums; }
+.stl__year { position: absolute; top: 26px; transform: translateX(-50%); color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); display: flex; flex-direction: column; align-items: center; gap: 5px; font-variant-numeric: tabular-nums; }
 .stl__tick { width: 1.5px; height: 8px; background: var(--nu-dark-chip-line); display: block; margin-top: -12px; }
 .stl__event {
   position: absolute; top: 13px; transform: translateX(-50%);
@@ -80,7 +80,7 @@ const cursorLabel = computed(() => (cursor.value === null ? null : props.dates[c
 }
 .stl__cursor-label {
   position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
-  color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 700; font-style: normal;
+  color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-style: normal;
   white-space: nowrap; font-variant-numeric: tabular-nums;
 }
 /* no celular dez anos de quatro dígitos encostavam um no outro: ficam os dois últimos, como no "ano a ano" */

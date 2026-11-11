@@ -36,18 +36,18 @@ const contexto = (s: AcaoStatRow) => ({ id: `dividendos:${sobre.value}:${s.l}`, 
 .dvs { --pad: clamp(20px, 2.4vw, 32px); overflow: hidden; animation: nu-fade .5s ease .1s both; }
 .dvs__heroi { display: flex; flex-direction: column; gap: 6px; padding: clamp(22px, 2.6vw, 32px) var(--pad) clamp(20px, 2.4vw, 28px); }
 .dvs__heroi-v {
-  color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: 800;
+  color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display);
   letter-spacing: -.035em; font-variant-numeric: tabular-nums; line-height: 1; overflow-wrap: anywhere;
 }
-.dvs__heroi-l { margin-top: 4px; color: var(--nu-on-dark); font-size: 14.5px; font-weight: 700; }
+.dvs__heroi-l { margin-top: 4px; color: var(--nu-on-dark); font-size: 14.5px; font-weight: var(--nu-w-medio); }
 .dvs__grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 20px 24px;
-  margin: 0 var(--pad); padding: clamp(18px, 2vw, 24px) 0 clamp(22px, 2.6vw, 30px); border-top: 1.5px solid var(--nu-dark-line);
+  margin: 0 var(--pad); padding: clamp(18px, 2vw, 24px) 0 clamp(22px, 2.6vw, 30px); border-top: 1px solid var(--nu-dark-line);
 }
 .dvs__card { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .dvs__label { color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 600; }
 .dvs__value {
-  color: var(--nu-white); font-size: clamp(20px, 2vw, 25px); font-weight: 800;
+  color: var(--nu-white); font-size: clamp(20px, 2vw, 25px); font-weight: var(--nu-w-forte);
   letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1.2;
   overflow-wrap: anywhere;
 }

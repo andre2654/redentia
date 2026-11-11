@@ -38,13 +38,13 @@ const updatedText = computed(() => {
 .lgh {
   background: var(--nu-page);
   padding: clamp(48px, 6.5vw, 88px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(32px, 4vw, 48px);
-  border-bottom: 1.5px solid var(--nu-line-2);
+  border-bottom: 1px solid var(--nu-line-2);
   animation: nu-fade .5s ease both;
 }
 .lgh__inner { max-width: 920px; }
 .lgh__title {
   margin: 18px 0 0; color: var(--nu-ink);
-  font-size: clamp(40px, 5.5vw, 76px); font-weight: 800;
+  font-size: clamp(40px, 5.5vw, 76px); font-weight: var(--nu-w-display);
   letter-spacing: -0.035em; line-height: .98; text-wrap: balance;
 }
 .lgh__updated {

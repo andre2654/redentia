@@ -147,11 +147,11 @@ onBeforeUnmount(() => {
 
 /* ——— o topo do cartão ——— */
 .bfl__topo { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; padding: 0 4px 14px; }
-.bfl__rotulo { color: var(--nu-cream-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.bfl__rotulo { color: var(--nu-cream-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .14em; text-transform: uppercase; }
 .bfl__quando { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
 .bfl__prontos {
   margin-left: auto; display: inline-flex; align-items: center; gap: 7px; height: 26px; padding: 0 11px; border-radius: var(--nu-r-pill);
-  background: var(--nu-white-14); color: var(--nu-cream-text); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap;
+  background: var(--nu-white-14); color: var(--nu-cream-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .bfl__vivo { width: 6px; height: 6px; border-radius: 50%; background: var(--nu-green-soft); box-shadow: 0 0 0 3px rgba(143, 240, 181, .18); }
 
@@ -160,15 +160,15 @@ onBeforeUnmount(() => {
 .bfl__item {
   position: relative; display: flex; align-items: center; gap: 14px; padding: 14px 14px 14px 16px; border-radius: var(--nu-r-tile);
   background: var(--nu-white-14); background: color-mix(in srgb, var(--nu-white) 6%, transparent);
-  transition: background .2s ease, transform .3s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s ease, transform .3s var(--nu-ease-saida);
 }
 .bfl__item:hover { background: color-mix(in srgb, var(--nu-white) 11%, transparent); transform: translateX(2px); }
 .bfl__miolo { flex: 1; min-width: 0; }
-.bfl__tipo { margin: 0; color: var(--nu-cream-text-55); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.bfl__tipo { margin: 0; color: var(--nu-cream-text-55); font-size: 11px; font-weight: var(--nu-w-medio); letter-spacing: .14em; text-transform: uppercase; }
 .bfl__etapa { color: var(--nu-cream-text-45); }
 .bfl__t { margin: 5px 0 0; color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
 .bfl__w { display: inline-block; }
-.bfl__n { font-weight: 800; font-variant-numeric: tabular-nums; }
+.bfl__n { font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .bfl__l { margin: 3px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.4; }
 .bfl__barra { position: relative; height: 6px; margin-top: 10px; border-radius: 3px; background: var(--nu-white-14); overflow: hidden; }
 .bfl__barra-in {
@@ -180,7 +180,7 @@ onBeforeUnmount(() => {
    O ::after estica o link sobre o item inteiro. */
 .bfl__acao {
   flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 10px 0 12px; border-radius: var(--nu-r-pill);
-  color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap;
+  color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); white-space: nowrap;
   box-shadow: inset 0 0 0 1px var(--nu-white-14); transition: color .2s, background .2s, box-shadow .2s;
 }
 .bfl__acao::after { content: ''; position: absolute; inset: 0; border-radius: var(--nu-r-tile); }
@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
 .bfl__item:hover .bfl__acao { color: var(--nu-cream-text); box-shadow: inset 0 0 0 1px var(--nu-white-35); }
 .bfl__acao--cheia, .bfl__item:hover .bfl__acao--cheia { background: var(--nu-biz-lavanda); color: var(--nu-navy); box-shadow: none; }
 .bfl__item:hover .bfl__acao--cheia { background: var(--nu-biz-lavanda-hover); }
-.bfl__acao svg { transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.bfl__acao svg { transition: transform .25s var(--nu-ease-saida); }
 .bfl__item:hover .bfl__acao svg { transform: translateX(2px); }
 
 @media (max-width: 520px) {

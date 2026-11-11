@@ -1020,21 +1020,21 @@ onBeforeUnmount(() => {
 .clc__quando {
   position: absolute; top: 0; transform: translateX(-50%); pointer-events: none; white-space: nowrap;
   padding: 3px 10px; border-radius: var(--nu-r-tag); background: var(--nu-dark-chip);
-  color: var(--nu-cream-text); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
+  color: var(--nu-cream-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 .clc__marca {
   position: absolute; transform: translate(12px, -50%); pointer-events: none; white-space: nowrap;
   display: inline-flex; align-items: baseline; gap: 5px;
   padding: 3px 8px; border-radius: var(--nu-r-tag); background: var(--nu-dark-chip);
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 .clc__marca--esq { transform: translate(calc(-100% - 12px), -50%); }
-.clc__marca b { font-size: var(--nu-fs-sm); font-weight: 800; color: var(--nu-cream-text); }
+.clc__marca b { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); color: var(--nu-cream-text); }
 .clc__marca--otimista b { color: var(--nu-green-soft); }
 .clc__marca--pessimista b { color: var(--nu-red-soft); }
 .clc__marca--mal-acima b { color: var(--nu-cream-text-85); }
 
-.clc__eixo { position: absolute; left: 0; right: 0; height: 20px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.clc__eixo { position: absolute; left: 0; right: 0; height: 20px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .clc__eixo-hoje { position: absolute; left: 0; white-space: nowrap; }
 .clc__eixo-ano { position: absolute; transform: translateX(-50%); white-space: nowrap; color: var(--nu-cream-text-35); font-weight: 500; }
 .clc__eixo-fim { position: absolute; transform: translateX(-50%); white-space: nowrap; }
@@ -1044,8 +1044,8 @@ onBeforeUnmount(() => {
   position: absolute; left: 0; transform: translateY(-50%);
   display: flex; flex-direction: column; gap: 1px; white-space: nowrap;
 }
-.clc__valor { font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.01em; font-variant-numeric: tabular-nums; line-height: 1.15; }
-.clc__nome { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.clc__valor { font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.01em; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.clc__nome { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .clc__rotulo--otimista .clc__valor { color: var(--nu-green-soft); }
 .clc__rotulo--meio .clc__valor { color: var(--nu-cream-text); }
 .clc__rotulo--pessimista .clc__valor { color: var(--nu-red-soft); }
@@ -1054,10 +1054,10 @@ onBeforeUnmount(() => {
   position: absolute; top: 4px; pointer-events: none; white-space: nowrap;
   color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums;
 }
-.clc__contador b { color: var(--nu-cream-text); font-weight: 700; }
+.clc__contador b { color: var(--nu-cream-text); font-weight: var(--nu-w-medio); }
 .clc__hoje {
   position: absolute; transform: translate(-100%, 6px); padding: 2px 8px; border-radius: var(--nu-r-pill); pointer-events: none; white-space: nowrap;
-  background: color-mix(in srgb, var(--nu-ink) 78%, transparent); color: var(--nu-cream-text-85); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .01em;
+  background: color-mix(in srgb, var(--nu-ink) 78%, transparent); color: var(--nu-cream-text-85); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .01em;
 }
 .clc__valor--hover { font-size: var(--nu-fs-lg); }
 /* no hover, os finais parados dão lugar aos dos três caminhos acesos (o

@@ -46,12 +46,12 @@ withDefaults(defineProps<{
 /* o corte gigante, branco a 8%, no canto de cima à esquerda (posição e tamanho: .nu-corte-fundo) */
 .mfe__corte { --corte-l: 520px; z-index: -1; opacity: .08; }
 .mfe__texto { flex: 1 1 440px; min-width: min(300px, 100%); }
-.mfe__h2 { margin: 0; font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; max-width: 20ch; }
+.mfe__h2 { margin: 0; font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; max-width: 20ch; }
 .nu-eyebrow + .mfe__h2 { margin-top: 16px; }
 .mfe__p { margin: 14px 0 0; max-width: 48ch; color: var(--nu-blue-on-blue); font-size: clamp(17px, 1.5vw, 20px); font-weight: 500; line-height: 1.45; }
 .mfe__acao { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .mfe__link {
-  display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 700;
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
   text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-white-35);
   transition: text-decoration-color .2s ease, transform .2s ease;
 }

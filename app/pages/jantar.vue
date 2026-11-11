@@ -167,7 +167,7 @@ const fotos = [
   flex: 0 0 7px;
 }
 .jt__ticker-frase { margin: 0; }
-.jt__ticker-cta { color: #fff; font-weight: 700; white-space: nowrap; }
+.jt__ticker-cta { color: #fff; font-weight: var(--nu-w-medio); white-space: nowrap; }
 .jt__ticker-cta:hover,
 .jt__ticker-cta:focus-visible { color: #fff; text-decoration: underline; }
 
@@ -225,7 +225,7 @@ const fotos = [
   line-height: 1.45;
   color: rgba(245, 241, 234, 0.88);
 }
-.jt__ok { color: var(--jt-blue); font-weight: 700; line-height: 1.45; }
+.jt__ok { color: var(--jt-blue); font-weight: var(--nu-w-medio); line-height: 1.45; }
 .jt__pill {
   display: inline-flex;
   align-items: center;
@@ -263,7 +263,7 @@ const fotos = [
   margin: 0 0 14px;
   color: var(--jt-blue);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }

@@ -215,7 +215,7 @@ function onSubmit() {
 .ctf__form { display: flex; flex-direction: column; gap: 22px; }
 
 .ctf__field { display: flex; flex-direction: column; gap: 8px; }
-.ctf__label { color: var(--nu-ink); font-size: 15px; font-weight: 700; }
+.ctf__label { color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-medio); }
 
 .ctf__input {
   width: 100%; min-height: 56px; background: var(--nu-white);
@@ -250,7 +250,7 @@ function onSubmit() {
 }
 .ctf__check-text { color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.5; }
 .ctf__link {
-  color: var(--nu-blue-text); font-weight: 700; text-decoration: underline;
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline;
   text-underline-offset: 2px; text-decoration-thickness: 1.5px; transition: color .2s;
 }
 .ctf__link:hover { color: var(--nu-blue-hover); }
@@ -260,7 +260,7 @@ function onSubmit() {
 .ctf__err { color: var(--nu-red-text); font-size: 13.5px; font-weight: 600; }
 
 .ctf__done { text-align: center; padding: 8px 0; animation: nu-fade .25s ease both; }
-.ctf__done-title { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.ctf__done-title { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.15; }
 .ctf__done-sub { margin-top: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; }
 @media (prefers-reduced-motion: reduce) { .ctf, .ctf__done { animation: none; } }
 </style>

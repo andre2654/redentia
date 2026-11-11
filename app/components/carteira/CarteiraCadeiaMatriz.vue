@@ -171,19 +171,19 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
 
 <style scoped>
 /* a matriz mora num cartão creme (a seção é a faixa quente); o cobalto marca o que é da carteira */
-.ccm { --ccm-az: var(--nu-blue); padding: clamp(14px, 2vw, 28px) clamp(10px, 2vw, 28px) clamp(16px, 2vw, 24px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); --cel: 52px; --rot: 168px; --sep: 10px; --ease: cubic-bezier(.2, .8, .2, 1); --mola: cubic-bezier(.34, 1.56, .64, 1); max-width: 1080px; margin: 0 auto; position: relative; }
+.ccm { --ccm-az: var(--nu-blue); padding: clamp(14px, 2vw, 28px) clamp(10px, 2vw, 28px) clamp(16px, 2vw, 24px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); --cel: 52px; --rot: 168px; --sep: 10px; --ease: var(--nu-ease-saida); --mola: var(--nu-ease-saida); max-width: 1080px; margin: 0 auto; position: relative; }
 .ccm__rolo { display: flex; justify-content: center; }
 .ccm__grade {
   display: grid;
   position: relative;
 }
 .ccm__canto { position: relative; grid-row: 1; grid-column: 1; min-height: 58px; }
-.ccm__eixo { position: absolute; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap; }
+.ccm__eixo { position: absolute; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); white-space: nowrap; }
 .ccm__eixo--c { right: 10px; top: 6px; }
 .ccm__eixo--v { left: 4px; bottom: 6px; }
 
 .ccm__col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; padding-bottom: 8px; transition: opacity .25s, transform .3s var(--mola); }
-.ccm__col-tk { color: var(--nu-ink); font-size: 10px; font-weight: 800; letter-spacing: .01em; }
+.ccm__col-tk { color: var(--nu-ink); font-size: 10px; font-weight: var(--nu-w-forte); letter-spacing: .01em; }
 .ccm__col--fora, .ccm__rot--fora { opacity: .62; }
 .ccm__col--fora .ccm__col-tk, .ccm__rot--fora .ccm__rot-tk { color: var(--nu-gray); }
 .ccm__col--on, .ccm__rot--on { opacity: 1; }
@@ -192,7 +192,7 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
 .ccm__rot { display: flex; align-items: center; gap: 10px; min-width: 0; padding-right: 12px; transition: opacity .25s, transform .3s var(--mola); }
 .ccm__rot--on { transform: translateX(2px); }
 .ccm__rot-txt { display: flex; flex-direction: column; min-width: 0; }
-.ccm__rot-tk { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 800; }
+.ccm__rot-tk { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); }
 .ccm__rot-nome { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .ccm__cel {
@@ -236,9 +236,9 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
   pointer-events: none; animation: ccm-dica .18s var(--ease) both;
 }
 .ccm__dica--embaixo { transform: translate(-50%, 0); }
-.ccm__dica-frase { margin: 0; font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.4; }
+.ccm__dica-frase { margin: 0; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.4; }
 .ccm__dica-valor { margin: 4px 0 0; font-size: var(--nu-fs-xs); font-weight: 500; opacity: .72; font-variant-numeric: tabular-nums; }
-.ccm__dica-acao { margin: 6px 0 0; font-size: var(--nu-fs-xs); font-weight: 700; color: var(--nu-blue-soft); }
+.ccm__dica-acao { margin: 6px 0 0; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); color: var(--nu-blue-soft); }
 @keyframes ccm-dica { from { opacity: 0; } }
 
 /* ——— a entrada: as células acendem em diagonal ——— */

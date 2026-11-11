@@ -126,10 +126,10 @@ function seguir() {
    as duas telas ficarem alinhadas quando abertas lado a lado. */
 .rbcd { animation: nu-fade .5s ease both; }
 
-.rbcd__eyebrow { display: block; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.01em; }
+.rbcd__eyebrow { display: block; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.01em; }
 .rbcd__h1 {
   margin: 10px 0 0; color: var(--nu-ink);
-  font-size: clamp(32px, 3.4vw, 44px); font-weight: 800; letter-spacing: -.04em; line-height: 1.05;
+  font-size: clamp(32px, 3.4vw, 44px); font-weight: var(--nu-w-display); letter-spacing: -.04em; line-height: 1.05;
 }
 .rbcd__sub { margin: 16px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 
@@ -145,7 +145,7 @@ function seguir() {
   width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px;
   display: flex; align-items: center; justify-content: center;
   background: var(--nu-tile-blue-bg); color: var(--nu-blue-text); border-radius: 7px;
-  font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 
 .rbcd__nota { margin: 26px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }

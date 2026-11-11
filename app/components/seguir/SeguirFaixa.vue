@@ -145,7 +145,7 @@ async function deixar(t: string) {
 .sgf__card {
   position: relative; flex: 0 0 auto; width: min(236px, 72vw);
   background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-quente);
-  scroll-snap-align: start; transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  scroll-snap-align: start; transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
   animation: nu-fade .5s ease backwards;
 }
 .sgf__card:nth-child(2) { animation-delay: 60ms; }
@@ -156,16 +156,16 @@ async function deixar(t: string) {
 .sgf__link { display: flex; flex-direction: column; gap: 14px; padding: 20px 20px 18px; min-height: 100%; }
 .sgf__top { display: flex; align-items: center; gap: 12px; padding-right: 34px; min-width: 0; }
 .sgf__id { display: flex; flex-direction: column; min-width: 0; }
-.sgf__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; font-variant-numeric: tabular-nums; }
+.sgf__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; font-variant-numeric: tabular-nums; }
 .sgf__name { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sgf__price {
-  color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.5px;
+  color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -.5px;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .sgf__sk { display: block; }
 .sgf__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .sgf__chg {
-  display: inline-flex; align-items: center; font-size: 14px; font-weight: 700;
+  display: inline-flex; align-items: center; font-size: 14px; font-weight: var(--nu-w-medio);
   padding: 4px 9px; border-radius: var(--nu-r-tag); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .sgf__chg--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
@@ -176,7 +176,7 @@ async function deixar(t: string) {
   position: absolute; top: 10px; right: 8px; width: 44px; height: 44px;
   display: inline-flex; align-items: center; justify-content: center;
   border: none; border-radius: 50%; cursor: pointer;
-  background: transparent; color: var(--nu-blue); transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  background: transparent; color: var(--nu-blue); transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .sgf__unstar:active { transform: scale(.92); }
 .sgf__unstar:hover { background: var(--nu-blue-bg); }

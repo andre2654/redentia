@@ -345,9 +345,9 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
 }
 .haf__cab { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; }
 .haf__id { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; min-width: 0; }
-.haf__ola { margin: 0; font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.haf__ola { margin: 0; font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
 /* o estado do dia: selo de raio 8 (verde no dia comum, âmbar quando pede atenção) */
-.haf__selo { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-sm); font-weight: 700; }
+.haf__selo { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .haf__selo i { width: 8px; height: 8px; border-radius: 50%; }
 .haf__selo--verde { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .haf__selo--verde i { background: var(--nu-green); }
@@ -363,7 +363,7 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
 .haf__olho {
   display: inline-grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 50%;
   background: var(--nu-white); color: var(--tinta); box-shadow: inset 0 0 0 1.5px var(--nu-ink); cursor: pointer;
-  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .haf__olho:hover { background: var(--nu-row-hover); }
 .haf__olho:active { transform: scale(.96); }
@@ -375,28 +375,28 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
 .haf__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .haf__eyebrow { margin-bottom: 18px; }
 /* a frase do dia: 800, com o número em cobalto */
-.haf__frase { margin: 0; max-width: 17ch; font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
-.haf__frase :deep(b), .haf__frase b { color: var(--nu-blue); font-weight: 800; }
+.haf__frase { margin: 0; max-width: 17ch; font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
+.haf__frase :deep(b), .haf__frase b { color: var(--nu-blue); font-weight: var(--nu-w-forte); }
 .haf__dek { margin: 18px 0 0; max-width: 46ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
 .haf__esq { margin-top: 12px; }
 .haf__esq--dek { margin-top: 22px; max-width: 520px; }
 .haf__acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 26px; margin-top: clamp(22px, 2.6vw, 30px); }
 /* a segunda ação: link em negrito sublinhado, com 44 px de toque */
 .haf__segunda {
-  display: inline-flex; align-items: center; min-height: 44px; color: var(--tinta); font-size: 16.5px; font-weight: 700;
+  display: inline-flex; align-items: center; min-height: 44px; color: var(--tinta); font-size: 16.5px; font-weight: var(--nu-w-medio);
   text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; transition: color .2s;
 }
 .haf__segunda:hover { color: var(--nu-blue-text); }
 .haf__chamada { margin-top: clamp(24px, 3vw, 36px); }
 
 /* o cartão carvão com a faixa da marca; ele inteiro leva à /carteira e sobe 2 px no hover */
-.haf__graf { display: block; min-width: 0; color: inherit; text-decoration: none; border-radius: var(--nu-r-card); transition: transform .25s cubic-bezier(.2, .8, .2, 1); animation: nu-fade .5s ease backwards; }
+.haf__graf { display: block; min-width: 0; color: inherit; text-decoration: none; border-radius: var(--nu-r-card); transition: transform .25s var(--nu-ease-saida); animation: nu-fade .5s ease backwards; }
 a.haf__graf:hover { transform: translateY(-2px); }
 .haf__graf:focus-visible { outline-offset: 4px; }
 .haf__cartao { --pad: clamp(18px, 2vw, 28px); display: flex; flex-direction: column; padding-bottom: clamp(14px, 1.6vw, 20px); }
 .haf__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(16px, 1.8vw, 22px) var(--pad) 0; }
 .haf__leg { display: inline-flex; align-items: baseline; gap: 10px; }
-.haf__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: 800; letter-spacing: -0.03em; }
+.haf__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; }
 .haf__leg--1 b { font-size: clamp(36px, 4vw, 52px); letter-spacing: -0.04em; line-height: 1; }
 .haf__leg b.haf__leg--up { color: var(--nu-green-soft); }
 .haf__leg b.haf__leg--down { color: var(--nu-red-soft); }
@@ -408,7 +408,7 @@ a.haf__graf:hover { transform: translateY(-2px); }
 .haf__leque { display: block; width: 100%; height: clamp(220px, 22vw, 300px); margin-top: 4px; }
 .haf__leque-pe { display: flex; padding: 0 clamp(18px, 2.4vw, 28px) clamp(18px, 2.2vw, 24px); }
 .haf__leque-selo { display: inline-flex; align-items: center; gap: 8px; padding: 8px 15px; border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white); font-size: 14.5px; font-weight: 500; white-space: nowrap; }
-.haf__leque-selo strong { font-size: 15.5px; font-weight: 800; }
+.haf__leque-selo strong { font-size: 15.5px; font-weight: var(--nu-w-forte); }
 .haf__graf-area {
   position: relative; display: block; height: clamp(170px, 15vw, 210px); margin-top: 12px;
   --agr-esq: var(--pad); --agr-dir: max(var(--pad), 44px); --agr-rotulo-esq: var(--pad);
@@ -420,7 +420,7 @@ a.haf__graf:hover { transform: translateY(-2px); }
 .haf__fato {
   position: relative; display: flex; flex-direction: column; justify-content: center; padding: clamp(18px, 2vw, 24px) clamp(20px, 2.2vw, 26px);
   border-radius: var(--nu-r-card); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
   animation: nu-fade .5s ease .06s backwards;
 }
 .haf__fato:nth-child(2) { animation-delay: .12s; }
@@ -431,7 +431,7 @@ dl.haf__fatos .haf__fato:hover { transform: translateY(-2px); box-shadow: var(--
 .haf__fato dt { color: var(--sub); font-size: 15px; font-weight: 600; }
 .haf__fato dd { margin: 6px 0 0; }
 .haf__esq--fato { margin-top: 10px; }
-.haf__link { display: inline-flex; align-items: center; gap: 6px; color: var(--tinta); font-size: clamp(26px, 2.5vw, 34px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-decoration: none; }
+.haf__link { display: inline-flex; align-items: center; gap: 6px; color: var(--tinta); font-size: clamp(26px, 2.5vw, 34px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1.1; text-decoration: none; }
 /* o alvo do clique é o cartão inteiro */
 .haf__link::after { content: ''; position: absolute; inset: 0; border-radius: var(--nu-r-card); }
 .haf__link--up { color: var(--nu-green-text); }

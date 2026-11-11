@@ -408,11 +408,11 @@ onBeforeUnmount(() => {
 .cpn__sobre-rotulo { color: var(--nu-on-dark-2); }
 .cpn__sobre-ativo {
   display: inline-flex; align-items: center; gap: 7px; min-width: 0; max-width: 100%; padding: 4px 11px 4px 5px;
-  border-radius: var(--nu-r-pill); background: var(--nu-gray-3); color: var(--nu-white); font-weight: 700;
+  border-radius: var(--nu-r-pill); background: var(--nu-gray-3); color: var(--nu-white); font-weight: var(--nu-w-medio);
 }
 .cpn__sobre-ticker {
   flex: none; padding: 1px 8px; border-radius: var(--nu-r-pill); background: var(--nu-creme); color: var(--nu-ink);
-  font-size: var(--nu-fs-xs); font-weight: 800; letter-spacing: 0.04em;
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-forte); letter-spacing: 0.04em;
 }
 .cpn__sobre-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -422,7 +422,7 @@ onBeforeUnmount(() => {
 .cpn__vazio { padding: clamp(20px, 7vh, 72px) 4px 12px; }
 .cpn__vazio-corte { animation: nu-fade .4s ease both; }
 .cpn__vazio-titulo {
-  margin: 22px 0 0; color: var(--nu-ink); font-size: clamp(28px, 3.4vh, 34px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
+  margin: 22px 0 0; color: var(--nu-ink); font-size: clamp(28px, 3.4vh, 34px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1.05;
   animation: nu-fade .4s ease .05s both;
 }
 .cpn__vazio-sub { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; animation: nu-fade .4s ease .1s both; }
@@ -431,7 +431,7 @@ onBeforeUnmount(() => {
   min-height: 44px; max-width: 100%; text-align: left; padding: 8px 16px; border: 0; border-radius: 22px;
   background: var(--nu-cream-2); cursor: pointer;
   color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; line-height: 1.35;
-  animation: nu-fade .35s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(160ms + var(--k) * 60ms);
+  animation: nu-fade .35s var(--nu-ease-saida) both; animation-delay: calc(160ms + var(--k) * 60ms);
   transition: background .2s ease, color .2s ease;
 }
 .cpn__sug:hover { background: var(--nu-ink); color: var(--nu-white); }
@@ -465,7 +465,7 @@ onBeforeUnmount(() => {
 .cpn__dica-ponto { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--nu-anel); }
 .cpn__aviso { margin: 12px 6px 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.4; text-align: center; }
 
-.cpn-enter-active, .cpn-leave-active { transition: transform .38s cubic-bezier(.2, .8, .2, 1), opacity .25s ease; }
+.cpn-enter-active, .cpn-leave-active { transition: transform .38s var(--nu-ease-saida), opacity .25s ease; }
 .cpn-leave-active { transition-duration: .22s, .18s; }
 .cpn-enter-from, .cpn-leave-to { transform: translateX(24px); opacity: 0; }
 
@@ -485,7 +485,7 @@ onBeforeUnmount(() => {
    largo; entre 760 e 1180px ele passa por cima (a página ficaria estreita). */
 :root { --chat-painel-w: 440px; --chat-painel-margem: 12px; }
 @media (min-width: 1180px) {
-  .nu-shell { transition: margin-right .38s cubic-bezier(.2, .8, .2, 1); }
+  .nu-shell { transition: margin-right .38s var(--nu-ease-saida); }
   /* a página encolhe o painel e as duas margens dele */
   html.nu-chat-aberto .nu-shell { margin-right: calc(var(--chat-painel-w) + 2 * var(--chat-painel-margem)); }
 }

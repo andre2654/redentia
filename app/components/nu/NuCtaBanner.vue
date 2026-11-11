@@ -26,7 +26,7 @@ defineProps<{ title: string; subtitle: string; to: string }>()
   display: flex; align-items: center; gap: 20px;
   background: var(--nu-grad-cobalto); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 40px);
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 /* o seletor dobrado vence a regra de link de texto corrido da página (o guia
    sublinha todo <a> do artigo, e o banner é um <a>) */
@@ -37,7 +37,7 @@ a.ncb.ncb { text-decoration: none; }
 .ncb__main { position: relative; flex: 1; min-width: 0; }
 .ncb__title {
   display: block; color: var(--nu-white); font-size: clamp(22px, 2.4vw, 30px);
-  font-weight: 800; letter-spacing: -0.025em; line-height: 1.1;
+  font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.1;
 }
 .ncb__sub { display: block; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; margin-top: 10px; }
 .ncb__circle {
@@ -46,5 +46,5 @@ a.ncb.ncb { text-decoration: none; }
   display: flex; align-items: center; justify-content: center;
 }
 .ncb__seta { display: block; }
-.ncb:hover .ncb__seta { animation: nu-seta .45s cubic-bezier(.4, 0, .2, 1); }
+.ncb:hover .ncb__seta { animation: nu-seta .45s var(--nu-ease-cor); }
 </style>

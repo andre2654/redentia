@@ -93,8 +93,8 @@
   --nu-fs-hero: clamp(44px, 6.4vw, 88px); /* H1 de página */
 
   /* sombras (dos designs) */
-  --nu-shadow-card: 0 24px 48px -12px rgba(17, 24, 39, 0.10);
-  --nu-shadow-float: 0 30px 60px -12px rgba(17, 24, 39, 0.22);
+  --nu-shadow-card: 0 0 0 1px rgba(17, 24, 39, 0.05), 0 2px 4px rgba(17, 24, 39, 0.03), 0 8px 18px rgba(17, 24, 39, 0.05), 0 24px 56px rgba(17, 24, 39, 0.07);
+  --nu-shadow-float: 0 0 0 1px rgba(17, 24, 39, 0.06), 0 4px 8px rgba(17, 24, 39, 0.04), 0 16px 32px rgba(17, 24, 39, 0.08), 0 40px 80px rgba(17, 24, 39, 0.12);
 
   /* ——— PR1 /mercado (valores exatos de Redentia Mercado Nu.dc.html) ——— */
   --nu-green-soft: #86EFAC;    /* variação positiva sobre navy (perf de tese, altas) */
@@ -421,9 +421,35 @@
   --nu-anel: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); /* o anel do input mágico */
   --nu-r-tag: 8px;             /* etiqueta (ticker, selo "Atenção") */
   --nu-r-secao: 40px;          /* painel grande (chamada final, painel do login) */
-  --nu-shadow-quente: 0 0 0 1px rgba(120, 90, 50, 0.05), 0 2px 8px rgba(120, 90, 50, 0.06); /* cartão creme */
-  --nu-shadow-escuro: 0 30px 60px rgba(17, 24, 39, 0.20);  /* cartão carvão com a faixa da marca */
-  --nu-shadow-branco: 0 18px 40px rgba(17, 24, 39, 0.08);  /* cartão branco dentro de painel */
+  --nu-shadow-quente: 0 0 0 1px rgba(90, 64, 32, 0.06), 0 1px 1px rgba(90, 64, 32, 0.03), 0 2px 4px rgba(90, 64, 32, 0.03); /* cartão creme */
+  --nu-shadow-escuro: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 2px 6px rgba(17, 24, 39, 0.10), 0 18px 40px rgba(17, 24, 39, 0.16), 0 40px 80px -20px rgba(17, 24, 39, 0.22);  /* cartão carvão com a faixa da marca */
+  --nu-shadow-branco: 0 0 0 1px rgba(17, 24, 39, 0.05), 0 1px 2px rgba(17, 24, 39, 0.03), 0 4px 10px rgba(17, 24, 39, 0.03), 0 16px 36px rgba(17, 24, 39, 0.04);  /* cartão branco dentro de painel */
   --nu-fs-hero-xl: clamp(54px, 7.2vw, 104px);  /* H1 da home */
   --nu-fs-marca: 13.5px;       /* eyebrow da marca: caixa alta, 700, 0.2em, com o corte */
+
+  /* ——— Robustez (11/11/2026): o que faz parecer firme está nos detalhes ———
+     Estudo da Legora e da Rogo (docs/aportou/robustez.md). Pesos: o tamanho faz
+     a hierarquia, não o negrito; título grande em peso de exibição, o resto em 600.
+     A Redentia (B2B) devolve os pesos antigos em tema-redentia.css. */
+  --nu-w-display: 500;   /* título e número a partir de ~36px */
+  --nu-w-forte: 600;     /* era 800: título de cartão, número médio, ticker */
+  --nu-w-medio: 600;     /* era 700: botão, rótulo, nav, destaque no texto */
+  --nu-w-texto: 500;     /* corpo */
+  /* movimento: uma curva por papel, nunca linear, nada que quique */
+  --nu-ease-saida: cubic-bezier(.16, 1, .3, 1);    /* entrada, hover, o que chega */
+  --nu-ease-troca: cubic-bezier(.625, .05, 0, 1);  /* o que muda de lugar: aba, indicador, acordeão, painel */
+  --nu-ease-cor: cubic-bezier(.4, 0, .2, 1);       /* cor e fundo */
+  --nu-dur-rapida: 160ms;   /* apertar, cor */
+  --nu-dur-media: 280ms;    /* hover, opacidade */
+  --nu-dur-lenta: 520ms;    /* mudança de lugar */
+  --nu-dur-entrada: 720ms;  /* revelar ao rolar */
+  /* tracking por tamanho: grande aperta, caixa alta abre */
+  --nu-ls-display: -0.035em;
+  --nu-ls-titulo: -0.02em;
+  --nu-ls-texto: -0.005em;
+  --nu-ls-caixa: 0.16em;
+  /* a margem da coluna de 1240 (a mesma em todas as seções) */
+  --nu-coluna: max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
+  /* o véu de modal e folha */
+  --nu-veu: color-mix(in srgb, var(--nu-ink) 52%, transparent);
 }

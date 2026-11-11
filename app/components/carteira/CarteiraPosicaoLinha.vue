@@ -22,12 +22,12 @@ defineProps<{ row: CarteiraRowVM; hidden: boolean; mask: (v: string, dots?: numb
 <style scoped>
 .cpl__tile {
   width: 36px; height: 36px; border-radius: 27%; flex-shrink: 0;
-  display: inline-flex; align-items: center; justify-content: center; font-size: var(--nu-fs-sm); font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte);
 }
 .cpl__nome { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.cpl__label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cpl__label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cpl__sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cpl__val { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cpl__val { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cpl__ret { font-size: var(--nu-fs-dense); }
 .cpl__ret--up { color: var(--nu-green-text); }
 .cpl__ret--down { color: var(--nu-red-text); }

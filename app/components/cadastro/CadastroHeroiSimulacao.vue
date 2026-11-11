@@ -89,15 +89,15 @@ const id = useId()
 <style scoped>
 .chs { display: flex; flex-direction: column; padding: 22px 28px 14px; color: var(--nu-cream-text); }
 .chs__topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 44px; }
-.chs__valor { font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.chs__valor { font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .chs__sub { margin-top: 2px; color: var(--nu-cream-text-60); font-size: var(--nu-fs-dense); font-weight: 500; }
 .chs__selo {
   flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-tag);
-  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
+  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
 }
 .chs__grafico { display: block; width: 100%; height: auto; margin-top: 10px; overflow: visible; }
 .chs__reta { stroke: var(--nu-cream-text-35); }
-.chs__aporte { fill: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700; }
+.chs__aporte { fill: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 .chs__curva { stroke: var(--nu-blue-soft); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nu-blue-soft) 55%, transparent)); }
 .chs__bola { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--nu-blue-soft) 80%, transparent)); }
 
@@ -105,7 +105,7 @@ const id = useId()
    virada da folha, o herói apaga e volta, para a bola não saltar do fim ao
    começo. */
 .chs { --chs-ciclo: 9s; animation: chs-volta var(--chs-ciclo) ease infinite; }
-.chs__selo { animation: chs-selo var(--chs-ciclo) cubic-bezier(.2, .8, .2, 1) infinite; }
+.chs__selo { animation: chs-selo var(--chs-ciclo) var(--nu-ease-saida) infinite; }
 .chs--guardada, .chs--guardada .chs__selo { animation: none; }
 @keyframes chs-volta { 0% { opacity: 0; } 3%, 93% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes chs-selo { 0%, 42% { opacity: 0; transform: translateY(6px); } 48%, 100% { opacity: 1; transform: none; } }

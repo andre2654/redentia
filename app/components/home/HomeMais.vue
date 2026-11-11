@@ -57,23 +57,23 @@ const DESTINOS = [
 <style scoped>
 /* o creme da página, no contêiner de 1.240 px */
 .hms { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1240px) / 2)); }
-.hms__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
+.hms__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
 .hms__dek { margin: 20px 0 0; max-width: 620px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
 .hms__grade { display: grid; gap: 16px; margin-top: clamp(36px, 4vw, 44px); grid-template-columns: repeat(4, minmax(0, 1fr)); }
 /* o cartão creme do contrato, clicável: ícone, nome, frase e "Abrir" */
 .hms__cartao {
   display: flex; flex-direction: column; min-height: 216px; padding: clamp(22px, 2.2vw, 28px);
   border-radius: var(--nu-r-card); background: var(--nu-band); box-shadow: var(--nu-shadow-quente);
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .hms__cartao:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .hms__cartao:active { transform: scale(.99); }
 .hms__icone { flex: none; width: 34px; height: 34px; color: var(--nu-blue); }
 .hms__texto { display: block; margin-top: 18px; min-width: 0; }
-.hms__nome { display: block; color: var(--nu-ink); font-size: clamp(21px, 1.8vw, 24px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.hms__nome { display: block; color: var(--nu-ink); font-size: clamp(21px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.15; }
 .hms__desc { display: block; margin-top: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
-.hms__abrir { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 18px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; }
-.hms__abrir svg { flex: none; transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.hms__abrir { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 18px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
+.hms__abrir svg { flex: none; transition: transform .25s var(--nu-ease-saida); }
 .hms__cartao:hover .hms__abrir svg { transform: translateX(3px); }
 
 /* entrada: o cabeçalho e os cartões em cascata de 60 ms */

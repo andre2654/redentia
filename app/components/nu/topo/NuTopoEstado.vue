@@ -14,7 +14,7 @@ defineProps<{ mercado: MercadoDoTopo | null; curto?: boolean }>()
 </template>
 
 <style scoped>
-.nte { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; color: var(--nu-gray-2); font-weight: 700; }
+.nte { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; color: var(--nu-gray-2); font-weight: var(--nu-w-medio); }
 .nte__ponto { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--nu-sand); flex-shrink: 0; }
 .nte--aberta { color: var(--nu-ink); }
 .nte--aberta .nte__ponto { background: var(--nu-green); }

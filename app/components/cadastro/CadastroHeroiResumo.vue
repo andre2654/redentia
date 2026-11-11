@@ -40,12 +40,12 @@ const texto = computed(() => (props.frase ? `Bom dia. ${props.frase}` : 'Bom dia
 .chr__noite { position: absolute; inset: 0; background: var(--nu-ink); opacity: 0; }
 .chr__estrela { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: var(--nu-cream-text); opacity: 0; }
 .chr__relogio {
-  position: relative; font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.05em; line-height: 1;
+  position: relative; font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: -0.05em; line-height: 1;
   text-shadow: 0 2px 24px color-mix(in srgb, var(--nu-ink) 35%, transparent);
 }
 .chr__frase {
   position: relative; margin: 18px 0 0; max-width: 40ch;
-  font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.45;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.45;
   text-shadow: 0 1px 12px color-mix(in srgb, var(--nu-ink) 50%, transparent);
 }
 

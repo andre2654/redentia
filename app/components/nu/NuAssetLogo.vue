@@ -48,7 +48,7 @@ const showImg = computed(() => eligible.value && !failed.value)
 <style scoped>
 .nal {
   flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
-  font-weight: 800; overflow: hidden; background: var(--nu-cream);
+  font-weight: var(--nu-w-forte); overflow: hidden; background: var(--nu-cream);
 }
 .nal__img { width: 100%; height: 100%; object-fit: cover; display: block; }
 </style>

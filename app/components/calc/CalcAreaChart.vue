@@ -84,8 +84,8 @@ const grid = computed(() =>
 .cac__line { position: absolute; left: 0; right: 0; height: 1.5px; background: var(--nu-line-2); }
 .cac__lbl {
   position: absolute; right: 2px; transform: translateY(-120%);
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 .cac__x { display: flex; justify-content: space-between; margin-top: 10px; }
-.cac__x span { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
+.cac__x span { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
 </style>

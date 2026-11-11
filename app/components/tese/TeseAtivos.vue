@@ -181,7 +181,7 @@ function perguntar(l: TeseLinhaVM) {
   padding: clamp(56px, 5.6vw, 80px) max(clamp(20px, 4vw, 56px), calc((100% - 1240px) / 2));
 }
 .tat__cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 22px; flex-wrap: wrap; animation: nu-fade .5s ease both; }
-.tat__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
+.tat__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
 .tat__meta { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
 
 .tat__lista { display: flex; flex-direction: column; gap: 10px; margin-top: clamp(28px, 3vw, 36px); }
@@ -190,7 +190,7 @@ function perguntar(l: TeseLinhaVM) {
 .tat__trancada {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   padding: 16px clamp(16px, 2vw, 24px); border-radius: var(--nu-r-panel);
-  background: color-mix(in srgb, var(--nu-card) 60%, var(--nu-page)); box-shadow: inset 0 0 0 1.5px var(--nu-line-2);
+  background: color-mix(in srgb, var(--nu-card) 60%, var(--nu-page)); box-shadow: inset 0 0 0 1px var(--nu-line-2);
   animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
 }
 .tat__t-id { display: flex; align-items: center; gap: 14px; min-width: 0; }
@@ -198,9 +198,9 @@ function perguntar(l: TeseLinhaVM) {
 .tat__t-nomes { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .tat__t-ticker {
   display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag);
-  background: var(--nu-gray); color: var(--nu-white); font-size: 13.5px; font-weight: 800; letter-spacing: .04em;
+  background: var(--nu-gray); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .04em;
 }
-.tat__t-nome { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+.tat__t-nome { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.2; }
 .tat__t-papel { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.35; }
 .tat__cadeado { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--nu-cream-2); color: var(--nu-gray-3); }
 
@@ -213,7 +213,7 @@ function perguntar(l: TeseLinhaVM) {
 .tat__gate-left { flex: 1 1 380px; min-width: min(320px, 100%); }
 .tat__gate-title {
   margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h3);
-  font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
+  font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05;
 }
 .tat__gate-sub {
   margin: 14px 0 0; color: var(--nu-on-dark); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500;
@@ -221,7 +221,7 @@ function perguntar(l: TeseLinhaVM) {
 }
 .tat__gate-actions { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; margin-top: 26px; }
 .tat__gate-ghost {
-  display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 700;
+  display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
   text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-dark-chip-line);
   transition: text-decoration-color .2s ease;
 }
@@ -234,6 +234,6 @@ function perguntar(l: TeseLinhaVM) {
 }
 .tat__gate-list li { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-on-dark); font-size: 15.5px; font-weight: 600; line-height: 1.4; }
 .tat__gate-list svg { color: var(--nu-green-soft); flex-shrink: 0; margin-top: 1px; }
-.tat__gate-list b { color: var(--nu-white); font-weight: 800; }
+.tat__gate-list b { color: var(--nu-white); font-weight: var(--nu-w-forte); }
 @media (prefers-reduced-motion: reduce) { .tat__cab, .tat__trancada { animation: none; } }
 </style>

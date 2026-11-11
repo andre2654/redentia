@@ -24,10 +24,10 @@ const emit = defineEmits<{ fechar: []; sair: []; tecla: [KeyboardEvent] }>()
 .ntk {
   position: fixed; z-index: 60; min-width: 232px; padding: 8px;
   background: var(--nu-page); border-radius: var(--nu-r-panel);
-  box-shadow: 0 0 0 1.5px var(--nu-line-2), var(--nu-shadow-card);
+  box-shadow: 0 0 0 1px var(--nu-line-2), var(--nu-shadow-card);
   animation: nu-surgir .2s ease both;
 }
-.ntk__dentro { display: flex; flex-direction: column; gap: 2px; animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both; }
+.ntk__dentro { display: flex; flex-direction: column; gap: 2px; animation: nu-subir .32s var(--nu-ease-saida) both; }
 .ntk__item {
   display: flex; align-items: center; width: 100%; min-height: 44px; padding: 0 14px; border: 0; border-radius: var(--nu-r-chip); background: transparent;
   color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-md); font-weight: 600; text-align: left; cursor: pointer;

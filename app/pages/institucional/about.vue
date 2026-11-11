@@ -88,11 +88,11 @@ const MAIS = [
 }
 .sob__marca { position: sticky; top: calc(var(--nuh-h, 72px) + 64px); animation: nu-fade .5s ease both; }
 .sob__frase {
-  margin: 22px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800;
+  margin: 22px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display);
   letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; max-width: 9em;
 }
 .sob__casa {
-  display: inline-block; margin: 26px 0 0; padding-top: 16px; border-top: 1.5px solid var(--nu-line);
+  display: inline-block; margin: 26px 0 0; padding-top: 16px; border-top: 1px solid var(--nu-line);
   color: var(--nu-gray); font-size: 14.5px; font-weight: 600;
 }
 .sob__texto { max-width: 720px; animation: nu-fade .5s ease .06s both; }
@@ -107,15 +107,15 @@ const MAIS = [
 .sob__link {
   display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 84px; padding: 18px 20px 18px 26px;
   border-radius: var(--nu-r-panel); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
-  color: var(--nu-ink); font-size: clamp(19px, 1.7vw, 22px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  color: var(--nu-ink); font-size: clamp(19px, 1.7vw, 22px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.15;
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .sob__link:hover { color: var(--nu-ink); transform: translateY(-2px); box-shadow: var(--nu-shadow-quente), var(--nu-shadow-card); }
 .sob__seta {
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px;
   border-radius: 50%; background: var(--nu-ink); color: var(--nu-white); transition: background .2s;
 }
-.sob__seta svg { width: 18px; height: 18px; transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.sob__seta svg { width: 18px; height: 18px; transition: transform .25s var(--nu-ease-saida); }
 .sob__link:hover .sob__seta { background: var(--nu-blue); }
 .sob__link:hover .sob__seta svg { transform: translateX(3px); }
 

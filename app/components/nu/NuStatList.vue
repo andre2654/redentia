@@ -29,11 +29,11 @@ const sobre = useSobreDoContexto()
 }
 .nsl__row--dark { border-top: 1px solid var(--nu-cream-text-10); }
 .nsl__row--first { border-top: none; }
-.nsl__row--light { border-top: 1.5px solid var(--nu-line-2); }
+.nsl__row--light { border-top: 1px solid var(--nu-line-2); }
 .nsl__label { font-weight: 600; }
 .nsl__label--dark { color: var(--nu-cream-text-50); font-size: var(--nu-fs-sm); }
 .nsl__label--light { color: var(--nu-gray); font-size: var(--nu-fs-sm); }
-.nsl__value { font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.nsl__value { font-weight: var(--nu-w-forte); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .nsl__value--dark { color: var(--nu-cream-text); font-size: var(--nu-fs-md); }
 .nsl__value--light { color: var(--nu-ink); font-size: var(--nu-fs-lg); }
 /* PR5: valor com destaque (ex.: 'Desde o lançamento' na tese) */

@@ -266,14 +266,14 @@ onBeforeUnmount(() => {
   width: min(600px, 94vw); max-height: 88vh; overflow: auto;
   background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
   padding: 36px 40px 34px; box-shadow: var(--nu-shadow-day-modal);
-  animation: rbcxrise .24s cubic-bezier(.2, .8, .2, 1);
+  animation: rbcxrise .24s var(--nu-ease-saida);
 }
 .rbcx__card:focus { outline: none; }
 @keyframes rbcxfade { from { opacity: 0; } }
 @keyframes rbcxrise { from { opacity: 0; transform: translateY(14px) scale(.98); } }
 
 .rbcx__head { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-.rbcx__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; }
+.rbcx__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: 1.6px; }
 .rbcx__close {
   flex-shrink: 0; width: 40px; height: 40px; border: 0; border-radius: 50%; cursor: pointer;
   background: var(--nu-day-close); color: var(--nu-gray-2); font-size: var(--nu-fs-md);
@@ -287,21 +287,21 @@ onBeforeUnmount(() => {
 .rbcx__prog-bar { flex: 1; height: 4px; border-radius: 2px; background: var(--nu-cream-2); transition: background .3s; }
 .rbcx__prog-bar--on { background: var(--nu-blue-deep); }
 .rbcx__prog-txt {
-  margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
+  margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   font-variant-numeric: tabular-nums; text-transform: uppercase; letter-spacing: 1px;
 }
 
-.rbcx__title { margin: 8px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+.rbcx__title { margin: 8px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1.15; }
 
 .rbcx__body { margin-top: 14px; }
 .rbcx__dek { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65; }
-.rbcx__dek strong { color: var(--nu-ink); font-weight: 800; }
+.rbcx__dek strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .rbcx__nota { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.6; }
 .rbcx__inline {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: .92em; color: var(--nu-blue-deep); background: var(--nu-cream); padding: 1px 6px; border-radius: 5px;
 }
-.rbcx__link { color: var(--nu-blue-deep); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+.rbcx__link { color: var(--nu-blue-deep); font-weight: var(--nu-w-forte); text-decoration: underline; text-underline-offset: 3px; }
 .rbcx__link:hover { color: var(--nu-blue-hover); }
 .rbcx__link:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 
@@ -316,16 +316,16 @@ onBeforeUnmount(() => {
 }
 .rbcx__opcao:hover { border-color: var(--nu-blue); background: var(--nu-cream); transform: translateY(-2px); }
 .rbcx__opcao:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.rbcx__opcao-nome { grid-column: 1; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
+.rbcx__opcao-nome { grid-column: 1; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
 .rbcx__opcao-hint { grid-column: 1; margin-top: 3px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.rbcx__opcao-seta { grid-column: 2; grid-row: 1 / span 2; color: var(--nu-blue-deep); font-size: var(--nu-fs-xl); font-weight: 800; }
+.rbcx__opcao-seta { grid-column: 2; grid-row: 1 / span 2; color: var(--nu-blue-deep); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); }
 
 /* ——— o artefato de ação (link externo / download): pílula azul grande ——— */
 .rbcx__acao {
   display: inline-flex; align-items: center; gap: 9px; margin-top: 18px;
   min-height: 48px; padding: 0 26px;
   background: var(--nu-blue); color: var(--nu-white); border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-md); font-weight: 800; transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); transition: background .2s;
 }
 .rbcx__acao:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .rbcx__acao:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
@@ -342,7 +342,7 @@ onBeforeUnmount(() => {
   position: absolute; top: 8px; right: 10px; border: 0; border-radius: var(--nu-r-pill);
   cursor: pointer; font-family: inherit;
   padding: 8px 18px; background: var(--nu-cream-text-14); color: var(--nu-cream-text);
-  font-size: var(--nu-fs-dense); font-weight: 700; transition: background .2s;
+  font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); transition: background .2s;
 }
 .rbcx__copy:hover { background: var(--nu-cream-text-22); }
 .rbcx__copy:focus-visible { outline: 2px solid var(--nu-cream-text); outline-offset: 2px; }
@@ -357,7 +357,7 @@ onBeforeUnmount(() => {
   display: inline-flex; align-items: center;
   border: 0; border-radius: var(--nu-r-pill); cursor: pointer; font-family: inherit;
   min-height: 44px; padding: 0 20px; background: var(--nu-ink); color: var(--nu-white);
-  font-size: var(--nu-fs-sm); font-weight: 700; transition: background .2s;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); transition: background .2s;
 }
 .rbcx__aviso-btn:hover { background: var(--nu-ink-hover); color: var(--nu-white); }
 .rbcx__aviso-btn:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
@@ -366,7 +366,7 @@ onBeforeUnmount(() => {
 .rbcx__btn {
   border: 0; border-radius: var(--nu-r-pill); cursor: pointer; font-family: inherit;
   min-height: 48px; padding: 0 28px; background: var(--nu-ink); color: var(--nu-white);
-  font-size: var(--nu-fs-md); font-weight: 800; transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); transition: background .2s;
 }
 .rbcx__btn:hover { background: var(--nu-ink-hover); }
 .rbcx__btn--ghost { background: var(--nu-cream); color: var(--nu-ink); }

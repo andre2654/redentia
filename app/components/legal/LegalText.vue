@@ -20,9 +20,9 @@ defineProps<{ value: LegalText }>()
 </template>
 
 <style scoped>
-.ltx__b { font-weight: 800; color: var(--nu-ink); }
+.ltx__b { font-weight: var(--nu-w-forte); color: var(--nu-ink); }
 .ltx__a {
-  color: var(--nu-blue-text); font-weight: 700; text-decoration: underline;
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline;
   text-underline-offset: 2px; text-decoration-thickness: 1.5px;
   transition: color .2s;
 }

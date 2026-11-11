@@ -170,7 +170,7 @@ const goRankings = () => clearError({ redirect: '/rankings' })
 }
 .nf__num {
   font-family: var(--nu-font);
-  font-weight: 800;
+  font-weight: var(--nu-w-display);
   font-size: 372px;
   letter-spacing: -22px;
 }
@@ -211,7 +211,7 @@ const goRankings = () => clearError({ redirect: '/rankings' })
 .nf__eyebrow { justify-content: center; margin-bottom: 16px; }
 .nf__title {
   font-size: clamp(30px, 5vw, 48px);
-  font-weight: 800;
+  font-weight: var(--nu-w-display);
   letter-spacing: -0.03em;
   line-height: 1.04;
   color: var(--nu-ink);

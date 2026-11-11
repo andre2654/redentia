@@ -19,7 +19,7 @@ const Link = resolveComponent('NuxtLink')
 
 <style scoped>
 .tac__b {
-  --mola: cubic-bezier(.34, 1.56, .64, 1);
+  --mola: var(--nu-ease-saida);
   display: flex; flex-direction: column; align-items: center; gap: 6px; width: 64px; padding: 0; border: 0; background: none;
   font: inherit; color: inherit; cursor: pointer; text-align: center;
 }

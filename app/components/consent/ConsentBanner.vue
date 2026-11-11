@@ -146,7 +146,7 @@ onBeforeUnmount(() => {
   background: var(--nu-band);
   color: var(--nu-ink);
   border: 0;
-  border-bottom: 1.5px solid var(--nu-line-2);
+  border-bottom: 1px solid var(--nu-line-2);
   box-shadow: none;
   font-family: var(--nu-font);
 }
@@ -164,7 +164,7 @@ onBeforeUnmount(() => {
 .ck__links { white-space: normal; font-weight: 500; margin-left: 4px; }
 .ck__txt a {
   color: var(--nu-blue-text);
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color .2s;
@@ -184,10 +184,10 @@ onBeforeUnmount(() => {
   color: var(--nu-ink);
   font-family: inherit;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   line-height: 1.2;
   cursor: pointer;
-  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 /* o alvo de toque tem 44px; a pílula, 36 (o aviso é pequeno de propósito) */
 .ck__btn::after { content: ''; position: absolute; inset: -4px 0; }

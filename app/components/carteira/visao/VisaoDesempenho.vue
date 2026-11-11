@@ -110,13 +110,13 @@ const contexto = computed(() => ({
 .vds__textos { min-width: 0; max-width: 760px; }
 .vds__titulo {
   margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance;
+  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance;
 }
 .vds__sub { margin: 16px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; }
 .vds__periodos { display: flex; gap: 4px; flex-shrink: 0; padding: 4px; border-radius: var(--nu-r-pill); background: var(--nu-dark-chip); }
 .vds__periodo {
   min-height: 44px; padding: 0 18px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-on-dark); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+  color: var(--nu-on-dark); font: inherit; font-size: 15px; font-weight: var(--nu-w-medio); cursor: pointer;
   transition: color .2s, background .2s;
 }
 .vds__periodo:hover { color: var(--nu-white); }
@@ -127,8 +127,8 @@ const contexto = computed(() => ({
 .vds__leg { display: inline-flex; align-items: center; gap: 9px; }
 .vds__traco { align-self: center; width: 16px; height: 3px; border-radius: 2px; background: var(--nu-blue-on-dark); }
 .vds__traco--bench { height: 2px; background: repeating-linear-gradient(90deg, var(--nu-on-dark-2) 0 3px, transparent 3px 7px); }
-.vds__leg-r { color: var(--nu-on-dark-2); font-size: var(--nu-fs-md); font-weight: 700; }
-.vds__leg-v { color: var(--nu-white); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.vds__leg-r { color: var(--nu-on-dark-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
+.vds__leg-v { color: var(--nu-white); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .vds__leg-v--voce { color: var(--nu-blue-on-dark); }
 
 /* a caixa do gráfico: as marcas ('+10%') moram na faixa da esquerda, fora da

@@ -930,7 +930,7 @@ const readingHtml = computed(() => {
 .sim__wiz-word { display: inline-flex; justify-content: center; }
 .sim__step--film { display: flex; flex-direction: column; align-items: center; }
 .sim__wiz-letter {
-  color: var(--nu-white); font-size: var(--nu-fs-2xl); font-weight: 800; font-style: normal;
+  color: var(--nu-white); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); font-style: normal;
   letter-spacing: 0.02em;
   animation: sim-letter 2s ease-in-out infinite;
   opacity: 0.4;
@@ -974,8 +974,8 @@ const readingHtml = computed(() => {
   display: inline-flex; align-items: center; justify-content: center; min-height: 52px;
   border: none; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
   background: var(--nu-white); color: var(--nu-ink);
-  padding: 0 26px; font-size: 16.5px; font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: background 0.2s, transform 0.15s cubic-bezier(.2, .8, .2, 1);
+  padding: 0 26px; font-size: 16.5px; font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
+  transition: background 0.2s, transform 0.15s var(--nu-ease-saida);
 }
 .sim__back:hover { background: var(--nu-row-hover); }
 .sim__back:active { transform: scale(.98); }
@@ -996,7 +996,7 @@ const readingHtml = computed(() => {
 .sim__wiz--shock .sim__dot--on { background: var(--nu-ink); }
 .sim__title {
   margin: 18px 0 26px; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
+  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
 }
 .sim__honest { margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.45; position: relative; z-index: 1; }
 .sim__wiz--shock .sim__honest { color: var(--nu-gray-3); }
@@ -1012,7 +1012,7 @@ const readingHtml = computed(() => {
 .sim__result-head { display: flex; justify-content: space-between; gap: 26px; flex-wrap: wrap; align-items: flex-start; }
 .sim__navy-title {
   margin: 18px 0 0; color: var(--nu-white);
-  font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
+  font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05;
 }
 /* o número-herói: o cobalto que lê sobre carvão */
 .sim__counter {
@@ -1023,14 +1023,14 @@ const readingHtml = computed(() => {
 /* o selo "atenção" sobre carvão */
 .sim__flag {
   margin: 14px 0 0; display: inline-flex; align-items: center;
-  font-size: 13.5px; font-weight: 700; line-height: 1.35;
+  font-size: 13.5px; font-weight: var(--nu-w-medio); line-height: 1.35;
   padding: 6px 12px; border-radius: var(--nu-r-tag);
   background: var(--nu-warning-bg); color: var(--nu-amber-soft);
 }
 .sim__flag--mock { background: color-mix(in srgb, var(--nu-red-soft) 22%, transparent); color: var(--nu-red-soft); }
 
 .sim__range { margin: 14px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-lg); font-weight: 500; max-width: 560px; }
-.sim__range b { font-weight: 800; font-variant-numeric: tabular-nums; }
+.sim__range b { font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .sim__range-lo { color: var(--nu-red-soft); }
 .sim__range-hi { color: var(--nu-green-soft); }
 .sim__pills { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -1046,7 +1046,7 @@ const readingHtml = computed(() => {
 /* checks das trajetórias macro na legenda: o chip sobre carvão */
 .sim__leg-check {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
-  border: 1.5px solid var(--nu-dark-chip-line); border-radius: var(--nu-r-pill);
+  border: 1px solid var(--nu-dark-chip-line); border-radius: var(--nu-r-pill);
   background: var(--nu-dark-chip); color: var(--nu-on-dark-2);
   padding: 0 16px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
   transition: color 0.2s, border-color 0.2s, background 0.2s;
@@ -1068,10 +1068,10 @@ const readingHtml = computed(() => {
   width: min(940px, 100%); max-height: calc(100dvh - 36px); overflow-y: auto;
   background: var(--nu-page); border-radius: var(--nu-r-card-lg);
   padding: clamp(20px, 3vw, 30px) clamp(18px, 3vw, 30px) clamp(18px, 2.4vw, 24px); box-shadow: var(--nu-shadow-day-modal);
-  outline: none; animation: nu-subir 0.32s cubic-bezier(.2, .8, .2, 1) both;
+  outline: none; animation: nu-subir 0.32s var(--nu-ease-saida) both;
 }
 .simw__head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-.simw__title { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; }
+.simw__title { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.1; }
 .simw__close {
   width: 44px; height: 44px; flex-shrink: 0; border: none; border-radius: 50%;
   background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer;
@@ -1103,7 +1103,7 @@ const readingHtml = computed(() => {
 .sim__blue-eyebrow { justify-content: center; margin-bottom: 20px; }
 .sim__blue-lead {
   margin: 0; color: var(--nu-white); text-align: center;
-  font-size: var(--nu-fs-h3); font-weight: 800;
+  font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display);
   letter-spacing: -0.025em; line-height: 1.05; text-wrap: balance;
 }
 .sim__blue-text {
@@ -1112,15 +1112,15 @@ const readingHtml = computed(() => {
 }
 .sim__blue-text :deep(.sim__mark) {
   background: var(--nu-white-18); color: var(--nu-white);
-  border-radius: 6px; padding: 1px 6px; font-weight: 700;
+  border-radius: 6px; padding: 1px 6px; font-weight: var(--nu-w-medio);
 }
 /* entregável: a pílula creme com a seta + a pílula de contorno com o ícone */
 .sim__blue-cta { position: relative; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: clamp(32px, 4vw, 44px); }
 .sim__blue-btn2 {
   display: inline-flex; align-items: center; gap: 9px; min-height: 62px;
   background: transparent; color: var(--nu-white); border: 1.5px solid var(--nu-white-35);
-  border-radius: var(--nu-r-pill); padding: 0 28px; font-size: 17px; font-weight: 700;
-  cursor: pointer; font-family: inherit; transition: background 0.2s, border-color 0.2s, transform 0.15s cubic-bezier(.2, .8, .2, 1);
+  border-radius: var(--nu-r-pill); padding: 0 28px; font-size: 17px; font-weight: var(--nu-w-medio);
+  cursor: pointer; font-family: inherit; transition: background 0.2s, border-color 0.2s, transform 0.15s var(--nu-ease-saida);
 }
 .sim__blue-btn2:hover { background: var(--nu-white-14); border-color: var(--nu-white-60); }
 .sim__blue-btn2:active { transform: scale(.98); }
@@ -1128,16 +1128,16 @@ const readingHtml = computed(() => {
 /* blocos do resumo: cartão branco dentro da folha */
 .sims__block { margin-top: 16px; background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 18px 20px; box-shadow: var(--nu-shadow-quente); }
 .sims__block-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
-.sims__block-label { color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.sims__block-label { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
 .sims__copy {
   min-height: 44px; border: none; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
   background: var(--nu-white); color: var(--nu-ink);
-  padding: 0 18px; font-size: 14.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  padding: 0 18px; font-size: 14.5px; font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 .sims__copy:hover { background: var(--nu-row-hover); }
 .sims__copy--ok { background: var(--nu-green-bg); color: var(--nu-green-text); box-shadow: none; }
-.sims__subject { margin: 0 0 6px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.sims__subject { margin: 0 0 6px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .sims__text { margin: 0; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.6; white-space: pre-line; }
 .sims__footer { margin: 16px 2px 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 
@@ -1162,12 +1162,12 @@ const readingHtml = computed(() => {
 .sim__run-error {
   margin: 0 0 18px; padding: 12px 18px; max-width: 640px;
   background: var(--nu-red-bg); color: var(--nu-red-text); border-radius: var(--nu-r-tile);
-  font-size: 15px; font-weight: 700; line-height: 1.45;
+  font-size: 15px; font-weight: var(--nu-w-medio); line-height: 1.45;
 }
 
 /* painel de limites: o cartão quente, tipografia de nota — não compete com os blocos */
 .sim__limits { margin-top: 40px; padding: clamp(22px, 3vw, 34px); background: var(--nu-band); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); }
-.sim__limits-title { display: block; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.sim__limits-title { display: block; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
 /* duas colunas no desktop (a linha tinha 170 caracteres de ponta a ponta) e o marcador cobalto da marca */
 .sim__limits-list { list-style: none; margin: 18px 0 0; padding: 0; columns: 2 420px; column-gap: clamp(28px, 4vw, 56px); }
 .sim__limits-list li { position: relative; break-inside: avoid; padding: 0 0 14px 20px; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.55; }

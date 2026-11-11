@@ -34,7 +34,7 @@ defineProps<{
 .cfc__formula {
   color: var(--nu-ink);
   font-size: clamp(22px, 2.4vw, 32px);
-  font-weight: 800;
+  font-weight: var(--nu-w-forte);
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   text-align: center;
@@ -48,9 +48,9 @@ defineProps<{
 .cfc__terms { margin-top: 26px; display: grid; grid-template-columns: minmax(26px, max-content) auto minmax(0, 1fr); column-gap: 16px; }
 .cfc__term {
   display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: baseline;
-  padding: 12px 0; border-top: 1.5px solid var(--nu-line);
+  padding: 12px 0; border-top: 1px solid var(--nu-line);
 }
-.cfc__sym { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; }
+.cfc__sym { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .cfc__eq { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; flex-shrink: 0; }
 .cfc__desc { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
 </style>

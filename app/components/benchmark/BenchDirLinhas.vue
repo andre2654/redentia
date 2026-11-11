@@ -144,10 +144,10 @@ const aria = (r: Linha) => [
 .bdl__tile {
   width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center;
   background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line-2);
-  color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
 }
 .bdl__tile img { width: 14px; height: 14px; display: block; object-fit: contain; }
-.bdl__name { min-width: 0; color: var(--tinta); font-size: 14.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bdl__name { min-width: 0; color: var(--tinta); font-size: 14.5px; font-weight: var(--nu-w-medio); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .bdl__track { position: relative; height: 10px; border-radius: var(--nu-r-pill); background: var(--pista); }
 .bdl__fill { position: absolute; top: 0; bottom: 0; border-radius: var(--nu-r-pill); background: var(--nu-blue-soft); transition: background .18s ease; }
@@ -170,7 +170,7 @@ const aria = (r: Linha) => [
 .bdl--escuro .bdl__ic, .bdl--escuro .bdl__ic::before, .bdl--escuro .bdl__ic::after { background: var(--nu-white); }
 
 .bdl__num { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
-.bdl__val { color: var(--tinta); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bdl__val { color: var(--tinta); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bdl__item--on .bdl__val { color: var(--nu-blue-text); }
 .bdl--escuro .bdl__item--on .bdl__val { color: var(--nu-blue-soft); }
 .bdl__extra { color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; white-space: pre; text-align: right; }

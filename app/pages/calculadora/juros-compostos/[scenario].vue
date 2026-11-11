@@ -362,21 +362,21 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-bottom: 22px;
 }
-.jcs__live { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: 700; }
+.jcs__live { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .jcs__live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); flex-shrink: 0; }
 .jcs__back {
   display: inline-flex; align-items: center; gap: 9px;
-  background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-line);
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1px var(--nu-line);
   border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 20px;
-  font-size: var(--nu-fs-sm); font-weight: 700;
-  transition: box-shadow .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
+  transition: box-shadow .2s, transform .15s var(--nu-ease-saida);
 }
 .jcs__back:hover { box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink); }
 .jcs__back:active { transform: scale(.98); }
 .jcs__eyebrow { margin: 0; }
 .jcs__h1 {
   margin: 18px 0 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
+  font-size: clamp(34px, 4.6vw, 64px); font-weight: var(--nu-w-display);
   letter-spacing: -0.035em; line-height: 1.02; max-width: 1080px;
 }
 .jcs__lead {
@@ -387,7 +387,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
 .jcs__chips li {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--nu-cream-2); border-radius: var(--nu-r-tag);
-  padding: 6px 11px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
+  padding: 6px 11px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
 }
 .jcs__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 
@@ -399,10 +399,10 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
 .jcs__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .jcs__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.jcs__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.jcs__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
 .jcs__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— prosa da coluna direita (bandas split do design: jc__prose) ——— */
@@ -413,7 +413,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
 .jcs__prose p:last-child { margin-bottom: 0; }
 
 /* ——— sub-heading dentro da prosa (exemplar: jc__sub) ——— */
-.jcs__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.jcs__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
 .jcs__sub + p { margin-top: 10px; }
 .jcs__prose > div:first-child .jcs__sub { margin-top: 0; }
 

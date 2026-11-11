@@ -22,7 +22,7 @@ withDefaults(defineProps<{
 .chct__selo {
   position: absolute; right: 28px; bottom: 18px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px;
   border-radius: var(--nu-r-tag); background: var(--nu-green-soft-16); color: var(--nu-green-soft);
-  font-size: var(--nu-fs-dense); font-weight: 700;
+  font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
 }
 @media (max-width: 640px) {
   .chct { padding: 20px 64px 16px 22px; }

@@ -71,7 +71,7 @@ const ultima = computed(() => dias.value.length - 1)
   background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-float); pointer-events: none;
   animation: rbpu-dica .15s ease both;
 }
-.rbpu__dica b { font-size: var(--nu-fs-sm); font-weight: 800; }
+.rbpu__dica b { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); }
 .rbpu__dica span { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
 .rbpu__dica--esq { left: auto; right: 0; transform: none; }
 .rbpu__dica--dir { left: 0; transform: none; }

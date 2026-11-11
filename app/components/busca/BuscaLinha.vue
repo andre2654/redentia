@@ -90,14 +90,14 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
 
 .bl__id { flex: 1; min-width: 0; }
 .bl__titulo {
-  display: block; font-size: var(--nu-fs-md); font-weight: 800; line-height: 1.3;
+  display: block; font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); line-height: 1.3;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 /* o ticker na etiqueta carvão */
 .bl__titulo--tk { display: flex; overflow: visible; }
 .bl__tk {
   display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: var(--nu-r-tag);
-  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: 800; letter-spacing: .04em; line-height: 1;
+  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .04em; line-height: 1;
 }
 /* título de Tesouro, tese e guia é frase: quebra em até duas linhas em vez de
    cortar o vencimento ("Tesouro IPCA+ com Juros Semestrais 2035") */
@@ -110,12 +110,12 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
 }
 
 .bl__num { flex: none; display: flex; align-items: center; gap: 10px; text-align: right; }
-.bl__valor { font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.bl__valor--leve { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; }
+.bl__valor { font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bl__valor--leve { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio); }
 /* a variação do dia no selo de raio 8 */
 .bl__pct {
   display: inline-flex; align-items: center; justify-content: flex-end; min-width: 68px; min-height: 28px; padding: 0 9px; border-radius: var(--nu-r-tag);
-  font-size: 14.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap;
+  font-size: 14.5px; font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .bl__pct--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .bl__pct--down { background: var(--nu-red-bg); color: var(--nu-red-text); }

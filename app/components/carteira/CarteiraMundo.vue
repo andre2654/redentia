@@ -209,17 +209,17 @@ const contexto = computed(() => ({
   overflow: hidden;
 }
 .cmu__cabeca { max-width: 860px; }
-.cmu__eyebrow { display: block; color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+.cmu__eyebrow { display: block; color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.2em; text-transform: uppercase; }
 .cmu__frase {
   margin: 18px 0 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04;
+  font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04;
   font-variant-numeric: tabular-nums; text-wrap: balance;
 }
 .cmu__palavra { display: inline-block; }
 /* as palavras que surgem (o mesmo gesto de utils/revelar-palavras.ts) */
 .cmu__frase--esperando .cmu__palavra { opacity: 0; }
 .cmu__frase--revelando .cmu__palavra {
-  animation: cmu-palavra 520ms cubic-bezier(.22, 1, .36, 1) both;
+  animation: cmu-palavra 520ms var(--nu-ease-saida) both;
   animation-delay: min(calc(var(--i) * 38ms), 900ms);
 }
 @keyframes cmu-palavra { from { opacity: 0; filter: blur(8px); transform: translateY(6px); } }
@@ -227,7 +227,7 @@ const contexto = computed(() => ({
 .cmu__esq-frase { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
 .cmu__cobertura { margin: 14px 0 0; color: var(--nu-ink-75); font-size: var(--nu-fs-lg); font-weight: 600; line-height: 1.4; }
 .cmu__cobertura--esperando { opacity: 0; }
-.cmu__cobertura--revelando { animation: cmu-palavra 520ms cubic-bezier(.22, 1, .36, 1) 520ms both; }
+.cmu__cobertura--revelando { animation: cmu-palavra 520ms var(--nu-ease-saida) 520ms both; }
 .cmu__nota { margin: 16px 0 0; max-width: 620px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 
 .cmu__corpo { display: grid; gap: clamp(28px, 4vw, 64px); margin-top: clamp(28px, 4vw, 52px); align-items: center; }
@@ -241,7 +241,7 @@ const contexto = computed(() => ({
 .cmu__lista { list-style: none; margin: 0; padding: 0; }
 .cmu__linha {
   display: flex; align-items: center; gap: 14px; padding: 16px 10px; margin: 0 -10px;
-  border-radius: var(--nu-r-chip); border-top: 1.5px solid var(--nu-line-2);
+  border-radius: var(--nu-r-chip); border-top: 1px solid var(--nu-line-2);
   transition: background .18s, opacity .25s; cursor: default;
 }
 .cmu__linha:first-child { border-top-color: transparent; }
@@ -256,14 +256,14 @@ const contexto = computed(() => ({
 .cmu__linha--ativa .cmu__ponto { box-shadow: 0 0 0 6px color-mix(in srgb, var(--c) 24%, transparent), 0 0 18px color-mix(in srgb, var(--c) 60%, transparent); }
 .cmu__ponto--sem { background: repeating-linear-gradient(135deg, var(--nu-sand) 0 2px, var(--nu-cream-3) 2px 4px); box-shadow: 0 0 0 4px var(--nu-cream-2); }
 .cmu__nome { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.cmu__nome-txt { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em; }
+.cmu__nome-txt { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -0.01em; }
 .cmu__sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cmu__valores { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; text-align: right; }
-.cmu__pct { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cmu__pct { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cmu__valor { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .cmu__esq-lista { display: flex; flex-direction: column; }
-.cmu__esq-linha { display: flex; align-items: center; gap: 14px; padding: 20px 0; border-top: 1.5px solid var(--nu-line-2); }
+.cmu__esq-linha { display: flex; align-items: center; gap: 14px; padding: 20px 0; border-top: 1px solid var(--nu-line-2); }
 .cmu__esq-linha:first-child { border-top: none; }
 .cmu__esq-pct { margin-left: auto; }
 

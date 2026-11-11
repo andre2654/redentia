@@ -23,7 +23,7 @@ const { hidden, toggle } = useHiddenValues()
   width: 48px; height: 48px; border-radius: 50%; color: var(--nu-ink);
   background: transparent; border: 1.5px solid var(--nu-borda-campo);
   display: flex; align-items: center; justify-content: center; cursor: pointer;
-  flex-shrink: 0; transition: background .2s, border-color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  flex-shrink: 0; transition: background .2s, border-color .2s, transform .15s var(--nu-ease-saida);
 }
 .neb:hover { background: var(--nu-white); border-color: var(--nu-ink); }
 .neb:active { transform: scale(.96); }

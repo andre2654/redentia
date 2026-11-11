@@ -26,7 +26,7 @@ const emit = defineEmits<{ (e: 'pronto'): void; (e: 'comecou', segundos: number)
 /* sem caixa (pedido do dono, 31/10/2026): o leque fica solto no azul-marinho do topo */
 .aex { margin: 0; display: flex; flex-direction: column; gap: clamp(18px, 2.4vw, 28px); }
 .aex__topo { display: flex; flex-direction: column; gap: 8px; }
-.aex__titulo { color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.aex__titulo { color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.1; }
 .aex__nota { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 500; }
 /* cheio: o leque estica até o fim da figura (o fundo do topo do /assinar) */
 .aex--cheio { height: 100%; }

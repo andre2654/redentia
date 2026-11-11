@@ -157,24 +157,24 @@ onMounted(() => {
 .tbo__logo { width: 40px; height: 40px; border-radius: var(--nu-r-chip); background: var(--nu-white); object-fit: cover; box-shadow: var(--nu-shadow-quente); }
 .tbo__quem { min-width: 0; }
 .tbo__empresa { margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.tbo__nome { font-size: clamp(24px, 2.6vw, 34px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.tbo__nome { font-size: clamp(24px, 2.6vw, 34px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1.1; }
 /* as etiquetas: o código em carvão, a bolsa em creme (selos de raio 8) */
-.tbo__ticker, .tbo__bolsa { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-sm); font-weight: 800; letter-spacing: 0.04em; }
+.tbo__ticker, .tbo__bolsa { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); letter-spacing: 0.04em; }
 .tbo__ticker { background: var(--nu-ink); color: var(--nu-white); }
 .tbo__bolsa { background: var(--nu-cream-2); color: var(--nu-ink); }
 .tbo__h1 { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; letter-spacing: 0; line-height: 1.4; }
-.tbo__posicao { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.tbo__posicao { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 
 /* a cotação: o número-herói da marca, com a moeda pequena e elevada */
 .tbo__preco-linha { grid-area: preco; animation: nu-fade .5s ease .06s both; }
-.tbo__preco { margin: 0; display: flex; align-items: flex-start; gap: .08em; font-size: clamp(64px, 17vw, 132px); font-weight: 800; letter-spacing: -0.045em; line-height: .92; }
+.tbo__preco { margin: 0; display: flex; align-items: flex-start; gap: .08em; font-size: clamp(64px, 17vw, 132px); font-weight: var(--nu-w-display); letter-spacing: -0.045em; line-height: .92; }
 .tbo__preco--longo { font-size: clamp(44px, 11.5vw, 92px); }
 /* cada casa do TopoPreco corta o que sai da caixa (é o que esconde o dígito que troca); com a
    letra apertada do número-herói o desenho passa da caixa: a folga volta por dentro */
 .tbo__preco :deep(.tpr__casa) { padding: .1em .05em; margin: -.1em -.05em; }
 .tbo__moeda { margin-top: .16em; font-size: .36em; letter-spacing: -0.02em; line-height: 1; }
 .tbo__dia { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; min-height: 38px; margin: clamp(14px, 1.6vw, 20px) 0 0; font-variant-numeric: tabular-nums; }
-.tbo__selo { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 6px 14px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-lg); font-weight: 700; }
+.tbo__selo { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 6px 14px; border-radius: var(--nu-r-tag); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); }
 .tbo__selo--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .tbo__selo--down { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .tbo__seta { flex: none; fill: currentColor; }
@@ -188,12 +188,12 @@ onMounted(() => {
 .tbo__cartao { --pad: clamp(18px, 2.2vw, 30px); padding-bottom: clamp(16px, 2vw, 24px); }
 .tbo__cartao :deep(.nfm__acoes) { padding: 10px 12px 0 0; }
 .tbo__cartao .tbo__seg--topo { background: transparent; }
-.tbo__cartao .tbo__seg :deep(.ape__b) { height: 38px; color: var(--nu-on-dark); font-weight: 700; }
+.tbo__cartao .tbo__seg :deep(.ape__b) { height: 38px; color: var(--nu-on-dark); font-weight: var(--nu-w-medio); }
 .tbo__cartao .tbo__seg :deep(.ape__b:hover) { color: var(--nu-white); }
 .tbo__cartao .tbo__seg :deep(.ape__b--on), .tbo__cartao .tbo__seg :deep(.ape__b--on:hover) { background: var(--nu-creme); color: var(--nu-ink); }
 .tbo__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(18px, 2vw, 26px) var(--pad) 0; }
 .tbo__leg { display: inline-flex; align-items: baseline; gap: 10px; }
-.tbo__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.tbo__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .tbo__leg--1 b { font-size: clamp(38px, 4.4vw, 58px); letter-spacing: -0.04em; line-height: 1; }
 .tbo__leg b.tbo__leg--up { color: var(--nu-green-soft); }
 .tbo__leg b.tbo__leg--down { color: var(--nu-red-soft); }
@@ -221,13 +221,13 @@ onMounted(() => {
   animation: nu-fade .5s ease .16s both;
 }
 /* o fio fica em cima de cada linha; o da primeira fileira some no corte do cartão */
-.tbo__num { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: -1.5px; padding: 15px 0 14px; border-top: 1.5px solid var(--nu-line-2); }
+.tbo__num { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: -1.5px; padding: 15px 0 14px; border-top: 1px solid var(--nu-line-2); }
 .tbo__num dt { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.3; }
-.tbo__num dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.tbo__num dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
 
 .tbo__pe { grid-area: pe; display: flex; justify-content: space-between; align-items: center; gap: 16px 32px; flex-wrap: wrap; }
 .tbo__sim { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.tbo__sim-l { margin-right: 8px; color: var(--nu-ink); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line); transition: text-decoration-color .2s ease, color .2s ease; }
+.tbo__sim-l { margin-right: 8px; color: var(--nu-ink); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line); transition: text-decoration-color .2s ease, color .2s ease; }
 .tbo__sim-l:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
 
 /* duas colunas: o papel e o preço à esquerda, o cartão do gráfico à direita */

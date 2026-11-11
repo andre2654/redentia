@@ -209,18 +209,18 @@ const campoAberto = shallowRef<symbol | null>(null)
   display: flex; flex-direction: column; gap: 12px; width: 300px; padding: 18px 18px 16px;
   white-space: normal; text-align: left;
   background: var(--nu-white); border-radius: var(--nu-r-panel);
-  box-shadow: var(--nu-shadow-float), 0 0 0 1.5px var(--nu-line-2);
+  box-shadow: var(--nu-shadow-float), 0 0 0 1px var(--nu-line-2);
   font-size: var(--nu-fs-md); font-weight: 500; letter-spacing: 0; line-height: 1.4; color: var(--nu-ink);
-  animation: cfc-abre .22s cubic-bezier(.2, .8, .2, 1) both;
+  animation: cfc-abre .22s var(--nu-ease-saida) both;
 }
 @keyframes cfc-abre { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
-.cfc__rotulo { color: var(--nu-ink); font-size: 15px; font-weight: 700; }
+.cfc__rotulo { color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-medio); }
 .cfc__linha { display: flex; align-items: center; gap: 10px; }
 .cfc__passo {
   flex: none; width: 44px; height: 44px; border: 0; border-radius: 50%; cursor: pointer;
   display: grid; place-items: center; background: var(--nu-cream-2); color: var(--nu-ink);
-  font: inherit; font-size: var(--nu-fs-xl); font-weight: 700;
-  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  font: inherit; font-size: var(--nu-fs-xl); font-weight: var(--nu-w-medio);
+  transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .cfc__passo:active:not(:disabled) { transform: scale(.94); }
 .cfc__passo:hover:not(:disabled) { background: var(--nu-line-2); }
@@ -231,10 +231,10 @@ const campoAberto = shallowRef<symbol | null>(null)
   background: var(--nu-white); cursor: text;
 }
 .cfc__exato:focus-within { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
-.cfc__unidade { flex: none; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cfc__unidade { flex: none; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .cfc__campo {
   width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; text-align: center;
-  font: inherit; font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; color: var(--nu-ink);
+  font: inherit; font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; color: var(--nu-ink);
   font-variant-numeric: tabular-nums;
 }
 .cfc__trilho {
@@ -268,8 +268,8 @@ const campoAberto = shallowRef<symbol | null>(null)
 .cfc__atalho--on, .cfc__atalho--on:hover { background: var(--nu-ink); color: var(--nu-white); }
 .cfc__pronto {
   align-self: flex-end; min-height: 44px; padding: 0 22px; border: 0; border-radius: var(--nu-r-pill); cursor: pointer;
-  background: var(--nu-blue); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-md); font-weight: 700;
-  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  background: var(--nu-blue); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
+  transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .cfc__pronto:hover { background: var(--nu-blue-hover); }
 .cfc__pronto:active { transform: scale(.98); }
@@ -279,7 +279,7 @@ const campoAberto = shallowRef<symbol | null>(null)
   .cfc__painel {
     position: fixed; left: 12px; right: 12px; top: auto; bottom: calc(12px + env(safe-area-inset-bottom));
     width: auto; z-index: 80; border-radius: var(--nu-r-card);
-    animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both;
+    animation: nu-subir .32s var(--nu-ease-saida) both;
   }
   .cfc__atalho { min-height: 44px; padding: 0 16px; }
 }

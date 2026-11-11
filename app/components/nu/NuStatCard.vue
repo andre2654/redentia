@@ -20,7 +20,7 @@ const sobre = useSobreDoContexto()
 <style scoped>
 .nsc { background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 22px; box-shadow: var(--nu-shadow-quente); }
 .nsc__value {
-  color: var(--nu-ink); font-size: clamp(26px, 2.4vw, 34px); font-weight: 800;
+  color: var(--nu-ink); font-size: clamp(26px, 2.4vw, 34px); font-weight: var(--nu-w-forte);
   letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .nsc__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; margin-top: 10px; }

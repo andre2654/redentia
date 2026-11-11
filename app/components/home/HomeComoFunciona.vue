@@ -84,7 +84,7 @@ const BANCOS = [
 /* a moldura da marca: creme da página, contêiner de 1.240 px */
 .hcf { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1240px) / 2)); }
 .hcf__cabeca { max-width: 760px; }
-.hcf__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
+.hcf__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
 .hcf__dek { margin: 20px 0 0; max-width: 620px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
 
 .hcf__grade {
@@ -102,34 +102,34 @@ const BANCOS = [
   position: relative; display: flex; flex-direction: column; justify-content: center;
   aspect-ratio: 16 / 12; overflow: hidden; border-radius: 18px; background: var(--nu-ink); color: var(--nu-white);
 }
-.hcf__nome { margin: 26px 16px 0; color: var(--nu-ink); font-size: clamp(22px, 2vw, 26px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; }
+.hcf__nome { margin: 26px 16px 0; color: var(--nu-ink); font-size: clamp(22px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.1; }
 .hcf__texto { margin: 10px 16px 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500; line-height: 1.5; }
 
 /* 1 · os bancos */
 .hcf__bancos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 8px; margin: 0; padding: 0 18px; list-style: none; }
 .hcf__bancos li { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
 .hcf__bancos img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
-.hcf__bancos span { color: var(--nu-on-dark); font-size: var(--nu-fs-dense); font-weight: 700; text-align: center; }
+.hcf__bancos span { color: var(--nu-on-dark); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); text-align: center; }
 .hcf__mais b {
   display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%;
-  background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1.5px var(--nu-dark-chip-line);
-  color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums;
+  background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line);
+  color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums;
 }
 
 /* 2 · o leque */
 .hcf__tela--leque { justify-content: space-between; padding: 16px 0 12px; }
-.hcf__tela-rotulo { margin: 0 18px; color: var(--nu-blue-soft); font-size: var(--nu-fs-sm); font-weight: 700; }
-.hcf__tela-pe { margin: 0 18px; color: var(--nu-on-dark-2); font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }
+.hcf__tela-rotulo { margin: 0 18px; color: var(--nu-blue-soft); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.hcf__tela-pe { margin: 0 18px; color: var(--nu-on-dark-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .hcf__tela--leque :deep(.hlq) { aspect-ratio: auto; flex: 1; min-height: 0; margin: 6px 0; }
 
 /* 3 · os dois estados, com o selo de raio 8 da marca */
 .hcf__tela--estados { gap: 12px; padding: 18px; justify-content: center; }
 .hcf__estado { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px 18px; border-radius: 16px; background: var(--nu-dark-chip); }
 .hcf__estado--aviso { box-shadow: inset 0 0 0 1.5px var(--nu-amber); }
-.hcf__selo { padding: 3px 9px; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: 700; line-height: 1.4; }
+.hcf__selo { padding: 3px 9px; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: var(--nu-w-medio); line-height: 1.4; }
 .hcf__selo--verde { background: color-mix(in srgb, var(--nu-green-soft) 16%, transparent); color: var(--nu-green-soft); }
 .hcf__selo--ambar { background: color-mix(in srgb, var(--nu-amber) 20%, transparent); color: var(--nu-amber-soft); }
-.hcf__estado-frase { color: var(--nu-white); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+.hcf__estado-frase { color: var(--nu-white); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.2; }
 .hcf__estado-sub { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 /* entrada: o cabeçalho e depois os três cartões, em cascata de 60 ms */

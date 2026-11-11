@@ -41,7 +41,7 @@ watch(ritmo, acertarRitmo)
 .cpi {
   --cpi-fio: 2.5px;
   position: relative; isolation: isolate; padding: var(--cpi-fio); border-radius: var(--cpi-raio, 28px);
-  transition: padding .25s cubic-bezier(.2, .8, .2, 1);
+  transition: padding .25s var(--nu-ease-saida);
 }
 .cpi--aceso { --cpi-fio: 3px; }
 

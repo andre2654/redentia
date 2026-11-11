@@ -98,20 +98,20 @@ const barPct = (n: EtfXrayTreeNodeVM) =>
 .axt__chev:focus-visible { outline: 2px solid var(--nu-ink); outline-offset: 2px; }
 .axt__chev--open { transform: rotate(90deg); }
 .axt__dot { flex-shrink: 0; width: 24px; text-align: center; }
-.axt__dot::before { content: '·'; color: var(--nu-gray); font-weight: 800; }
+.axt__dot::before { content: '·'; color: var(--nu-gray); font-weight: var(--nu-w-forte); }
 
 .axt__name { flex: 1.4; min-width: 0; display: flex; flex-direction: column; }
-.axt__name b { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.axt__name b { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .axt__sub { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.axt__note { color: var(--nu-gray-tag); font-style: normal; font-weight: 700; }
+.axt__note { color: var(--nu-gray-tag); font-style: normal; font-weight: var(--nu-w-medio); }
 .axt__note::before { content: ' · '; }
 
 .axt__bar { flex: 1; height: 6px; border-radius: 999px; background: var(--nu-sand-2); overflow: hidden; }
 .axt__fill { height: 100%; border-radius: 999px; background: var(--nu-blue); }
 
 .axt__pcts { flex-shrink: 0; min-width: 118px; text-align: right; display: flex; flex-direction: column; }
-.axt__pct { color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }
-.axt__eff { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
+.axt__pct { color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
+.axt__eff { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 
 .axt__go {
   flex-shrink: 0; width: 26px; height: 26px; border-radius: 999px;

@@ -149,14 +149,14 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
   border-radius: var(--nu-r-tile); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5;
   animation: nu-fade .5s ease both;
 }
-.cvi__parcial a { margin-left: 6px; color: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.cvi__parcial a { margin-left: 6px; color: inherit; font-weight: var(--nu-w-forte); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
 .cvi__parcial-p { display: inline-block; width: 8px; height: 8px; margin-right: 10px; border-radius: 50%; background: var(--nu-amber-fill); vertical-align: 1px; }
 .cvi__dev {
   position: fixed; left: 16px; bottom: 16px; z-index: 50; display: flex; align-items: center; gap: 4px; padding: 4px;
   border-radius: var(--nu-r-pill); background: var(--nu-ink); box-shadow: var(--nu-shadow-escuro);
 }
-.cvi__dev-t { padding: 0 8px 0 10px; color: var(--nu-amber-soft); font-size: var(--nu-fs-xs); font-weight: 800; }
-.cvi__dev-b { height: 28px; padding: 0 12px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-agora-sub); font: inherit; font-size: var(--nu-fs-xs); font-weight: 700; cursor: pointer; }
+.cvi__dev-t { padding: 0 8px 0 10px; color: var(--nu-amber-soft); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-forte); }
+.cvi__dev-b { height: 28px; padding: 0 12px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-agora-sub); font: inherit; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); cursor: pointer; }
 .cvi__dev-b:hover { color: var(--nu-white); }
 .cvi__dev-b--on { background: var(--nu-white); color: var(--nu-ink); }
 @media (max-width: 640px) { .cvi__dev { left: 8px; right: 8px; bottom: 8px; overflow-x: auto; } }

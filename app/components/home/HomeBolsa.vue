@@ -262,7 +262,7 @@ function irParaNewsletter(e: MouseEvent) {
 .hbo__rotulo--aberta { color: var(--nu-green-soft); }
 .hbo__frase {
   margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h2);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
+  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
 }
 .hbo__sub { margin: 16px 0 0; max-width: 62ch; color: var(--nu-on-dark); font-size: clamp(17px, 1.4vw, 19px); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; text-wrap: pretty; }
 .hbo__sub-sk { margin-top: 20px; }
@@ -271,7 +271,7 @@ function irParaNewsletter(e: MouseEvent) {
 .hbo__frase, .hbo__sub { transition: opacity .4s ease; }
 .hbo__titulos--lendo .hbo__frase, .hbo__titulos--lendo .hbo__sub { opacity: .3; }
 /* lido: a frase da bolsa sai e entra a da leitura */
-.hbo-troca-enter-active, .hbo-troca-leave-active { transition: opacity .3s ease, transform .3s cubic-bezier(.22, 1, .36, 1); }
+.hbo-troca-enter-active, .hbo-troca-leave-active { transition: opacity .3s ease, transform .3s var(--nu-ease-saida); }
 .hbo-troca-enter-from { opacity: 0; transform: translateY(10px); }
 .hbo-troca-leave-to { opacity: 0; transform: translateY(-6px); }
 
@@ -283,25 +283,25 @@ function irParaNewsletter(e: MouseEvent) {
 .hbo__quadro--lido .hbo__grafico { opacity: .14; filter: blur(3px); pointer-events: none; }
 .hbo__simples {
   position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 24px; padding-top: 12px;
-  animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards;
+  animation: hbo-entra .5s var(--nu-ease-saida) backwards;
 }
 /* só a ideia de cada cartão, no centro do quadro: a seta do sentido, o título e o rótulo; o texto inteiro fica no resumo do dia */
 .hbo__itens { list-style: none; margin: auto 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.hbo__item { display: flex; flex-direction: column; align-items: center; padding: 0 20px; text-align: center; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards; }
+.hbo__item { display: flex; flex-direction: column; align-items: center; padding: 0 20px; text-align: center; animation: hbo-entra .5s var(--nu-ease-saida) backwards; }
 .hbo__item:nth-child(1) { animation-delay: .1s; }
 .hbo__item:nth-child(2) { animation-delay: .22s; }
 .hbo__item:nth-child(3) { animation-delay: .34s; }
 .hbo__item-seta { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--nu-r-pill); }
 .hbo__item-seta--sobe { color: var(--nu-green-soft); background: color-mix(in srgb, var(--nu-green-soft) 16%, transparent); }
 .hbo__item-seta--cai { color: var(--nu-red-soft); background: color-mix(in srgb, var(--nu-red-soft) 16%, transparent); }
-.hbo__item-rotulo { display: block; margin-top: 10px; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; }
-.hbo__item-titulo { display: block; margin-top: 16px; color: var(--nu-white); font-size: clamp(22px, 2.2vw, 28px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance; }
+.hbo__item-rotulo { display: block; margin-top: 10px; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: .16em; }
+.hbo__item-titulo { display: block; margin-top: 16px; color: var(--nu-white); font-size: clamp(22px, 2.2vw, 28px); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance; }
 /* as ações no fim do quadro, centradas */
-.hbo__simples-acoes { padding-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 12px 24px; flex-wrap: wrap; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) .46s backwards; }
+.hbo__simples-acoes { padding-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 12px 24px; flex-wrap: wrap; animation: hbo-entra .5s var(--nu-ease-saida) .46s backwards; }
 /* a segunda ação: link em negrito sublinhado, com 44 px de toque */
 .hbo__link-news {
   display: inline-flex; align-items: center; min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
-  color: var(--nu-on-dark); font-family: inherit; font-size: 15.5px; font-weight: 700; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px;
+  color: var(--nu-on-dark); font-family: inherit; font-size: 15.5px; font-weight: var(--nu-w-medio); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px;
   transition: color .2s;
 }
 .hbo__link-news:hover { color: var(--nu-white); }
@@ -311,26 +311,26 @@ function irParaNewsletter(e: MouseEvent) {
 .hbo__titulos { min-width: 0; }
 .hbo__deixa { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; max-width: 340px; text-align: right; }
 .hbo__deixa-txt { margin: 0; color: var(--nu-on-dark); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.4; font-variant-numeric: tabular-nums; text-wrap: balance; }
-.hbo__deixa-txt strong { color: var(--nu-white); font-weight: 800; }
+.hbo__deixa-txt strong { color: var(--nu-white); font-weight: var(--nu-w-forte); }
 .hbo__mercado-rotulo--fora { visibility: hidden; }
-.hbo__mercado-rotulo { margin: 0; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.hbo__mercado-rotulo { margin: 0; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
 
 /* o dia no mercado: três cartões do fechamento da IA */
 .hbo__dia { margin-top: clamp(40px, 4.6vw, 56px); }
 .hbo__dia-titulo:focus { outline: none; }
 /* o resumo da leitura entra de baixo para cima */
 @keyframes hbo-entra { from { opacity: 0; transform: translateY(12px); } }
-.hbo__dia-titulo { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.hbo__dia-titulo { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; }
 .hbo__dia-meta { margin: 10px 0 0; color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; }
 .hbo__dia-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
 @media (max-width: 900px) { .hbo__dia-grade { grid-template-columns: 1fr; } }
 /* o cartão carvão do contrato, um tom acima da seção, com o fio escuro */
 .hbo__dia-cartao {
   display: flex; flex-direction: column; padding: clamp(22px, 2.4vw, 28px);
-  border-radius: var(--nu-r-card); background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1.5px var(--nu-dark-line);
+  border-radius: var(--nu-r-card); background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-line);
 }
-.hbo__dia-rotulo { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; }
-.hbo__dia-stat, .hbo__dia-titulo-cartao { padding-top: 18px; color: var(--nu-white); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+.hbo__dia-rotulo { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: .16em; }
+.hbo__dia-stat, .hbo__dia-titulo-cartao { padding-top: 18px; color: var(--nu-white); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1.05; }
 .hbo__dia-stat { font-size: var(--nu-fs-h2); font-variant-numeric: tabular-nums; }
 .hbo__dia-titulo-cartao { font-size: clamp(22px, 2.2vw, 28px); letter-spacing: -0.025em; line-height: 1.1; }
 .hbo__dia-texto { margin: 12px 0 0; color: var(--nu-on-dark); font-size: 16.5px; font-weight: 500; line-height: 1.5; }

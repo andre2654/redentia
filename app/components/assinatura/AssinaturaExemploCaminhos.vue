@@ -373,16 +373,16 @@ const nf = new Intl.NumberFormat('pt-BR')
 .aec--cheio { display: flex; flex-direction: column; height: 100%; }
 .aec--cheio .aec__palco { flex: 1; min-height: 0; }
 .aec__conta { margin: 0 0 8px; display: flex; align-items: baseline; gap: 6px; min-height: 22px; font-variant-numeric: tabular-nums; }
-.aec__conta strong { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; }
-.aec__conta span { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700; }
+.aec__conta strong { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
+.aec__conta span { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 .aec__palco { position: relative; }
 .aec__cv { display: block; width: 100%; height: 100%; }
 .aec__nome {
   position: absolute; transform: translateY(-50%); white-space: nowrap;
-  font-size: var(--nu-fs-sm); font-weight: 700; transition: opacity .2s linear;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); transition: opacity .2s linear;
 }
 .aec__nome--otimista { color: var(--nu-green-soft); }
 .aec__nome--meio { color: var(--nu-cream-text); }
 .aec__nome--pessimista { color: var(--nu-red-soft); }
-.aec__eixo { display: flex; justify-content: space-between; margin-top: 8px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700; }
+.aec__eixo { display: flex; justify-content: space-between; margin-top: 8px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 </style>

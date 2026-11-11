@@ -29,7 +29,7 @@ defineEmits<{ (e: 'copiar'): void }>()
   margin-top: 20px; background: var(--nu-navy); border-radius: var(--nu-r-card-lg);
   padding: clamp(20px, 2.6vw, 28px); animation: nu-fade .45s ease both;
 }
-.rbcln__l { display: block; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; overflow-wrap: anywhere; }
+.rbcln__l { display: block; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: 1.2px; overflow-wrap: anywhere; }
 .rbcln__code {
   display: block; margin-top: 12px; background: var(--nu-navy-2); border: 1px solid var(--nu-cream-text-12);
   border-radius: var(--nu-r-input); padding: 14px 16px; color: var(--nu-cream-text);
@@ -38,7 +38,7 @@ defineEmits<{ (e: 'copiar'): void }>()
 .rbcln__copy {
   margin-top: 12px; min-height: 44px; padding: 0 22px; border: none; cursor: pointer;
   background: var(--nu-blue); color: var(--nu-white); border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-sm); font-weight: 700; font-family: inherit;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-family: inherit;
 }
 .rbcln__copy:hover { background: var(--nu-blue-hover); }
 .rbcln__copy:focus-visible { outline: 2px solid var(--nu-cream-text); outline-offset: 2px; }

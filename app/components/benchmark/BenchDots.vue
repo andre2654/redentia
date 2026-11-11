@@ -51,8 +51,8 @@ const clears = (r: { lo: number; hi: number }) => r.lo > 0 || r.hi < 0
 .bdt__row { padding: 9px 12px; margin: 0 -12px; border-radius: var(--nu-r-tile); outline: none; transition: background .2s, opacity .2s; }
 .bdt__row:hover, .bdt__row:focus-visible { background: var(--b-surface, var(--nu-cream)); }
 .bdt__rows:hover .bdt__row:not(:hover) { opacity: .5; }
-.bdt__name { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bdt__name b { color: var(--nu-gray); font-weight: 700; margin-right: 4px; }
+.bdt__name { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bdt__name b { color: var(--nu-gray); font-weight: var(--nu-w-medio); margin-right: 4px; }
 .bdt__track { position: relative; height: 12px; border-radius: var(--nu-r-pill); background: var(--b-surface, var(--nu-cream)); }
 .bdt__row:hover .bdt__track, .bdt__row:focus-visible .bdt__track { background: var(--b-surface-hi, var(--nu-white)); }
 .bdt__zero { position: absolute; left: var(--z); top: -6px; bottom: -6px; width: 1px; background: var(--nu-ink-30); }
@@ -65,16 +65,16 @@ const clears = (r: { lo: number; hi: number }) => r.lo > 0 || r.hi < 0
 }
 .bdt__dot--weak { background: var(--nu-sand); }
 .bdt__row:hover .bdt__dot, .bdt__row:focus-visible .bdt__dot { width: 18px; height: 18px; }
-.bdt__val { text-align: right; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums; }
+.bdt__val { text-align: right; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .bdt__axis { padding: 6px 0 0; }
 .bdt__axis-track { position: relative; height: 16px; }
-.bdt__axis-zero { position: absolute; left: var(--z); transform: translateX(-50%); white-space: nowrap; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
+.bdt__axis-zero { position: absolute; left: var(--z); transform: translateX(-50%); white-space: nowrap; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 .bdt__foot { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 /* ——— entrada: os pontos deslizam do zero até o valor ——— */
 .is-pending .bdt__dot { left: var(--z); }
 .is-pending .bdt__ci { opacity: 0; }
-.is-in .bdt__dot { transition: left .8s cubic-bezier(.2, .8, .2, 1) calc(var(--i) * 45ms), width .2s, height .2s; }
+.is-in .bdt__dot { transition: left .8s var(--nu-ease-saida) calc(var(--i) * 45ms), width .2s, height .2s; }
 .is-in .bdt__ci { transition: opacity .5s ease calc(.4s + var(--i) * 45ms); }
 
 @container (max-width: 640px) {

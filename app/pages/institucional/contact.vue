@@ -142,7 +142,7 @@ const painel = useChatPainel()
 
 .ctc__h2 {
   margin: clamp(48px, 5.5vw, 68px) 0 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h3); font-weight: 800;
+  font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display);
   letter-spacing: -0.025em; line-height: 1.05;
 }
 
@@ -159,8 +159,8 @@ const painel = useChatPainel()
   width: 44px; height: 44px; border-radius: 50%;
   background: var(--nu-ink); color: var(--nu-white); margin-bottom: 16px;
 }
-.ctc__channel-label { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
-.ctc__channel-value { margin-top: 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+.ctc__channel-label { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); letter-spacing: 0.14em; text-transform: uppercase; }
+.ctc__channel-value { margin-top: 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); line-height: 1.35; overflow-wrap: anywhere; }
 .ctc__channel-value--link { display: inline-block; color: var(--nu-blue-text); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; transition: color .2s; }
 .ctc__channel-value--link:hover { color: var(--nu-blue-hover); }
 
@@ -185,7 +185,7 @@ const painel = useChatPainel()
   }
   .ctc__lede { grid-column: 1; grid-row: 1; color: var(--nu-ink); font-size: clamp(22px, 2vw, 27px); font-weight: 600; letter-spacing: -0.012em; line-height: 1.35; text-wrap: pretty; }
   .ctc__form { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; }
-  .ctc__h2 { grid-column: 1; grid-row: 2; margin-top: clamp(40px, 4.4vw, 56px); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.3; }
+  .ctc__h2 { grid-column: 1; grid-row: 2; margin-top: clamp(40px, 4.4vw, 56px); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.3; }
   .ctc__channels { grid-column: 1; grid-row: 3; grid-template-columns: 1fr; margin-top: 16px; gap: 12px; }
   .ctc__channel { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 16px; align-items: center; padding: 20px 22px; }
   .ctc__channel-icon { grid-row: 1 / span 2; margin-bottom: 0; }

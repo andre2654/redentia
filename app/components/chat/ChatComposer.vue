@@ -92,7 +92,7 @@ defineExpose({ focar })
 .cco__chip {
   display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
   padding: 4px 4px 4px 10px; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream-2); color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700;
+  background: var(--nu-cream-2); color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
 }
 .cco__chip--novo { animation: cco-pop .45s cubic-bezier(.2, 1.4, .4, 1) both; }
 .cco__chip-txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }

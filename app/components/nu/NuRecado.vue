@@ -228,7 +228,7 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
   width: min(540px, 100%); max-height: calc(100vh - 48px); overflow: auto;
   background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
   box-shadow: var(--nu-shadow-day-modal);
-  animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both;
+  animation: nu-subir .32s var(--nu-ease-saida) both;
 }
 .rec__card:focus { outline: none; }
 
@@ -248,19 +248,19 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
 }
 .rec__vale line { stroke: var(--nu-navy); stroke-width: 1; opacity: .55; }
 .rec__vale text {
-  fill: var(--nu-navy); font-size: 11px; font-weight: 800; letter-spacing: .04em;
+  fill: var(--nu-navy); font-size: 11px; font-weight: var(--nu-w-forte); letter-spacing: .04em;
   font-variant-numeric: tabular-nums; opacity: .72;
 }
 .rec__hoje { fill: var(--nu-white); stroke: var(--nu-blue); stroke-width: 2; }
 .rec__legenda {
   position: absolute; left: 22px; top: 18px;
-  color: var(--nu-cream-text-78); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .02em;
+  color: var(--nu-cream-text-78); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .02em;
 }
 .rec__x {
   position: absolute; top: 14px; right: 14px; z-index: 1;
   width: 36px; height: 36px; border-radius: 50%; border: none;
   background: var(--nu-cream-text-12); color: var(--nu-cream-text);
-  font-size: var(--nu-fs-sm); font-weight: 800; cursor: pointer;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); cursor: pointer;
   display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
 .rec__x:hover { background: var(--nu-white-30); }
@@ -270,12 +270,12 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
 .rec__de { display: flex; align-items: center; gap: 12px; }
 .rec__foto { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 3px var(--nu-day-card), 0 0 0 4px var(--nu-day-divider); }
 .rec__de-txt { display: flex; flex-direction: column; gap: 2px; }
-.rec__de-nome { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.rec__de-nome { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .rec__de-data { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 .rec__titulo {
   margin: 22px 0 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.06; text-wrap: balance;
+  font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.06; text-wrap: balance;
 }
 .rec__p {
   margin: 12px 0 0; color: var(--nu-day-body);
@@ -286,21 +286,21 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
   padding: 12px 14px; border-radius: 14px; background: var(--nu-cream);
   color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
 }
-.rec__nota b { font-weight: 800; color: var(--nu-ink); }
+.rec__nota b { font-weight: var(--nu-w-forte); color: var(--nu-ink); }
 .rec__nota-i { flex: none; width: 18px; height: 18px; margin-top: 1px; fill: none; stroke: var(--nu-blue); stroke-width: 1.6; stroke-linecap: round; }
 
 /* o fecho à mão: tinta de caneta azul, escrevendo da esquerda para a direita */
 .rec__mao {
   margin: 22px 0 0; color: var(--nu-blue-deep);
   font-family: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
-  font-size: calc(var(--nu-fs-h3) + 2px); font-weight: 700; line-height: 1.02; letter-spacing: .005em;
+  font-size: calc(var(--nu-fs-h3) + 2px); font-weight: var(--nu-w-display); line-height: 1.02; letter-spacing: .005em;
   transform: rotate(-1.2deg); transform-origin: left center;
   animation: rec-escreve 1.5s .5s cubic-bezier(.45, .05, .35, 1) both;
 }
 .rec__assina { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .rec__assina-nome {
   font-family: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
-  color: var(--nu-blue-deep); font-size: var(--nu-fs-2xl); font-weight: 700; margin-right: 1px;
+  color: var(--nu-blue-deep); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-medio); margin-right: 1px;
 }
 
 .rec__acoes { margin-top: 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
@@ -308,13 +308,13 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--nu-blue); color: var(--nu-white); text-decoration: none;
   border-radius: var(--nu-r-pill); padding: 13px 24px;
-  min-height: 52px; font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  min-height: 52px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .rec__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .rec__cta:active { transform: scale(.98); }
 .rec__ok {
   border: none; background: none; padding: 10px 4px; cursor: pointer;
-  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 700;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
 }
 .rec__ok:hover { color: var(--nu-ink); }
 

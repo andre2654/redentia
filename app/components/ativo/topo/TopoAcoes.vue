@@ -48,7 +48,7 @@ async function compartilhar() {
 
 <style scoped>
 /* o botão redondo mora no TopoBotao (o mesmo do topo da /carteira) */
-.tac { --mola: cubic-bezier(.34, 1.56, .64, 1); position: relative; display: flex; align-items: flex-start; gap: 14px; }
+.tac { --mola: var(--nu-ease-saida); position: relative; display: flex; align-items: flex-start; gap: 14px; }
 .tac__msg { position: absolute; top: 100%; left: 0; margin: 6px 0 0; font-size: var(--nu-fs-xs); font-weight: 600; opacity: 0; transition: opacity .2s ease; white-space: nowrap; }
 .tac__msg { color: var(--nu-agora-sub); }
 .tac--claro .tac__msg { color: var(--nu-gray); }

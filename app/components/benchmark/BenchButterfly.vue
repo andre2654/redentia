@@ -64,16 +64,16 @@ const { el, revealClass } = useReveal()
 .bbf__bar { display: block; height: 100%; border-radius: var(--nu-r-pill); }
 .bbf__bar--bad { background: var(--nu-red); transform-origin: right; }
 .bbf__bar--good { background: var(--nu-blue); transform-origin: left; }
-.bbf__num { flex: 0 0 46px; color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 800; font-variant-numeric: tabular-nums; }
+.bbf__num { flex: 0 0 46px; color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .bbf__side--l .bbf__num { text-align: right; }
 .bbf__mid { display: flex; flex-direction: column; align-items: center; min-width: 0; }
-.bbf__name { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.bbf__name { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .bbf__score { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; }
 .bbf__foot { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 /* ——— entrada: as pílulas saem do eixo para os dois lados ——— */
 .is-pending .bbf__bar { transform: scaleX(0); }
-.is-in .bbf__bar { transform: scaleX(1); transition: transform .7s cubic-bezier(.2, .8, .2, 1) calc(var(--i) * 45ms); }
+.is-in .bbf__bar { transform: scaleX(1); transition: transform .7s var(--nu-ease-saida) calc(var(--i) * 45ms); }
 
 @container (max-width: 640px) {
   .bbf__head, .bbf__row { grid-template-columns: 1fr 92px 1fr; gap: 8px; }

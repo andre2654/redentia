@@ -82,21 +82,21 @@ const serra = logs
 .rfx__mao {
   margin: 0; color: var(--nu-cream-text);
   font-family: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
-  font-size: var(--nu-fs-2xl); font-weight: 700; line-height: 1; white-space: nowrap;
+  font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-medio); line-height: 1; white-space: nowrap;
 }
-.rfx__txt { margin: 0; color: var(--nu-cream-text-78); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rfx__txt { margin: 0; color: var(--nu-cream-text-78); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .rfx__ler {
   border: none; cursor: pointer; white-space: nowrap;
   background: var(--nu-cream-text-12); color: var(--nu-cream-text);
   border-radius: var(--nu-r-pill); padding: 7px 14px;
-  font-size: var(--nu-fs-sm); font-weight: 800; transition: background .2s;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); transition: background .2s;
 }
 .rfx__ler:hover { background: var(--nu-white-30); }
 .rfx__x {
   position: absolute; top: 50%; right: clamp(22px, 5.5vw, 80px); transform: translateY(-50%);
   width: 30px; height: 30px; border-radius: 50%; border: none; cursor: pointer;
   background: transparent; color: var(--nu-cream-text-78);
-  font-size: var(--nu-fs-sm); font-weight: 800;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte);
   display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
 .rfx__x:hover { background: var(--nu-cream-text-12); }

@@ -105,7 +105,7 @@ const BANCOS = [
   margin: 18px 0 0; max-width: 64ch; color: var(--nu-gray);
   font-size: 14.5px; font-weight: 500; line-height: 1.55; text-wrap: balance;
 }
-.hch__letra strong { color: var(--nu-ink); font-weight: 700; }
+.hch__letra strong { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .hch__apps {
   display: inline-flex; align-items: center; gap: 10px; margin: 8px 0 0;
   color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.4;

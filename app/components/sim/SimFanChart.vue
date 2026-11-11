@@ -200,7 +200,7 @@ const fmt = fmtBRL
 @keyframes sfc-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 .sfc__event {
   position: absolute; top: -4px; transform: translateX(-50%);
-  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;
 }
 .sfc__event--choque { color: var(--nu-amber); }
@@ -209,23 +209,23 @@ const fmt = fmtBRL
 .sfc__event-text { display: inline-block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 .sfc__ylabel {
   position: absolute; right: 0; transform: translateY(-120%);
-  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   font-variant-numeric: tabular-nums;
 }
 .sfc__xrow { position: relative; height: 22px; }
 .sfc__xlabel {
   position: absolute; transform: translateX(-50%);
-  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   font-variant-numeric: tabular-nums;
 }
 .sfc__tip {
   position: absolute; top: 12px; transform: translateX(-50%);
   display: flex; flex-direction: column; gap: 3px;
-  background: var(--nu-dark-chip); border: 1.5px solid var(--nu-dark-chip-line); border-radius: var(--nu-r-chip); padding: 10px 13px;
+  background: var(--nu-dark-chip); border: 1px solid var(--nu-dark-chip-line); border-radius: var(--nu-r-chip); padding: 10px 13px;
   box-shadow: var(--nu-shadow-chart-tip);
   pointer-events: none;
 }
-.sfc__tip-date { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+.sfc__tip-date { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: 0.12em; }
 .sfc__tip-row { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-on-dark); font-size: var(--nu-fs-dense); font-weight: 500; }
 .sfc__tip-row b { color: var(--nu-white); font-variant-numeric: tabular-nums; }
 .sfc__dot { width: 8px; height: 8px; border-radius: 50%; }

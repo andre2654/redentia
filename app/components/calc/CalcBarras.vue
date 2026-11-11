@@ -34,12 +34,12 @@ defineProps<{
 .cbr__linha { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 14px; }
 .cbr__linha:first-child { margin-top: 0; }
 /* a letra do eixo do CalcCurva (.ccv__eixo, .ccv__fim) */
-.cbr__rotulo { color: var(--nu-gray); font-size: 13px; font-weight: 700; }
-.cbr__valor { color: var(--nu-ink); font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.cbr__rotulo { color: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-medio); }
+.cbr__valor { color: var(--nu-ink); font-size: 14px; font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .cbr__trilho { height: 12px; margin-top: 6px; border-radius: var(--nu-r-pill); background: var(--nu-cream-2); overflow: hidden; }
 .cbr__barra {
   display: block; height: 100%; border-radius: var(--nu-r-pill); background: var(--nu-blue);
-  transition: width .25s ease; transform-origin: left center; animation: cbr-cresce .6s cubic-bezier(.2, .8, .2, 1) both;
+  transition: width .25s ease; transform-origin: left center; animation: cbr-cresce .6s var(--nu-ease-saida) both;
 }
 .cbr__barra--preco { background: var(--nu-ink); }
 @keyframes cbr-cresce { from { transform: scaleX(0); } }

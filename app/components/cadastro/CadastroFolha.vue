@@ -338,7 +338,7 @@ const eyebrow = computed(() => {
 .ncf__card {
   position: relative; width: min(520px, 100%); max-height: calc(100dvh - 48px); overflow-y: auto; overscroll-behavior: contain;
   background: var(--nu-page); color: var(--nu-ink); border-radius: var(--nu-r-card-lg); box-shadow: var(--nu-shadow-escuro); outline: none;
-  animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) backwards;
+  animation: nu-subir .32s var(--nu-ease-saida) backwards;
 }
 /* o herói: um cartão carvão dentro do cartão creme, com a luz cobalto no canto */
 .ncf__heroi {
@@ -352,7 +352,7 @@ const eyebrow = computed(() => {
 .ncf__fechar {
   position: absolute; top: 12px; right: 12px; z-index: 1; width: 36px; height: 36px; border-radius: 50%; border: 0; cursor: pointer;
   display: grid; place-items: center; background: var(--nu-white-14); color: var(--nu-white);
-  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 /* o alvo de toque tem 44px, o círculo fica em 36 */
 .ncf__fechar::after { content: ''; position: absolute; inset: -4px; }
@@ -360,16 +360,16 @@ const eyebrow = computed(() => {
 .ncf__fechar:active { transform: scale(.94); }
 .ncf__fechar:focus-visible { outline: 3px solid var(--nu-blue-soft); outline-offset: 2px; }
 
-.ncf__corpo { padding: 26px 34px 24px; animation: nu-fade .35s cubic-bezier(.2, .8, .2, 1) backwards; }
-.ncf__titulo { margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(28px, 3vw, 36px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
+.ncf__corpo { padding: 26px 34px 24px; animation: nu-fade .35s var(--nu-ease-saida) backwards; }
+.ncf__titulo { margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(28px, 3vw, 36px); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
 .ncf__apoio { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 17px; font-weight: 500; line-height: 1.45; }
-.ncf__apoio b { color: var(--nu-ink); font-weight: 700; overflow-wrap: anywhere; }
+.ncf__apoio b { color: var(--nu-ink); font-weight: var(--nu-w-medio); overflow-wrap: anywhere; }
 .ncf__linhas { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
 .ncf__linha { display: flex; gap: 14px; align-items: flex-start; animation: nu-fade .4s ease backwards; }
 .ncf__linha:nth-child(2) { animation-delay: 60ms; }
 .ncf__linha:nth-child(3) { animation-delay: 120ms; }
 .ncf__icone { flex: none; width: 38px; height: 38px; border-radius: var(--nu-r-chip); display: grid; place-items: center; background: var(--nu-blue-bg); color: var(--nu-blue); }
-.ncf__linha b { display: block; color: var(--nu-ink); font-size: 16px; font-weight: 700; }
+.ncf__linha b { display: block; color: var(--nu-ink); font-size: 16px; font-weight: var(--nu-w-medio); }
 .ncf__linha span span { display: block; margin-top: 2px; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.4; }
 
 .ncf__social { margin-top: 24px; }
@@ -379,10 +379,10 @@ const eyebrow = computed(() => {
 .ncf__canais { display: flex; padding: 4px; margin-bottom: 8px; border-radius: var(--nu-r-pill); background: var(--nu-cream-2); }
 .ncf__canal {
   flex: 1; min-height: 44px; border: 0; border-radius: var(--nu-r-pill); background: transparent; cursor: pointer;
-  color: var(--nu-gray); font: inherit; font-size: 15px; font-weight: 700; transition: background .2s, color .2s;
+  color: var(--nu-gray); font: inherit; font-size: 15px; font-weight: var(--nu-w-medio); transition: background .2s, color .2s;
 }
 .ncf__canal--on { background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-quente); }
-.ncf__rotulo { font-size: 15px; font-weight: 700; }
+.ncf__rotulo { font-size: 15px; font-weight: var(--nu-w-medio); }
 .ncf__campo {
   width: 100%; height: 56px; box-sizing: border-box; padding: 0 18px; border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input);
   background: var(--nu-white); color: var(--nu-ink); font: inherit; font-size: 17px; font-weight: 500; transition: border-color .2s;
@@ -392,17 +392,17 @@ const eyebrow = computed(() => {
 .ncf__botao { margin-top: 9px; }
 .ncf__botao--fim { margin-top: 26px; }
 .ncf__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-.ncf__erro { margin: 12px 0 0; color: var(--nu-red-text); font-size: 14.5px; font-weight: 700; }
+.ncf__erro { margin: 12px 0 0; color: var(--nu-red-text); font-size: 14.5px; font-weight: var(--nu-w-medio); }
 .ncf__aceite { margin: 14px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 .ncf__aceite a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .ncf__pe {
   display: flex; align-items: center; justify-content: space-between; gap: 4px 12px; flex-wrap: wrap;
-  margin-top: 14px; padding-top: 8px; border-top: 1.5px solid var(--nu-line-2);
+  margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--nu-line-2);
   color: var(--nu-gray); font-size: 15px; font-weight: 500;
 }
-.ncf__pe a { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.ncf__pe a { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; }
 .ncf__agora-nao {
-  min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-gray-3); font: inherit; font-weight: 700;
+  min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-gray-3); font: inherit; font-weight: var(--nu-w-medio);
   transition: color .2s;
 }
 .ncf__agora-nao:hover { color: var(--nu-ink); text-decoration: underline; text-underline-offset: 3px; }
@@ -412,7 +412,7 @@ const eyebrow = computed(() => {
 .ncf__digito {
   flex: 1; min-width: 0; height: 64px; box-sizing: border-box; display: grid; place-items: center; border-radius: var(--nu-r-input);
   background: var(--nu-white); border: 1.5px solid var(--nu-borda-campo);
-  color: var(--nu-ink); font-size: clamp(26px, 7vw, 32px); font-weight: 800; font-variant-numeric: tabular-nums; transition: border-color .2s;
+  color: var(--nu-ink); font-size: clamp(26px, 7vw, 32px); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; transition: border-color .2s;
 }
 .ncf__digito--cheio { border-color: var(--nu-ink); }
 .ncf__digito--vez { border-color: var(--nu-blue); outline: 3px solid var(--nu-blue); outline-offset: 1px; }
@@ -424,7 +424,7 @@ const eyebrow = computed(() => {
 .ncf__nota { margin: 14px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.45; }
 .ncf__links { display: flex; flex-wrap: wrap; gap: 0 22px; margin-top: 12px; }
 .ncf__links button {
-  min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-size: 15px; font-weight: 700;
+  min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-size: 15px; font-weight: var(--nu-w-medio);
   text-decoration: underline; text-underline-offset: 3px;
 }
 .ncf__links button:disabled { color: var(--nu-gray); cursor: default; text-decoration: none; }
@@ -434,7 +434,7 @@ const eyebrow = computed(() => {
 .ncf__check {
   flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
   background: var(--nu-green-bg); color: var(--nu-green-text);
-  animation: ncf-pousa .45s cubic-bezier(.2, .8, .2, 1) backwards;
+  animation: ncf-pousa .45s var(--nu-ease-saida) backwards;
 }
 .ncf__check--aviso { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .ncf__check path { stroke-dasharray: 1; stroke-dashoffset: 0; animation: ncf-desenha .5s cubic-bezier(.65, 0, .35, 1) .2s backwards; }
@@ -452,7 +452,7 @@ const eyebrow = computed(() => {
   .ncf { align-items: flex-end; padding: 0; }
   .ncf__card {
     width: 100%; max-height: 92dvh; border-radius: 28px 28px 0 0; padding-bottom: env(safe-area-inset-bottom);
-    animation: ncf-sobe .36s cubic-bezier(.2, .8, .2, 1) backwards;
+    animation: ncf-sobe .36s var(--nu-ease-saida) backwards;
   }
   .ncf__alca { display: block; width: 40px; height: 5px; margin: 8px auto 0; border-radius: var(--nu-r-pill); background: var(--nu-line); }
   .ncf__heroi { margin: 8px 8px 0; border-radius: 20px; }

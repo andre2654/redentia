@@ -227,8 +227,8 @@ function dateTxt(s: SimulationVM): string {
   display: inline-flex; align-items: center; justify-content: center; gap: 9px; height: 52px;
   padding: 0 24px; border: 0; border-radius: var(--nu-r-pill);
   background: var(--nu-blue); color: var(--nu-white); white-space: nowrap;
-  font-size: 16.5px; font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  font-size: 16.5px; font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
+  transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
 }
 .csv__btn:hover { background: var(--nu-blue-hover); }
 .csv__btn:active { transform: scale(.98); }
@@ -237,7 +237,7 @@ function dateTxt(s: SimulationVM): string {
 .csv__btn--saved:hover { background: var(--nu-blue-bg); }
 .csv__btn:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .csv__hint { margin: 0; padding-left: 4px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
-.csv__error { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-dense); font-weight: 700; }
+.csv__error { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
 /* no celular o salvar vive numa barra fina grudada no pé da tela: uma linha só */
 @media (max-width: 900px) {
   .csv__botoes { flex-wrap: nowrap; }
@@ -248,9 +248,9 @@ function dateTxt(s: SimulationVM): string {
 /* ——— botão histórico (ao lado do título da seção) ——— */
 .csh-btn {
   display: inline-flex; align-items: center; gap: 7px;
-  min-height: 44px; padding: 0 16px; border: 1.5px solid var(--nu-line); border-radius: var(--nu-r-pill);
+  min-height: 44px; padding: 0 16px; border: 1px solid var(--nu-line); border-radius: var(--nu-r-pill);
   background: var(--nu-white); color: var(--nu-gray-3);
-  font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer; font-family: inherit;
   white-space: nowrap; transition: border-color .15s, color .15s;
 }
 .csh-btn:hover { border-color: var(--nu-blue); color: var(--nu-blue-text); }
@@ -258,7 +258,7 @@ function dateTxt(s: SimulationVM): string {
   min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--nu-r-tag);
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--nu-blue-bg); color: var(--nu-blue-text);
-  font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums;
 }
 
 /* ——— modal ——— */
@@ -273,10 +273,10 @@ function dateTxt(s: SimulationVM): string {
   width: min(560px, 100%); max-height: calc(100dvh - 36px); overflow-y: auto;
   background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
   padding: 32px 34px 26px; box-shadow: var(--nu-shadow-day-modal);
-  outline: none; animation: nu-subir .32s cubic-bezier(.2, .8, .2, 1) both;
+  outline: none; animation: nu-subir .32s var(--nu-ease-saida) both;
 }
 .cshm__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-.cshm__title { margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(26px, 2.8vw, 34px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+.cshm__title { margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(26px, 2.8vw, 34px); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.05; }
 .cshm__close {
   width: 44px; height: 44px; flex-shrink: 0; border: none; border-radius: 50%;
   background: var(--nu-cream-2); color: var(--nu-ink); cursor: pointer;
@@ -285,17 +285,17 @@ function dateTxt(s: SimulationVM): string {
 }
 .cshm__close:hover { background: var(--nu-line-2); }
 
-.cshm__list { margin-top: 20px; display: flex; flex-direction: column; border-bottom: 1.5px solid var(--nu-line-2); }
-.cshm__row { display: flex; align-items: center; gap: 6px; border-top: 1.5px solid var(--nu-line-2); transition: background .15s; }
+.cshm__list { margin-top: 20px; display: flex; flex-direction: column; border-bottom: 1px solid var(--nu-line-2); }
+.cshm__row { display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--nu-line-2); transition: background .15s; }
 .cshm__row:hover, .cshm__row--hot { background: var(--nu-cream-2); }
 .cshm__row-main {
   flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;
   text-align: left; padding: 11px 14px; border: none; background: transparent;
   cursor: pointer; font-family: inherit;
 }
-.cshm__row-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cshm__row-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cshm__row-meta { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
-.cshm__row-meta strong { color: var(--nu-blue-text); font-weight: 800; }
+.cshm__row-meta strong { color: var(--nu-blue-text); font-weight: var(--nu-w-forte); }
 .cshm__row-del {
   width: 44px; height: 44px; flex-shrink: 0; margin-right: 2px;
   border: none; border-radius: 50%; background: transparent; color: var(--nu-gray);
@@ -304,7 +304,7 @@ function dateTxt(s: SimulationVM): string {
 }
 .cshm__row-del:hover { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .cshm__empty { margin: 22px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
-.cshm__error { margin: 12px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cshm__error { margin: 12px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .cshm__foot { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 @media (max-width: 760px) {

@@ -143,13 +143,13 @@ const avgPerPayment = computed(() =>
 /* o cartão branco sobre o creme da página (Aportou, 11/11/2026) */
 .car--branco { background: var(--nu-white); box-shadow: var(--nu-shadow-quente); }
 .car--branco .car__kpi { background: var(--nu-band); }
-.car--branco .car__table-wrap { box-shadow: inset 0 0 0 1.5px var(--nu-line-2); }
-.car__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.car--branco .car__table-wrap { box-shadow: inset 0 0 0 1px var(--nu-line-2); }
+.car__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
 .car__name { margin: 3px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.car__eyebrow { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.car__eyebrow { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .car__value {
   margin-top: 4px; color: var(--nu-ink);
-  font-size: var(--nu-fs-h3); font-weight: 800;
+  font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display);
   letter-spacing: -0.03em; line-height: 1.05; font-variant-numeric: tabular-nums;
 }
 .car__kpis {
@@ -161,14 +161,14 @@ const avgPerPayment = computed(() =>
   background: var(--nu-white); border-radius: var(--nu-r-input);
   padding: 12px 14px; display: flex; flex-direction: column; gap: 3px;
 }
-.car__kpi-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
-.car__kpi-value { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.car__kpi-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
+.car__kpi-value { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .car__pos { color: var(--nu-green-text); }
 .car__neg { color: var(--nu-red-text); }
 .car__sub { margin-top: 22px; }
-.car__sub-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.car__sub-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .car__chart { margin-top: 22px; }
-.car__chart-label { margin: 0 0 10px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.car__chart-label { margin: 0 0 10px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .car__table-wrap {
   background: var(--nu-white); border-radius: var(--nu-r-tile);
   margin-top: 12px; max-height: 500px; overflow-y: auto; overflow-x: auto;
@@ -176,20 +176,20 @@ const avgPerPayment = computed(() =>
 .car__table { width: 100%; border-collapse: collapse; min-width: 560px; }
 .car__table th {
   position: sticky; top: 0; background: var(--nu-white); text-align: left;
-  padding: 12px 14px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
+  padding: 12px 14px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   letter-spacing: 0.14em; text-transform: uppercase;
-  border-bottom: 1.5px solid var(--nu-line-2); white-space: nowrap;
+  border-bottom: 1px solid var(--nu-line-2); white-space: nowrap;
 }
 .car__table td {
   padding: 11px 14px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500;
-  border-bottom: 1.5px solid var(--nu-line-2); font-variant-numeric: tabular-nums;
+  border-bottom: 1px solid var(--nu-line-2); font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .car__table tbody tr:last-child td { border-bottom: none; }
 .car__muted { color: var(--nu-gray-2); }
 .car__badge {
   display: inline-flex; border-radius: var(--nu-r-tag);
-  padding: 3px 8px; font-size: var(--nu-fs-xs); font-weight: 700;
+  padding: 3px 8px; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
 }
 .car__badge--success { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .car__badge--brand { background: var(--nu-blue-bg); color: var(--nu-blue-text); }

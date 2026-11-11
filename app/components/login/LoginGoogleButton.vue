@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
   box-sizing: border-box; padding: 0 20px; border-radius: var(--nu-r-pill);
   /* cores fixas do guia de marca do Google, não são tokens do tema */
   background: #FFFFFF; box-shadow: inset 0 0 0 1px #747775; color: #1F1F1F;
-  font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); transition: background .2s;
 }
 .lgb:hover .lgb__pilula { background: #F8F9FA; }
 .lgb--busy { pointer-events: none; }

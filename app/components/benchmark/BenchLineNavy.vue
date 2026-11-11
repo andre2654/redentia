@@ -341,7 +341,7 @@ const tip = computed(() => {
 .blv__full {
   flex-shrink: 0; display: grid; place-items: center; width: 36px; height: 36px; margin: -1px -8px 0 0; padding: 0;
   border: 0; background: none; border-radius: 50%; cursor: pointer; color: var(--nu-cream-text-55);
-  transition: color .25s ease, transform .35s cubic-bezier(.22, 1, .36, 1);
+  transition: color .25s ease, transform .35s var(--nu-ease-saida);
 }
 .blv__full svg { width: 20px; height: 20px; overflow: visible; }
 .blv__full:hover { color: var(--nu-cream-text); }
@@ -350,7 +350,7 @@ const tip = computed(() => {
 /* cada canto gira no próprio centro: o "abrir" vira o "sair" */
 .blv__full-c {
   transform-box: fill-box; transform-origin: center;
-  transition: transform .55s cubic-bezier(.65, 0, .35, 1), translate .35s cubic-bezier(.22, 1, .36, 1);
+  transition: transform .55s cubic-bezier(.65, 0, .35, 1), translate .35s var(--nu-ease-saida);
 }
 .blv--cheia .blv__full-c { transform: rotate(180deg); }
 /* hover: os cantos respiram para fora (abrir) ou para dentro (sair) */
@@ -381,7 +381,7 @@ const tip = computed(() => {
 .blv__pill--cor:hover { opacity: .85; }
 .blv__pill-dot {
   width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  box-shadow: inset 0 0 0 1.5px var(--c); transition: background .25s ease, box-shadow .25s ease, transform .3s cubic-bezier(.22, 1, .36, 1);
+  box-shadow: inset 0 0 0 1.5px var(--c); transition: background .25s ease, box-shadow .25s ease, transform .3s var(--nu-ease-saida);
 }
 .blv__pill--ativo, .blv__pill--ativo:hover {
   opacity: 1; color: var(--nu-cream-text);
@@ -398,15 +398,15 @@ const tip = computed(() => {
 .blv__tip--multi { transform: none; width: 230px; white-space: normal; }
 .blv__tip-list { list-style: none; margin: 6px 0 8px; padding: 0; display: grid; gap: 4px; }
 .blv__tip-list li { display: flex; align-items: center; gap: 8px; color: var(--nu-navy); font-size: var(--nu-fs-sm); font-weight: 500; }
-.blv__tip-list b { margin-left: auto; font-weight: 800; font-variant-numeric: tabular-nums; }
+.blv__tip-list b { margin-left: auto; font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .blv__tip-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
 .blv__tip-nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.blv--cheia.blv--fade { animation: blv-cheia-in .35s cubic-bezier(.22, 1, .36, 1); }
+.blv--cheia.blv--fade { animation: blv-cheia-in .35s var(--nu-ease-saida); }
 @keyframes blv-cheia-in { from { opacity: 0; } }
 .blv__pill {
   padding: 7px 13px; border-radius: var(--nu-r-pill); cursor: pointer; font-family: inherit;
   border: 1px solid var(--nu-cream-text-18); background: transparent;
-  color: var(--nu-cream-text-78); font-size: var(--nu-fs-dense); font-weight: 700;
+  color: var(--nu-cream-text-78); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
   transition: background .2s, color .2s, border-color .2s, transform .2s;
 }
 .blv__pill:hover { border-color: var(--nu-cream-text-45); color: var(--nu-cream-text); transform: translateY(-1px); }
@@ -444,10 +444,10 @@ const tip = computed(() => {
 }
 .blv__end--sel { background: var(--nu-cream); box-shadow: var(--nu-shadow-chart-pill); }
 .blv__end--ibov { background: var(--nu-navy-2); }
-.blv__end-lbl { font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .4px; text-transform: uppercase; }
+.blv__end-lbl { font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .4px; text-transform: uppercase; }
 .blv__end--sel .blv__end-lbl { color: var(--nu-navy-55); }
 .blv__end--ibov .blv__end-lbl { color: var(--nu-cream-text-55); }
-.blv__end-val { font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.blv__end-val { font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .blv__end--sel .blv__end-val { color: var(--nu-navy); }
 .blv__end--ibov .blv__end-val { color: var(--nu-cream-text); }
 .blv__cross { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--nu-cream-text-30); pointer-events: none; }
@@ -462,23 +462,23 @@ const tip = computed(() => {
 }
 .blv__mark-lbl {
   position: absolute; left: 12px; top: 12px; white-space: nowrap; border-radius: var(--nu-r-pill); padding: 4px 10px;
-  background: var(--nu-cream); color: var(--nu-navy); font-size: var(--nu-fs-xs); font-weight: 700; box-shadow: var(--nu-shadow-chart-pill);
+  background: var(--nu-cream); color: var(--nu-navy); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); box-shadow: var(--nu-shadow-chart-pill);
 }
 .blv__mark--flip .blv__mark-lbl { left: auto; right: 12px; }
 .blv__rule { position: absolute; bottom: 0; width: 0; border-left: 1px dashed var(--nu-cream-text-30); pointer-events: none; }
 .blv__mark-foot {
   position: absolute; bottom: 6px; transform: translateX(8px); white-space: nowrap; pointer-events: none; z-index: 2;
   border-radius: var(--nu-r-pill); padding: 3px 9px; background: var(--nu-navy-2); color: var(--nu-cream-text);
-  font-size: var(--nu-fs-xs); font-weight: 700;
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
 }
 .blv__mark-foot--flip { transform: translateX(calc(-100% - 8px)); }
-.blv__tip-marco { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; margin-top: 2px; }
+.blv__tip-marco { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); margin-top: 2px; }
 .blv__tip {
   position: absolute; top: 4px; transform: translateX(-50%); z-index: 3; background: var(--nu-cream);
   border-radius: var(--nu-r-tile); padding: 10px 14px; box-shadow: var(--nu-shadow-chart-tip); pointer-events: none; white-space: nowrap;
 }
-.blv__tip-date { color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
-.blv__tip-main { color: var(--nu-navy); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
+.blv__tip-date { color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: .4px; }
+.blv__tip-main { color: var(--nu-navy); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .blv__tip-row { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 .blv__axis { display: flex; justify-content: space-between; margin-top: 10px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 500; }
 .blv__foot { margin: 14px 0 0; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; }
@@ -510,8 +510,8 @@ const tip = computed(() => {
     border-radius: var(--nu-r-input); border: 1px solid var(--nu-cream-text-18); color: var(--nu-cream-text);
   }
   .blv__select:has(select:focus-visible) { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
-  .blv__select-lbl { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
-  .blv__select-val { flex: 1; min-width: 0; font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .blv__select-lbl { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
+  .blv__select-val { flex: 1; min-width: 0; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .blv__select-chev { width: 18px; height: 18px; flex-shrink: 0; color: var(--nu-cream-text-55); }
   .blv__select select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: var(--nu-fs-md); }
 }

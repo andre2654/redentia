@@ -60,11 +60,11 @@ const estado = (n: number) => (n < props.passo ? 'feito' : n === props.passo ? '
 .ajr__marca {
   width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums;
   background: var(--nu-cream-2); color: var(--nu-gray-3);
 }
 .ajr__texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.ajr__t { color: var(--nu-ink); font-size: 15px; font-weight: 800; }
+.ajr__t { color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-forte); }
 .ajr__d { color: var(--nu-gray-2); font-size: 13.5px; font-weight: 500; line-height: 1.45; }
 .ajr__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -73,7 +73,7 @@ const estado = (n: number) => (n < props.passo ? 'feito' : n === props.passo ? '
 .ajr__passo--agora .ajr__marca { background: var(--nu-blue); color: var(--nu-white); }
 .ajr__passo--feito .ajr__marca { background: var(--nu-green); color: var(--nu-white); }
 .ajr__passo--feito .ajr__t { color: var(--nu-gray-2); }
-.ajr__passo--depois { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-line); }
+.ajr__passo--depois { background: transparent; box-shadow: inset 0 0 0 1px var(--nu-line); }
 .ajr__passo--depois .ajr__t { color: var(--nu-gray-2); }
 
 /* compacto (embaixo do botão, no login): só os títulos, cada passo do tamanho

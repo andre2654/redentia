@@ -45,9 +45,9 @@ const label = computed(() => {
 .nfb {
   pointer-events: auto; display: inline-flex; align-items: center; gap: 10px;
   border: none; border-radius: var(--nu-r-pill); min-height: 52px; padding: 0 28px;
-  font-family: inherit; font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
+  font-family: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer;
   background: var(--nu-creme); color: var(--nu-ink);
-  transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
 }
 .nfb:hover { background: var(--nu-white); }
 .nfb:active { transform: scale(.98); }
@@ -56,7 +56,7 @@ const label = computed(() => {
 /* ativo sobre o creme (card sobre creme é branco — regra 2 do design system) */
 .nfb--cream {
   background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
-  min-height: 62px; padding: 0 26px; font-size: var(--nu-fs-lg); font-weight: 700;
+  min-height: 62px; padding: 0 26px; font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio);
 }
 .nfb--cream:hover { background: var(--nu-row-hover); }
 .nfb--cream.nfb--on, .nfb--cream.nfb--on:hover { background: var(--nu-blue-bg); color: var(--nu-blue-text); box-shadow: none; }

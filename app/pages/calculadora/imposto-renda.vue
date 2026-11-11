@@ -409,7 +409,7 @@ usePageSeo({
 
 <style scoped>
 /* ——— tipografia compartilhada ——— */
-.ir__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.ir__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .ir__h4--accent { color: var(--nu-blue-text); }
 .ir__h4--negative { color: var(--nu-red-text); }
 .ir__link { text-decoration: underline; }
@@ -421,10 +421,10 @@ usePageSeo({
   line-height: 1.7;
 }
 .ir__prose p:last-child { margin-bottom: 0; }
-.ir__prose strong { color: var(--nu-ink); font-weight: 800; }
+.ir__prose strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.ir__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.ir__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .ir__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -437,10 +437,10 @@ usePageSeo({
 .ir__scenario {
   background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .ir__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.ir__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.ir__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
 .ir__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
@@ -461,10 +461,10 @@ usePageSeo({
 .cbd--cream .ir__tile { background: var(--nu-white); }
 .csp--cream .ir__tile { background: var(--nu-white); }
 .ir__tile--danger { background: var(--nu-red-tint); }
-.ir__tile-title { margin: 0 0 8px; color: var(--nu-blue-text); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.ir__tile-title { margin: 0 0 8px; color: var(--nu-blue-text); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .ir__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .ir__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
-.ir__list :deep(strong), .ir__list strong { color: var(--nu-ink); font-weight: 800; }
+.ir__list :deep(strong), .ir__list strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .ir__note {
   margin: 22px auto 0; max-width: 680px; text-align: center;
   color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
@@ -479,17 +479,17 @@ usePageSeo({
 .ir__card-link {
   background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .ir__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.ir__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.ir__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
 .ir__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.ir__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.ir__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .ir__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 .ir__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 </style>

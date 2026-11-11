@@ -30,9 +30,9 @@ defineProps<{ itens: CotacaoDoTopo[]; separador?: boolean }>()
   content: ''; position: absolute; left: calc(var(--ntc-gap, 22px) / -2); top: 50%; width: 1px; height: 12px;
   transform: translateY(-50%); background: var(--nu-cream-line);
 }
-.ntc__nome { color: var(--nu-gray); font-weight: 700; }
-.ntc__valor { color: var(--nu-ink); font-weight: 700; font-variant-numeric: tabular-nums; }
-.ntc__pct { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ntc__nome { color: var(--nu-gray); font-weight: var(--nu-w-medio); }
+.ntc__valor { color: var(--nu-ink); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
+.ntc__pct { font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .ntc__pct--up { color: var(--nu-green-text); }
 .ntc__pct--down { color: var(--nu-red-text); }
 .ntc__pct--flat { color: var(--nu-gray); }

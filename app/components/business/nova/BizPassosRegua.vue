@@ -29,7 +29,7 @@ const emit = defineEmits<{ ir: [i: number, ev: MouseEvent]; foco: [i: number, ev
 <style scoped>
 .bpr { display: flex; gap: 6px; }
 .bpr__marca { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; width: 52px; padding: 8px 0; color: var(--nu-cream-text-50); }
-.bpr__n { font-size: 11px; font-weight: 700; letter-spacing: .08em; font-variant-numeric: tabular-nums; transition: color .3s; }
+.bpr__n { font-size: 11px; font-weight: var(--nu-w-medio); letter-spacing: .08em; font-variant-numeric: tabular-nums; transition: color .3s; }
 .bpr__trilho { position: relative; display: block; width: 100%; height: 2px; border-radius: 1px; background: var(--nu-cream-text-35); overflow: hidden; }
 .bpr__in { position: absolute; inset: 0; background: var(--nu-cream-text); transform-origin: left center; transform: scaleX(0); }
 .bpr__marca--feita .bpr__in { transform: scaleX(1); }

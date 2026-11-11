@@ -48,8 +48,8 @@ onBeforeUnmount(() => { if (volta) clearTimeout(volta) })
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; padding: 0 22px;
   border: 0; border-radius: 999px; cursor: pointer; white-space: nowrap;
   background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-ink);
-  font: inherit; font-size: 16.5px; font-weight: 700;
-  transition: background .2s, box-shadow .18s ease, color .18s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
+  font: inherit; font-size: 16.5px; font-weight: var(--nu-w-medio);
+  transition: background .2s, box-shadow .18s ease, color .18s ease, transform .15s var(--nu-ease-saida);
 }
 .ccp:hover { background: var(--nu-row-hover); }
 .ccp:active { transform: scale(.98); }

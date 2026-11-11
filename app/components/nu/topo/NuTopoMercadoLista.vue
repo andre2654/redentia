@@ -28,19 +28,19 @@ defineProps<{ itens: CotacaoDoTopo[]; mercado: MercadoDoTopo | null; titulo?: st
 <style scoped>
 .nml { display: flex; flex-direction: column; }
 .nml__topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 2px 4px 10px; }
-.nml__titulo { color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.nml__titulo { color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
 .nml__estado { font-size: var(--nu-fs-dense); }
 .nml__lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .nml__linha {
   display: grid; grid-template-columns: 1fr auto 72px; align-items: baseline; gap: 12px;
-  padding: 11px 4px; border-top: 1.5px solid var(--nu-line-2);
+  padding: 11px 4px; border-top: 1px solid var(--nu-line-2);
   font-size: var(--nu-fs-sm); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .nml__nome { color: var(--nu-gray-3); font-weight: 600; }
-.nml__valor { color: var(--nu-ink); font-weight: 700; text-align: right; }
-.nml__pct { font-weight: 700; text-align: right; }
+.nml__valor { color: var(--nu-ink); font-weight: var(--nu-w-medio); text-align: right; }
+.nml__pct { font-weight: var(--nu-w-medio); text-align: right; }
 .nml__pct--up { color: var(--nu-green-text); }
 .nml__pct--down { color: var(--nu-red-text); }
 .nml__junto { white-space: nowrap; }
-.nml__nota { margin: 0; padding: 10px 4px 2px; border-top: 1.5px solid var(--nu-line-2); color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.45; }
+.nml__nota { margin: 0; padding: 10px 4px 2px; border-top: 1px solid var(--nu-line-2); color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.45; }
 </style>

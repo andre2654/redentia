@@ -47,12 +47,12 @@ const id = useId()
 <style scoped>
 .cpr__linha { display: flex; align-items: center; gap: 16px; }
 .cpr__resumo { flex: 1; min-width: 0; margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.cpr__nome { color: var(--nu-ink); font-weight: 700; }
+.cpr__nome { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .cpr__botao {
   flex: none; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0; border: 0; cursor: pointer;
-  background: transparent; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
+  background: transparent; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap;
 }
-.cpr__seta { transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.cpr__seta { transition: transform .25s var(--nu-ease-saida); }
 .cpr__botao:hover .cpr__seta:not(.cpr__seta--aberta) { transform: translateX(3px); }
 .cpr__seta--aberta { transform: rotate(90deg); }
 .cpr__painel { margin-top: 16px; padding: 20px 22px 22px; border-radius: var(--nu-r-panel); background: var(--nu-band); animation: nu-fade .3s ease both; }
@@ -60,7 +60,7 @@ const id = useId()
 .cpr__nota { flex: 1; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .cpr__restaurar {
   flex: none; min-height: 44px; padding: 0; border: 0; cursor: pointer; background: transparent;
-  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
+  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
   text-decoration: underline; text-underline-offset: 3px;
 }
 .cpr__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }

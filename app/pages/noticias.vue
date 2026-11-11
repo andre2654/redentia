@@ -109,7 +109,7 @@ usePageSeo({
 .nof__stack { display: flex; flex-direction: column; }
 /* entrada em cascata (60ms por linha, só nas primeiras) */
 .nof__item { animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms); }
-.nof__more { text-align: center; margin-top: clamp(28px, 3.6vw, 44px); padding-top: clamp(28px, 3.6vw, 44px); border-top: 1.5px solid var(--nu-line-2); }
+.nof__more { text-align: center; margin-top: clamp(28px, 3.6vw, 44px); padding-top: clamp(28px, 3.6vw, 44px); border-top: 1px solid var(--nu-line-2); }
 @media (prefers-reduced-motion: reduce) { .nof__item { animation: none; } }
 
 /* estado vazio: o cartão creme da marca, com a pílula da seta */
@@ -119,7 +119,7 @@ usePageSeo({
 }
 .nof__empty-title {
   color: var(--nu-ink); font-size: var(--nu-fs-h3);
-  font-weight: 800; letter-spacing: -0.025em; line-height: 1.05;
+  font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05;
 }
 .nof__empty-sub {
   color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5;

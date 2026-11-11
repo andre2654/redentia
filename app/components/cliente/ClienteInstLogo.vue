@@ -29,6 +29,6 @@ const style = computed(() => ({
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;
   background: var(--nu-white); border: 1px solid var(--nu-cream-line);
 }
-.cil--ini { background: var(--nu-cream); color: var(--nu-gray-2); font-weight: 800; letter-spacing: .02em; }
+.cil--ini { background: var(--nu-cream); color: var(--nu-gray-2); font-weight: var(--nu-w-forte); letter-spacing: .02em; }
 .cil__img { width: 100%; height: 100%; display: block; object-fit: cover; }
 </style>

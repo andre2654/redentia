@@ -50,7 +50,7 @@ usePageSeo({
 .tsf__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .tsf__title {
   margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
+  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
 }
 .tsf__copy { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; margin-top: 20px; max-width: 420px; }
 .tsf__cta { margin-top: 28px; }

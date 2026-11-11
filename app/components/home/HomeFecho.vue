@@ -36,12 +36,12 @@ const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
 }
 /* posição e tamanho são da classe global .nu-corte-fundo (sempre no canto de cima à esquerda) */
 .hfe__corte { z-index: -1; opacity: .08; }
-.hfe__titulo { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
+.hfe__titulo { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
 .hfe__dek { margin: 20px 0 0; max-width: 46ch; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
 .hfe__chamada { margin-top: clamp(26px, 3vw, 36px); }
 
 /* entrada: o painel sobe quando a seção chega perto da tela */
-.hfe.is-in .hfe__painel { animation: nu-subir .5s cubic-bezier(.2, .8, .2, 1) backwards; }
+.hfe.is-in .hfe__painel { animation: nu-subir .5s var(--nu-ease-saida) backwards; }
 
 @media (max-width: 760px) {
   .hfe { padding-inline: 20px; }

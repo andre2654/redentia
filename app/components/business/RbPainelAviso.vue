@@ -24,10 +24,10 @@ defineProps<{ texto: string | null }>()
 .rbpa__pilula {
   display: inline-flex; align-items: center; gap: 10px; max-width: 520px; padding: 12px 20px 12px 16px; border-radius: var(--nu-r-pill);
   background: var(--nu-navy); color: var(--nu-cream-text); box-shadow: var(--nu-shadow-float);
-  font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.4;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.4;
 }
 .rbpa__pilula svg { flex: none; width: 18px; height: 18px; padding: 2px; border-radius: 50%; background: var(--nu-green); color: var(--nu-white); }
-.rbpa-enter-active, .rbpa-leave-active { transition: opacity .25s ease, transform .3s cubic-bezier(.2, .8, .2, 1); }
+.rbpa-enter-active, .rbpa-leave-active { transition: opacity .25s ease, transform .3s var(--nu-ease-saida); }
 .rbpa-enter-from, .rbpa-leave-to { opacity: 0; transform: translateY(12px) scale(.97); }
 @media (prefers-reduced-motion: reduce) {
   .rbpa-enter-active, .rbpa-leave-active { transition: opacity .15s linear; }

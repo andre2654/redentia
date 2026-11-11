@@ -115,13 +115,13 @@ usePageSeo({
   flex-shrink: 0; width: clamp(56px, 7vw, 76px); height: clamp(56px, 7vw, 76px);
   border-radius: 50%; background: var(--nu-blue); color: var(--nu-white);
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: clamp(24px, 3vw, 32px); font-weight: 800;
+  font-size: clamp(24px, 3vw, 32px); font-weight: var(--nu-w-forte);
 }
 .conta__idtext { min-width: 0; }
 .conta__eyebrow { margin-bottom: 10px; }
 .conta__name {
   margin: 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -.035em; line-height: 1.02;
+  font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -.035em; line-height: 1.02;
   overflow-wrap: anywhere;
 }
 .conta__email { display: block; margin-top: 6px; color: var(--nu-gray); font-size: clamp(14px, 1.5vw, 17px); font-weight: 500; overflow-wrap: anywhere; }
@@ -130,8 +130,8 @@ usePageSeo({
   background: var(--nu-white); color: var(--nu-ink); border: none; cursor: pointer;
   box-shadow: inset 0 0 0 1.5px var(--nu-ink);
   border-radius: var(--nu-r-pill); padding: 0 22px;
-  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 700;
-  transition: background .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
+  transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .conta__logout:hover { background: var(--nu-row-hover); }
 .conta__logout:active { transform: scale(.98); }

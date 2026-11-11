@@ -55,7 +55,7 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
 .gdc {
   border-radius: var(--nu-r-card); overflow: hidden;
   display: flex; flex-direction: column;
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .gdc--hub { background: var(--nu-card); box-shadow: var(--nu-shadow-quente); }
 .gdc--related { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
@@ -73,7 +73,7 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
 .gdc__banner--g3 { background: var(--nu-sage); color: var(--nu-ink); }
 .gdc__tag {
   display: inline-flex; align-items: center; background: var(--nu-white-20);
-  color: inherit; font-size: var(--nu-fs-dense); font-weight: 700;
+  color: inherit; font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
   letter-spacing: 0.14em; text-transform: uppercase;
   padding: 6px 10px; border-radius: var(--nu-r-tag);
 }
@@ -82,7 +82,7 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
 .gdc__body { display: flex; flex-direction: column; flex: 1; }
 .gdc--hub .gdc__body { padding: 22px 24px 24px; }
 .gdc--related .gdc__body { padding: 20px 22px 22px; }
-.gdc__title { color: var(--nu-ink); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; text-wrap: balance; }
+.gdc__title { color: var(--nu-ink); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.2; text-wrap: balance; }
 .gdc--hub .gdc__title { font-size: var(--nu-fs-xl); }
 .gdc--related .gdc__title { font-size: var(--nu-fs-xl); }
 .gdc__desc {
@@ -100,7 +100,7 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
   border-radius: 50%; background: var(--nu-ink); color: var(--nu-white);
   display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
-.gdc__arrow svg { transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.gdc__arrow svg { transition: transform .25s var(--nu-ease-saida); }
 .gdc:hover .gdc__arrow { background: var(--nu-blue); }
 .gdc:hover .gdc__arrow svg { transform: translateX(2px); }
 .gdc--hub .gdc__arrow { width: 38px; height: 38px; }
@@ -110,7 +110,7 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
 /* estado "em breve": selo neutro de raio 8 */
 .gdc__soon {
   display: inline-flex; align-items: center; background: var(--nu-cream-2);
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
   letter-spacing: 0.14em; text-transform: uppercase;
   padding: 6px 10px; border-radius: var(--nu-r-tag);
 }

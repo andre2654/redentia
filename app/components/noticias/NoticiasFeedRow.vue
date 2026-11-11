@@ -40,23 +40,23 @@ defineProps<{ item: NoticiasItem; naCarteira: boolean; destaque?: boolean }>()
 /* ——— a linha da lista ——— */
 .nfr {
   display: grid; grid-template-columns: clamp(180px, 19vw, 248px) minmax(0, 1fr); column-gap: clamp(20px, 2.6vw, 36px);
-  align-items: start; padding: clamp(24px, 2.8vw, 34px) 0; border-top: 1.5px solid var(--nu-line-2);
+  align-items: start; padding: clamp(24px, 2.8vw, 34px) 0; border-top: 1px solid var(--nu-line-2);
 }
 /* sizing/radius do slot de imagem; miolo (img/fallback) = NuNewsImage */
 .nfr__media { aspect-ratio: 3 / 2; border-radius: var(--nu-r-tile); }
 .nfr__media :deep(.nni__msg) { font-size: 12px; }
 .nfr__content { min-width: 0; }
 .nfr__meta { display: flex; align-items: center; gap: 4px 10px; flex-wrap: wrap; }
-.nfr__veiculo { color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
-.nfr__dot { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
+.nfr__veiculo { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
+.nfr__dot { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
 .nfr__tempo { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
 .nfr__badge {
   display: inline-flex; align-items: center; min-height: 26px; background: var(--nu-blue-bg); color: var(--nu-blue-text);
-  font-size: 13.5px; font-weight: 700; padding: 0 9px; border-radius: var(--nu-r-tag);
+  font-size: 13.5px; font-weight: var(--nu-w-medio); padding: 0 9px; border-radius: var(--nu-r-tag);
 }
 .nfr__title {
   color: var(--nu-ink); font-size: clamp(21px, 2vw, 27px);
-  font-weight: 800; letter-spacing: -0.025em; line-height: 1.14; margin-top: 10px; text-wrap: balance;
+  font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.14; margin-top: 10px; text-wrap: balance;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
   transition: color .2s;
 }

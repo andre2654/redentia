@@ -30,7 +30,7 @@ const emit = defineEmits<{ perguntar: [string] }>()
 .apc__q {
   display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 18px 8px 14px; border: 0; border-radius: var(--nu-r-pill);
   font: inherit; font-size: 14.5px; font-weight: 600; text-align: left; cursor: pointer; font-variant-numeric: tabular-nums;
-  transition: background .2s ease, box-shadow .2s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
+  transition: background .2s ease, box-shadow .2s ease, transform .15s var(--nu-ease-saida);
 }
 .apc__q:active { transform: scale(.98); }
 .apc__logo { flex-shrink: 0; }

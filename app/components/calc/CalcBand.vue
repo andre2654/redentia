@@ -47,7 +47,7 @@ defineProps<{
 .cbd__kicker { margin: 0 auto 18px; max-width: 980px; justify-content: center; }
 .cbd__title {
   margin: 0 auto; max-width: 980px;
-  color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800;
+  color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display);
   letter-spacing: -0.03em; line-height: 1.04; text-align: center;
 }
 .cbd__dek {

@@ -27,7 +27,7 @@ defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
 }
 .nph__title {
   margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(40px, 5.5vw, 76px);
-  font-weight: 800; letter-spacing: -0.035em; line-height: 0.98;
+  font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 0.98;
 }
 .nph__sub {
   color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;

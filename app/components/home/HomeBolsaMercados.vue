@@ -173,22 +173,22 @@ const resumo = computed(() => props.mercados.map((m) => `${m.nome} ${pct(m.final
 .hbm__legenda { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; color: var(--nu-on-dark); font-size: 14.5px; font-weight: 500; }
 .hbm__chave { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
 .hbm__chave i { width: 14px; height: 3px; border-radius: 2px; }
-.hbm__chave strong { color: var(--nu-white); font-weight: 800; font-variant-numeric: tabular-nums; }
-.hbm__nota { color: var(--nu-on-dark-2); font-size: var(--nu-fs-dense); font-weight: 700; }
+.hbm__chave strong { color: var(--nu-white); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
+.hbm__nota { color: var(--nu-on-dark-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
 .hbm__rastro { stop-color: var(--nu-blue-on-dark); }
 .hbm__caixa { position: relative; height: 280px; margin-top: 12px; touch-action: pan-y; outline: none; border-radius: 8px; }
 .hbm__caixa:focus-visible { box-shadow: 0 0 0 3px var(--nu-blue-on-dark); }
 .hbm__svg { display: block; overflow: visible; }
 .hbm__zero { stroke: var(--nu-cream-text-45); stroke-width: 1; stroke-dasharray: 3 4; }
-.hbm__zero-txt, .hbm__marca { fill: var(--nu-on-dark-2); font-size: var(--nu-fs-dense); font-weight: 700; }
+.hbm__zero-txt, .hbm__marca { fill: var(--nu-on-dark-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
 /* o rótulo do zero fica sob o começo das linhas: um contorno da cor do fundo o separa */
 .hbm__zero-txt { paint-order: stroke; stroke: var(--nu-ink); stroke-width: 4px; stroke-linejoin: round; }
 .hbm__eixo { stroke: var(--nu-cream-text-12); stroke-width: 1; }
 .hbm__apagada { stroke: var(--nu-cream-text-12); }
-.hbm__fim-nome { fill: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 800; }
-.hbm__fim-num { fill: var(--nu-on-dark); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.hbm__fim-nome { fill: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); }
+.hbm__fim-num { fill: var(--nu-on-dark); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .hbm__leitor { stroke: var(--nu-creme); stroke-width: 2; }
-.hbm__leitor-txt { fill: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hbm__leitor-txt { fill: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .hbm__cursor { stroke: var(--nu-cream-text-45); stroke-width: 1; }
 .hbm__dica {
   position: absolute; top: 34px; transform: translateX(12px); pointer-events: none; z-index: 2;
@@ -196,8 +196,8 @@ const resumo = computed(() => props.mercados.map((m) => `${m.nome} ${pct(m.final
   background: var(--nu-white); box-shadow: var(--nu-shadow-card); white-space: nowrap;
 }
 .hbm__dica--esq { transform: translateX(calc(-100% - 12px)); }
-.hbm__dica-hora { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
+.hbm__dica-hora { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 .hbm__dica-linha { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; }
 .hbm__dica-linha i { width: 12px; height: 3px; border-radius: 2px; box-shadow: 0 0 0 1px var(--nu-ink-30); }
-.hbm__dica-linha strong { min-width: 54px; color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hbm__dica-linha strong { min-width: 54px; color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 </style>

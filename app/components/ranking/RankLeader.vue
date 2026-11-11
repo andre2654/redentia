@@ -74,13 +74,13 @@ const tone = computed(() => {
 }
 .rkl__id { display: flex; align-items: center; gap: 16px; min-width: 0; }
 .rkl__who { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.rkl__ticker { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; transition: color .2s ease; }
+.rkl__ticker { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; transition: color .2s ease; }
 .rkl__lider:hover .rkl__ticker { color: var(--nu-blue-soft); }
 .rkl__name { color: var(--nu-on-dark); font-size: 14.5px; font-weight: 600; }
 .rkl__sector { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 500; }
 .rkl__metric { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; }
 .rkl__value {
-  color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: 800;
+  color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display);
   letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .rkl__value--up { color: var(--nu-green-soft); }
@@ -89,13 +89,13 @@ const tone = computed(() => {
 
 /* o 2º e o 3º: linhas com fio escuro */
 .rkl__podio { list-style: none; margin: 0; padding: 0 var(--pad) clamp(10px, 1.4vw, 16px); }
-.rkl__podio li { border-top: 1.5px solid var(--nu-dark-line); }
+.rkl__podio li { border-top: 1px solid var(--nu-dark-line); }
 .rkl__linha { display: flex; align-items: center; gap: 12px; min-height: 56px; color: var(--nu-white); font-variant-numeric: tabular-nums; }
-.rkl__pos { width: 16px; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 700; }
-.rkl__linha-tk { font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: .04em; transition: color .2s ease; }
+.rkl__pos { width: 16px; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: var(--nu-w-medio); }
+.rkl__linha-tk { font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: .04em; transition: color .2s ease; }
 .rkl__linha:hover .rkl__linha-tk { color: var(--nu-blue-soft); }
 .rkl__linha-nome { flex: 1; min-width: 0; color: var(--nu-on-dark-2); font-size: 14.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rkl__linha-v { font-size: var(--nu-fs-md); font-weight: 800; }
+.rkl__linha-v { font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 
 @media (max-width: 560px) {
   .rkl__metric { align-items: flex-start; margin-left: 0; }

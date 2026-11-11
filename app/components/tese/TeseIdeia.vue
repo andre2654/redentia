@@ -63,7 +63,7 @@ const tipo = (kind: string) => TIPO[kind] ?? { rotulo: kind, tom: 'azul' as cons
 .tid__cols { display: flex; align-items: flex-start; gap: 20px clamp(32px, 4.4vw, 72px); flex-wrap: wrap; margin-top: 22px; }
 .tid__frase {
   flex: 1.2 1 440px; min-width: min(320px, 100%); margin: 0; color: var(--nu-ink);
-  font-size: clamp(26px, 2.7vw, 38px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.18; text-wrap: pretty;
+  font-size: clamp(26px, 2.7vw, 38px); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.18; text-wrap: pretty;
 }
 /* o trecho marcado: cobalto, como a FraseDestaque (sem fundo) */
 .tid__frase :deep(.tse-hi) { color: var(--nu-blue-text); }
@@ -73,7 +73,7 @@ const tipo = (kind: string) => TIPO[kind] ?? { rotulo: kind, tom: 'azul' as cons
   font-size: clamp(16.5px, 1.3vw, 18px); font-weight: 500; line-height: 1.55; text-wrap: pretty;
 }
 .tid__lead + .tid__lead { margin-top: 14px; }
-.tid__lead :deep(.tse-hi) { color: var(--nu-ink); font-weight: 700; }
+.tid__lead :deep(.tse-hi) { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 
 .tid__vereditos {
   list-style: none; margin: clamp(28px, 3vw, 40px) 0 0; padding: 0;
@@ -87,7 +87,7 @@ const tipo = (kind: string) => TIPO[kind] ?? { rotulo: kind, tom: 'azul' as cons
 }
 .tid__v-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0; }
 .tid__cadeado { flex: none; color: var(--nu-gray); }
-.tid__v-t { margin: 14px 0 0; color: var(--nu-ink); font-size: clamp(20px, 1.8vw, 24px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.tid__v-t { margin: 14px 0 0; color: var(--nu-ink); font-size: clamp(20px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.15; }
 .tid__v-p { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 .tid__v-corpo:not(:has(.tid__v-t)) .tid__v-p { margin-top: 16px; }
 /* visitante: o miolo fica atrás do cadastro (o texto segue no HTML, como antes) */

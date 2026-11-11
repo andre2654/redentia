@@ -55,22 +55,22 @@ const anchorDiff = computed(() => Math.abs(props.a.assumptions.anchor - props.b.
   animation: nu-fade 0.4s ease both;
 }
 .scp__col { padding: 22px 26px 20px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.scp__col--b { border-left: 1.5px solid var(--nu-dark-chip-line); }
+.scp__col--b { border-left: 1px solid var(--nu-dark-chip-line); }
 
 .scp__head { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
 .scp__dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 .scp__dot--a { background: var(--nu-blue-on-dark); }
 .scp__dot--b { background: var(--nu-amber); }
-.scp__name { color: var(--nu-on-dark); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.scp__name { color: var(--nu-on-dark); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
 
 .scp__big {
-  color: var(--nu-white); font-size: clamp(26px, 2.8vw, 38px); font-weight: 800;
+  color: var(--nu-white); font-size: clamp(26px, 2.8vw, 38px); font-weight: var(--nu-w-display);
   letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1.05;
   display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
 }
 .scp__big--b { color: var(--nu-amber); }
 /* o selo da variação sobre carvão: raio 8 */
-.scp__delta { padding: 4px 9px; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: 700; font-style: normal; letter-spacing: 0; align-self: center; }
+.scp__delta { padding: 4px 9px; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: var(--nu-w-medio); font-style: normal; letter-spacing: 0; align-self: center; }
 .scp__delta--down { background: var(--nu-red-soft-16); color: var(--nu-red-soft); }
 .scp__delta--up { background: var(--nu-green-soft-16); color: var(--nu-green-soft); }
 .scp__sub { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
@@ -78,7 +78,7 @@ const anchorDiff = computed(() => Math.abs(props.a.assumptions.anchor - props.b.
 .scp__acts { margin-left: auto; display: inline-flex; gap: 12px; }
 .scp__act {
   border: none; background: transparent; padding: 0;
-  color: var(--nu-on-dark); font-size: 13.5px; font-weight: 700;
+  color: var(--nu-on-dark); font-size: 13.5px; font-weight: var(--nu-w-medio);
   cursor: pointer; font-family: inherit;
   text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-dark-chip-line);
   transition: color 0.2s;
@@ -87,6 +87,6 @@ const anchorDiff = computed(() => Math.abs(props.a.assumptions.anchor - props.b.
 
 @media (max-width: 700px) {
   .scp { grid-template-columns: 1fr; }
-  .scp__col--b { border-left: none; border-top: 1.5px solid var(--nu-dark-chip-line); }
+  .scp__col--b { border-left: none; border-top: 1px solid var(--nu-dark-chip-line); }
 }
 </style>

@@ -440,7 +440,7 @@ useConviteDaConta('acoes', () => JSON.stringify([simParams.value, simTextos.valu
 </template>
 
 <style scoped>
-.cas__aviso { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700; }
+.cas__aviso { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 
 /* enquanto o histórico sai da B3 */
 .cas__lendo-legenda { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
@@ -457,11 +457,11 @@ useConviteDaConta('acoes', () => JSON.stringify([simParams.value, simTextos.valu
   .cas__esqueleto, .cas__pulso { animation: none; }
 }
 
-.cas__erro-texto { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.cas__erro-texto { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .cas__de-novo {
   margin-top: 14px; min-height: 44px; padding: 0 20px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-ink);
-  background: var(--nu-white); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
-  transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
+  background: var(--nu-white); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer;
+  transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
 }
 .cas__de-novo:hover { background: var(--nu-ink); color: var(--nu-white); }
 .cas__de-novo:active { transform: scale(.98); }

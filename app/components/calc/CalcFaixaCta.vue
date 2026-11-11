@@ -102,7 +102,7 @@ const BENEFICIOS = [
 .cft__miolo { position: relative; max-width: 980px; margin: 0 auto; }
 .cft__titulo {
   margin: 0 auto; max-width: 900px; color: var(--nu-white);
-  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance;
+  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance;
 }
 .cft__texto {
   margin: 18px auto 0; max-width: 560px; color: var(--nu-blue-on-blue);
@@ -111,7 +111,7 @@ const BENEFICIOS = [
 .cft__acoes { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; margin-top: 34px; }
 .cft__pill {
   display: inline-flex; align-items: center; justify-content: center; min-height: 62px; padding: 0 28px; border-radius: var(--nu-r-pill);
-  font-size: 19px; font-weight: 700; transition: background .2s ease, transform .15s cubic-bezier(.2, .8, .2, 1);
+  font-size: 19px; font-weight: var(--nu-w-medio); transition: background .2s ease, transform .15s var(--nu-ease-saida);
 }
 .cft__pill--contorno { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-white-60); color: var(--nu-white); }
 .cft__pill--contorno:hover { background: var(--nu-white-14); color: var(--nu-white); }
