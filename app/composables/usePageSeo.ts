@@ -61,6 +61,9 @@ export function usePageSeo(input: PageSeoInput) {
   const path = input.path ?? route.path
   const canonical = `${origin}${path}`
   const image = input.image ?? `${origin}/og-default.png`
+  // a marca que assina a página: Aportou no site de investidor, Redentia nas telas de escritório
+  const marca = marcaDaRota(path)
+  const logoDaMarca = marca === MARCA.b2b ? `${origin}/logo-azul.svg` : `${origin}/icone-aportou.svg`
 
   useSeoMeta({
     title: input.title,
@@ -71,7 +74,7 @@ export function usePageSeo(input: PageSeoInput) {
     ogImage: image,
     ogType: 'website',
     ogLocale: 'pt_BR',
-    ogSiteName: 'Redentia',
+    ogSiteName: marca,
     twitterCard: 'summary_large_image',
     twitterTitle: input.title,
     twitterDescription: input.description,
@@ -91,7 +94,7 @@ export function usePageSeo(input: PageSeoInput) {
     if (normalized['@type'] === 'Article' || normalized['@type'] === 'NewsArticle') {
       normalized.image ??= image
       normalized.mainEntityOfPage ??= canonical
-      normalized.publisher ??= { '@type': 'Organization', name: 'Redentia', logo: { '@type': 'ImageObject', url: `${origin}/logo-azul.svg` } }
+      normalized.publisher ??= { '@type': 'Organization', name: marca, logo: { '@type': 'ImageObject', url: logoDaMarca } }
     }
     ld.push(normalized)
   }
@@ -129,7 +132,7 @@ export function usePageSeo(input: PageSeoInput) {
           name: input.title,
           dateModified: dateModified.value,
           inLanguage: 'pt-BR',
-          isPartOf: { '@type': 'WebSite', name: 'Redentia', url: origin },
+          isPartOf: { '@type': 'WebSite', name: marca, url: origin },
         })
       }
       nodes.push(...trailing)

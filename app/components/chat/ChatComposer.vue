@@ -61,7 +61,7 @@ defineExpose({ focar })
       <div class="cco__linha">
         <textarea
           ref="campo" class="cco__campo" rows="1" enterkeyhint="send"
-          :value="modelValue" placeholder="Pergunte à Redentia" aria-label="Pergunte à Redentia"
+          :value="modelValue" placeholder="Pergunte à Aportou" aria-label="Pergunte à Aportou"
           @input="emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
           @keydown="onKey" @focus="focado = true" @blur="focado = false"
         />

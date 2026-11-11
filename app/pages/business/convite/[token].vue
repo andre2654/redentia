@@ -20,6 +20,8 @@
  * O backend decide tudo (uso único, validade, conta liberada, teto, rótulo
  * repetido): a tela só traduz o código de recusa pra frase com saída.
  */
+// tela de escritório: tema e marca da Redentia, não da Aportou
+useMarcaRedentia()
 definePageMeta({ layout: false })
 
 usePageSeo({

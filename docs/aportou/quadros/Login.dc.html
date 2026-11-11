@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Aportou · Entrar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E3A8A}
+.campo::placeholder{color:#6B7280}
+.campo:focus{outline:3px solid #2563EB;outline-offset:1px;border-color:#2563EB}
+.login-painel{display:flex}
+@container login (max-width: 900px){.login-painel{display:none}}
+</style>
+</helmet>
+<div style="container: login / inline-size; background: #F9F3EC; color: #111827; font-family: Figtree, system-ui, sans-serif; font-size: 16px; line-height: 1.5;">
+  <div style="min-height: 900px; display: flex; align-items: stretch;">
+
+    <!-- FORMULÁRIO -->
+    <main style="flex: 1 1 480px; min-width: 0; box-sizing: border-box; padding: 28px clamp(24px, 5vw, 72px) 32px; display: flex; flex-direction: column;">
+      <a href="#" aria-label="Aportou, página inicial" style="align-self: flex-start; display: flex; align-items: center; min-height: 44px;"><svg viewBox="-2 -40 681 178" width="138" height="36" aria-hidden="true"><g fill="none" stroke="#111827" stroke-width="25"><circle cx="50" cy="50" r="37.5"/><circle cx="173" cy="50" r="37.5"/><circle cx="280.5" cy="50" r="37.5"/><circle cx="520.5" cy="50" r="37.5"/><path d="M593.5 2 V54 A35.25 35.25 0 0 0 664 54"/></g><g fill="#111827"><rect x="83" y="2" width="25" height="98"/><path d="M121 2 H146 V124 A12 12 0 0 1 134 136 H121 Z"/><path d="M340 100 V26 A26 26 0 0 1 366 0 H399 V23 H372 Q365 23 365 31 V100 Z"/><path d="M408 -25 Q408 -38 421 -38 H433 V62 Q433 77 448 77 H463 V101 H440 Q408 101 408 69 Z"/><rect x="651.5" y="2" width="25" height="98"/></g><path d="M408 44 V0 H444 C456 0 466 -2 472 -8 C474 8 466 23 448 23 H433 C419 23 410 31 408 44 Z" fill="#2563EB"/></svg></a>
+
+      <div style="width: 100%; max-width: 440px; margin: auto; padding: 40px 0; display: flex; flex-direction: column; gap: 26px;">
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>ENTRAR</span>
+          <h1 style="margin: 0; font-size: clamp(44px, 4.6vw, 60px); font-weight: 800; line-height: 1; letter-spacing: -0.035em;">Bom te ver de volta.</h1>
+          <p style="margin: 0; font-size: 18px; color: #1F2937;">Entre para ver a sua carteira e continuar de onde parou.</p>
+        </div>
+
+        <button type="button" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 58px; border: 1.5px solid #111827; border-radius: 999px; background: #FFFFFF; color: #111827; font-family: inherit; font-size: 17px; font-weight: 700; cursor: pointer;">Continuar com Google</button>
+
+        <div style="display: flex; align-items: center; gap: 14px; font-size: 14px; font-weight: 600; color: #4B5563;"><span style="flex: 1; height: 1.5px; background: #D9CDB9;"></span>ou com e-mail<span style="flex: 1; height: 1.5px; background: #D9CDB9;"></span></div>
+
+        <form style="display: flex; flex-direction: column; gap: 18px;">
+          <label style="display: flex; flex-direction: column; gap: 7px; font-size: 15px; font-weight: 700;">E-mail
+            <input class="campo" type="email" autocomplete="email" placeholder="voce@email.com" style="width: 100%; height: 56px; box-sizing: border-box; padding: 0 18px; border: 1.5px solid #B9AD99; border-radius: 16px; background: #FFFFFF; color: #111827; font-family: inherit; font-size: 17px;">
+          </label>
+          <div style="display: flex; flex-direction: column; gap: 7px;">
+            <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+              <label for="senha" style="font-size: 15px; font-weight: 700;">Senha</label>
+              <a href="#" style="font-size: 15px; font-weight: 700;">Esqueci minha senha</a>
+            </div>
+            <div style="position: relative;">
+              <input class="campo" id="senha" type="password" autocomplete="current-password" style="width: 100%; height: 56px; box-sizing: border-box; padding: 0 18px; border: 1.5px solid #B9AD99; border-radius: 16px; background: #FFFFFF; color: #111827; font-family: inherit; font-size: 17px; padding-right: 96px;">
+              <button type="button" style="position: absolute; right: 6px; top: 6px; height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: #1D4ED8; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer;">Mostrar</button>
+            </div>
+          </div>
+          <button type="submit" style="margin-top: 6px; display: flex; align-items: center; justify-content: space-between; width: 100%; height: 62px; box-sizing: border-box; padding: 0 8px 0 28px; border: 0; border-radius: 999px; background: #2563EB; color: #FFFFFF; font-family: inherit; font-size: 19px; font-weight: 700; cursor: pointer;">Entrar<span style="width: 46px; height: 46px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13.5 6.5 19 12l-5.5 5.5"/></svg></span></button>
+        </form>
+
+        <p style="margin: 0; padding: 16px 20px; border-radius: 18px; background: #F1E8DB; font-size: 16.5px;">Ainda não tem conta? <a href="#" style="font-weight: 700;">Criar conta grátis</a>, leva 2 minutos e não pede cartão.</p>
+      </div>
+
+      <p style="margin: 0; display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 13.5px; color: #4B5563;"><span>Uma empresa Redentia</span><a href="#" style="color: #4B5563;">Privacidade</a><a href="#" style="color: #4B5563;">Termos de uso</a><a href="#" style="color: #4B5563;">Ajuda</a></p>
+    </main>
+
+    <!-- PAINEL DA MARCA -->
+    <aside class="login-painel" style="flex: 1.1 1 520px; min-width: 0; padding: 16px 16px 16px 0;">
+      <div style="position: relative; overflow: hidden; flex: 1; border-radius: 40px; color: #FFFFFF; background: linear-gradient(120deg, #1039BD 0%, #3A63D8 46%, #2450CF 72%, #1640C2 100%); display: flex; flex-direction: column;">
+        <div style="position: relative; z-index: 1; padding: clamp(36px, 4.4vw, 64px); display: flex; flex-direction: column; gap: 20px;">
+          <svg viewBox="0 -9 66 54" width="44" height="36" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#FFFFFF"/></svg>
+          <p style="margin: 0; max-width: 520px; font-size: clamp(48px, 5.6vw, 84px); font-weight: 800; line-height: 0.98; letter-spacing: -0.035em;">Investir fica mais claro.</p>
+          <p style="margin: 0; max-width: 420px; font-size: 19px; color: #EEF3FF;">Seus bancos, suas ações e as suas dúvidas, no mesmo lugar.</p>
+        </div>
+        <div role="img" aria-label="Leque de 2.000 linhas de futuro se abrindo da esquerda para a direita" style="position: relative; flex: 1; min-height: 300px;">
+          <img src="/_blob/6f7c2630138e8f78a4be1fa543eb44d3" alt="" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block;">
+          <span style="position: absolute; left: clamp(36px, 4.4vw, 64px); bottom: clamp(28px, 3.4vw, 44px); display: inline-flex; align-items: center; gap: 8px; padding: 9px 17px; border-radius: 999px; background: #111827; font-size: 15px; white-space: nowrap;"><strong style="font-size: 16px;">2.000</strong> futuros testados para cada carteira</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":966}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

@@ -20,6 +20,8 @@
 import type { ClientAccessInfo } from '~/types/clientes'
 import { instituicaoPorNome, type Instituicao } from '~/content/instituicoes'
 
+// tela de escritório: tema e marca da Redentia, não da Aportou
+useMarcaRedentia()
 definePageMeta({ layout: false })
 
 usePageSeo({

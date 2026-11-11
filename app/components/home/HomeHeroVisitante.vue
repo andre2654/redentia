@@ -54,14 +54,14 @@ const selos = { mac: seloDoApp('mac'), watch: seloDoApp('watch'), iphone: seloDo
 const emBreve = emBreveDosApps()
 /** os atributos do aparelho: link para a loja quando ele já está lá */
 const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
-  s.url ? { href: s.url, target: '_blank', rel: 'noopener', 'aria-label': `${s.rotulo}: o app da Redentia para ${nome} (abre em outra aba)` } : {}
+  s.url ? { href: s.url, target: '_blank', rel: 'noopener', 'aria-label': `${s.rotulo}: o app para ${nome} (abre em outra aba)` } : {}
 </script>
 
 <template>
   <section class="hhv" aria-labelledby="hhv-titulo">
     <div class="hhv__ceu" aria-hidden="true" />
     <div class="hhv__texto">
-      <p class="hhv__produto"><img src="/logo-branca.svg" alt="" width="20" height="20">Redentia</p>
+      <p class="hhv__produto"><MarcaAportou :altura="30" sobre="escuro" rotulo="Aportou" /></p>
       <h1 id="hhv-titulo" class="hhv__titulo">Simulamos a sua carteira em 2.000 cenários para ver se ela é boa.</h1>
       <p class="hhv__dek">Você conecta o banco uma vez. A IA testa a carteira nos próximos cinco anos, vigia todo dia e só chama quando algo pede você.</p>
       <HomeChamada tom="escuro" porte="calmo" class="hhv__chamada" />
@@ -76,7 +76,7 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
             <img
               :srcset="MAC.webp" :sizes="MAC.sizes" src="/img/home/mac-simulacao-1640.webp"
               width="1640" height="1025" fetchpriority="high" decoding="async"
-              alt="O app da Redentia no Mac, na Simulação: a carteira em 2.000 caminhos, com o otimista, o meio e o pessimista, e quem sofre e por quê."
+              alt="O app no Mac, na Simulação: a carteira em 2.000 caminhos, com o otimista, o meio e o pessimista, e quem sofre e por quê."
             >
           </picture>
           <span class="hhv__selo" :class="{ 'hhv__selo--loja': selos.mac.url }">{{ selos.mac.rotulo }}<svg v-if="selos.mac.url" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg></span>
@@ -85,7 +85,7 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
           <img
             :srcset="WATCH.srcset" :sizes="WATCH.sizes" src="/img/home/watch-detalhes-400.webp"
             width="400" height="490" decoding="async"
-            alt="O app da Redentia no Apple Watch: os anéis do dia, você contra a bolsa. Caiu menos que a bolsa."
+            alt="O app no Apple Watch: os anéis do dia, você contra a bolsa. Caiu menos que a bolsa."
           >
           <span class="hhv__selo" :class="{ 'hhv__selo--loja': selos.watch.url }">{{ selos.watch.rotulo }}<svg v-if="selos.watch.url" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg></span>
         </component>
@@ -93,7 +93,7 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
           <img
             :srcset="IPHONE.srcset" :sizes="IPHONE.sizes" src="/img/home/iphone-detalhes-520.webp"
             width="520" height="1099" decoding="async"
-            alt="O app da Redentia no iPhone, em Detalhes: os anéis da semana, o dia contra a bolsa e a carteira."
+            alt="O app no iPhone, em Detalhes: os anéis da semana, o dia contra a bolsa e a carteira."
           >
           <span class="hhv__selo" :class="{ 'hhv__selo--loja': selos.iphone.url }">{{ selos.iphone.rotulo }}<svg v-if="selos.iphone.url" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg></span>
         </component>
@@ -113,7 +113,7 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
 
       <!-- sem hover (toque): os selos numa linha embaixo dos aparelhos -->
       <p class="hhv__lojas">
-        <a v-if="selos.iphone.url" :href="selos.iphone.url" target="_blank" rel="noopener" class="hhv__selo hhv__selo--loja hhv__selo--toque" aria-label="Baixar na App Store: o app da Redentia para iPhone (abre em outra aba)">
+        <a v-if="selos.iphone.url" :href="selos.iphone.url" target="_blank" rel="noopener" class="hhv__selo hhv__selo--loja hhv__selo--toque" aria-label="Baixar na App Store: o app para iPhone (abre em outra aba)">
           {{ selos.iphone.rotulo }}<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
         </a>
         <span v-if="emBreve" class="hhv__embreve">{{ emBreve }}</span>
@@ -145,11 +145,11 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
   color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: -0.02em;
 }
 .hhv__titulo {
-  margin: 16px 0 0; max-width: 22ch;
-  font-size: clamp(34px, 4.4vw, 64px); font-weight: 500; letter-spacing: -0.05em; line-height: 1.04;
+  margin: 22px 0 0; max-width: 22ch;
+  font-size: clamp(36px, 4.8vw, 68px); font-weight: 800; letter-spacing: -0.035em; line-height: 1;
   text-wrap: balance;
   color: var(--nu-agora-texto);
-  background: linear-gradient(180deg, var(--nu-agora-texto) 35%, var(--nu-cream-text-70) 100%);
+  background: linear-gradient(180deg, var(--nu-white) 45%, var(--nu-cream-text-78) 100%);
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
 .hhv__dek {

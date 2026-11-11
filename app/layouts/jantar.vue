@@ -35,7 +35,7 @@ useMarcaRedentia()
       <slot />
     </main>
     <div class="jt-foot">
-      <NuFooter />
+      <NuFooter variante="business" />
     </div>
   </div>
 </template>

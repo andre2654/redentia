@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Aportou · Input mágico e chat</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E3A8A}
+@keyframes aportouAnel{to{background-position:200% 0}}
+@keyframes aportouPonto{0%,80%,100%{opacity:.25}40%{opacity:1}}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1060px; box-sizing: border-box; padding: 64px 64px 56px; background: #F9F3EC; color: #111827; font-family: Figtree, system-ui, sans-serif; font-size: 16px; line-height: 1.5; display: flex; gap: 72px;">
+
+  <!-- ESTADOS DO INPUT -->
+  <div style="width: 548px; flex: none; display: flex; flex-direction: column; gap: 22px;">
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      <span style="display: flex; align-items: center; gap: 10px; font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>ASSISTENTE</span>
+      <h1 style="margin: 0; font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -0.03em;">O input mágico.</h1>
+      <p style="margin: 0; font-size: 18px; color: #1F2937;">Fica fixo no rodapé de toda tela, no centro. Quando a pergunta é enviada, ele vira um chat no canto inferior direito, já sabendo de qual ativo você está falando.</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 22px 24px 30px; border-radius: 24px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06);">
+      <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-size: 13px; font-weight: 800; letter-spacing: 0.14em;">1 · EM REPOUSO</span><span style="font-size: 13.500px; color: #4B5563;">A sugestão muda a cada 4 s</span></div>
+      <div style="position: relative; align-self: center; width: 440px; margin-top: 10px;">
+        <div aria-hidden="true" style="position: absolute; left: -8px; right: -8px; top: -6px; bottom: -6px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; filter: blur(18px); opacity: 0.55; animation: aportouAnel 7s linear infinite;"></div>
+        <div style="position: relative; padding: 2.500px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; animation: aportouAnel 7s linear infinite;">
+          <button type="button" style="display: flex; align-items: center; gap: 12px; width: 100%; height: 58px; box-sizing: border-box; padding: 0 9px 0 20px; border: 0; border-radius: 999px; background: #FFFFFF; color: #111827; font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer;">
+            <svg viewBox="0 -9 66 54" width="26" height="21" aria-hidden="true" style="flex: none;"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>
+            <span style="flex: 1; text-align: left;">Por que SEQL3 subiu hoje?</span>
+            <span aria-hidden="true" style="flex: none; padding: 2px 7px; border: 1px solid #E0D6C6; border-radius: 7px; font-size: 12.500px; font-weight: 700; color: #4B5563;">⌘K</span>
+            <span aria-hidden="true" style="flex: none; width: 40px; height: 40px; border-radius: 50%; background: #2563EB; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#FFFFFF" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 22px 24px 30px; border-radius: 24px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06);">
+      <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-size: 13px; font-weight: 800; letter-spacing: 0.14em;">2 · DIGITANDO</span><span style="font-size: 13.500px; color: #4B5563;">Cresce e mostra atalhos da tela</span></div>
+      <div style="display: flex; justify-content: center; gap: 8px; margin-top: 4px;">
+        <span style="padding: 7px 14px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 2px 8px rgba(17,24,39,0.08); font-size: 14px; font-weight: 600;">O que é grupamento?</span>
+        <span style="padding: 7px 14px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 2px 8px rgba(17,24,39,0.08); font-size: 14px; font-weight: 600;">A empresa dá lucro?</span>
+        <span style="padding: 7px 14px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 2px 8px rgba(17,24,39,0.08); font-size: 14px; font-weight: 600;">Paga dividendos?</span>
+      </div>
+      <div style="position: relative; align-self: stretch; margin-top: 6px;">
+        <div aria-hidden="true" style="position: absolute; left: -8px; right: -8px; top: -8px; bottom: -8px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; filter: blur(22px); opacity: 0.75; animation: aportouAnel 4s linear infinite;"></div>
+        <div style="position: relative; padding: 3px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; animation: aportouAnel 4s linear infinite;">
+          <div style="display: flex; align-items: center; gap: 12px; height: 62px; box-sizing: border-box; padding: 0 10px 0 22px; border-radius: 999px; background: #FFFFFF; font-size: 18px; font-weight: 600;">
+            <svg viewBox="0 -9 66 54" width="26" height="21" aria-hidden="true" style="flex: none;"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>
+            <span style="flex: 1; display: flex; align-items: center; gap: 3px; white-space: nowrap;">Isso tem a ver com o grupamento<span aria-hidden="true" style="width: 2px; height: 24px; background: #2563EB;"></span></span>
+            <span aria-hidden="true" style="flex: none; width: 42px; height: 42px; border-radius: 50%; background: #2563EB; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#FFFFFF" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 22px 24px 28px; border-radius: 24px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06);">
+      <div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-size: 13px; font-weight: 800; letter-spacing: 0.14em;">3 · RESPONDENDO</span><span style="font-size: 13.500px; color: #4B5563;">Encolhe e vai para o canto direito</span></div>
+      <div style="position: relative; align-self: flex-end; margin-top: 8px;">
+        <div aria-hidden="true" style="position: absolute; left: -6px; right: -6px; top: -5px; bottom: -5px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; filter: blur(14px); opacity: 0.6; animation: aportouAnel 3s linear infinite;"></div>
+        <div style="position: relative; padding: 2.500px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; animation: aportouAnel 3s linear infinite;">
+          <div style="display: flex; align-items: center; gap: 12px; height: 52px; box-sizing: border-box; padding: 0 20px 0 18px; border-radius: 999px; background: #111827; color: #FFFFFF; font-size: 15.500px; font-weight: 600;">
+            <svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true" style="flex: none;"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#5B8CFF"/></svg>
+            <span>Lendo os dados de SEQL3</span>
+            <span aria-hidden="true" style="display: flex; gap: 4px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF; animation: aportouPonto 1.200s infinite;"></span><span style="width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF; animation: aportouPonto 1.200s 0.200s infinite;"></span><span style="width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF; animation: aportouPonto 1.200s 0.400s infinite;"></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 28px; font-size: 14px; color: #1F2937;">
+      <span><strong>Anel:</strong> cobalto, céu, sálvia e areia, girando devagar.</span>
+      <span><strong>Ícone:</strong> o corte azul do “t” do logo.</span>
+      <span><strong>Atalho:</strong> ⌘K abre em qualquer tela.</span>
+      <span><strong>Contexto:</strong> a sugestão vem do ativo aberto.</span>
+    </div>
+  </div>
+
+  <!-- TELA COM O CHAT ABERTO -->
+  <div style="position: relative; flex: 1; min-width: 0; border-radius: 28px; background: #F9F3EC; box-shadow: 0 0 0 1px #E0D6C6, 0 30px 70px rgba(17,24,39,0.14); overflow: hidden;">
+
+    <div style="padding: 22px 30px; display: flex; align-items: center; gap: 22px;">
+      <svg viewBox="-2 -40 681 178" width="104" height="27" role="img" aria-label="aportou"><g fill="none" stroke="#111827" stroke-width="25"><circle cx="50" cy="50" r="37.5"/><circle cx="173" cy="50" r="37.5"/><circle cx="280.5" cy="50" r="37.5"/><circle cx="520.5" cy="50" r="37.5"/><path d="M593.5 2 V54 A35.25 35.25 0 0 0 664 54"/></g><g fill="#111827"><rect x="83" y="2" width="25" height="98"/><path d="M121 2 H146 V124 A12 12 0 0 1 134 136 H121 Z"/><path d="M340 100 V26 A26 26 0 0 1 366 0 H399 V23 H372 Q365 23 365 31 V100 Z"/><path d="M408 -25 Q408 -38 421 -38 H433 V62 Q433 77 448 77 H463 V101 H440 Q408 101 408 69 Z"/><rect x="651.5" y="2" width="25" height="98"/></g><path d="M408 44 V0 H444 C456 0 466 -2 472 -8 C474 8 466 23 448 23 H433 C419 23 410 31 408 44 Z" fill="#2563EB"/></svg>
+      <span style="font-size: 14.500px; font-weight: 600;">Início</span><span style="font-size: 14.500px; font-weight: 600;">Carteira</span><span style="font-size: 14.500px; font-weight: 600; color: #1D4ED8;">Ações</span><span style="font-size: 14.500px; font-weight: 600;">Teses</span>
+    </div>
+
+    <div style="padding: 14px 30px 0; display: flex; flex-direction: column; gap: 14px;">
+      <div style="display: flex; align-items: center; gap: 10px;"><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em;">Sequoia Log</span><span style="padding: 3px 9px; border-radius: 7px; background: #111827; color: #FFFFFF; font-size: 12.500px; font-weight: 700; letter-spacing: 0.04em;">SEQL3</span></div>
+      <div style="font-size: 104px; font-weight: 800; letter-spacing: -0.045em; line-height: 0.9;"><span style="font-size: 0.34em; font-weight: 700; letter-spacing: -0.01em; vertical-align: 1.150em; margin-right: 0.18em;">R$</span>12,30</div>
+      <span style="align-self: flex-start; padding: 6px 12px; border-radius: 10px; background: #DDF2E3; color: #18703A; font-size: 15px; font-weight: 700;">+R$ 2,80 (+29,47%) hoje</span>
+
+      <div style="margin-top: 26px; width: 330px; border-radius: 24px; background: #111827; color: #FFFFFF;">
+        <div style="display: flex;">
+          <div style="position: relative; height: 48px; padding: 0 20px 0 22px; display: flex; align-items: center; background: #2563EB; border-radius: 24px 0 0 0; font-size: 12.500px; font-weight: 700; letter-spacing: 0.16em;">SEQL3 EM 12 MESES
+            <svg viewBox="0 -9 30 32" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: calc(100% - 1px); top: -18.800px; width: 62.600px; height: 66.800px;"><path d="M0 0 C12 0 22 -2 28 -8 C30 8 22 23 4 23 H0 Z" fill="#2563EB"/></svg>
+            <svg viewBox="0 0 25 21" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; top: calc(100% - 1px); width: 52px; height: 44px;"><path d="M0 0 H25 C11 0 2 8 0 21 Z" fill="#2563EB"/></svg>
+          </div>
+        </div>
+        <div style="padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 10px;">
+          <span style="font-size: 40px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: #86EFAC;">+95,24%</span>
+          <svg viewBox="0 0 280 110" width="100%" aria-hidden="true" style="display: block;"><path d="M0 52 L8 46 L16 48 L22 62 L30 72 L44 80 L60 86 L80 96 L110 100 L200 101 L262 101 L266 60 L272 12" fill="none" stroke="#5B8CFF" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle cx="272" cy="12" r="6" fill="#F6F2E9" stroke="#2563EB" stroke-width="3.500"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div role="dialog" aria-label="Chat com a IA da Aportou" style="position: absolute; right: 22px; bottom: 22px; width: 408px; height: 690px; display: flex; flex-direction: column; border-radius: 26px; background: #FBF7F1; box-shadow: 0 0 0 1px rgba(17,24,39,0.06), 0 34px 80px rgba(17,24,39,0.32);">
+
+      <div style="flex: none; border-radius: 26px 26px 0 0; background: #111827; color: #FFFFFF; padding-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div style="position: relative; height: 52px; padding: 0 22px 0 24px; display: flex; align-items: center; background: #2563EB; border-radius: 26px 0 0 0; font-size: 13.500px; font-weight: 700; letter-spacing: 0.16em;">IA DA APORTOU
+            <svg viewBox="0 -9 30 32" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: calc(100% - 1px); top: -20.300px; width: 67.800px; height: 72.300px;"><path d="M0 0 C12 0 22 -2 28 -8 C30 8 22 23 4 23 H0 Z" fill="#2563EB"/></svg>
+            <svg viewBox="0 0 25 21" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; top: calc(100% - 1px); width: 56.500px; height: 47.500px;"><path d="M0 0 H25 C11 0 2 8 0 21 Z" fill="#2563EB"/></svg>
+          </div>
+          <div style="display: flex; gap: 2px; padding: 4px 8px 0 0;">
+            <button type="button" aria-label="Minimizar chat" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg></button>
+            <button type="button" aria-label="Fechar chat" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+          </div>
+        </div>
+        <div style="padding: 14px 20px 0 30px; display: flex; align-items: center; gap: 8px; font-size: 13.500px;">
+          <span style="color: #B6BCC8;">Falando sobre</span>
+          <span style="display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px 4px 5px; border-radius: 999px; background: #1F2937; font-weight: 700;"><span style="padding: 1px 7px; border-radius: 999px; background: #F6F2E9; color: #111827; font-size: 11.500px; letter-spacing: 0.04em;">SEQL3</span>Sequoia Log</span>
+        </div>
+      </div>
+
+      <div style="flex: 1; min-height: 0; padding: 16px 18px 6px; display: flex; flex-direction: column; gap: 12px; overflow: hidden;">
+        <span style="align-self: center; font-size: 12px; font-weight: 600; color: #4B5563;">Hoje, 10:42</span>
+
+        <div style="align-self: flex-end; max-width: 84%; padding: 11px 16px; border-radius: 20px 20px 5px 20px; background: #2563EB; color: #FFFFFF; font-size: 15px; font-weight: 500;">Por que SEQL3 subiu tanto hoje?</div>
+
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+          <span aria-hidden="true" style="flex: none; width: 30px; height: 30px; border-radius: 50%; background: #111827; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 -9 66 54" width="16" height="13"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#5B8CFF"/></svg></span>
+          <div style="flex: 1; min-width: 0; padding: 14px 16px 14px; border-radius: 5px 20px 20px 20px; background: #FFFFFF; box-shadow: 0 0 0 1px #ECE4D8; display: flex; flex-direction: column; gap: 12px; font-size: 14.500px; line-height: 1.45;">
+            <span>SEQL3 está em <strong>R$ 12,30</strong>, alta de 29,47% sobre o fechamento de ontem (R$ 9,50).</span>
+            <span>Não encontrei um fato novo publicado hoje que explique o movimento. O evento recente mais relevante é o grupamento de 150 ações para 1, aprovado em outubro.</span>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+              <div style="padding: 9px 12px; border-radius: 12px; background: #F4ECE1; display: flex; flex-direction: column;"><span style="font-size: 12px; font-weight: 600; color: #4B5563;">Hoje</span><span style="font-size: 18px; font-weight: 800; color: #18703A;">+29,47%</span></div>
+              <div style="padding: 9px 12px; border-radius: 12px; background: #F4ECE1; display: flex; flex-direction: column;"><span style="font-size: 12px; font-weight: 600; color: #4B5563;">12 meses</span><span style="font-size: 18px; font-weight: 800; color: #18703A;">+95,24%</span></div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; font-weight: 600; color: #4B5563;">
+              <span style="padding: 3px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px #E0D6C6;">B3 · cotação de 10/11</span>
+              <span style="padding: 3px 9px; border-radius: 999px; box-shadow: inset 0 0 0 1px #E0D6C6;">Money Times · 02/10</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-left: 40px;">
+          <button type="button" style="min-height: 44px; padding: 0 14px; border: 0; border-radius: 999px; background: #EFE4D5; color: #111827; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">O que é grupamento?</button>
+          <button type="button" style="min-height: 44px; padding: 0 14px; border: 0; border-radius: 999px; background: #EFE4D5; color: #111827; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">A empresa dá lucro?</button>
+        </div>
+      </div>
+
+      <div style="flex: none; padding: 10px 16px 6px;">
+        <div style="position: relative;">
+          <div aria-hidden="true" style="position: absolute; left: -5px; right: -5px; top: -4px; bottom: -4px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; filter: blur(12px); opacity: 0.45; animation: aportouAnel 7s linear infinite;"></div>
+          <div style="position: relative; padding: 2.500px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; animation: aportouAnel 7s linear infinite;">
+            <div style="display: flex; align-items: center; gap: 8px; height: 52px; box-sizing: border-box; padding: 0 7px 0 18px; border-radius: 999px; background: #FFFFFF;">
+              <label for="chat-pergunta" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);">Pergunte mais sobre SEQL3</label>
+              <input id="chat-pergunta" type="text" placeholder="Pergunte mais sobre SEQL3" style="flex: 1; min-width: 0; height: 44px; border: 0; background: transparent; font-family: inherit; font-size: 15.500px; color: #111827; outline-offset: 4px;">
+              <button type="button" aria-label="Enviar pergunta" style="flex: none; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #2563EB; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: -3px;"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#FFFFFF" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span style="flex: none; padding: 4px 16px 12px; text-align: center; font-size: 11.500px; color: #4B5563;">Resposta gerada por IA. Não é recomendação de compra ou venda.</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1060}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

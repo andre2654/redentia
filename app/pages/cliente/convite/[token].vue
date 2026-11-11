@@ -36,6 +36,8 @@
  */
 import type { ClientInviteInfo } from '~/types/clientes'
 
+// tela de escritório: tema e marca da Redentia, não da Aportou
+useMarcaRedentia()
 definePageMeta({ layout: false })
 
 usePageSeo({

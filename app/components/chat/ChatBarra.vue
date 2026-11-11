@@ -43,7 +43,7 @@ const mostrarSugestoes = computed(() => focado.value && !texto.value.trim() && s
 /* ——— a cápsula do celular ——— */
 const movel = ref(false)
 const recolhida = computed(() => movel.value && !focado.value && !texto.value)
-const PADRAO = 'Pergunte à Redentia'
+const PADRAO = 'Pergunte à Aportou'
 const dica = ref(PADRAO)
 let relogio: ReturnType<typeof setTimeout> | null = null
 let mq: MediaQueryList | null = null
@@ -172,11 +172,11 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
         </ul>
       </Transition>
 
-      <form class="cba__form" role="search" aria-label="Pergunte à Redentia" @submit.prevent="perguntar()">
+      <form class="cba__form" role="search" aria-label="Pergunte à Aportou" @submit.prevent="perguntar()">
         <ChatPilula :aceso="focado || !!texto">
           <div class="cba__linha" @click="campo?.focus()">
             <span class="cba__lado" :class="{ 'cba__lado--aberto': focado, 'cba__lado--dois': focado && isAuthenticated }">
-              <img src="/logo-azul.svg" alt="" width="20" height="20" class="cba__marca">
+              <MarcaCorte :largura="24" class="cba__marca" />
               <button
                 type="button" class="cba__acao" style="--i: 0" aria-label="Abrir o chat" title="Abrir o chat"
                 :tabindex="focado ? 0 : -1" @mousedown.prevent @click.stop="expandir"
@@ -192,7 +192,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
             </span>
             <input
               ref="campo" v-model="texto" class="cba__campo" type="text" enterkeyhint="send" autocomplete="off"
-              :placeholder="movel ? dica : PADRAO" aria-label="Pergunte à Redentia"
+              :placeholder="movel ? dica : PADRAO" aria-label="Pergunte à Aportou"
               role="combobox" :aria-expanded="mostrarSugestoes" :aria-controls="listaId" aria-autocomplete="list"
               :aria-activedescendant="mostrarSugestoes && ativa >= 0 ? `${listaId}-${ativa}` : undefined"
               @focus="focado = true" @keydown="onKey"

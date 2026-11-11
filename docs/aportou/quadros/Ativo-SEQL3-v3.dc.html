@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Aportou · Tela de ativo SEQL3 (v3)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E3A8A}
+@keyframes aportouAnel{to{background-position:200% 0}}
+</style>
+</helmet>
+<div style="background: #F9F3EC; color: #111827; font-family: Figtree, system-ui, sans-serif; font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums;">
+
+  <!-- NAVEGAÇÃO -->
+  <header>
+    <div style="max-width: 1240px; margin: 0 auto; padding: 16px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 44px;">
+      <a href="#" aria-label="Aportou, página inicial" style="display: flex; align-items: center; min-height: 44px;">
+        <svg viewBox="-2 -40 681 178" width="138" height="36" aria-hidden="true"><g fill="none" stroke="#111827" stroke-width="25"><circle cx="50" cy="50" r="37.5"/><circle cx="173" cy="50" r="37.5"/><circle cx="280.5" cy="50" r="37.5"/><circle cx="520.5" cy="50" r="37.5"/><path d="M593.5 2 V54 A35.25 35.25 0 0 0 664 54"/></g><g fill="#111827"><rect x="83" y="2" width="25" height="98"/><path d="M121 2 H146 V124 A12 12 0 0 1 134 136 H121 Z"/><path d="M340 100 V26 A26 26 0 0 1 366 0 H399 V23 H372 Q365 23 365 31 V100 Z"/><path d="M408 -25 Q408 -38 421 -38 H433 V62 Q433 77 448 77 H463 V101 H440 Q408 101 408 69 Z"/><rect x="651.5" y="2" width="25" height="98"/></g><path d="M408 44 V0 H444 C456 0 466 -2 472 -8 C474 8 466 23 448 23 H433 C419 23 410 31 408 44 Z" fill="#2563EB"/></svg>
+      </a>
+      <nav aria-label="Principal" style="display: flex; flex-wrap: wrap; gap: 0 28px; flex: 1 1 320px; font-size: 16px; font-weight: 600;">
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #111827; text-decoration: none;">Início</a>
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #111827; text-decoration: none;">Carteira</a>
+        <a href="#" aria-current="page" style="min-height: 44px; display: flex; align-items: center; color: #1D4ED8; text-decoration: none;">Ações</a>
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #111827; text-decoration: none;">Teses</a>
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #111827; text-decoration: none;">Ferramentas</a>
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #111827; text-decoration: none;">Aprender</a>
+      </nav>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button type="button" aria-label="Buscar ativo" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: #F1E8DB; display: flex; align-items: center; justify-content: center; cursor: pointer;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111827" stroke-width="1.800" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.500"/><path d="M16 16l4.500 4.500"/></svg></button>
+        <a href="#" style="min-height: 44px; padding: 0 20px; display: flex; align-items: center; border-radius: 999px; background: #2563EB; color: #FFFFFF; text-decoration: none; font-weight: 700;">Perguntar à IA</a>
+        <span aria-label="Conta de S." style="width: 44px; height: 44px; border-radius: 50%; background: #111827; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center;">S</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MERCADO AGORA -->
+  <div style="max-width: 1240px; margin: 0 auto; padding: 0 32px;">
+    <div style="border-radius: 14px; background: #111827; color: #D1D5DB; padding: 10px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 28px; font-size: 14px;">
+      <span style="font-weight: 700; color: #FFFFFF;">Mercado agora</span>
+      <span>IBOV <span style="color: #FFFFFF; font-weight: 600;">171.337</span> <span style="color: #FCA5A5;">−0,52%</span></span>
+      <span>IFIX <span style="color: #FFFFFF; font-weight: 600;">3.574</span> <span style="color: #FCA5A5;">−0,47%</span></span>
+      <span>Dólar <span style="color: #FFFFFF; font-weight: 600;">R$ 5,58</span></span>
+      <span>CDI <span style="color: #FFFFFF; font-weight: 600;">13,65% a.a.</span></span>
+      <span>Bitcoin <span style="color: #FFFFFF; font-weight: 600;">R$ 411.684</span> <span style="color: #86EFAC;">+0,30%</span></span>
+      <span style="margin-left: auto; color: #B6BCC8;">B3 · atraso de 15 min</span>
+    </div>
+  </div>
+
+  <!-- CABEÇALHO DO ATIVO -->
+  <section style="overflow: hidden;">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 44px 32px 72px; display: flex; flex-wrap: wrap; gap: 48px 56px; align-items: flex-start;">
+
+      <div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 26px;">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <nav aria-label="Você está em" style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 14px; color: #4B5563;">
+            <a href="#" style="color: #4B5563;">Ações</a><span aria-hidden="true">/</span><a href="#" style="color: #4B5563;">Bens industriais</a><span aria-hidden="true">/</span><span>SEQL3</span>
+          </nav>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px;">
+            <h1 style="margin: 0; font-size: 34px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;">Sequoia Log</h1>
+            <span style="padding: 4px 10px; border-radius: 8px; background: #111827; color: #FFFFFF; font-size: 14px; font-weight: 700; letter-spacing: 0.04em;">SEQL3</span>
+            <span style="padding: 4px 10px; border-radius: 8px; background: #EFE4D5; font-size: 14px; font-weight: 700; letter-spacing: 0.04em;">B3</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="font-size: clamp(76px, 10vw, 144px); font-weight: 800; letter-spacing: -0.045em; line-height: 0.9;"><span style="font-size: 0.34em; font-weight: 700; letter-spacing: -0.01em; vertical-align: 1.150em; margin-right: 0.18em;">R$</span>12,30</div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;">
+            <span style="display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 10px; background: #DDF2E3; color: #18703A; font-size: 17px; font-weight: 700;"><svg viewBox="0 0 12 10" width="11" height="9" fill="#18703A" aria-hidden="true"><path d="M6 0l6 10H0z"/></svg>+R$ 2,80 (+29,47%) hoje</span>
+            <span style="font-size: 14.500px; color: #4B5563;">Fechamento anterior R$ 9,50 · atualizado em 10/11</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          <a href="#" style="min-height: 52px; padding: 0 8px 0 24px; display: flex; align-items: center; gap: 14px; border-radius: 999px; background: #2563EB; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 700;">Adicionar à carteira<span style="width: 36px; height: 36px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563EB" stroke-width="2.200" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span></a>
+          <button type="button" style="min-height: 52px; padding: 0 20px; display: flex; align-items: center; gap: 8px; border: 1.500px solid #111827; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 17px; font-weight: 700; cursor: pointer;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#111827" stroke-width="1.800" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.500l2.700 5.500 6 .900-4.350 4.250 1.030 6-5.380-2.830-5.380 2.830 1.030-6L3.300 9.900l6-.900L12 3.500Z"/></svg>Seguir</button>
+          <button type="button" style="min-height: 52px; padding: 0 20px; display: flex; align-items: center; gap: 8px; border: 1.500px solid #111827; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 17px; font-weight: 700; cursor: pointer;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#111827" stroke-width="1.800" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.500 7 2.500 7h-17S6 15 6 9Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>Criar alerta</button>
+        </div>
+
+        <dl style="margin: 0; padding: 6px 22px; border-radius: 22px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); column-gap: 36px;">
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(17,24,39,0.1); font-size: 15px;"><dt style="color: #4B5563;">Valor de mercado</dt><dd style="margin: 0; font-weight: 700;">R$ 403,46M</dd></div>
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(17,24,39,0.1); font-size: 15px;"><dt style="color: #4B5563;">Setor</dt><dd style="margin: 0; font-weight: 700;">Bens industriais</dd></div>
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(17,24,39,0.1); font-size: 15px;"><dt style="color: #4B5563;">Mín. 52 semanas</dt><dd style="margin: 0; font-weight: 700;">R$ 3,72</dd></div>
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(17,24,39,0.1); font-size: 15px;"><dt style="color: #4B5563;">Máx. 52 semanas</dt><dd style="margin: 0; font-weight: 700;">R$ 1.275,00</dd></div>
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; font-size: 15px;"><dt style="color: #4B5563;">Proventos (12M)</dt><dd style="margin: 0; font-weight: 700;">R$ 0,00</dd></div>
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; font-size: 15px;"><dt style="color: #4B5563;">P/L (TTM)</dt><dd style="margin: 0; font-weight: 700;">−1,80</dd></div>
+        </dl>
+      </div>
+
+      <!-- Cartão do gráfico com a faixa da marca -->
+      <div style="flex: 1.400 1 480px; min-width: 0; margin-top: 26px; border-radius: 28px; background: #111827; color: #FFFFFF; box-shadow: 0 30px 60px rgba(17,24,39,0.2);">
+        <div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0 16px;">
+          <div style="position: relative; flex: none; height: 60px; padding: 0 26px 0 28px; display: flex; align-items: center; background: #2563EB; border-radius: 28px 0 0 0;">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0.16em;">SEQL3 EM 12 MESES</h2>
+            <svg viewBox="0 -9 30 32" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: calc(100% - 1px); top: -23.500px; width: 78.300px; height: 83.500px;"><path d="M0 0 C12 0 22 -2 28 -8 C30 8 22 23 4 23 H0 Z" fill="#2563EB"/></svg>
+            <svg viewBox="0 0 25 21" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; top: calc(100% - 1px); width: 65px; height: 55px;"><path d="M0 0 H25 C11 0 2 8 0 21 Z" fill="#2563EB"/></svg>
+          </div>
+          <div role="group" aria-label="Período do gráfico" style="margin-left: auto; padding: 8px 18px 0 0; display: flex; gap: 2px;">
+            <button type="button" style="min-width: 50px; height: 44px; border: 0; border-radius: 999px; background: transparent; color: #B6BCC8; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">1M</button>
+            <button type="button" style="min-width: 50px; height: 44px; border: 0; border-radius: 999px; background: transparent; color: #B6BCC8; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">6M</button>
+            <button type="button" aria-pressed="true" style="min-width: 54px; height: 44px; border: 0; border-radius: 999px; background: #F6F2E9; color: #111827; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">12M</button>
+          </div>
+        </div>
+
+        <div style="padding: 30px 30px 26px; display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 30px;">
+            <span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: clamp(40px, 4.400vw, 60px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: #86EFAC;">+95,24%</span><span style="font-size: 15px; font-weight: 600; color: #B6BCC8;">SEQL3</span></span>
+            <span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em;">+10,36%</span><span style="font-size: 15px; font-weight: 600; color: #B6BCC8;">Ibovespa</span></span>
+          </div>
+
+          <svg viewBox="0 0 640 290" width="100%" role="img" aria-label="Gráfico da cotação de SEQL3 em 12 meses: começa perto de R$ 7, cai para menos de R$ 1 e sobe para R$ 12,30 nos últimos dias" style="display: block;">
+            <defs><linearGradient id="fillSeqlV3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2563EB" stop-opacity="0.5"/><stop offset="1" stop-color="#2563EB" stop-opacity="0"/></linearGradient></defs>
+            <g stroke="#263042" stroke-width="1"><path d="M0 80H592"/><path d="M0 160H592"/><path d="M0 240H592"/></g>
+            <g fill="#B6BCC8" font-family="Figtree, sans-serif" font-size="12.500" font-weight="600"><text x="602" y="84">R$ 10</text><text x="602" y="164">R$ 5</text><text x="602" y="244">R$ 0</text></g>
+            <g fill="#B6BCC8" font-family="Figtree, sans-serif" font-size="12.500" font-weight="600"><text x="0" y="272">nov/25</text><text x="140" y="272">fev/26</text><text x="287" y="272">mai/26</text><text x="434" y="272">ago/26</text><text x="552" y="272">nov/26</text></g>
+            <path d="M0 128 L8 122 L14 116 L22 118 L28 132 L36 160 L44 172 L56 178 L70 188 L84 186 L100 194 L116 202 L128 206 L140 220 L156 228 L180 232 L240 234 L320 235 L420 235 L520 235 L574 235 L578 160 L584 120 L590 43 V240 H0 Z" fill="url(#fillSeqlV3)"/>
+            <path d="M0 128 L8 122 L14 116 L22 118 L28 132 L36 160 L44 172 L56 178 L70 188 L84 186 L100 194 L116 202 L128 206 L140 220 L156 228 L180 232 L240 234 L320 235 L420 235 L520 235 L574 235 L578 160 L584 120 L590 43" fill="none" stroke="#5B8CFF" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle cx="590" cy="43" r="7" fill="#F6F2E9" stroke="#2563EB" stroke-width="4"/>
+            <g><rect x="446" y="20" width="126" height="46" rx="12" fill="#F6F2E9"/><text x="460" y="39" fill="#4B5563" font-family="Figtree, sans-serif" font-size="11" font-weight="700" letter-spacing="1.500">HOJE</text><text x="460" y="57" fill="#111827" font-family="Figtree, sans-serif" font-size="17" font-weight="800">R$ 12,30</text></g>
+          </svg>
+
+          <p style="margin: 0; padding: 14px 16px; border-radius: 14px; background: #1B2434; font-size: 14px; line-height: 1.5; color: #D1D5DB;">A Sequoia aprovou em outubro o grupamento de 150 ações para 1. O grupamento altera o preço por ação e afeta a leitura do histórico.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EM CLARO -->
+  <section style="position: relative; overflow: hidden; background: #9AAE9B;">
+    <svg aria-hidden="true" viewBox="0 -9 66 54" style="position: absolute; right: -90px; top: -70px; width: 640px; height: 524px;"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#93A894"/></svg>
+
+    <div style="position: relative; max-width: 1240px; margin: 0 auto; padding: 84px 32px 76px; display: flex; flex-direction: column; gap: 36px;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 56px;">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#111827"/></svg>EM CLARO</span>
+          <h2 style="margin: 0; max-width: 700px; font-size: clamp(40px, 5vw, 64px); font-weight: 800; line-height: 1; letter-spacing: -0.03em;">O que pesa em SEQL3 hoje.</h2>
+        </div>
+        <div style="max-width: 350px; display: flex; flex-direction: column; gap: 8px;">
+          <p style="margin: 0; font-size: 17px; font-weight: 500;">Cinco pontos, em linguagem direta, antes de você olhar os indicadores.</p>
+          <p style="margin: 0; font-size: 13.500px; color: #1F2937;">Gerado pela IA da Aportou com dados da B3 e da CVM. Não é recomendação de compra ou venda.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; flex-wrap: wrap; gap: 18px;">
+
+          <div style="flex: 1.250 1 380px; min-width: 0; border-radius: 28px; background: #111827; color: #FFFFFF; padding: 28px 30px 30px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 24px 48px rgba(17,24,39,0.18);">
+            <span style="display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 800; letter-spacing: 0.14em; color: #B6BCC8;"><svg viewBox="0 -9 66 54" width="19" height="16" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#5B8CFF"/></svg>01 · HOJE</span>
+            <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 20px;">
+              <span style="font-size: clamp(56px, 6.400vw, 88px); font-weight: 800; line-height: 0.9; letter-spacing: -0.04em; color: #86EFAC;">+29,47%</span>
+              <span style="font-size: 22px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; max-width: 220px;">Alta em um único pregão</span>
+            </div>
+            <div style="margin-top: auto; display: flex; align-items: center; gap: 14px;">
+              <span style="display: flex; flex-direction: column;"><span style="font-size: 12.500px; font-weight: 600; color: #B6BCC8;">Ontem</span><span style="font-size: 18px; font-weight: 800;">R$ 9,50</span></span>
+              <span style="position: relative; flex: 1; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #2563EB 0%, #86EFAC 100%);"><span style="position: absolute; left: -2px; top: -4px; width: 16px; height: 16px; box-sizing: border-box; border-radius: 50%; background: #111827; border: 4px solid #2563EB;"></span><span style="position: absolute; right: -2px; top: -4px; width: 16px; height: 16px; box-sizing: border-box; border-radius: 50%; background: #111827; border: 4px solid #86EFAC;"></span></span>
+              <span style="display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 12.500px; font-weight: 600; color: #B6BCC8;">Agora</span><span style="font-size: 18px; font-weight: 800;">R$ 12,30</span></span>
+            </div>
+            <span style="font-size: 14.500px; color: #D1D5DB;">A ação tem oscilado com muita força nos últimos pregões.</span>
+          </div>
+
+          <div style="flex: 1 1 340px; min-width: 0; border-radius: 28px; background: #F9F3EC; padding: 28px 30px 30px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 24px 48px rgba(17,24,39,0.1);">
+            <span style="display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 800; letter-spacing: 0.14em; color: #4B5563;"><svg viewBox="0 -9 66 54" width="19" height="16" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>02 · RESULTADO EM 12 MESES</span>
+            <span style="font-size: 30px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;">Empresa com prejuízo</span>
+            <div style="margin-top: auto; display: flex; flex-direction: column; gap: 14px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; font-size: 14.500px;"><span style="font-weight: 600;">Receita</span><span style="font-weight: 800;">R$ 769,0M</span></div>
+                <div style="height: 14px; border-radius: 7px; background: #111827;"></div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; font-size: 14.500px;"><span style="font-weight: 600;">Prejuízo</span><span style="font-weight: 800; color: #B42318;">−R$ 348,3M</span></div>
+                <div style="height: 14px; border-radius: 7px; background: #EADDCA;"><div style="width: 45.300%; height: 100%; border-radius: 7px; background: #B42318;"></div></div>
+              </div>
+            </div>
+            <span style="font-size: 14.500px; color: #4B5563;">A cada R$ 100 de receita, a empresa perdeu R$ 45.</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 18px;">
+
+          <div style="flex: 1 1 280px; min-width: 0; border-radius: 28px; background: #F9F3EC; padding: 26px 28px 26px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 48px rgba(17,24,39,0.1);">
+            <span style="display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 800; letter-spacing: 0.14em; color: #4B5563;"><svg viewBox="0 -9 66 54" width="19" height="16" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>03 · BALANÇO</span>
+            <span style="font-size: 24px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em;">Patrimônio líquido negativo</span>
+            <svg viewBox="0 0 300 78" width="100%" role="img" aria-label="Régua do P/VP: o marcador está em −1,76, à esquerda do zero, na faixa de patrimônio negativo" style="display: block; margin-top: auto;">
+              <rect x="10" y="36" width="140" height="10" rx="5" fill="#F3CFC8"/><rect x="150" y="36" width="140" height="10" rx="5" fill="#CFE6D4"/>
+              <g stroke="#111827" stroke-width="1.500"><path d="M150 28V54"/></g>
+              <g stroke="#111827" stroke-width="1" opacity="0.45"><path d="M70 34V48"/><path d="M110 34V48"/><path d="M190 34V48"/><path d="M230 34V48"/></g>
+              <g fill="#4B5563" font-family="Figtree, sans-serif" font-size="11.500" font-weight="600" text-anchor="middle"><text x="70" y="68">−2</text><text x="110" y="68">−1</text><text x="150" y="68" fill="#111827" font-weight="800">0</text><text x="190" y="68">1</text><text x="230" y="68">2</text></g>
+              <circle cx="79.600" cy="41" r="8" fill="#B42318" stroke="#F9F3EC" stroke-width="3"/>
+              <text x="79.600" y="20" text-anchor="middle" fill="#B42318" font-family="Figtree, sans-serif" font-size="17" font-weight="800">−1,76</text>
+              <text x="290" y="20" text-anchor="end" fill="#4B5563" font-family="Figtree, sans-serif" font-size="11.500" font-weight="700" letter-spacing="1">P/VP</text>
+            </svg>
+            <span style="font-size: 14.500px; color: #4B5563;">Abaixo de zero, o P/VP não mede se a ação está barata.</span>
+          </div>
+
+          <div style="flex: 1 1 280px; min-width: 0; border-radius: 28px; color: #FFFFFF; background: linear-gradient(120deg, #1039BD 0%, #3A63D8 50%, #1640C2 100%); padding: 26px 28px 26px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 48px rgba(16,57,189,0.25);">
+            <span style="display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 800; letter-spacing: 0.14em;"><svg viewBox="0 -9 66 54" width="19" height="16" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#FFFFFF"/></svg>04 · EVENTO</span>
+            <span style="font-size: 24px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em;">Grupamento de 150 para 1</span>
+            <svg viewBox="0 0 270 122" width="100%" role="img" aria-label="150 ações viram 1 ação" style="display: block; margin-top: auto; max-width: 300px;">
+              <defs><pattern id="pontos150" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="2.800" fill="#FFFFFF" fill-opacity="0.85"/></pattern></defs>
+              <rect x="0" y="0" width="150" height="100" fill="url(#pontos150)"/>
+              <path d="M166 50H200M190 40l10 10-10 10" fill="none" stroke="#FFFFFF" stroke-width="2.500" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="240" cy="50" r="26" fill="#F6F2E9"/>
+              <text x="240" y="58" text-anchor="middle" fill="#111827" font-family="Figtree, sans-serif" font-size="24" font-weight="800">1</text>
+              <g fill="#FFFFFF" font-family="Figtree, sans-serif" font-size="12" font-weight="700" text-anchor="middle"><text x="75" y="118">150 ações</text><text x="240" y="118">1 ação</text></g>
+            </svg>
+            <span style="font-size: 14.500px;">Aprovado em outubro. Muda o preço por ação, não o valor da empresa.</span>
+          </div>
+
+          <div style="flex: 1 1 280px; min-width: 0; border-radius: 28px; background: #F9F3EC; padding: 26px 28px 26px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 48px rgba(17,24,39,0.1);">
+            <span style="display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 800; letter-spacing: 0.14em; color: #4B5563;"><svg viewBox="0 -9 66 54" width="19" height="16" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>05 · PROVENTOS</span>
+            <span style="font-size: 24px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em;">Sem proventos em 12 meses</span>
+            <svg viewBox="0 0 288 60" width="100%" role="img" aria-label="Doze meses, de dezembro a novembro, sem nenhum pagamento" style="display: block; margin-top: auto;">
+              <g fill="none" stroke="#9CA3AF" stroke-width="1.600" stroke-dasharray="3 3"><circle cx="12" cy="22" r="9"/><circle cx="36" cy="22" r="9"/><circle cx="60" cy="22" r="9"/><circle cx="84" cy="22" r="9"/><circle cx="108" cy="22" r="9"/><circle cx="132" cy="22" r="9"/><circle cx="156" cy="22" r="9"/><circle cx="180" cy="22" r="9"/><circle cx="204" cy="22" r="9"/><circle cx="228" cy="22" r="9"/><circle cx="252" cy="22" r="9"/><circle cx="276" cy="22" r="9"/></g>
+              <g fill="#4B5563" font-family="Figtree, sans-serif" font-size="11.500" font-weight="700" text-anchor="middle"><text x="12" y="52">D</text><text x="36" y="52">J</text><text x="60" y="52">F</text><text x="84" y="52">M</text><text x="108" y="52">A</text><text x="132" y="52">M</text><text x="156" y="52">J</text><text x="180" y="52">J</text><text x="204" y="52">A</text><text x="228" y="52">S</text><text x="252" y="52">O</text><text x="276" y="52">N</text></g>
+            </svg>
+            <span style="font-size: 14.500px; color: #4B5563;">Nenhum dividendo ou JCP com data-com no período.</span>
+          </div>
+        </div>
+      </div>
+
+      <a href="#" style="align-self: flex-start; min-height: 48px; padding: 0 8px 0 22px; display: flex; align-items: center; gap: 12px; border-radius: 999px; background: #111827; color: #FFFFFF; text-decoration: none; font-weight: 700;">Perguntar à IA sobre estes pontos<span style="width: 32px; height: 32px; border-radius: 50%; background: #2563EB; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13.500 6.500 19 12l-5.500 5.500"/></svg></span></a>
+    </div>
+  </section>
+
+  <!-- INDICADORES -->
+  <section style="position: relative; overflow: hidden;">
+
+    <div style="position: relative; max-width: 1240px; margin: 0 auto; padding: 84px 32px 40px; display: flex; flex-direction: column; gap: 30px;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 48px;">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>INDICADORES</span>
+          <h2 style="margin: 0; font-size: clamp(40px, 5vw, 64px); font-weight: 800; line-height: 1; letter-spacing: -0.03em;">Os números da empresa.</h2>
+        </div>
+        <div role="group" aria-label="Período dos indicadores" style="display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: #EFE4D5;">
+          <button type="button" aria-pressed="true" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #111827; color: #FFFFFF; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">12 meses</button>
+          <button type="button" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">3 anos</button>
+          <button type="button" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">5 anos</button>
+        </div>
+      </div>
+
+      <!-- Diagnóstico -->
+      <div style="border-radius: 22px; background: #111827; color: #FFFFFF; padding: 20px 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px 32px;">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-size: 13px; font-weight: 600; color: #B6BCC8;">Rentabilidade</span>
+          <span style="display: flex; align-items: center; gap: 12px;"><span aria-hidden="true" style="display: flex; gap: 4px;"><span style="width: 22px; height: 7px; border-radius: 4px; background: #FCA5A5;"></span><span style="width: 22px; height: 7px; border-radius: 4px; background: #374151;"></span><span style="width: 22px; height: 7px; border-radius: 4px; background: #374151;"></span></span><span style="font-size: 17px; font-weight: 800;">Fraca</span></span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-size: 13px; font-weight: 600; color: #B6BCC8;">Crescimento</span>
+          <span style="display: flex; align-items: center; gap: 12px;"><span aria-hidden="true" style="display: flex; gap: 4px;"><span style="width: 22px; height: 7px; border-radius: 4px; background: #FCA5A5;"></span><span style="width: 22px; height: 7px; border-radius: 4px; background: #374151;"></span><span style="width: 22px; height: 7px; border-radius: 4px; background: #374151;"></span></span><span style="font-size: 17px; font-weight: 800;">Em queda</span></span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-size: 13px; font-weight: 600; color: #B6BCC8;">Endividamento</span>
+          <span style="display: flex; align-items: center; gap: 12px;"><span aria-hidden="true" style="display: flex; gap: 4px;"><span style="width: 22px; height: 7px; border-radius: 4px; background: #86EFAC;"></span><span style="width: 22px; height: 7px; border-radius: 4px; background: #86EFAC;"></span><span style="width: 22px; height: 7px; border-radius: 4px; background: #86EFAC;"></span></span><span style="font-size: 17px; font-weight: 800;">Caixa líquida</span></span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-size: 13px; font-weight: 600; color: #B6BCC8;">Valuation</span>
+          <span style="display: flex; align-items: center; gap: 12px;"><span aria-hidden="true" style="display: flex; gap: 4px;"><span style="width: 22px; height: 7px; box-sizing: border-box; border-radius: 4px; border: 1.500px dashed #9CA3AF;"></span><span style="width: 22px; height: 7px; box-sizing: border-box; border-radius: 4px; border: 1.500px dashed #9CA3AF;"></span><span style="width: 22px; height: 7px; box-sizing: border-box; border-radius: 4px; border: 1.500px dashed #9CA3AF;"></span></span><span style="font-size: 17px; font-weight: 800;">Não se aplica</span></span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr)); gap: 18px;">
+
+        <div style="border-radius: 24px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 24px 26px 8px; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; gap: 14px; padding-bottom: 16px;">
+            <span style="flex: none; width: 46px; height: 46px; border-radius: 13px; background: #111827; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#FFFFFF" stroke-width="1.600" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-3"/><path d="M10 20v-6"/><path d="M15 20v-10"/><path d="M20 20V5"/></svg></span>
+            <h3 style="margin: 0; flex: 1; font-size: 23px; font-weight: 800; letter-spacing: -0.015em;">Resultado</h3>
+            <span style="padding: 5px 12px; border-radius: 999px; background: #FBE4E0; color: #B42318; font-size: 13.500px; font-weight: 700;">Em queda</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding: 15px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-weight: 700;">Receita</span><span style="font-size: 14px; color: #4B5563;">Total vendido no período. Vem caindo ano a ano.</span></div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+              <svg viewBox="0 0 96 36" width="96" height="36" aria-hidden="true"><rect x="10" y="2" width="18" height="34" rx="4" fill="#111827" fill-opacity="0.35"/><rect x="39" y="5.400" width="18" height="30.600" rx="4" fill="#111827" fill-opacity="0.6"/><rect x="68" y="8.500" width="18" height="27.500" rx="4" fill="#111827"/></svg>
+              <div style="min-width: 118px; display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">R$ 769,0M</span><span style="font-size: 13.500px; font-weight: 700; color: #B42318;">↓ 9,9% a.a.</span></div>
+            </div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding: 15px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-weight: 700;">Lucro líquido</span><span style="font-size: 14px; color: #4B5563;">O que sobra depois de todos os custos. Negativo indica prejuízo.</span></div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+              <svg viewBox="0 0 96 36" width="96" height="36" aria-hidden="true"><path d="M4 3H92" stroke="#111827" stroke-width="1.500" stroke-linecap="round"/><rect x="10" y="3" width="18" height="15" rx="4" fill="#B42318" fill-opacity="0.4"/><rect x="39" y="3" width="18" height="22" rx="4" fill="#B42318" fill-opacity="0.65"/><rect x="68" y="3" width="18" height="32" rx="4" fill="#B42318"/></svg>
+              <div style="min-width: 118px; display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">R$ −348,3M</span><span style="font-size: 13.500px; font-weight: 700; color: #B42318;">↓ 47,1% a.a.</span></div>
+            </div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding: 15px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-weight: 700;">Margem líquida</span><span style="font-size: 14px; color: #4B5563;">A cada R$ 100 de receita, a empresa perdeu R$ 45.</span></div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+              <svg viewBox="0 0 96 36" width="96" height="36" aria-hidden="true"><rect x="0" y="14" width="96" height="8" rx="4" fill="#E6D9C6"/><rect x="26.300" y="14" width="21.700" height="8" rx="4" fill="#B42318"/><path d="M48 7V29" stroke="#111827" stroke-width="1.500" stroke-linecap="round"/></svg>
+              <div style="min-width: 118px; display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">−45,3%</span><span style="font-size: 13.500px; font-weight: 700; color: #B42318;">Negativa</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-radius: 24px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 24px 26px 8px; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; gap: 14px; padding-bottom: 16px;">
+            <span style="flex: none; width: 46px; height: 46px; border-radius: 13px; background: #111827; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#FFFFFF" stroke-width="1.600" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M12 3.500 3.500 8l8.500 4.500L20.500 8 12 3.500Z"/><path d="M3.500 12l8.500 4.500 8.500-4.500"/><path d="M3.500 16l8.500 4.500 8.500-4.500"/></svg></span>
+            <h3 style="margin: 0; flex: 1; font-size: 23px; font-weight: 800; letter-spacing: -0.015em;">Valuation</h3>
+            <span style="padding: 5px 12px; border-radius: 999px; background: #E6D9C6; color: #111827; font-size: 13.500px; font-weight: 700;">Não se aplica</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding: 15px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-weight: 700;">P/L</span><span style="font-size: 14px; color: #4B5563;">Preço sobre lucro. Com prejuízo, não permite comparação.</span></div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+              <svg viewBox="0 0 96 36" width="96" height="36" aria-hidden="true"><defs><pattern id="hachura" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#EADDCA"/><path d="M0 0V6" stroke="#B5A68F" stroke-width="2"/></pattern></defs><rect x="0" y="12" width="96" height="12" rx="6" fill="url(#hachura)"/></svg>
+              <div style="min-width: 118px; display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">−1,80</span><span style="font-size: 13.500px; font-weight: 700; color: #4B5563;">Não se aplica</span></div>
+            </div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding: 15px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-weight: 700;">P/VP</span><span style="font-size: 14px; color: #4B5563;">Preço sobre patrimônio. Negativo: as obrigações superam os ativos.</span></div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+              <svg viewBox="0 0 96 36" width="96" height="36" aria-hidden="true"><rect x="0" y="12" width="96" height="12" rx="6" fill="url(#hachura)"/></svg>
+              <div style="min-width: 118px; display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">−1,76</span><span style="font-size: 13.500px; font-weight: 700; color: #B42318;">Patrimônio negativo</span></div>
+            </div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding: 15px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-weight: 700;">EV/EBITDA</span><span style="font-size: 14px; color: #4B5563;">Valor da empresa sobre a geração de caixa operacional.</span></div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+              <div style="min-width: 118px; display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">190,75</span><span style="font-size: 13.500px; font-weight: 700; color: #111827;">Alto</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-radius: 24px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 24px 26px 8px; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; gap: 14px; padding-bottom: 16px;">
+            <span style="flex: none; width: 46px; height: 46px; border-radius: 13px; background: #111827; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#FFFFFF" stroke-width="1.600" stroke-linejoin="round" aria-hidden="true"><path d="M11 4.100A8.500 8.500 0 1 0 19.900 13H11V4.100Z"/><path d="M14 3.500a7 7 0 0 1 6.500 6.500H14V3.500Z"/></svg></span>
+            <h3 style="margin: 0; flex: 1; font-size: 23px; font-weight: 800; letter-spacing: -0.015em;">Rentabilidade</h3>
+            <span style="padding: 5px 12px; border-radius: 999px; background: #FBE4E0; color: #B42318; font-size: 13.500px; font-weight: 700;">Fraca</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding: 15px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-weight: 700;">ROE</span><span style="font-size: 14px; color: #4B5563;">Retorno sobre o capital dos acionistas.</span></div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+              <svg viewBox="0 0 96 36" width="96" height="36" aria-hidden="true"><rect x="0" y="14" width="96" height="8" rx="4" fill="#E6D9C6"/><rect x="0.900" y="14" width="47.100" height="8" rx="4" fill="#B42318"/><path d="M48 7V29" stroke="#111827" stroke-width="1.500" stroke-linecap="round"/></svg>
+              <div style="min-width: 118px; display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">−98,2%</span><span style="font-size: 13.500px; font-weight: 700; color: #B42318;">Baixo</span></div>
+            </div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding: 15px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-weight: 700;">ROA</span><span style="font-size: 14px; color: #4B5563;">Retorno sobre o total de ativos da empresa.</span></div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+              <svg viewBox="0 0 96 36" width="96" height="36" aria-hidden="true"><rect x="0" y="14" width="96" height="8" rx="4" fill="#E6D9C6"/><rect x="32" y="14" width="16" height="8" rx="4" fill="#B42318"/><path d="M48 7V29" stroke="#111827" stroke-width="1.500" stroke-linecap="round"/></svg>
+              <div style="min-width: 118px; display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">−33,3%</span><span style="font-size: 13.500px; font-weight: 700; color: #B42318;">Baixo</span></div>
+            </div>
+          </div>
+          <p style="margin: auto 0 0; padding: 12px 0 14px; border-top: 1px solid rgba(17,24,39,0.1); font-size: 13px; color: #4B5563;">Barras à esquerda do traço indicam retorno negativo, numa escala de −100% a +100%.</p>
+        </div>
+
+        <div style="border-radius: 24px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 24px 26px 8px; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; gap: 14px; padding-bottom: 16px;">
+            <span style="flex: none; width: 46px; height: 46px; border-radius: 13px; background: #111827; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#FFFFFF" stroke-width="1.600" aria-hidden="true"><circle cx="12" cy="12" r="8.500"/><circle cx="12" cy="12" r="3.800"/></svg></span>
+            <h3 style="margin: 0; flex: 1; font-size: 23px; font-weight: 800; letter-spacing: -0.015em;">Dívida e proventos</h3>
+            <span style="padding: 5px 12px; border-radius: 999px; background: #DDF2E3; color: #18703A; font-size: 13.500px; font-weight: 700;">Caixa líquida</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding: 15px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-weight: 700;">Dív. líq./EBITDA</span><span style="font-size: 14px; color: #4B5563;">Negativo indica mais caixa do que dívida.</span></div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+              <div style="min-width: 118px; display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">−73,48</span><span style="font-size: 13.500px; font-weight: 700; color: #18703A;">Caixa líquida</span></div>
+            </div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding: 15px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-weight: 700;">Proventos (12M)</span><span style="font-size: 14px; color: #4B5563;">Nenhum dividendo ou JCP com data-com no período.</span></div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 18px;">
+              <svg viewBox="0 0 96 36" width="96" height="36" aria-hidden="true"><g fill="none" stroke="#9CA3AF" stroke-width="1.300"><circle cx="4" cy="18" r="2.800"/><circle cx="12" cy="18" r="2.800"/><circle cx="20" cy="18" r="2.800"/><circle cx="28" cy="18" r="2.800"/><circle cx="36" cy="18" r="2.800"/><circle cx="44" cy="18" r="2.800"/><circle cx="52" cy="18" r="2.800"/><circle cx="60" cy="18" r="2.800"/><circle cx="68" cy="18" r="2.800"/><circle cx="76" cy="18" r="2.800"/><circle cx="84" cy="18" r="2.800"/><circle cx="92" cy="18" r="2.800"/></g></svg>
+              <div style="min-width: 118px; display: flex; flex-direction: column; align-items: flex-end;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap;">R$ 0,00</span><span style="font-size: 13.500px; font-weight: 700; color: #4B5563;">Sem pagamento</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IA + SIMULADOR -->
+  <section>
+    <div style="max-width: 1240px; margin: 0 auto; padding: 40px 32px 88px; display: flex; flex-wrap: wrap; gap: 44px 18px; align-items: stretch;">
+
+      <div style="flex: 1.300 1 440px; min-width: 0; margin-top: 26px; border-radius: 28px; background: #111827; color: #FFFFFF; display: flex; flex-direction: column;">
+        <div style="display: flex;">
+          <div style="position: relative; flex: none; height: 60px; padding: 0 26px 0 28px; display: flex; align-items: center; background: #2563EB; border-radius: 28px 0 0 0;">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0.16em;">LEITURA DA IA</h2>
+            <svg viewBox="0 -9 30 32" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: calc(100% - 1px); top: -23.500px; width: 78.300px; height: 83.500px;"><path d="M0 0 C12 0 22 -2 28 -8 C30 8 22 23 4 23 H0 Z" fill="#2563EB"/></svg>
+            <svg viewBox="0 0 25 21" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; top: calc(100% - 1px); width: 65px; height: 55px;"><path d="M0 0 H25 C11 0 2 8 0 21 Z" fill="#2563EB"/></svg>
+          </div>
+        </div>
+        <div style="flex: 1; padding: 32px 30px 28px; display: flex; flex-direction: column; gap: 22px;">
+          <p style="margin: 0; font-size: clamp(20px, 2vw, 25px); font-weight: 600; line-height: 1.35; letter-spacing: -0.01em;">O P/VP negativo (−1,76) mostra que o patrimônio líquido da empresa está negativo. Nessa situação, P/L e P/VP deixam de ser úteis para avaliar o preço, e o foco passa para caixa, dívida e retomada do resultado.</p>
+          <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px;">
+            <label for="pergunta-ia-v3" style="font-size: 14px; font-weight: 700; color: #B6BCC8;">Pergunte à IA sobre SEQL3</label>
+            <div style="display: flex; gap: 8px;">
+              <input id="pergunta-ia-v3" type="text" placeholder="Por que a ação subiu 29% hoje?" style="flex: 1; min-width: 0; height: 52px; box-sizing: border-box; padding: 0 20px; border: 0; border-radius: 999px; background: #F6F2E9; font-family: inherit; font-size: 16px; color: #111827;">
+              <button type="button" aria-label="Enviar pergunta" style="flex: none; width: 64px; height: 52px; border: 0; border-radius: 999px; background: #2563EB; display: flex; align-items: center; justify-content: center; cursor: pointer;"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13.500 6.500 19 12l-5.500 5.500"/></svg></button>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 0 22px; font-size: 14.500px;">
+              <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #FFFFFF;">O que é grupamento?</a>
+              <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #FFFFFF;">A empresa dá lucro?</a>
+              <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #FFFFFF;">Paga dividendos?</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex: 1 1 360px; min-width: 0; margin-top: 26px; border-radius: 28px; color: #FFFFFF; background: linear-gradient(120deg, #1039BD 0%, #3A63D8 46%, #2450CF 72%, #1640C2 100%); padding: 32px 30px 28px; display: flex; flex-direction: column; gap: 14px;">
+        <span style="font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;">SIMULADOR DE AÇÕES</span>
+        <h2 style="margin: 0; font-size: clamp(30px, 3.200vw, 42px); font-weight: 800; line-height: 1.04; letter-spacing: -0.025em;">E se você tivesse aportado em SEQL3?</h2>
+        <p style="margin: 0; font-size: 17px;">Veja quanto teria rendido com dividendos reinvestidos, no histórico real da B3.</p>
+        <a href="#" style="margin-top: auto; align-self: flex-start; min-height: 52px; padding: 0 8px 0 24px; display: flex; align-items: center; gap: 14px; border-radius: 999px; background: #F6F2E9; color: #111827; text-decoration: none; font-size: 17px; font-weight: 700;">Abrir simulador<span style="width: 36px; height: 36px; border-radius: 50%; background: #2563EB; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FFFFFF" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13.500 6.500 19 12l-5.500 5.500"/></svg></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTÍCIAS -->
+  <section style="background: #F1E8DB;">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 80px 32px; display: flex; flex-wrap: wrap; gap: 32px 64px; align-items: flex-start;">
+      <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+        <span style="display: flex; align-items: center; gap: 10px; font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>NOTÍCIAS</span>
+        <h2 style="margin: 0; font-size: clamp(40px, 5vw, 64px); font-weight: 800; line-height: 1; letter-spacing: -0.03em;">O que saiu sobre SEQL3.</h2>
+        <a href="#" style="min-height: 44px; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; align-self: flex-start;">Ver todas as notícias<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13.500 6.500 19 12l-5.500 5.500"/></svg></a>
+      </div>
+
+      <div style="flex: 1.700 1 520px; min-width: 0; padding: 8px 30px 18px; border-radius: 28px; background: #F9F3EC; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06);">
+        <a href="#" style="display: flex; gap: 20px; align-items: baseline; padding: 22px 0; border-bottom: 1px solid rgba(17,24,39,0.1); color: #111827; text-decoration: none;">
+          <span style="flex: none; width: 50px; font-size: 14px; font-weight: 700; color: #1D4ED8;">02/10</span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 24px; font-weight: 800; line-height: 1.2; letter-spacing: -0.015em;">Sequoia (SEQL3) aprova grupamento de 150 ações para 1; veja os prazos</span><span style="font-size: 14px; color: #4B5563;">Money Times</span></span>
+          <span style="flex: none; font-size: 16px; font-weight: 700; white-space: nowrap;">0,00%</span>
+        </a>
+        <a href="#" style="display: flex; gap: 20px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid rgba(17,24,39,0.1); color: #111827; text-decoration: none;">
+          <span style="flex: none; width: 50px; font-size: 14px; font-weight: 700; color: #1D4ED8;">05/10</span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 17.500px; font-weight: 700; line-height: 1.35;">Petrobras (PETR4), Bradesco (BBDC4), privatizações e outros destaques desta segunda (5)</span><span style="font-size: 14px; color: #4B5563;">Money Times</span></span>
+          <span style="flex: none; font-size: 16px; font-weight: 700; color: #B42318; white-space: nowrap;">−14,29%</span>
+        </a>
+        <a href="#" style="display: flex; gap: 20px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid rgba(17,24,39,0.1); color: #111827; text-decoration: none;">
+          <span style="flex: none; width: 50px; font-size: 14px; font-weight: 700; color: #1D4ED8;">01/06</span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 17.500px; font-weight: 700; line-height: 1.35;">Ibovespa abre junho em baixa e tem quinta queda seguida; Petrobras se salva</span><span style="font-size: 14px; color: #4B5563;">Infomoney</span></span>
+          <span style="flex: none; font-size: 16px; font-weight: 700; color: #B42318; white-space: nowrap;">−33,33%</span>
+        </a>
+        <a href="#" style="display: flex; gap: 20px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid rgba(17,24,39,0.1); color: #111827; text-decoration: none;">
+          <span style="flex: none; width: 50px; font-size: 14px; font-weight: 700; color: #1D4ED8;">29/05</span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 17.500px; font-weight: 700; line-height: 1.35;">Itaú (ITUB4), Santander (SANB11), Brava Energia (BRAV3) e outros destaques desta sexta-feira (29)</span><span style="font-size: 14px; color: #4B5563;">Money Times</span></span>
+          <span style="flex: none; font-size: 16px; font-weight: 700; white-space: nowrap;">0,00%</span>
+        </a>
+        <p style="margin: 14px 0 0; font-size: 13px; color: #4B5563;">O percentual à direita é a variação de SEQL3 no dia da notícia.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE + PERGUNTAS -->
+  <section>
+    <div style="max-width: 1240px; margin: 0 auto; padding: 80px 32px; display: flex; flex-wrap: wrap; gap: 44px 64px; align-items: flex-start;">
+      <div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+        <h2 style="margin: 0; font-size: clamp(30px, 3.200vw, 40px); font-weight: 800; line-height: 1.05; letter-spacing: -0.025em;">Sobre a Sequoia Log.</h2>
+        <p style="margin: 0; font-size: 17px; color: #1F2937;">Sequoia Log (SEQL3) é uma ação negociada na B3, do setor de bens industriais. A cotação mais recente é R$ 12,30, atualizada em 10/11/2026, com variação de +29,47% no dia.</p>
+        <p style="margin: 0; font-size: 17px; color: #1F2937;">De 10/11/2025 a 10/11/2026, SEQL3 variou +95,24%. No mesmo período, o Ibovespa variou +10,36%. A mínima de 52 semanas foi R$ 3,72 e a máxima foi R$ 1.275,00.</p>
+        <p style="margin: 0; font-size: 14px; color: #4B5563;">Fontes: Brapi (B3), com atualização de 10 a 30 min, e avisos de proventos da B3.</p>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+          <span style="font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;">VEJA TAMBÉM</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <a href="#" style="min-height: 44px; padding: 0 16px; display: flex; align-items: center; border-radius: 12px; background: #111827; color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 700;">Setor bens industriais</a>
+            <a href="#" style="min-height: 44px; padding: 0 16px; display: flex; align-items: center; border-radius: 12px; background: #F1E8DB; color: #111827; text-decoration: none; font-size: 15px; font-weight: 700;">WEG (WEGE3)</a>
+            <a href="#" style="min-height: 44px; padding: 0 16px; display: flex; align-items: center; border-radius: 12px; background: #F1E8DB; color: #111827; text-decoration: none; font-size: 15px; font-weight: 700;">Itaúsa (ITSA4)</a>
+            <a href="#" style="min-height: 44px; padding: 0 16px; display: flex; align-items: center; border-radius: 12px; background: #F1E8DB; color: #111827; text-decoration: none; font-size: 15px; font-weight: 700;">Localiza (RENT3)</a>
+            <a href="#" style="min-height: 44px; padding: 0 16px; display: flex; align-items: center; border-radius: 12px; background: #F1E8DB; color: #111827; text-decoration: none; font-size: 15px; font-weight: 700;">Motiva (MOTV3)</a>
+            <a href="#" style="min-height: 44px; padding: 0 16px; display: flex; align-items: center; border-radius: 12px; background: #F1E8DB; color: #111827; text-decoration: none; font-size: 15px; font-weight: 700;">Rumo (RAIL3)</a>
+            <a href="#" style="min-height: 44px; padding: 0 16px; display: flex; align-items: center; border-radius: 12px; background: #F1E8DB; color: #111827; text-decoration: none; font-size: 15px; font-weight: 700;">Orizon (ORVR3)</a>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex: 1.200 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+        <h2 style="margin: 0 0 8px; font-size: clamp(30px, 3.200vw, 40px); font-weight: 800; line-height: 1.05; letter-spacing: -0.025em;">Perguntas frequentes.</h2>
+        <details open style="border-radius: 20px; background: #F4ECE1; padding: 6px 24px; box-shadow: 0 0 0 1px rgba(120,90,50,0.05);">
+          <summary style="min-height: 56px; display: flex; align-items: center; font-size: 18px; font-weight: 700; cursor: pointer;">Qual a cotação de Sequoia Log (SEQL3)?</summary>
+          <p style="margin: 0 0 18px; color: #1F2937;">A cotação mais recente de Sequoia Log (SEQL3) é R$ 12,30, atualizada em 10/11/2026, com variação de +29,47% no dia. Fonte: Brapi (B3), atualização de 10 a 30 min.</p>
+        </details>
+        <details style="border-radius: 20px; background: #F4ECE1; padding: 6px 24px; box-shadow: 0 0 0 1px rgba(120,90,50,0.05);">
+          <summary style="min-height: 56px; display: flex; align-items: center; font-size: 18px; font-weight: 700; cursor: pointer;">Quanto SEQL3 teve em proventos com data-com nos últimos 12 meses?</summary>
+          <p style="margin: 0 0 18px; color: #1F2937;">Não houve provento de renda com data-com nos últimos 12 meses de SEQL3. Fonte: avisos de proventos da B3.</p>
+        </details>
+        <details style="border-radius: 20px; background: #F4ECE1; padding: 6px 24px; box-shadow: 0 0 0 1px rgba(120,90,50,0.05);">
+          <summary style="min-height: 56px; display: flex; align-items: center; font-size: 18px; font-weight: 700; cursor: pointer;">Como SEQL3 variou nos últimos 12 meses?</summary>
+          <p style="margin: 0 0 18px; color: #1F2937;">De 10/11/2025 a 10/11/2026, SEQL3 variou +95,24%. No mesmo período, o Ibovespa variou +10,36%.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- INPUT MÁGICO: fixo no rodapé da tela, abre o chat no canto inferior direito -->
+  <div style="position: sticky; bottom: 22px; z-index: 30; height: 0; display: flex; justify-content: center; align-items: flex-end;">
+    <div style="position: relative; width: min(460px, calc(100% - 36px));">
+      <div aria-hidden="true" style="position: absolute; left: -8px; right: -8px; top: -6px; bottom: -6px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; filter: blur(18px); opacity: 0.6; animation: aportouAnel 7s linear infinite;"></div>
+      <div style="position: relative; padding: 2.500px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; animation: aportouAnel 7s linear infinite; box-shadow: 0 12px 30px rgba(17,24,39,0.18);">
+        <button type="button" aria-label="Perguntar à IA da Aportou: por que SEQL3 subiu hoje?" style="display: flex; align-items: center; gap: 12px; width: 100%; height: 58px; box-sizing: border-box; padding: 0 9px 0 20px; border: 0; border-radius: 999px; background: #FFFFFF; color: #111827; font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer;">
+          <svg viewBox="0 -9 66 54" width="26" height="21" aria-hidden="true" style="flex: none;"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>
+          <span style="flex: 1; min-width: 0; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Por que SEQL3 subiu hoje?</span>
+          <span aria-hidden="true" style="flex: none; padding: 2px 7px; border: 1px solid #E0D6C6; border-radius: 7px; font-size: 12.500px; font-weight: 700; color: #4B5563;">⌘K</span>
+          <span aria-hidden="true" style="flex: none; width: 40px; height: 40px; border-radius: 50%; background: #2563EB; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#FFFFFF" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RODAPÉ -->
+  <footer style="background: #111827; color: #D1D5DB; overflow: hidden;">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 64px 32px 0; display: flex; flex-direction: column; gap: 44px;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 48px;">
+        <span style="font-size: clamp(34px, 4.400vw, 56px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: #F6F2E9;">Investir fica mais claro.</span>
+        <span style="max-width: 480px; font-size: 13.500px; line-height: 1.5;">Uma empresa Redentia. As informações desta página têm caráter educativo e não são recomendação de compra ou venda. Rentabilidade passada não garante resultado futuro.</span>
+      </div>
+      <svg viewBox="-2 -40 681 142" width="100%" role="img" aria-label="aportou" style="display: block;"><g fill="none" stroke="#243047" stroke-width="25"><circle cx="50" cy="50" r="37.5"/><circle cx="173" cy="50" r="37.5"/><circle cx="280.5" cy="50" r="37.5"/><circle cx="520.5" cy="50" r="37.5"/><path d="M593.5 2 V54 A35.25 35.25 0 0 0 664 54"/></g><g fill="#243047"><rect x="83" y="2" width="25" height="98"/><path d="M121 2 H146 V124 A12 12 0 0 1 134 136 H121 Z"/><path d="M340 100 V26 A26 26 0 0 1 366 0 H399 V23 H372 Q365 23 365 31 V100 Z"/><path d="M408 -25 Q408 -38 421 -38 H433 V62 Q433 77 448 77 H463 V101 H440 Q408 101 408 69 Z"/><rect x="651.5" y="2" width="25" height="98"/></g><path d="M408 44 V0 H444 C456 0 466 -2 472 -8 C474 8 466 23 448 23 H433 C419 23 410 31 408 44 Z" fill="#2563EB"/></svg>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5339}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

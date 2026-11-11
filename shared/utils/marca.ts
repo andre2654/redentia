@@ -17,3 +17,11 @@ export const MARCA = {
   /** o produto de escritório, que mora em /business */
   b2b: 'Redentia',
 } as const
+
+/** As rotas do produto de escritório: nelas a marca é Redentia, não Aportou. */
+export const ROTAS_B2B = ['/business', '/cliente', '/jantar'] as const
+
+/** O nome da marca que assina a página desta rota (título, og:site_name). */
+export function marcaDaRota(path: string): string {
+  return ROTAS_B2B.some((r) => path === r || path.startsWith(`${r}/`)) ? MARCA.b2b : MARCA.nome
+}

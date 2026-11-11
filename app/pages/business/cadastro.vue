@@ -27,6 +27,8 @@
  * Quem já está logado não vê form: o middleware manda direto pro painel. Por
  * variar por cookie, a rota é private/no-store no nuxt.config.
  */
+// tela de escritório: tema e marca da Redentia, não da Aportou
+useMarcaRedentia()
 definePageMeta({
   layout: false,
   middleware: [

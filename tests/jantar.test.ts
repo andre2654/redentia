@@ -31,7 +31,9 @@ test('o aviso de cookies fica abaixo do header, como no resto do site, e não no
 test('a página usa o layout do jantar, com rodapé do site, e não entra no menu', () => {
   assert.match(pagina, /layout:\s*'jantar'/)
   assert.doesNotMatch(layout, /<NuHeader/)
-  assert.match(layout, /<NuFooter\s*\/>/)
+  // o jantar é da Redentia (escritórios): desde 11/11/2026 o rodapé do site de
+  // investidor é o da Aportou, e o jantar usa a variante business, com a marca dele
+  assert.match(layout, /<NuFooter variante="business"\s*\/>/)
   assert.doesNotMatch(nav, /\/jantar/)
   assert.doesNotMatch(layout.slice(layout.indexOf('<template>')), /Início|Teses|Criar conta|Ferramentas/)
 })
