@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// O campo do painel do chat (02/11/2026): a mesma pílula iridescente da barra,
-// com os chips do que a pessoa mostrou da página em cima do texto (removíveis)
-// e o botão que vira "parar" enquanto a resposta chega. Enter envia,
+// O campo do painel do chat (02/11/2026): o mesmo anel da barra (cobalto, céu,
+// sálvia e areia; corre mais rápido no foco e enquanto a resposta chega), com
+// os chips do que a pessoa mostrou da página em cima do texto (removíveis) e o
+// botão cobalto que vira "parar" enquanto a resposta chega. Enter envia,
 // Shift+Enter quebra a linha.
 import type { ContextoDoChat } from '~/composables/useChatPainel'
 
@@ -11,6 +12,8 @@ const props = defineProps<{
   streaming: boolean
   /** o chip que acabou de entrar, para o "pop" */
   novoId?: string | null
+  /** o convite do campo ("Pergunte sobre PETR4"); o nome acessível não muda */
+  convite?: string
 }>()
 const emit = defineEmits<{
   (e: 'update:modelValue', v: string): void
@@ -47,7 +50,7 @@ defineExpose({ focar })
 </script>
 
 <template>
-  <ChatPilula class="cco" :aceso="focado || !!modelValue">
+  <ChatPilula class="cco" :aceso="focado || !!modelValue" :respondendo="streaming">
     <div class="cco__in" @click.self="focar">
       <TransitionGroup v-if="contextos.length" tag="div" name="cco-chip" class="cco__chips" aria-label="O que vai junto da pergunta">
         <span v-for="c in contextos" :key="c.id" class="cco__chip" :class="{ 'cco__chip--novo': c.id === novoId }">
@@ -61,7 +64,7 @@ defineExpose({ focar })
       <div class="cco__linha">
         <textarea
           ref="campo" class="cco__campo" rows="1" enterkeyhint="send"
-          :value="modelValue" placeholder="Pergunte à Aportou" aria-label="Pergunte à Aportou"
+          :value="modelValue" :placeholder="convite || 'Pergunte à Aportou'" aria-label="Pergunte à Aportou"
           @input="emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
           @keydown="onKey" @focus="focado = true" @blur="focado = false"
         />
@@ -72,10 +75,10 @@ defineExpose({ focar })
           <span class="cco__quadrado" aria-hidden="true" />
         </button>
         <button
-          v-else type="button" class="cco__btn" :class="{ 'cco__btn--pronto': !!modelValue.trim() }"
+          v-else type="button" class="cco__btn"
           aria-label="Enviar pergunta" :disabled="!modelValue.trim()" @click="emit('enviar')"
         >
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5" /><path d="M6 11l6-6 6 6" /></svg>
         </button>
       </div>
     </div>
@@ -83,39 +86,41 @@ defineExpose({ focar })
 </template>
 
 <style scoped>
-.cco { --cpi-raio: 24px; }
-.cco__in { padding: 6px 6px 6px 16px; cursor: text; }
+.cco { --cpi-raio: 28px; }
+.cco__in { padding: 6px 7px 6px 18px; cursor: text; }
 .cco__chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 4px 2px 0; }
 .cco__chip {
   display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
-  padding: 4px 4px 4px 9px; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700;
+  padding: 4px 4px 4px 10px; border-radius: var(--nu-r-pill);
+  background: var(--nu-cream-2); color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700;
 }
 .cco__chip--novo { animation: cco-pop .45s cubic-bezier(.2, 1.4, .4, 1) both; }
 .cco__chip-txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
 .cco__chip-x {
-  width: 20px; height: 20px; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+  width: 22px; height: 22px; border: 0; border-radius: 50%; padding: 0; display: grid; place-items: center; cursor: pointer;
   background: transparent; color: var(--nu-gray); transition: background .15s, color .15s;
 }
-.cco__chip-x:hover { background: var(--nu-navy-07); color: var(--nu-ink); }
-.cco__chip-x:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 1px; }
+.cco__chip-x:hover { background: var(--nu-ink); color: var(--nu-white); }
 .cco__linha { display: flex; align-items: flex-end; gap: 10px; }
 .cco__campo {
   flex: 1; min-width: 0; resize: none; border: 0; outline: 0; background: transparent;
   font: inherit; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45;
-  padding: 9px 0; max-height: 132px; overflow-y: auto;
+  padding: 9px 0; max-height: 132px; overflow-y: auto; caret-color: var(--nu-blue);
 }
-.cco__campo::placeholder { color: var(--nu-gray); }
+/* o anel é o foco do campo: o contorno global não entra por cima dele */
+.cco__campo:focus-visible { outline: 0; }
+.cco__campo::placeholder { color: var(--nu-gray); opacity: 1; }
+/* o envio: o círculo cobalto com a seta para cima; parar é o mesmo círculo em carvão */
 .cco__btn {
-  flex-shrink: 0; width: 40px; height: 40px; border: 0; border-radius: 50%; cursor: pointer;
-  display: grid; place-items: center; background: var(--nu-ink); color: var(--nu-white);
+  flex-shrink: 0; width: 40px; height: 40px; border: 0; border-radius: 50%; padding: 0; cursor: pointer;
+  display: grid; place-items: center; background: var(--nu-blue); color: var(--nu-white);
   transition: transform .2s ease, background .2s ease, opacity .2s ease;
 }
-.cco__btn:disabled { opacity: .3; cursor: default; }
-.cco__btn:not(:disabled):hover { transform: scale(1.05); }
-.cco__btn:not(:disabled):active { transform: scale(.96); }
-.cco__btn--pronto { background: var(--nu-blue); }
-.cco__btn:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.cco__btn:disabled { opacity: .4; cursor: default; }
+.cco__btn:not(:disabled):hover { background: var(--nu-blue-hover); }
+.cco__btn:not(:disabled):active { transform: scale(.94); }
+.cco__btn--parar, .cco__btn--parar:not(:disabled):hover { background: var(--nu-ink); }
+.cco__btn--parar { animation: cco-pop .35s cubic-bezier(.2, 1.4, .4, 1) both; }
 .cco__quadrado { width: 12px; height: 12px; border-radius: 3px; background: currentColor; }
 
 .cco-chip-enter-active, .cco-chip-leave-active { transition: opacity .2s ease, transform .2s ease; }

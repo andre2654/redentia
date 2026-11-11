@@ -16,7 +16,7 @@ withDefaults(defineProps<{
 <template>
   <svg
     class="mka" :class="`mka--${sobre}`" viewBox="-2 -40 681 178"
-    :height="altura" :width="Math.round(altura * 681 / 178)"
+    :height.attr="altura" :width.attr="Math.round(altura * 681 / 178)"
     :role="rotulo ? 'img' : undefined" :aria-label="rotulo || undefined" :aria-hidden="rotulo ? undefined : 'true'"
   >
     <g fill="none" stroke="currentColor" stroke-width="25">

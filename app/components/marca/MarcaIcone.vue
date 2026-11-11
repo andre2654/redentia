@@ -9,7 +9,7 @@ withDefaults(defineProps<{ tamanho?: number; rotulo?: string }>(), { tamanho: 44
     class="mki" :style="{ width: `${tamanho}px`, height: `${tamanho}px`, borderRadius: `${Math.round(tamanho * 0.245)}px` }"
     :role="rotulo ? 'img' : undefined" :aria-label="rotulo || undefined" :aria-hidden="rotulo ? undefined : 'true'"
   >
-    <svg viewBox="0 0 110 104" :width="Math.round(tamanho * 0.545)" :height="Math.round(tamanho * 0.515)" aria-hidden="true">
+    <svg viewBox="0 0 110 104" :width.attr="Math.round(tamanho * 0.545)" :height.attr="Math.round(tamanho * 0.515)" aria-hidden="true">
       <circle cx="50" cy="54" r="36" fill="none" stroke="#fff" stroke-width="27" />
       <rect x="82" y="6" width="26" height="98" fill="#fff" />
     </svg>

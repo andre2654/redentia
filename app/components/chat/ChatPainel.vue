@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// O chat da Redentia como painel à direita (02/11/2026, pedido do dono: "o chat
+// O chat da Aportou como painel à direita (02/11/2026, pedido do dono: "o chat
 // agora não será uma janela e sim um componente que pode ser aberto em qualquer
 // página"). Montado no layout padrão; abre pela barra flutuante (ChatBarra),
 // por useChatPainel().abrir(pergunta) de qualquer tela e pelos deep-links
@@ -16,7 +16,12 @@
 // ?pergunta= (utils/chat-painel.ts): ela é enviada sozinha na volta, porque
 // quem mandou ao login deixou o marcador na aba. Um ?pergunta= de fora só
 // preenche o campo e espera a pessoa enviar (acaoDoPedido).
-import { acaoDoPedido, esquecerPerguntaDoGate, lerPerguntaDoGate, MAX_CONTEXTOS, pedidoDaQuery, podeRetomarPerguntaAqui, querySemPedido, sugestoesDaRota } from '~/utils/chat-painel'
+//
+// A cara é a da Aportou (11/11/2026): o topo é a faixa da marca "IA DA APORTOU"
+// (NuFaixaMarca) com as ações do painel; embaixo dela, "Falando sobre PETR4"
+// quando a página é de um ativo (é o mesmo foco que vai no routeContext da
+// pergunta). O painel segue lateral, de altura cheia: só a roupa mudou.
+import { acaoDoPedido, esquecerPerguntaDoGate, lerPerguntaDoGate, MAX_CONTEXTOS, pedidoDaQuery, podeRetomarPerguntaAqui, querySemPedido, sugestoesDaRota, tickerDaRota } from '~/utils/chat-painel'
 import { CHAVE_POS_LOGIN, type ContextoDoChat } from '~/composables/useChatPainel'
 
 
@@ -53,7 +58,30 @@ const pensandoMeio = computed(() => thinking.value && !pensandoVazio.value)
 const loginHref = computed(() => `/login?redirect=${encodeURIComponent(route.fullPath)}`)
 const dica = computed(() => (contextos.value.length >= MAX_CONTEXTOS
   ? `Até ${MAX_CONTEXTOS} pedaços da página por pergunta.`
-  : 'Clique em algo da página para mostrar à Redentia.'))
+  : 'Clique em algo da página para mostrar à IA.'))
+
+/* ——— o ativo da página: "Falando sobre PETR4 Petrobras" ———
+   O ticker é o da rota (o mesmo que vai no routeContext do envio). O nome sai
+   do que a página do ativo já carregou (o payload `acao:TICKER` do useAcao):
+   nenhuma chamada nova; sem ele, fica só o ticker. */
+const nuxtApp = useNuxtApp()
+const tickerDaPagina = computed(() => tickerDaRota(route.path))
+const nomeDoAtivo = computed(() => {
+  const t = tickerDaPagina.value
+  if (!t) return ''
+  const dado = (nuxtApp.payload.data as Record<string, unknown>)[`acao:${t}`] as { name?: unknown } | null | undefined
+  const nome = typeof dado?.name === 'string' ? dado.name.trim() : ''
+  return nome && nome.toUpperCase() !== t ? nome : ''
+})
+const convite = computed(() => {
+  const t = tickerDaPagina.value
+  if (!t) return 'Pergunte à Aportou'
+  return messages.value.length ? `Pergunte mais sobre ${t}` : `Pergunte sobre ${t}`
+})
+/** o que a IA está fazendo, na pílula carvão dos três pontos */
+const estado = computed(() => (pensandoVazio.value ? 'Pensando' : pensandoMeio.value ? 'Buscando os dados' : ''))
+/** a folha de tela cheia do celular não tem canto: a aba da faixa também não */
+const folha = ref(false)
 
 /* ——— enviar ———
    Quem não entrou vê a folha de cadastro com a pergunta (o herói da pergunta
@@ -192,6 +220,8 @@ function onKey(e: KeyboardEvent) {
 }
 
 function celular() { return window.matchMedia('(max-width: 759px)').matches }
+let mqFolha: MediaQueryList | null = null
+function lerFolha() { folha.value = !!mqFolha?.matches }
 
 watch(aberto, async (a) => {
   if (!import.meta.client) return
@@ -233,6 +263,9 @@ watch(() => route.query, lerPedido)
 
 onMounted(() => {
   apontador.value = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+  mqFolha = window.matchMedia('(max-width: 759px)')
+  lerFolha()
+  mqFolha.addEventListener('change', lerFolha)
   window.addEventListener('keydown', onKey)
   lerPedido()
   // pergunta longa demais para o redirect do login volta pelo sessionStorage
@@ -245,6 +278,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKey)
+  mqFolha?.removeEventListener('change', lerFolha)
   document.documentElement.classList.remove('nu-chat-aberto')
   document.documentElement.style.removeProperty('overflow')
 })
@@ -254,30 +288,31 @@ onBeforeUnmount(() => {
   <Transition name="cpn">
     <aside
       v-if="aberto" class="cpn" :class="{ 'cpn--atras': !!assinatura.gate.value }"
-      aria-label="Conversa com a Redentia"
+      aria-label="Conversa com a IA da Aportou"
     >
-      <header class="cpn__topo">
-        <span class="cpn__id">
-          <img src="/logo-azul.svg" alt="" width="20" height="20">
-          <span class="cpn__nome">Redentia</span>
-        </span>
-        <span class="cpn__acoes">
+      <NuFaixaMarca rotulo="IA da Aportou" :altura="52" :raio="folha ? 0 : 32" como="h2" class="cpn__topo">
+        <template #acoes>
           <button
             v-if="isAuthenticated" type="button" class="cpn__icone" :class="{ 'cpn__icone--on': historico }"
             :aria-pressed="historico" aria-label="Conversas anteriores" title="Conversas anteriores" @click="alternarHistorico"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6" /><path d="M3.5 4.5V9H8" /><path d="M12 7.5V12l3 2" /></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6" /><path d="M3.5 4.5V9H8" /><path d="M12 7.5V12l3 2" /></svg>
           </button>
           <button
             v-if="messages.length" type="button" class="cpn__icone" aria-label="Nova conversa" title="Nova conversa" @click="novaConversa"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h8" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z" /></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h8" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z" /></svg>
           </button>
           <button type="button" class="cpn__icone" aria-label="Fechar a conversa" title="Fechar (Esc)" @click="painel.fechar()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12" /><path d="M18 6L6 18" /></svg>
           </button>
-        </span>
-      </header>
+        </template>
+        <p v-if="tickerDaPagina" class="cpn__sobre">
+          <span class="cpn__sobre-rotulo">Falando sobre</span>
+          <span class="cpn__sobre-ativo"><span class="cpn__sobre-ticker">{{ tickerDaPagina }}</span><span v-if="nomeDoAtivo" class="cpn__sobre-nome">{{ nomeDoAtivo }}</span></span>
+        </p>
+        <p v-else class="cpn__sobre"><span class="cpn__sobre-rotulo">Investir fica mais claro.</span></p>
+      </NuFaixaMarca>
 
       <div ref="corpo" class="cpn__corpo">
         <ChatHistorico
@@ -288,18 +323,22 @@ onBeforeUnmount(() => {
 
         <template v-else>
           <div v-if="vazio" class="cpn__vazio">
+            <MarcaCorte :largura="64" class="cpn__vazio-corte" />
             <h2 class="cpn__vazio-titulo">Pergunte qualquer coisa.</h2>
             <p class="cpn__vazio-sub">Sobre um ativo, a sua carteira ou o mercado de hoje.</p>
             <div class="cpn__sugs">
-              <button v-for="s in sugestoes" :key="s" type="button" class="cpn__sug" @click="onFollowup(s)">{{ s }}</button>
+              <button v-for="(s, k) in sugestoes" :key="s" type="button" class="cpn__sug" :style="{ '--k': k }" @click="onFollowup(s)">{{ s }}</button>
             </div>
           </div>
 
           <!-- role=log + aria-live: o leitor de tela lê a resposta enquanto chega -->
           <div v-else class="cpn__conversa" role="log" aria-live="polite" aria-relevant="additions text">
             <div v-if="loadingSessionId && !messages.length" class="cpn__sk" aria-hidden="true">
-              <NuSkeleton variant="line" height="38px" width="62%" radius="18px" class="cpn__sk-eu" />
-              <NuSkeleton variant="text" :lines="4" last-width="48%" />
+              <NuSkeleton variant="line" height="46px" width="62%" radius="20px 20px 5px 20px" class="cpn__sk-eu" />
+              <div class="cpn__sk-ia">
+                <NuSkeleton variant="circle" width="30px" height="30px" />
+                <div class="cpn__sk-balao"><NuSkeleton variant="text" :lines="4" last-width="48%" /></div>
+              </div>
             </div>
             <ChatMensagem
               v-for="m in visiveis" :key="m.id" :msg="m"
@@ -308,11 +347,19 @@ onBeforeUnmount(() => {
               :login-href="loginHref"
               @followup="onFollowup"
             />
-            <div v-if="pensandoVazio" class="cpn__pensando" role="status" aria-label="A Redentia está pensando">
-              <NuSkeleton variant="text" :lines="3" last-width="58%" />
-            </div>
-            <div v-else-if="pensandoMeio" class="cpn__pensando cpn__pensando--meio" role="status" aria-label="A Redentia está buscando os dados">
-              <NuSkeleton variant="line" height="12px" width="44%" radius="pill" />
+            <!-- respondendo: a pílula carvão com o anel e os três pontos -->
+            <div
+              v-if="estado" class="cpn__pensando" :class="{ 'cpn__pensando--meio': pensandoMeio }" role="status"
+              :aria-label="pensandoVazio ? 'A IA da Aportou está pensando' : 'A IA da Aportou está buscando os dados'"
+            >
+              <span v-if="pensandoVazio" class="cpn__pensando-avatar" aria-hidden="true"><MarcaCorte :largura="16" cor="var(--nu-blue-on-dark)" /></span>
+              <ChatPilula class="cpn__pensando-pilula" respondendo escuro>
+                <span class="cpn__pensando-in" aria-hidden="true">
+                  <MarcaCorte :largura="20" cor="var(--nu-blue-on-dark)" />
+                  <span>{{ estado }}</span>
+                  <span class="cpn__pontos"><i /><i /><i /></span>
+                </span>
+              </ChatPilula>
             </div>
           </div>
         </template>
@@ -323,10 +370,10 @@ onBeforeUnmount(() => {
           <span class="cpn__dica-ponto" aria-hidden="true" />{{ dica }}
         </p>
         <ChatComposer
-          ref="composer" v-model="texto" :contextos="contextos" :streaming="streaming" :novo-id="novoId"
+          ref="composer" v-model="texto" :contextos="contextos" :streaming="streaming" :novo-id="novoId" :convite="convite"
           @enviar="enviarDoCampo" @parar="chat.stop()" @remover="painel.remover"
         />
-        <p class="cpn__aviso">Gerado por IA. Não é recomendação de investimento.</p>
+        <p class="cpn__aviso">Resposta gerada por IA. Não é recomendação de compra ou venda.</p>
       </footer>
     </aside>
   </Transition>
@@ -337,68 +384,98 @@ onBeforeUnmount(() => {
   /* solto da borda (dono, 02/11/2026: "dê uma margem nesse chat e deixe arredondado") */
   position: fixed; z-index: 51; top: var(--chat-painel-margem); right: var(--chat-painel-margem); bottom: var(--chat-painel-margem);
   width: var(--chat-painel-w, 440px);
-  display: flex; flex-direction: column; overflow: hidden; background: var(--nu-white);
+  display: flex; flex-direction: column; overflow: hidden; background: var(--nu-page);
   border-radius: var(--nu-r-card-lg);
   box-shadow: var(--nu-chat-sombra-painel);
 }
 .cpn--atras { z-index: 40; }
 
-.cpn__topo {
-  flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  height: 64px; padding: 0 12px 0 22px;
-}
-.cpn__id { display: inline-flex; align-items: center; gap: 9px; }
-.cpn__id img { display: block; }
-.cpn__nome { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.01em; }
-.cpn__acoes { display: inline-flex; align-items: center; gap: 2px; }
+/* o topo: a faixa da marca. É o cabeçalho do painel, não um cartão solto: sem
+   o canto e a sombra próprios (o painel já recorta e já tem a dele) */
+.cpn__topo { flex-shrink: 0; border-radius: 0 !important; box-shadow: none !important; padding-bottom: 16px; }
 .cpn__icone {
-  width: 38px; height: 38px; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
-  background: transparent; color: var(--nu-gray-2); transition: background .15s ease, color .15s ease;
+  width: 44px; height: 44px; border: 0; border-radius: 50%; padding: 0; display: grid; place-items: center; cursor: pointer;
+  background: transparent; color: var(--nu-white); transition: background .2s ease, transform .2s ease;
 }
-.cpn__icone:hover { background: var(--nu-cream); color: var(--nu-ink); }
-.cpn__icone--on { background: var(--nu-cream); color: var(--nu-ink); }
-.cpn__icone:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 1px; }
+.cpn__icone:hover { background: var(--nu-dark-chip); }
+.cpn__icone:active { transform: scale(.94); }
+.cpn__icone--on { background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line); }
+.cpn__icone:focus-visible { outline-color: var(--nu-white); outline-offset: -3px; }
+.cpn__sobre {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-height: 28px; margin: 0; padding: 14px 20px 0 30px;
+  font-size: var(--nu-fs-marca); font-weight: 500; line-height: 1.3; animation: nu-fade .35s ease both;
+}
+.cpn__sobre-rotulo { color: var(--nu-on-dark-2); }
+.cpn__sobre-ativo {
+  display: inline-flex; align-items: center; gap: 7px; min-width: 0; max-width: 100%; padding: 4px 11px 4px 5px;
+  border-radius: var(--nu-r-pill); background: var(--nu-gray-3); color: var(--nu-white); font-weight: 700;
+}
+.cpn__sobre-ticker {
+  flex: none; padding: 1px 8px; border-radius: var(--nu-r-pill); background: var(--nu-creme); color: var(--nu-ink);
+  font-size: var(--nu-fs-xs); font-weight: 800; letter-spacing: 0.04em;
+}
+.cpn__sobre-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.cpn__corpo { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 8px 22px 12px; }
+.cpn__corpo { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 14px 18px 12px; }
 
-.cpn__vazio { padding: clamp(24px, 9vh, 88px) 0 12px; animation: nu-fade .4s ease both; }
-.cpn__vazio-titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
-.cpn__vazio-sub { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
-.cpn__sugs { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 24px; }
+/* vazio: o corte grande, o convite e as sugestões da página */
+.cpn__vazio { padding: clamp(20px, 7vh, 72px) 4px 12px; }
+.cpn__vazio-corte { animation: nu-fade .4s ease both; }
+.cpn__vazio-titulo {
+  margin: 22px 0 0; color: var(--nu-ink); font-size: clamp(28px, 3.4vh, 34px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
+  animation: nu-fade .4s ease .05s both;
+}
+.cpn__vazio-sub { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; animation: nu-fade .4s ease .1s both; }
+.cpn__sugs { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 26px; }
 .cpn__sug {
-  max-width: 100%; text-align: left; padding: 10px 15px; border-radius: 16px;
-  border: 1.5px solid var(--nu-cream-2); background: var(--nu-white); cursor: pointer;
-  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.4;
-  transition: background .2s, border-color .2s;
+  min-height: 44px; max-width: 100%; text-align: left; padding: 8px 16px; border: 0; border-radius: 22px;
+  background: var(--nu-cream-2); cursor: pointer;
+  color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; line-height: 1.35;
+  animation: nu-fade .35s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(160ms + var(--k) * 60ms);
+  transition: background .2s ease, color .2s ease;
 }
-.cpn__sug:hover { background: var(--nu-cream); border-color: var(--nu-cream); }
-.cpn__sug:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.cpn__sug:hover { background: var(--nu-ink); color: var(--nu-white); }
+.cpn__sug:active { transform: scale(.98); }
 
-.cpn__conversa { padding-top: 4px; }
-.cpn__sk { display: flex; flex-direction: column; gap: 22px; padding-top: 18px; }
+.cpn__conversa { padding-top: 2px; }
+.cpn__sk { display: flex; flex-direction: column; gap: 14px; padding-top: 14px; }
 .cpn__sk-eu { align-self: flex-end; }
-.cpn__pensando { margin: 6px 0 22px; animation: nu-fade .3s ease both; }
-.cpn__pensando--meio { margin-top: -8px; }
+.cpn__sk-ia { display: flex; align-items: flex-start; gap: 10px; }
+.cpn__sk-balao { flex: 1; min-width: 0; padding: 16px; border-radius: 5px 20px 20px 20px; background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-line-2); }
 
-.cpn__pe { flex-shrink: 0; padding: 8px 16px calc(12px + env(safe-area-inset-bottom)); }
+/* respondendo: o avatar e a pílula carvão dos três pontos */
+.cpn__pensando { display: flex; align-items: center; gap: 10px; margin: 4px 0 20px; animation: nu-fade .3s ease both; }
+.cpn__pensando--meio { margin-top: -4px; padding-left: 40px; }
+.cpn__pensando-avatar { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--nu-ink); display: grid; place-items: center; }
+.cpn__pensando-pilula { --cpi-raio: 999px; }
+.cpn__pensando-in {
+  display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 18px 0 16px;
+  color: var(--nu-white); font-size: 15px; font-weight: 600; white-space: nowrap;
+}
+.cpn__pontos { display: inline-flex; gap: 4px; }
+.cpn__pontos i { width: 6px; height: 6px; border-radius: 50%; background: var(--nu-white); animation: nu-ponto 1.2s infinite; }
+.cpn__pontos i:nth-child(2) { animation-delay: .2s; }
+.cpn__pontos i:nth-child(3) { animation-delay: .4s; }
+
+.cpn__pe { flex-shrink: 0; padding: 10px 16px calc(12px + env(safe-area-inset-bottom)); }
 .cpn__dica {
-  display: flex; align-items: center; gap: 8px; margin: 0 6px 10px;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; line-height: 1.4;
+  display: flex; align-items: center; gap: 8px; margin: 0 8px 12px;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 600; line-height: 1.4;
 }
-.cpn__dica-ponto {
-  flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%;
-  background: conic-gradient(var(--nu-blue), var(--nu-serie-5), var(--nu-serie-4), var(--nu-serie-2), var(--nu-blue));
-}
-.cpn__aviso { margin: 10px 6px 0; color: var(--nu-gray); font-size: 11px; font-weight: 500; line-height: 1.4; text-align: center; }
+.cpn__dica-ponto { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--nu-anel); }
+.cpn__aviso { margin: 12px 6px 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.4; text-align: center; }
 
 .cpn-enter-active, .cpn-leave-active { transition: transform .38s cubic-bezier(.2, .8, .2, 1), opacity .25s ease; }
+.cpn-leave-active { transition-duration: .22s, .18s; }
 .cpn-enter-from, .cpn-leave-to { transform: translateX(24px); opacity: 0; }
 
 @media (max-width: 759px) {
   .cpn { inset: 0; width: 100%; border-radius: 0; box-shadow: none; }
-  .cpn__topo { padding-top: env(safe-area-inset-top); height: calc(60px + env(safe-area-inset-top)); padding-left: 18px; }
-  .cpn__corpo { padding: 4px 18px 12px; }
+  .cpn__topo { padding-top: env(safe-area-inset-top); }
+  .cpn__sobre { padding-left: 22px; }
+  .cpn__corpo { padding: 12px 14px 12px; }
   .cpn__pe { padding-left: 12px; padding-right: 12px; }
+  .cpn__pensando--meio { padding-left: 34px; }
   .cpn-enter-from, .cpn-leave-to { transform: translateY(32px); }
 }
 </style>

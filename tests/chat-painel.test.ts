@@ -325,3 +325,73 @@ test('o cursor mágico escolhe o pedaço mais de dentro e acha seções com tít
   }
   assert.match(ler('app/pages/asset/[ticker].vue'), /proverSobreDoContexto\(ticker\)/)
 })
+
+/* ——— a cara da Aportou no chat (11/11/2026) ——— */
+
+const PECAS_DO_CHAT = ['ChatBarra', 'ChatPilula', 'ChatPainel', 'ChatComposer', 'ChatMensagem', 'ChatHistorico', 'ChatIconeContexto', 'ChatSeletor']
+
+test('o chat fala como Aportou: nenhum texto visível diz Redentia', () => {
+  for (const f of PECAS_DO_CHAT) {
+    const src = ler(`app/components/chat/${f}.vue`)
+    const tpl = src.slice(src.indexOf('<template>'), src.lastIndexOf('</template>'))
+    assert.doesNotMatch(tpl, /Redentia/, `${f}: template`)
+    // os textos montados no script (dica, convite, estado)
+    for (const m of src.matchAll(/'([^'\n]*Redentia[^'\n]*)'/g)) assert.fail(`${f}: ${m[1]}`)
+  }
+  for (const p of ['/', '/asset/VALE3', '/carteira', '/noticias', '/tesouro', '/teses', '/dividendos/TAEE11']) {
+    for (const s of sugestoesDaRota(p)) assert.doesNotMatch(s, /Redentia/, `${p}: ${s}`)
+  }
+  assert.match(ler('app/composables/useNuChat.ts'), /a\.error = 'A conversa é de quem assina a Aportou\.'/)
+  // o contrato técnico não muda com o nome
+  assert.match(ler('app/composables/useNuChat.ts'), /tenantSlug: 'redentia'/)
+})
+
+test('o painel abre com a faixa da marca e fecha com a nota da IA', () => {
+  const p = ler('app/components/chat/ChatPainel.vue')
+  assert.match(p, /<NuFaixaMarca rotulo="IA da Aportou" :altura="52"/)
+  assert.match(p, /<template #acoes>/)
+  assert.match(p, /aria-label="Conversa com a IA da Aportou"/)
+  assert.match(p, /Falando sobre/)
+  // o ativo do "Falando sobre" é o mesmo da rota que vai no routeContext, e o
+  // nome sai do que a página já carregou: nenhuma chamada nova
+  assert.match(p, /tickerDaRota\(route\.path\)/)
+  assert.match(p, /nuxtApp\.payload\.data/)
+  assert.doesNotMatch(p, /\$fetch|useFetch|useAsyncData/)
+  assert.match(p, /Resposta gerada por IA\. Não é recomendação de compra ou venda\./)
+  assert.match(p, /'A IA da Aportou está pensando'/)
+  // respondendo: os três pontos da marca
+  assert.match(p, /animation: nu-ponto/)
+})
+
+test('o anel do input é o da marca e só anima transform', () => {
+  const pilula = ler('app/components/chat/ChatPilula.vue')
+  assert.match(pilula, /background: var\(--nu-anel\)/)
+  assert.match(pilula, /@keyframes cpi-corre \{ to \{ transform: translateX\(-50%\); \} \}/)
+  assert.match(pilula, /prefers-reduced-motion: reduce/)
+  assert.doesNotMatch(pilula, /--nu-serie-/)
+  const seletor = ler('app/components/chat/ChatSeletor.vue')
+  assert.match(seletor, /background: var\(--nu-anel\)/)
+  assert.doesNotMatch(seletor, /--nu-serie-|hue-rotate/)
+  // o envio é o círculo cobalto, na barra e no campo do painel
+  assert.match(ler('app/components/chat/ChatBarra.vue'), /\.cba__enviar \{[^}]*background: var\(--nu-blue\)/)
+  assert.match(ler('app/components/chat/ChatComposer.vue'), /\.cco__btn \{[^}]*background: var\(--nu-blue\)/)
+})
+
+test('os balões: cobalto para a pessoa, branco com fio e avatar para a IA', () => {
+  const m = ler('app/components/chat/ChatMensagem.vue')
+  assert.match(m, /\.cms__bolha \{[^}]*background: var\(--nu-blue\)[^}]*border-radius: 20px 20px 5px 20px/)
+  assert.match(m, /\.cms__balao \{[^}]*border-radius: 5px 20px 20px 20px[^}]*background: var\(--nu-white\)/)
+  assert.match(m, /class="cms__avatar" aria-hidden="true"><MarcaCorte/)
+  assert.match(m, /aria-label="O que foi mostrado à IA"/)
+  assert.match(m, /\.cms__chip \{[^}]*min-height: 44px[^}]*background: var\(--nu-cream-2\)/)
+})
+
+test('nenhuma peça do chat escreve cor em hex', () => {
+  for (const f of PECAS_DO_CHAT) {
+    const src = ler(`app/components/chat/${f}.vue`)
+    const css = src.slice(src.indexOf('<style'))
+    // a máscara do contorno usa #000 como opaco (não é cor que aparece)
+    const hex = css.replace(/linear-gradient\(#000 0 0\)/g, '').match(/#[0-9a-fA-F]{3,8}\b/g)
+    assert.equal(hex, null, `${f}: ${hex}`)
+  }
+})

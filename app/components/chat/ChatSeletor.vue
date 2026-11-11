@@ -2,9 +2,10 @@
 // O cursor mágico (02/11/2026, pedido do dono: "com o chat aberto o mouse fica
 // com um efeito mágico que podemos clicar pra adicionar o contexto do
 // componente no chat"). Só com o painel aberto e em aparelho de mouse
-// (hover + pointer fine): uma luz iridescente, a mesma paleta da barra, segue
-// o ponteiro; o pedaço da página marcado com v-contexto-chat (ou um link para
-// /asset/X) ganha o contorno iridescente; o clique anexa o pedaço ao campo do
+// (hover + pointer fine): uma luz nas cores do anel da Aportou (cobalto, céu e
+// areia: --nu-chat-luz-*) segue o ponteiro; o pedaço da página marcado com
+// v-contexto-chat (ou um link para /asset/X) ganha o contorno do anel
+// (--nu-anel correndo); o clique anexa o pedaço ao campo do
 // painel em vez de navegar. Botões e links DENTRO de um pedaço continuam
 // funcionando (trocar o período do gráfico, seguir o ativo).
 // Movimento reduzido: sem a luz que segue; o contorno fica, sem animação.
@@ -249,7 +250,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="ligado" class="cse" aria-hidden="true">
-    <span v-if="!calmo" ref="luz" class="cse__luz" :class="{ 'cse__luz--alvo': !!alvo }" />
+    <span v-if="!calmo" ref="luz" class="cse__luz" :class="{ 'cse__luz--alvo': !!alvo }"><span class="cse__manchas" /></span>
     <span
       v-if="alvo" :key="pulso" class="cse__contorno" :class="{ 'cse__contorno--pulso': pulso > 0 }"
       :style="{ transform: `translate3d(${alvo.x - 6}px, ${alvo.y - 6}px, 0)`, width: `${alvo.w + 12}px`, height: `${alvo.h + 12}px`, borderRadius: alvo.r }"
@@ -261,16 +262,20 @@ onBeforeUnmount(() => {
 <style scoped>
 .cse { position: fixed; inset: 0; z-index: 39; pointer-events: none; overflow: hidden; }
 
-/* a luz que segue o ponteiro: três manchas da paleta da barra, desfocadas */
+/* a luz que segue o ponteiro: três manchas do anel (cobalto, céu, areia),
+   desfocadas, girando devagar em volta do ponto */
 .cse__luz {
   position: absolute; left: -75px; top: -75px; width: 150px; height: 150px; border-radius: 50%;
+  filter: blur(14px); opacity: .8; will-change: transform;
+  transform: translate3d(-999px, -999px, 0); transition: opacity .2s ease;
+}
+.cse__manchas {
+  position: absolute; inset: 0; border-radius: 50%;
   background:
     radial-gradient(closest-side at 38% 40%, var(--nu-chat-luz-1), transparent),
     radial-gradient(closest-side at 64% 56%, var(--nu-chat-luz-2), transparent),
     radial-gradient(closest-side at 46% 70%, var(--nu-chat-luz-3), transparent);
-  filter: blur(14px); opacity: .75; will-change: transform;
-  transform: translate3d(-999px, -999px, 0);
-  animation: cse-gira 6s linear infinite;
+  animation: cse-gira 7s linear infinite;
 }
 .cse__luz::after {
   content: ''; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%;
@@ -278,27 +283,26 @@ onBeforeUnmount(() => {
 }
 .cse__luz--alvo { opacity: .45; }
 
-/* o contorno iridescente em volta do pedaço sob o ponteiro */
+/* o contorno em volta do pedaço sob o ponteiro: o anel da marca, correndo */
 .cse__contorno {
-  position: absolute; left: 0; top: 0; padding: 2px;
-  background: conic-gradient(from var(--cse-a, 0deg), var(--nu-blue), var(--nu-serie-5), var(--nu-serie-4), var(--nu-serie-2), var(--nu-serie-6), var(--nu-blue));
+  position: absolute; left: 0; top: 0; padding: 2.5px;
+  background: var(--nu-anel); background-size: 200% 100%;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
   transition: transform .16s cubic-bezier(.2, .8, .2, 1), width .16s cubic-bezier(.2, .8, .2, 1), height .16s cubic-bezier(.2, .8, .2, 1);
-  animation: cse-anel 4s linear infinite;
+  animation: nu-anel 4s linear infinite;
 }
-.cse__contorno--pulso { animation: cse-anel 4s linear infinite, cse-pulso .5s cubic-bezier(.2, .8, .2, 1); }
+.cse__contorno--pulso { animation: nu-anel 4s linear infinite, cse-pulso .5s cubic-bezier(.2, .8, .2, 1); }
+/* a etiqueta "+ PETR4": a pílula carvão, com o "+" no círculo cobalto */
 .cse__rotulo {
   position: absolute; left: 0; top: 0; will-change: transform;
-  display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px 4px 8px; border-radius: var(--nu-r-pill);
-  background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: var(--nu-r-pill);
+  background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-dense); font-weight: 700; white-space: nowrap;
   box-shadow: var(--nu-chat-sombra-rotulo);
 }
-.cse__mais { display: grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: var(--nu-blue); font-size: 12px; line-height: 1; }
+.cse__mais { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--nu-blue); font-size: 13px; line-height: 1; }
 
-@property --cse-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-@keyframes cse-anel { to { --cse-a: 360deg; } }
-@keyframes cse-gira { to { filter: blur(14px) hue-rotate(40deg); } }
+@keyframes cse-gira { to { transform: rotate(360deg); } }
 @keyframes cse-pulso { 0% { opacity: 1; } 40% { opacity: .4; box-shadow: 0 0 0 6px var(--nu-chat-luz-2); } 100% { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {

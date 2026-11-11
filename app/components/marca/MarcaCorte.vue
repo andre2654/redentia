@@ -6,7 +6,7 @@ withDefaults(defineProps<{ largura?: number; cor?: string }>(), { largura: 22, c
 </script>
 
 <template>
-  <svg class="mkc" viewBox="0 -9 66 54" :width="largura" :height="Math.round(largura * 54 / 66)" aria-hidden="true">
+  <svg class="mkc" viewBox="0 -9 66 54" :width.attr="largura" :height.attr="Math.round(largura * 54 / 66)" aria-hidden="true">
     <path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" :fill="cor" />
   </svg>
 </template>

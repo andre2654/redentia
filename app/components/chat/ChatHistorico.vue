@@ -23,7 +23,7 @@ const vazio = computed(() => !props.carregando && props.sessions.length === 0)
 
 <template>
   <div class="chi">
-    <p class="chi__titulo">Conversas</p>
+    <p class="chi__titulo nu-eyebrow"><MarcaCorte :largura="22" />Conversas</p>
     <div v-if="carregando && !sessions.length" class="chi__lista" aria-hidden="true">
       <div v-for="k in 5" :key="k" class="chi__sk">
         <NuSkeleton variant="line" height="13px" :width="k % 2 ? '78%' : '62%'" radius="pill" />
@@ -32,7 +32,7 @@ const vazio = computed(() => !props.carregando && props.sessions.length === 0)
     </div>
     <p v-else-if="vazio" class="chi__vazio">Nenhuma conversa ainda. A primeira pergunta abre uma.</p>
     <ul v-else class="chi__lista">
-      <li v-for="s in sessions" :key="s.id" class="chi__item-wrap">
+      <li v-for="(s, k) in sessions" :key="s.id" class="chi__item-wrap" :style="{ '--k': Math.min(k, 8) }">
         <button
           type="button" class="chi__item" :class="{ 'chi__item--ativa': s.id === ativaId }"
           :aria-current="s.id === ativaId ? 'true' : undefined" @click="emit('abrir', s.id)"
@@ -41,7 +41,7 @@ const vazio = computed(() => !props.carregando && props.sessions.length === 0)
           <span class="chi__item-meta">{{ relAgo(s.updatedAt) }}</span>
         </button>
         <button type="button" class="chi__apagar" :aria-label="`Apagar a conversa ${tituloDe(s)}`" @click="emit('apagar', s.id)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></svg>
         </button>
       </li>
     </ul>
@@ -49,31 +49,32 @@ const vazio = computed(() => !props.carregando && props.sessions.length === 0)
 </template>
 
 <style scoped>
-.chi { padding: 4px 0 24px; animation: nu-fade .3s ease both; }
-.chi__titulo { margin: 0 0 10px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.chi__lista { list-style: none; margin: 0 -10px; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-.chi__sk { display: flex; flex-direction: column; gap: 8px; padding: 14px 10px; }
-.chi__vazio { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.chi__item-wrap { position: relative; }
+.chi { padding: 10px 4px 24px; animation: nu-fade .3s ease both; }
+.chi__titulo { margin: 0 0 14px; }
+.chi__lista { list-style: none; margin: 0 -4px; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.chi__sk { display: flex; flex-direction: column; gap: 8px; padding: 14px 14px; }
+.chi__vazio { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+/* as conversas entram em cascata */
+.chi__item-wrap { position: relative; animation: nu-fade .3s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--k, 0) * 40ms); }
 .chi__item {
-  display: block; width: 100%; text-align: left; padding: 12px 44px 12px 10px; border: 0; border-radius: 14px;
-  background: transparent; cursor: pointer; font: inherit; transition: background .15s ease;
+  display: block; width: 100%; text-align: left; padding: 12px 52px 12px 14px; border: 0; border-radius: var(--nu-r-tile);
+  background: transparent; cursor: pointer; font: inherit; transition: background .2s ease, box-shadow .2s ease;
 }
-.chi__item:hover { background: var(--nu-cream); }
-.chi__item:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: -2px; }
-.chi__item--ativa { background: var(--nu-cream); }
+.chi__item:hover { background: var(--nu-cream-2); }
+.chi__item:focus-visible { outline-offset: -3px; }
+/* a conversa aberta: o cartão branco com o fio, marcado pelo cobalto */
+.chi__item--ativa, .chi__item--ativa:hover { background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-line-2), inset 4px 0 0 var(--nu-blue); }
 .chi__item-titulo {
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.4;
+  color: var(--nu-ink); font-size: 15px; font-weight: 700; line-height: 1.35;
 }
-.chi__item-meta { display: block; margin-top: 3px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+.chi__item-meta { display: block; margin-top: 3px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .chi__apagar {
-  position: absolute; top: 50%; right: 6px; width: 32px; height: 32px; transform: translateY(-50%);
-  border: 0; border-radius: 50%; background: transparent; color: var(--nu-gray); cursor: pointer;
+  position: absolute; top: 50%; right: 6px; width: 40px; height: 40px; transform: translateY(-50%);
+  border: 0; border-radius: 50%; padding: 0; background: transparent; color: var(--nu-gray); cursor: pointer;
   display: grid; place-items: center; opacity: 0; transition: opacity .15s, background .15s, color .15s;
 }
 .chi__item-wrap:hover .chi__apagar, .chi__apagar:focus-visible { opacity: 1; }
-.chi__apagar:hover { background: var(--nu-navy-07); color: var(--nu-red-text); }
-.chi__apagar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 1px; }
+.chi__apagar:hover { background: var(--nu-red-bg); color: var(--nu-red-text); }
 @media (hover: none) { .chi__apagar { opacity: 1; } }
 </style>

@@ -175,7 +175,7 @@ export function useNuChat() {
         break
       case 'error':
         if (data?.code === 'assinatura_necessaria') {
-          a.error = 'A conversa é de quem assina a Redentia.'
+          a.error = 'A conversa é de quem assina a Aportou.'
           const pergunta = [...messages.value].reverse().find((m) => m.role === 'user')?.content
           if (import.meta.client && pergunta) guardarPerguntaDoGate(localStorage, pergunta, [], Date.now())
           assinatura.recusado('chat')

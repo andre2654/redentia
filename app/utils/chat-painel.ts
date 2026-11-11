@@ -43,7 +43,7 @@ export function sugestoesDaRota(path: string): string[] {
     return ['Como foi a minha carteira hoje?', 'O que mais pesa na minha carteira?', 'Quanto recebo de proventos por mês?']
   }
   if (path.startsWith('/tese')) {
-    return ['Como funcionam as teses da Redentia?', 'Quais teses estão rendendo mais?', 'O que mexeu com a bolsa hoje?']
+    return ['Como funcionam as teses da Aportou?', 'Quais teses estão rendendo mais?', 'O que mexeu com a bolsa hoje?']
   }
   if (path.startsWith('/noticias')) {
     return ['O que mexeu com a bolsa hoje?', 'Qual notícia pesa mais na minha carteira?', 'Como está o dólar hoje?']

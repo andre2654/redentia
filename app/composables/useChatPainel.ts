@@ -1,5 +1,5 @@
 /**
- * O chat da Redentia como painel, aberto de qualquer página (02/11/2026).
+ * O chat da Aportou como painel, aberto de qualquer página (02/11/2026).
  *
  * Contrato entre a barra de pergunta (fixa no rodapé de toda página), a busca
  * (/busca) e o painel à direita. Quem quer abrir o chat chama `abrir()`; o
