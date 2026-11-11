@@ -25,7 +25,7 @@ defineProps<{ eyebrow?: string; dark?: boolean; id?: string }>()
   letter-spacing: var(--nu-ls-display); line-height: 1.02;
 }
 /* a Redentia (B2B) fica com o tracking de antes */
-:global(.marca-redentia) .nsh__title { letter-spacing: -0.03em; }
+.marca-redentia .nsh__title { letter-spacing: -0.03em; }
 .nsh__title--after-eyebrow { margin: 18px 0 0; }
 .nsh__title--dark { color: var(--nu-cream-text); }
 .nsh__dek {
