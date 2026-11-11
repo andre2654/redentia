@@ -198,6 +198,9 @@
 }
 .marca-redentia .nu-eyebrow--claro { color: var(--nu-blue-soft); }
 .marca-redentia .nu-eyebrow > svg { display: none; }
+/* o corte do "t" é sinal da Aportou: peça compartilhada que o desenha (o aviso
+   de cookies, por exemplo) não o mostra nas telas de escritório */
+.marca-redentia .mkc { display: none; }
 
 /* A fonte da Redentia B2B segue a Plus Jakarta Sans. O arquivo só baixa nas
    telas que usam a família (as de .marca-redentia). */
