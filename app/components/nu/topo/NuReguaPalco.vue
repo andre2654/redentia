@@ -106,8 +106,20 @@ watch(pausado, (p) => {
   if (t) { clearTimeout(t); t = null; resta = Math.max(0, vence - Date.now()) }
 })
 
+/* a cena que sai continua no lugar enquanto some (sobe e desfoca); a barra
+   que sai guarda a fase que tinha (não encolhe nem perde os textos no meio da saída) */
+const saindo = ref<CenaDaRegua | null>(null)
+let tSaida: ReturnType<typeof setTimeout> | null = null
+const SAIDA_MS = 600
+
 function entrar(i: number) {
+  const antes = cena.value
   indice.value = i
+  if (montado && antes !== cena.value) {
+    saindo.value = antes
+    if (tSaida) clearTimeout(tSaida)
+    tSaida = setTimeout(() => { saindo.value = null }, SAIDA_MS)
+  }
   const lista = cenas.value
   const troca = lista.length > 1
   // movimento reduzido: a cena fica, sem troca e sem a barra crescer
@@ -176,6 +188,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   limpar()
+  if (tSaida) clearTimeout(tSaida)
   if (tTique) clearInterval(tTique)
   document.removeEventListener('visibilitychange', visibilidade)
 })
@@ -184,16 +197,16 @@ onBeforeUnmount(() => {
 <template>
   <div ref="raiz" class="nrp" @pointerenter="sobre = true" @pointerleave="sobre = false" @focusin="aoFocar" @focusout="aoDesfocar">
     <!-- a barra: sempre no HTML do cliente e sempre focável (o rótulo estável da régua é o dela) -->
-    <div class="nrp__cena nrp__cena--barra" :class="{ 'nrp__cena--ativa': cena === 'barra' }">
+    <div class="nrp__cena nrp__cena--barra" :class="{ 'nrp__cena--ativa': cena === 'barra', 'nrp__cena--saindo': saindo === 'barra' }">
       <NuReguaBolsa
         :acoes="bolsa.acoes" :data="data" :mercado="mercado" :agora="relogio"
-        :fase="cena === 'barra' ? fase : 'oculta'" :ciclo="ciclo" :acender="!reduzido"
+        :fase="cena === 'barra' || saindo === 'barra' ? fase : 'oculta'" :ciclo="ciclo" :acender="!reduzido"
       />
     </div>
 
     <!-- a contagem: quanto falta para abrir e a linha que enche do último fechamento até a abertura -->
     <div
-      v-if="contagem && cenas.includes('contagem')" class="nrp__cena nrp__contagem" :class="{ 'nrp__cena--ativa': cena === 'contagem' }"
+      v-if="contagem && cenas.includes('contagem')" class="nrp__cena nrp__contagem" :class="{ 'nrp__cena--ativa': cena === 'contagem', 'nrp__cena--saindo': saindo === 'contagem' }"
       :aria-hidden="cena !== 'contagem' || undefined"
     >
       <span class="nrp__ponto" aria-hidden="true" />
@@ -208,7 +221,7 @@ onBeforeUnmount(() => {
 
     <!-- o fechamento: os fatos do dia, só os que o dado traz -->
     <div
-      v-if="fechamento && cenas.includes('fechamento')" class="nrp__cena nrp__fechamento" :class="{ 'nrp__cena--ativa': cena === 'fechamento' }"
+      v-if="fechamento && cenas.includes('fechamento')" class="nrp__cena nrp__fechamento" :class="{ 'nrp__cena--ativa': cena === 'fechamento', 'nrp__cena--saindo': saindo === 'fechamento' }"
       :aria-hidden="cena !== 'fechamento' || undefined"
     >
       <span class="nrp__ponto" aria-hidden="true" />
@@ -225,16 +238,20 @@ onBeforeUnmount(() => {
   position: relative; flex: 1 1 auto; min-width: 0; height: 100%; display: grid;
   animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both;
 }
-/* as cenas no mesmo lugar: a que sai desce e some, a que entra sobe 6px e aparece */
+/* as cenas no mesmo lugar, como um letreiro que rola (dono, 12/11/2026: "mais
+   suave"): as duas andam para cima; a que entra vem de 8px abaixo e firma
+   (--nu-dur-entrada na curva que chega), a que sai sobe 8px, desfoca e some
+   mais depressa (--nu-dur-lenta), e as duas se cruzam no meio, sem vazio */
 .nrp__cena {
   grid-area: 1 / 1; min-width: 0; display: flex; align-items: center;
-  transition: opacity var(--nu-dur-lenta) var(--nu-ease-troca), transform var(--nu-dur-lenta) var(--nu-ease-troca);
+  transition: opacity var(--nu-dur-entrada) var(--nu-ease-cor), transform var(--nu-dur-entrada) var(--nu-ease-saida), filter var(--nu-dur-entrada) var(--nu-ease-cor);
 }
-.nrp__cena:not(.nrp__cena--ativa) { opacity: 0; transform: translateY(6px); pointer-events: none; }
+.nrp__cena:not(.nrp__cena--ativa) { opacity: 0; transform: translateY(8px); filter: blur(3px); pointer-events: none; }
+.nrp__cena--saindo:not(.nrp__cena--ativa) { transform: translateY(-8px); transition-duration: var(--nu-dur-lenta); }
 /* as cenas de texto saem também do Tab e do leitor (a da barra não: o foco dela traz a cena de volta) */
 .nrp__contagem:not(.nrp__cena--ativa), .nrp__fechamento:not(.nrp__cena--ativa) {
   visibility: hidden;
-  transition: opacity var(--nu-dur-lenta) var(--nu-ease-troca), transform var(--nu-dur-lenta) var(--nu-ease-troca), visibility 0s var(--nu-dur-lenta);
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor), transform var(--nu-dur-lenta) var(--nu-ease-saida), filter var(--nu-dur-lenta) var(--nu-ease-cor), visibility 0s var(--nu-dur-lenta);
 }
 
 /* o ponto do estado (o mesmo do "Abre às 10h") e o texto */
@@ -277,5 +294,6 @@ onBeforeUnmount(() => {
 @media (prefers-reduced-motion: reduce) {
   .nrp { animation: none; }
   .nrp__cena, .nrp__contagem:not(.nrp__cena--ativa), .nrp__fechamento:not(.nrp__cena--ativa) { transition: none; }
+  .nrp__cena:not(.nrp__cena--ativa), .nrp__cena--saindo:not(.nrp__cena--ativa) { transform: none; filter: none; }
 }
 </style>

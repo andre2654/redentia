@@ -315,20 +315,30 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
 /* os lados (o estado e o número): o respiro mora dentro deles, para a barra encostar na coluna quando eles somem */
 .nrb__lado {
   flex: none; display: flex; align-items: center; height: 100%; overflow: hidden;
-  transition: width var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-media) var(--nu-ease-cor);
+  transition: width var(--nu-dur-entrada) var(--nu-ease-saida), opacity var(--nu-dur-lenta) var(--nu-ease-cor);
 }
-.nrb__lado-in { display: flex; align-items: center; gap: 16px; white-space: nowrap; }
+.nrb__lado-in {
+  display: flex; align-items: center; gap: 16px; white-space: nowrap;
+  transition: transform var(--nu-dur-entrada) var(--nu-ease-saida), filter var(--nu-dur-lenta) var(--nu-ease-cor);
+}
+/* de que lado cada texto vem e para onde vai: para a borda dele */
+.nrb__lado--esq .nrb__lado-in { --nrb-lado: -10px; }
+.nrb__lado--dir .nrb__lado-in { --nrb-lado: 10px; }
 .nrb__lado--esq .nrb__lado-in { padding-right: 16px; }
 .nrb__lado--dir .nrb__lado-in { padding-left: 16px; }
 /* fora de cena: os lados esperam a próxima entrada, invisíveis e fora do Tab */
 .nrb--oculta .nrb__lado { opacity: 0; visibility: hidden; }
-/* a cada entrada: a barra se forma e os textos aparecem depois dela */
-.nrb--textos .nrb__lado-in { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) var(--nu-dur-lenta) both; }
-/* a barra na largura toda: os lados somem (fade) e fecham; a barra cresce até a coluna */
+/* a cada entrada: a barra se forma e os textos chegam depois dela, da borda para dentro */
+.nrb--textos .nrb__lado-in { animation: nrb-lado-entra var(--nu-dur-entrada) var(--nu-ease-saida) var(--nu-dur-lenta) both; }
+@keyframes nrb-lado-entra { from { opacity: 0; transform: translateX(var(--nrb-lado)); filter: blur(3px); } }
+/* a barra na largura toda (dono, 12/11/2026: "mais suave"): os textos saem para a
+   borda, desfocando, e só então o lugar deles fecha, devagar, na curva que chega
+   (a barra cresce sem tranco) */
 .nrb--larga .nrb__lado {
   opacity: 0; visibility: hidden;
-  transition: width var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-media) var(--nu-ease-cor), visibility 0s var(--nu-dur-lenta);
+  transition: width var(--nu-dur-entrada) var(--nu-ease-saida) 140ms, opacity var(--nu-dur-lenta) var(--nu-ease-cor), visibility 0s calc(var(--nu-dur-entrada) + 140ms);
 }
+.nrb--larga .nrb__lado-in { transform: translateX(var(--nrb-lado)); filter: blur(3px); }
 .nrb__estado { flex: none; display: inline-flex; }
 .nrb__estado-curto { display: none; }
 .nrb__fio { flex: none; width: 1px; height: 16px; background: var(--nu-line-2); }
@@ -355,11 +365,12 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
 }
 .nrb__pedaco--clara { color: var(--nu-white); }
 /* o ticker dentro: só no pedaço que tem uns 62px (a largura real, pelo container) */
+/* o rótulo aparece e some em fade quando o pedaço passa dos 62px (a barra crescendo não estala) */
 .nrb__rotulo {
-  display: none; font-size: 11px; font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto);
+  display: block; opacity: 0; transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor); font-size: 11px; font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto);
   line-height: 1; white-space: nowrap; pointer-events: none; user-select: none;
 }
-@container (min-width: 62px) { .nrb__rotulo { display: block; } }
+@container (min-width: 62px) { .nrb__rotulo { opacity: 1; } }
 
 /* o pregão acende: da esquerda para a direita, pela posição do pedaço (uma vez
    por sessão), da areia do zero para a cor de cada um. É a cor que anima, não a
@@ -455,6 +466,7 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
 }
 @media (prefers-reduced-motion: reduce) {
   .nrb--acende .nrb__pedaco, .nrb__marca, .nrb--textos .nrb__lado-in { animation: none; }
-  .nrb__pedaco, .nrb__marca, .nrb__dica, .nrb__cart, .nrb__lado, .nrb--larga .nrb__lado { transition: none; }
+  .nrb__pedaco, .nrb__marca, .nrb__dica, .nrb__cart, .nrb__lado, .nrb--larga .nrb__lado, .nrb__lado-in, .nrb__rotulo { transition: none; }
+  .nrb--larga .nrb__lado-in { transform: none; filter: none; }
 }
 </style>
