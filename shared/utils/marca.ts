@@ -14,14 +14,6 @@ export const MARCA = {
   descricao: 'A Aportou explica ações, FIIs e a sua carteira em português claro, com uma IA do seu lado. Não é corretora e não tem produto para te vender.',
   assinatura: 'Uma empresa Redentia',
   ia: 'IA da Aportou',
-  /** o produto de escritório, que mora em /business */
+  /** o produto de escritório: desde 12/11/2026 fora deste site, em redentia.com.br */
   b2b: 'Redentia',
 } as const
-
-/** As rotas do produto de escritório: nelas a marca é Redentia, não Aportou. */
-export const ROTAS_B2B = ['/business', '/cliente', '/jantar'] as const
-
-/** O nome da marca que assina a página desta rota (título, og:site_name). */
-export function marcaDaRota(path: string): string {
-  return ROTAS_B2B.some((r) => path === r || path.startsWith(`${r}/`)) ? MARCA.b2b : MARCA.nome
-}

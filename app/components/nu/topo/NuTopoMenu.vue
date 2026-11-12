@@ -7,18 +7,12 @@
 // APORTOU (11/11/2026): no site de investidor o menu veste a marca (classe
 // ntn--ap): fundo creme da página, o wordmark no topo, itens em 600 com fios de
 // 1,5px, a lista entrando em cascata e, no pé, a chamada em pílula carvão com a
-// seta ("Criar conta grátis", a mesma do topo). A variante business não muda:
-// sem a classe, valem as regras de antes com os tokens do tema .marca-redentia.
+// seta ("Criar conta grátis", a mesma do topo). A variante do produto de
+// escritório saiu com o B2B em 12/11/2026.
 import type { NavItem } from '~/utils/topo'
 import { grupoAtivo, rotaAtiva } from '~/utils/topo'
 
-// `variante="business"` (04/11/2026): a marca For Business, sem a busca de
-// ativo, e no pé "Falar com a gente" e "Entrar" (ou "Minha conta") do Business.
-// `bizNova` (05/11/2026, na landing /business): o pé do print, "Testar com
-// carteira demo" (o mesmo cadastro do Entrar) e "Agendar 1 hora" (#contato).
-const props = defineProps<{ aberto: boolean; nav: NavItem[]; logado: boolean; variante?: 'business'; bizNova?: boolean }>()
-const business = computed(() => props.variante === 'business')
-const destinoCadastro = useDestinoCadastroBusiness()
+const props = defineProps<{ aberto: boolean; nav: NavItem[]; logado: boolean }>()
 const emit = defineEmits<{ fechar: []; sair: [] }>()
 const route = useRoute()
 const ativo = (to: string) => rotaAtiva(route.path, to)
@@ -42,16 +36,16 @@ onBeforeUnmount(() => { if (import.meta.client) document.removeEventListener('ke
 <template>
   <Teleport to="body">
     <Transition name="ntn">
-      <div v-if="aberto" ref="caixa" class="ntn" :class="{ 'ntn--ap': !business }" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1">
+      <div v-if="aberto" ref="caixa" class="ntn ntn--ap" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1">
         <div class="ntn__topo">
-          <NuTopoMarca class="ntn__marca" :business="variante === 'business'" @click="emit('fechar')" />
+          <NuTopoMarca class="ntn__marca" @click="emit('fechar')" />
           <button type="button" class="ntn__fechar" aria-label="Fechar menu" @click="emit('fechar')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
           </button>
         </div>
 
         <div class="ntn__rolo">
-          <NuxtLink v-if="variante !== 'business'" to="/busca" class="ntn__busca" @click="emit('fechar')">
+          <NuxtLink to="/busca" class="ntn__busca" @click="emit('fechar')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.2-3.2" /></svg>
             Buscar ativo, tese ou guia
           </NuxtLink>
@@ -89,15 +83,7 @@ onBeforeUnmount(() => { if (import.meta.client) document.removeEventListener('ke
           <div v-if="$slots.mercado" class="ntn__mercado"><slot name="mercado" /></div>
         </div>
 
-        <div v-if="variante === 'business' && bizNova" class="ntn__pe">
-          <NuxtLink :to="logado ? '/business/chaves' : destinoCadastro" class="ntn__cta ntn__cta--cheio" @click="emit('fechar')">{{ logado ? 'Minha conta' : 'Testar com carteira demo' }}</NuxtLink>
-          <NuxtLink to="/business#contato" class="ntn__cta" @click="emit('fechar')">Agendar 1 hora</NuxtLink>
-        </div>
-        <div v-else-if="variante === 'business'" class="ntn__pe">
-          <NuxtLink to="/business#contato" class="ntn__cta ntn__cta--cheio" @click="emit('fechar')">Falar com a gente</NuxtLink>
-          <NuxtLink :to="logado ? '/business/chaves' : destinoCadastro" class="ntn__cta" @click="emit('fechar')">{{ logado ? 'Minha conta' : 'Entrar' }}</NuxtLink>
-        </div>
-        <div v-else class="ntn__pe">
+        <div class="ntn__pe">
           <template v-if="logado">
             <NuBotaoSeta to="/carteira" variante="carvao" tamanho="m" largo @click="emit('fechar')">Minha carteira</NuBotaoSeta>
             <div class="ntn__linha">
@@ -126,8 +112,6 @@ onBeforeUnmount(() => { if (import.meta.client) document.removeEventListener('ke
   height: 52px; padding: 0 6px 0 16px; border-bottom: 1px solid var(--nu-cream-line);
 }
 .ntn__marca { gap: 8px; padding: 10px 6px 10px 2px; }
-.ntn__marca :deep(.ntm__marca) { width: 22px; height: 22px; }
-.ntn__marca :deep(.ntm__nome) { font-size: var(--nu-fs-md); }
 .ntn__fechar {
   width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; color: var(--nu-ink);
   display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s;
@@ -174,15 +158,12 @@ onBeforeUnmount(() => { if (import.meta.client) document.removeEventListener('ke
   border: 0; border-radius: var(--nu-r-pill); background: var(--nu-ink-04); color: var(--nu-ink);
   font-family: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); cursor: pointer;
 }
-.ntn__cta--cheio { background: var(--nu-blue); color: var(--nu-white); }
 .ntn__cta--sair { color: var(--nu-red-text); }
 .ntn-enter-active, .ntn-leave-active { transition: opacity .22s ease, transform .3s var(--nu-ease-saida); }
 .ntn-enter-from, .ntn-leave-to { opacity: 0; transform: translateY(10px); }
 /* no tablet a marca e o fechar seguem o header de lá */
 @media (min-width: 641px) {
   .ntn__topo { height: 72px; padding: 0 clamp(16px, 3vw, 40px); }
-  .ntn__marca :deep(.ntm__marca) { width: 26px; height: 26px; }
-  .ntn__marca :deep(.ntm__nome) { font-size: var(--nu-fs-lg); }
   .ntn__rolo, .ntn__pe { padding-left: clamp(16px, 3vw, 40px); padding-right: clamp(16px, 3vw, 40px); }
 }
 @media (prefers-reduced-motion: reduce) {

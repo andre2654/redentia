@@ -31,8 +31,8 @@ function ler(caminho: string) {
   return readFileSync(new URL(caminho, import.meta.url), 'utf8')
 }
 
-function ambiente(consentimento: AmbienteConvite['consentimento'], gtag?: GtagConvite, caminho = '/calculadora/preco-teto/PETR4'): AmbienteConvite {
-  return { consentimento, gtag, caminho }
+function ambiente(consentimento: AmbienteConvite['consentimento'], gtag?: GtagConvite): AmbienteConvite {
+  return { consentimento, gtag }
 }
 
 test('o convite fica abaixo do resultado, só na página do ticker, numa linha', () => {
@@ -120,7 +120,6 @@ test('sem consentimento nada dispara, e a view recusada não queima o ticker', (
     assert.equal(dispararEventoConvitePrecoTeto('preco_teto_convite_submit', 'PETR4', ambiente(consentimento, gtag)), 'recusado')
   }
   assert.equal(dispararEventoConvitePrecoTeto('preco_teto_convite_view', 'PETR4', ambiente('granted')), 'recusado')
-  assert.equal(dispararEventoConvitePrecoTeto('preco_teto_convite_submit', 'PETR4', ambiente('granted', gtag, '/cliente/acesso/segredo')), 'recusado')
   assert.equal(chamadas.length, 0)
   assert.equal(vistos.has('PETR4'), false)
   assert.equal(viewConviteNoConjunto('PETR4', vistos, ambiente('granted', gtag)), 'enviado')

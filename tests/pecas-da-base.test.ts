@@ -50,15 +50,11 @@ test('o acordeão fecha sem tirar o conteúdo do HTML', () => {
   assert.match(m, /details\[open\] > summary \.nmx__x/)
 })
 
-test('o FAQ usa o acordeão da base, segue emitindo o FAQPage e veste a Redentia como antes', () => {
+test('o FAQ usa o acordeão da base e segue emitindo o FAQPage', () => {
   const f = ler('app/components/nu/NuFaqAccordion.vue')
   assert.match(f, /<NuAcordeao\b/)
   assert.match(f, /if \(props\.schema\) useFaqSchema\(props\.items\)/)
   assert.match(f, /defaultOpen: 0/)
-  // a Redentia (B2B): os cartões creme, o "+" solto e a resposta com nu-fade
-  assert.match(f, /\.marca-redentia \.nfa__item \{ background: var\(--nu-cream\); border-radius: 18px; padding: 26px 28px; border-bottom: 0; \}/)
-  assert.match(f, /\.marca-redentia \.nfa__a--open \{ animation: nu-fade \.3s ease both; \}/)
-  assert.match(f, /\.marca-redentia \.nfa__item :deep\(\.nac__dobra\) \{ opacity: 1; transition: none; \}/)
 })
 
 test('o selo tem os sete tons, os dois tamanhos e a versão sobre o carvão', () => {

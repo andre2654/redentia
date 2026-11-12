@@ -102,7 +102,7 @@ const structuredData: Record<string, unknown>[] = [
     url: `${origin}/tesouro/${slug}`,
     // O emissor é o Tesouro Nacional. A Redentia informa sobre o título, não o
     // distribui: declarar `provider: Redentia` era afirmação falsa em dado
-    // estruturado, do mesmo tipo que a trava de RbSeguranca.vue evita na copy.
+    // estruturado, do mesmo tipo que a trava de copy de compliance evita.
     provider: { '@type': 'GovernmentOrganization', name: 'Tesouro Nacional', url: 'https://www.tesourodireto.com.br' },
     // `offers` REMOVIDO (2026-08-03). Declarava availability InStock e um preço
     // de compra num produto que este site não vende. Além de falso, era o que

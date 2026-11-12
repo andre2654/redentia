@@ -4,7 +4,7 @@
 // entra com nu-fade .3s — comportamento e valores exatos do design. Emite o
 // JSON-LD FAQPage (useFaqSchema), pra qualquer tela que use o componente;
 // `:schema="false"` desliga, para quem divide um FAQ em vários accordions e
-// emite um bloco só (o RbFaq, um accordion por aba).
+// emite um bloco só, ou para quem não quer um FAQPage a mais (a /assinar).
 // variant="compact" (PR4): escala do FAQ do guia (Redentia Guia
 // Open Finance.dc.html) — cards 22x24, pergunta 17px, ícone 19, gap 12.
 //
@@ -15,10 +15,9 @@
 // servidor (a fechada fica com altura 0 e `inert`, não some do DOM).
 // ROBUSTEZ (11/11/2026): cada pergunta é um NuAcordeao (a peça da base), com o
 // "+" do NuMais; a API, o single-open e o JSON-LD são os de antes.
-// Nas telas de escritório (.marca-redentia) o visual de antes fica igual: os
-// cartões creme, o "+" solto e a resposta entrando com nu-fade, sem animar a
-// altura (o bloco do fim veste o NuAcordeao por dentro, com :deep).
-// `surface="white"` só muda algo lá (no creme da Aportou não há cartão).
+// `surface="white"` (os cartões brancos de antes) não muda nada no creme da
+// Aportou, que não tem cartão; fica a classe para quem já passa a prop. O
+// visual antigo das telas de escritório saiu com o B2B (12/11/2026).
 import type { NuFaqItem } from '~/types/market'
 
 const props = withDefaults(
@@ -67,28 +66,4 @@ if (props.schema) useFaqSchema(props.items)
 .nfa--compact .nfa__q-text { font-size: var(--nu-fs-lg); }
 .nfa--compact :deep(.nac__corpo) { padding-bottom: 20px; }
 @media (max-width: 560px) { .nfa__a { padding-right: 0; } }
-
-/* ——— Redentia For Business: o FAQ de antes (cartões creme, "+" solto) ——— */
-.marca-redentia .nfa { gap: 14px; border-top: 0; }
-.marca-redentia .nfa__item { background: var(--nu-cream); border-radius: 18px; padding: 26px 28px; border-bottom: 0; }
-.marca-redentia .nfa__item :deep(.nac__cab) { position: static; align-items: flex-start; gap: 20px; min-height: 0; padding: 0; border-radius: 0; }
-/* o foco de antes: o anel global no botão inteiro */
-.marca-redentia .nfa__item :deep(.nac__cab:focus-visible) { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
-.marca-redentia .nfa__item :deep(.nac__cab:focus-visible::after) { content: none; }
-.marca-redentia .nfa__q-text { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; line-height: 1.35; }
-.marca-redentia .nfa__item :deep(.nmx) { width: 21px; height: 21px; margin-top: 3px; border-radius: 0; background: transparent; color: var(--nu-ink); }
-/* sem o círculo, sem o cobalto do hover e sem afundar: o "+" solto de antes */
-.marca-redentia .nfa__item :deep(.nac__cab:hover .nmx), .marca-redentia .nfa__item :deep(.nac__cab:active .nmx) { background: transparent; transform: none; }
-.marca-redentia .nfa__item :deep(.nmx__x) { width: 21px; height: 21px; stroke-width: 2.3; transition: transform .25s; }
-.marca-redentia .nfa__item :deep(.nac__dobra) { opacity: 1; transition: none; }
-.marca-redentia .nfa__item :deep(.nac__corpo) { padding-bottom: 0; }
-.marca-redentia .nfa__a { color: var(--nu-ink-75); line-height: 1.7; padding: 16px 0 0; }
-.marca-redentia .nfa__a--open { animation: nu-fade .3s ease both; }
-.marca-redentia .nfa--white .nfa__item { background: var(--nu-white); }
-.marca-redentia .nfa--compact { gap: 12px; }
-.marca-redentia .nfa--compact .nfa__item { padding: 22px 24px; }
-.marca-redentia .nfa--compact .nfa__item :deep(.nac__cab) { gap: 18px; }
-.marca-redentia .nfa--compact .nfa__item :deep(.nmx), .marca-redentia .nfa--compact .nfa__item :deep(.nmx__x) { width: 19px; height: 19px; }
-.marca-redentia .nfa--compact .nfa__item :deep(.nmx) { margin-top: 2px; }
-.marca-redentia .nfa--compact .nfa__a { padding-top: 14px; }
 </style>

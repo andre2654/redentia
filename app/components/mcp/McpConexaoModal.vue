@@ -1,6 +1,8 @@
 <script setup lang="ts">
 /**
- * Wizard de conexão do escritório — substitui a página /business/comecar.
+ * Wizard de conexão do Aportou MCP, aberto pela /mcp e pela seção MCP da
+ * /conta. Nasceu no painel do escritório (RbConexaoModal); quando o B2B saiu
+ * deste front (12/11/2026), ficou só o caminho do investidor.
  *
  * FORMATO WIZARD (direção do dono 2026-08-25: "passos simples e em formato
  * de wizard steps", e "de opção apenas claude e chatgpt, tire o resto"):
@@ -9,35 +11,36 @@
  *   1. Escolha o assistente (Claude ou ChatGPT — clicar já avança)
  *   2. Preparar (Claude: abrir os conectores · ChatGPT: ligar o dev mode)
  *   3. Criar o conector (nome + URL copiável)
- *   4. Autorizar (a CHAVE REAL copiável; sem chave, aviso + "Gerar a chave")
+ *   4. Autorizar (a CHAVE REAL copiável; sem chave, o aviso com o link para a /conta)
  *   5. Testar com uma frase pronta — Concluir
  *
  * O passo 5 era instalar o pack de skills; saiu em 24/10/2026: o servidor MCP
  * já ensina o assistente na conexão e devolve telas prontas. A frase do
- * passo 5 é a primeira de `frases` (app/content/business/frases.ts).
+ * passo 5 é FRASE_DO_TESTE (era a primeira da lista sem clientes do
+ * escritório, a mesma desde então).
  *
  * Cursor/Claude Code/Claude Desktop saíram do modal por decisão do dono;
- * as instruções deles continuam vivas na /mcp (B2C).
+ * as instruções deles continuam vivas na /mcp.
  *
  * Shell forkado do padrão AcaoEtfXrayModal (Teleport + useModalA11y +
- * Escape + scroll-lock). plainKey null = aberto por CTA sem chave nova.
+ * Escape + scroll-lock). plainKey null = aberto por CTA sem chave nova: a
+ * chave pessoal vive na /conta, e o passo 4 vira um link para lá.
  */
-import { frasesProntas, type FrasePronta } from '~/content/business/frases'
-
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   open: boolean
   plainKey: string | null
-  /** 'business' = painel de chaves (aviso emite 'gerar'); 'mcp' = página
-   *  B2C, onde a chave pessoal vive em /conta e o aviso vira link pra lá. */
-  origem?: 'business' | 'mcp'
-  /** As frases para começar; a primeira é a do teste no passo 5. */
-  frases?: FrasePronta[]
-}>(), { origem: 'business', frases: () => frasesProntas(false) })
+}>()
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'gerar'): void // sem chave: a página fecha o modal e foca o gerador
 }>()
+
+/** A frase do teste no passo 5: o que a pessoa cola e o que aparece depois. */
+const FRASE_DO_TESTE = {
+  // começa pelo nome que a pessoa deu ao conector (nomeConector, a Aportou)
+  texto: `${MARCA.nome}, o que mudou hoje em PETR4, VALE3 e HGLG11?`,
+  resultado: 'As cotações numa tela só, com a notícia de quem se mexeu.',
+}
 
 const ENDPOINT = 'https://redentia-api.saraivada.com/mcp'
 const temChave = computed(() => props.plainKey !== null)
@@ -49,9 +52,8 @@ const idx = ref(0)
 const TOTAL = 5
 
 const NOME: Record<Assistente, string> = { claude: 'Claude', chatgpt: 'ChatGPT' }
-// o nome que a pessoa digita no conector: no B2C (/mcp, /conta) é a Aportou;
-// no painel do escritório segue Redentia (11/11/2026)
-const nomeConector = computed(() => (props.origem === 'mcp' ? MARCA.nome : MARCA.b2b))
+// o nome que a pessoa digita no conector (11/11/2026)
+const nomeConector = MARCA.nome
 
 const TITULOS: Record<string, string> = {
   'prep-claude': 'Abra os conectores.',
@@ -65,9 +67,8 @@ const telaId = computed(() => {
   const passo = ['prep', 'url', 'chave', 'fim'][idx.value - 1]
   return passo === 'prep' ? `prep-${assistente.value}` : passo!
 })
-// "mesa" é vocabulário do escritório; no B2C (/mcp e /conta) a pergunta é pessoal
 const titulo = computed(() => {
-  if (telaId.value === 'escolha') return props.origem === 'business' ? 'Onde a sua mesa pergunta?' : 'Onde você pergunta?'
+  if (telaId.value === 'escolha') return 'Onde você pergunta?'
   return TITULOS[telaId.value] ?? ''
 })
 
@@ -131,7 +132,7 @@ onBeforeUnmount(() => {
       <div ref="cardRef" class="rbcx__card" role="dialog" aria-modal="true" :aria-labelledby="titleId" tabindex="-1" @click.stop>
         <div class="rbcx__head">
           <span class="rbcx__eyebrow">
-            {{ assistente ? `Conectar · ${NOME[assistente]}` : (origem === 'business' ? 'Conectar · Redentia For Business' : 'Conectar · Aportou MCP') }}
+            {{ assistente ? `Conectar · ${NOME[assistente]}` : 'Conectar · Aportou MCP' }}
           </span>
           <button type="button" class="rbcx__close" aria-label="Fechar" @click="emit('close')">✕</button>
         </div>
@@ -212,13 +213,6 @@ onBeforeUnmount(() => {
             </div>
             <p class="rbcx__nota">Ela não aparece de novo depois que você sair do painel. Se perder, revogue e gere outra.</p>
           </template>
-          <div v-else-if="origem === 'business'" class="rbcx__aviso" role="status">
-            <p class="rbcx__aviso-p">
-              Você ainda não tem uma chave nova em mãos. Gere uma — ela aparece uma única vez —
-              e este passo volta preenchido, pronto pra copiar.
-            </p>
-            <button type="button" class="rbcx__aviso-btn" @click="emit('gerar')">Gerar a chave</button>
-          </div>
           <div v-else class="rbcx__aviso" role="status">
             <p class="rbcx__aviso-p">
               A sua chave pessoal (rdt_mcp_…) fica em Configurações, seção MCP. Copie de lá e
@@ -235,12 +229,11 @@ onBeforeUnmount(() => {
             quando chamar a {{ nomeConector }}, e a resposta vem pronta. Não precisa instalar nada.
           </p>
           <div class="rbcx__code-wrap">
-            <button type="button" class="rbcx__copy" @click="copiar('frase', frases[0]!.texto)">{{ copiado === 'frase' ? 'Copiada' : 'Copiar' }}</button>
-            <pre class="rbcx__code rbcx__code--wrap"><code>{{ frases[0]!.texto }}</code></pre>
+            <button type="button" class="rbcx__copy" @click="copiar('frase', FRASE_DO_TESTE.texto)">{{ copiado === 'frase' ? 'Copiada' : 'Copiar' }}</button>
+            <pre class="rbcx__code rbcx__code--wrap"><code>{{ FRASE_DO_TESTE.texto }}</code></pre>
           </div>
           <p class="rbcx__nota">
-            {{ frases[0]!.resultado }}
-            <template v-if="origem === 'business'">Mais frases ficam no painel, em “Comece por aqui”.</template>
+            {{ FRASE_DO_TESTE.resultado }}
           </p>
         </div>
 
@@ -282,7 +275,7 @@ onBeforeUnmount(() => {
 .rbcx__close:hover { background: var(--nu-cream-2); }
 .rbcx__close:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 
-/* progresso: barras finas, o idioma dos passadores do hero da /business */
+/* progresso: barras finas, o idioma dos passadores de passo a passo */
 .rbcx__prog { display: flex; gap: 5px; margin-top: 22px; }
 .rbcx__prog-bar { flex: 1; height: 4px; border-radius: 2px; background: var(--nu-cream-2); transition: background .3s; }
 .rbcx__prog-bar--on { background: var(--nu-blue-deep); }

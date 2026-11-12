@@ -1,6 +1,12 @@
 /**
- * O rodapé do site (NuFooter, também na /business) cruzou a tela. O convite da
- * newsletter e o aviso de cookies usam isto para sair de cima dele.
+ * O rodapé (footer.nuf) cruzou a tela. O convite da newsletter e o aviso de
+ * cookies usam isto para sair de cima dele.
+ *
+ * ATENÇÃO (12/11/2026): footer.nuf era o rodapé antigo, que desde a Aportou
+ * (11/11) só existia na variante de escritório do NuFooter, que saiu com o B2B.
+ * O rodapé do site é o footer.nfa (NuFooterAportou): aqui nada casa e o valor
+ * fica sempre false, como já ficava no site de investidor desde 11/11. Trocar
+ * o seletor muda o comportamento do aviso de cookies: é decisão do dono.
  */
 export function useRodapeNaTela() {
   const visivel = ref(false)

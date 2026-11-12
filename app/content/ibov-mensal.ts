@@ -1,6 +1,6 @@
 // Ibovespa, fechamento de cada mês em pontos, de jan/1995 (depois do Plano Real) a
 // 10/2026. Fonte: Yahoo Finance (^BVSP, intervalo mensal), baixado em 20/10/2026; o
-// último mês é o fechamento de 20/10. É o traço de luz do rodapé (NuFooterLinha):
+// último mês é o fechamento de 20/10. É o traço de luz do recado (NuRecado, NuRecadoFaixa):
 // dado estático de propósito, a paisagem não precisa andar todo dia.
 export const IBOV_MENSAL_INICIO = '1995-01'
 

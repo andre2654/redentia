@@ -5,8 +5,7 @@
 // de cotações, com o fecho escrito à mão e um botão que abre a janela.
 //  - para todo mundo, logado ou não: é o banner pequeno que o Google aceita no
 //    lugar do diálogo que cobre a página;
-//  - fora da preço teto (veto do dono, 15/10), do login, do /business e das
-//    páginas do cliente do escritório;
+//  - fora da preço teto (veto do dono, 15/10) e do login;
 //  - sai no HTML do servidor enquanto o recado está no ar (sem empurrar a
 //    página depois); no cliente, some para quem fechou e quando o prazo passa.
 import { IBOV_MENSAL } from '~/content/ibov-mensal'
@@ -20,7 +19,7 @@ const noAr = ref(recadoNoAr())
 const fechada = ref(false)
 const foraDaPagina = computed(() => {
   const p = route.path
-  return p === '/calculadora/preco-teto' || p === '/login' || p.startsWith('/business') || p.startsWith('/cliente')
+  return p === '/calculadora/preco-teto' || p === '/login'
 })
 const visivel = computed(() => noAr.value && !fechada.value && !foraDaPagina.value)
 

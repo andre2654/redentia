@@ -39,3 +39,11 @@ test('o banner reserva no rodapé a própria altura quando ele está visível', 
   assert.match(src, /Recusar/)
   assert.match(src, /Análise e anúncios só com a sua escolha\./)
 })
+
+// Morava num teste do B2B, que saiu em 12/11/2026: é do layout padrão.
+test('no layout padrão o aviso de cookies fica abaixo do header, e não no rodapé', () => {
+  const layout = readFileSync(new URL('../app/layouts/default.vue', import.meta.url), 'utf8')
+  const padrao = layout.slice(layout.indexOf('<template>'), layout.lastIndexOf('</template>'))
+  assert.match(padrao, /<NuHeader\s*\/>[\s\S]*?<ConsentBanner\s*\/>[\s\S]*?<main>/)
+  assert.doesNotMatch(padrao.slice(padrao.lastIndexOf('<NuFooter')), /ConsentBanner/)
+})

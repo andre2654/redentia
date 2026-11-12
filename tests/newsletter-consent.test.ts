@@ -78,7 +78,9 @@ test('cada formulário declara a origem do aceite', () => {
   const ler = (caminho: string) => readFileSync(new URL(caminho, import.meta.url), 'utf8')
   // a faixa azul do /guias (NuNewsletterBand) saiu em 03/11/2026: lá a assinatura é a do rodapé
   assert.doesNotMatch(ler('../app/pages/guias/index.vue'), /NuNewsletterBand/)
-  assert.match(ler('../app/components/nu/NuFooter.vue'), /origem="rodape"/)
+  // o rodapé do site é o NuFooterAportou (o NuFooter só passa as colunas e a assinatura)
+  assert.match(ler('../app/components/nu/NuFooterAportou.vue'), /<NuNewsletterForm class="nfa__news-form" origem="rodape" \/>/)
+  assert.match(ler('../app/components/nu/NuFooter.vue'), /<NuFooterAportou :colunas="COLUMNS" :assinatura="assinaturaNoRodape" \/>/)
   // o convite antes do rodapé saiu (02/11/2026): a newsletter fica só no rodapé
   assert.doesNotMatch(ler('../app/layouts/default.vue'), /<NuNewsletterConvite/)
   assert.match(ler('../app/components/calc/CalcCapturaTeto.vue'), /useNewsletter\('bloco'\)/)

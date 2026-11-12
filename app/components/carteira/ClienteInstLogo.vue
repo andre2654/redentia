@@ -4,6 +4,10 @@
  * Connect: o SVG oficial em public/instituicoes/{slug}.svg quando existe
  * (cor de marca de terceiro: a única exceção à regra do var(--nu-*)); sem
  * logo, as iniciais sobre creme.
+ *
+ * Usado na carteira vazia e na assinatura (os bancos que a pessoa conecta).
+ * Nasceu no widget de conexão do cliente do escritório, que saiu com o B2B em
+ * 12/11/2026; o nome ficou para não mexer em quem usa.
  */
 import { iniciaisDe, type Instituicao } from '~/content/instituicoes'
 

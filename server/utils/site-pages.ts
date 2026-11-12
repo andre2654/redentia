@@ -104,9 +104,6 @@ const CORE_PAGES: SitePage[] = [
   { path: '/mcp', title: 'Aportou MCP', description: 'Servidor MCP da Aportou: conecte sua carteira da B3, teses e dados de mercado ao Claude, ChatGPT e Cursor.' },
   // A página do plano único (31/10/2026): R$ 19,99 por mês, 3 dias grátis.
   { path: '/assinar', title: 'Assinatura Aportou', description: 'Sua carteira de qualquer banco pelo Open Finance, testada em 2.000 cenários, com a IA que responde com os seus números.', lastmod: '2026-10-31' },
-  // Indexável desde 20/10/2026 (decisão do dono; o noindex era trava de
-  // compliance). lastmod = a última mudança de conteúdo da página.
-  { path: '/business', title: 'Redentia For Business', description: 'Para escritórios de investimento: a carteira do cliente consolidada por Open Finance, com o consentimento dele, no Claude ou no ChatGPT da mesa.', lastmod: '2026-10-15' },
   { path: '/rankings', title: 'Hub de rankings', description: '22 rankings de ações, FIIs, BDRs e Tesouro Direto atualizados diariamente.' },
   // O hub do Tesouro estava fora do sitemap (só os títulos entravam) e teve
   // 2.446 impressões de 19/07 a 18/10/2026. lastmod = o preço mais novo dos títulos.
@@ -115,14 +112,8 @@ const CORE_PAGES: SitePage[] = [
   { path: '/glossario', title: 'Glossário do investidor', description: 'Dicionário do mercado financeiro brasileiro: os principais termos da bolsa explicados de forma clara, de A a Z.' },
   { path: '/benchmark-ia', title: 'Ranking de IAs em finanças', description: 'Dez IAs na mesma prova de finanças, corrigida por gabarito: números inventados, planos ruins, golpes e uma carteira de R$ 10 mil. Placar com margem de erro e custo declarado.' },
   { path: '/metodologia', title: 'Metodologia', description: 'Como cada calculadora e ranking funciona, fórmulas, fontes oficiais e limitações.' },
-  // Wealth Intelligence Dinner (07/11/2026). Landing de campanha, fora do menu.
-  // lastmod é o dia em que a página entrou — a data do jantar ainda não existe.
-  {
-    path: '/jantar',
-    title: 'Redentia Wealth Intelligence Dinner',
-    description: 'Mesa fechada em São Paulo, dezembro, data a combinar. 10 cadeiras, uma mesa, nenhuma palestra. Convite sob curadoria. Jantar a R$ 600, só após a aprovação.',
-    lastmod: '2026-11-07',
-  },
+  // As páginas do produto de escritório (a landing e a de campanha) saíram com
+  // o B2B em 12/11/2026: moram em redentia.com.br, no sitemap de lá.
 ]
 
 const INSTITUCIONAL_PAGES: SitePage[] = [

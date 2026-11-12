@@ -64,7 +64,6 @@ export function barraVisivel(path: string, painelAberto: boolean): boolean {
   const p = path.replace(/\/+$/, '') || '/'
   if (p === '/login' || p === '/assinar' || p.startsWith('/assinar/')) return false
   if (p === '/busca') return false
-  if (p.startsWith('/business') || p.startsWith('/cliente')) return false
   return true
 }
 
@@ -301,7 +300,7 @@ export function acaoDoPedido(
 
 /** Onde a pergunta guardada NÃO deve abrir o painel sozinha (o meio do fluxo). */
 export function podeRetomarPerguntaAqui(path: string): boolean {
-  return !/^\/(login|assinar|cliente|business)(\/|$)/.test(path)
+  return !/^\/(login|assinar)(\/|$)/.test(path)
 }
 
 /** "P/L" + "PETR4" → "P/L PETR4"; sem sujeito (ou já citado), só o rótulo. */

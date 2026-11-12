@@ -11,8 +11,7 @@
  *
  * APORTOU (11/11/2026): o brilho foi recalibrado para ler sobre o creme da
  * página, o cartão creme e a faixa (base no fio leve, luz no cartão), e sobre o
- * carvão (base no fio escuro, luz no fio do chip). Nas telas de escritório
- * (.marca-redentia) valem as cores de antes.
+ * carvão (base no fio escuro, luz no fio do chip).
  */
 const props = withDefaults(defineProps<{
   variant?: 'text' | 'line' | 'block' | 'card' | 'tile' | 'pill' | 'circle' | 'bar'
@@ -87,9 +86,6 @@ const lineCount = computed(() => Math.max(1, props.lines ?? 1))
 
 /* tone escuro (bandas carvão: charts, hero de tese, seção IA) */
 .nusk--navy { --sk-base: var(--nu-dark-line); --sk-luz: var(--nu-dark-chip-line); }
-/* Redentia For Business: as cores de antes */
-.marca-redentia .nusk { --sk-base: var(--nu-sand-2); --sk-luz: var(--nu-cream); }
-.marca-redentia .nusk--navy { --sk-base: var(--nu-navy-2); --sk-luz: var(--nu-navy-3); }
 
 /* formas (height/radius default; as props sobrescrevem) */
 .nusk--line, .nusk--text { height: 0.82em; border-radius: var(--nu-r-chip); }

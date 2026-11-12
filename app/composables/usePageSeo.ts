@@ -60,10 +60,10 @@ export function usePageSeo(input: PageSeoInput) {
   const origin = useSiteOrigin()
   const path = input.path ?? route.path
   const canonical = `${origin}${path}`
-  // a marca que assina a página: Aportou no site de investidor, Redentia nas telas de escritório
-  const marca = marcaDaRota(path)
-  const image = input.image ?? `${origin}/${marca === MARCA.b2b ? 'og-default.png' : 'og-aportou.png'}`
-  const logoDaMarca = marca === MARCA.b2b ? `${origin}/logo-azul.svg` : `${origin}/icone-aportou.svg`
+  // a marca que assina a página (as telas de escritório, que assinavam Redentia, saíram em 12/11/2026)
+  const marca = MARCA.nome
+  const image = input.image ?? `${origin}/og-aportou.png`
+  const logoDaMarca = `${origin}/icone-aportou.svg`
 
   useSeoMeta({
     title: input.title,

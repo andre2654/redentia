@@ -356,19 +356,6 @@
 
   /* ——— /teses ("A grade", 02/11/2026): sem cor própria, só tokens de uso geral ——— */
 
-  /* ——— /business (painel de credibilidade do hero) ———
-     Degrau novo na rampa de ink que já existe (75, 30, 16, 14, 10, 04). Nasce
-     porque --nu-ink-30 dá 2,01:1 sobre branco e 2,01 sobre creme, abaixo do
-     piso de 3:1 que a SC 1.4.11 exige de LIMITE DE CONTROLE — e o quadrado do
-     calendário e a borda do botão de contorno carregam informação, não são
-     moldura. Medido: 3,15:1 sobre branco, 3,10:1 sobre creme. */
-
-  /* /business nova (05/11/2026, o print do dono): o azul-lavanda do botão cheio
-     sobre navy (o navy por cima dá 11,6:1) e o pontilhado do hero */
-  --nu-biz-lavanda: #C3CBFF;
-  --nu-biz-lavanda-hover: #D6DBFF;
-  --nu-biz-ponto: rgba(195, 203, 255, 0.16);
-
   /* ——— Home (31/10/2026): a tela do Agora dos apps no site ———
      Valores do canvas V5MBL5Q3 (IPhoneAgoraV2, WatchAgora, MacAgoraInicio):
      o preto do Agora, o verde da bolsa aberta, o vermelho e o âmbar do aviso.
@@ -426,8 +413,7 @@
 
   /* ——— Robustez (11/11/2026): o que faz parecer firme está nos detalhes ———
      Estudo da Legora e da Rogo (docs/aportou/robustez.md). Pesos: o tamanho faz
-     a hierarquia, não o negrito; título grande em peso de exibição, o resto em 600.
-     A Redentia (B2B) devolve os pesos antigos em tema-redentia.css. */
+     a hierarquia, não o negrito; título grande em peso de exibição, o resto em 600. */
   --nu-w-display: 500;   /* título e número a partir de ~36px */
   --nu-w-forte: 600;     /* era 800: título de cartão, número médio, ticker */
   --nu-w-medio: 600;     /* era 700: botão, rótulo, nav, destaque no texto */

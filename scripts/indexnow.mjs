@@ -14,7 +14,7 @@
  * USO
  *   node scripts/indexnow.mjs --desde 2026-10-20    # URLs do sitemap com lastmod a partir do dia
  *   node scripts/indexnow.mjs --tudo                 # o sitemap inteiro (uma vez, na estreia)
- *   node scripts/indexnow.mjs https://www.redentia.com.br/business ...
+ *   node scripts/indexnow.mjs https://www.redentia.com.br/mcp ...
  *   node scripts/indexnow.mjs --tudo --seco          # só lista, não envia
  */
 const HOST = 'www.redentia.com.br'

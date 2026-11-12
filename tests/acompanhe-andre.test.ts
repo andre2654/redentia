@@ -55,5 +55,6 @@ test('calculadora e rodapé passam o lugar certo; a página de ativo não repete
   assert.match(ler('app/components/calc/CalcPrecoTetoTicker.vue'), /<NuAcompanheAndre lugar="calculadora" \/>/)
   // a página de ativo (AtivoNoite) tirou a linha em 03/11/2026: já está no rodapé
   assert.doesNotMatch(ler('app/components/ativo/AtivoNoite.vue'), /<NuAcompanheAndre\b/)
-  assert.match(ler('app/components/nu/NuFooter.vue'), /<NuAcompanheAndre lugar="rodape" tom="escuro" \/>/)
+  // o rodapé do site é o NuFooterAportou desde 11/11/2026 (o NuFooter só passa as colunas)
+  assert.match(ler('app/components/nu/NuFooterAportou.vue'), /<NuAcompanheAndre lugar="rodape" tom="escuro" \/>/)
 })

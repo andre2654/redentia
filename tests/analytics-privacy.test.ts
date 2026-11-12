@@ -1,47 +1,18 @@
 /**
- * SEC-01 (revisão de 07/10/2026): o token do convite e o do link de gestão
- * ficam no caminho da URL. GA4, GTM, Clarity e o script da Vercel carregavam
- * em todas as rotas e mandavam a URL (e o Clarity, a tela) para terceiros:
- * quem tivesse acesso a esses painéis consentia ou revogava no lugar do
- * cliente. Os plugins agora perguntam a isSecretTokenPath antes de carregar, e
- * este teste trava as rotas que não podem voltar a vazar.
+ * Os plugins de analytics e o consentimento: GA4, Clarity, GTM e a Insight Tag
+ * só depois do aceite; a Vercel (anônima, sem cookie) entra sem ele.
+ *
+ * Até 12/11/2026 este teste também travava as rotas com token no caminho
+ * (SEC-01, 07/10/2026: o convite e o acesso do cliente do escritório e o
+ * convite de chave), em que nenhum script de terceiro podia carregar. Essas
+ * rotas eram do B2B e saíram com ele (redirecionam para redentia.com.br, ver
+ * tests/destino-b2b.test.ts); a guarda saiu junto.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { isSecretTokenPath } from '../app/utils/analytics-privacy.ts'
 
-const TOKEN = 'a'.repeat(48)
-
-test('as três rotas com token no path são secretas, com ou sem query e hash', () => {
-  for (const p of [
-    `/cliente/convite/${TOKEN}`,
-    `/cliente/acesso/${TOKEN}`,
-    `/business/convite/${TOKEN}`,
-    `/cliente/acesso/${TOKEN}?utm_source=x`,
-    `/cliente/convite/${TOKEN}#topo`,
-    `/cliente/acesso/${TOKEN}/`,
-    `//cliente//acesso/${TOKEN}`,
-    `/Cliente/Convite/${TOKEN}`,
-  ]) assert.equal(isSecretTokenPath(p), true, p)
-})
-
-test('rotas sem token seguem medidas', () => {
-  for (const p of ['/', '/business', '/business/clientes', '/business/chaves', '/cliente', '/cliente/convite', '/cliente/convite/', '/conta', '/asset/PETR4', null, undefined, ''])
-    assert.equal(isSecretTokenPath(p as string), false, String(p))
-})
-
-test('os plugins de analytics consultam a guarda antes de carregar', () => {
-  for (const f of [
-    'google-analytics.client.ts',
-    'clarity.client.ts',
-    'google-tag-manager.ts',
-    'vercel-analytics.client.ts',
-    'linkedin-insight.client.ts',
-  ]) {
-    const src = readFileSync(new URL(`../app/plugins/${f}`, import.meta.url), 'utf8')
-    assert.match(src, /isSecretTokenPath\(/, `${f} não consulta isSecretTokenPath`)
-  }
+test('os plugins de analytics esperam o consentimento, menos o da Vercel', () => {
   // Vercel Web Analytics não grava cookie e não identifica a pessoa: entra
   // sem o aceite. GA4, Clarity, GTM e a Insight Tag continuam no portão.
   const vercel = readFileSync(new URL('../app/plugins/vercel-analytics.client.ts', import.meta.url), 'utf8')
@@ -68,10 +39,6 @@ test('os plugins de analytics consultam a guarda antes de carregar', () => {
   assert.doesNotMatch(linkedin, /src\s*=\s*['"]https:\/\/px\.ads\.linkedin\.com/, 'o pixel noscript não pode estar no HTML')
   const cfg = readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8')
   assert.match(cfg, /linkedinPartnerId:[\s\S]*?'11192545'/)
-
-  const guard = readFileSync(new URL('../app/plugins/00.rotas-com-segredo.client.ts', import.meta.url), 'utf8')
-  assert.match(guard, /isSecretTokenPath\(to\.path\)/)
-  assert.match(guard, /location\.assign/)
 })
 
 test('a política de cookies declara a medição da Vercel fora do aceite', () => {
@@ -84,11 +51,8 @@ test('a política de cookies declara a medição da Vercel fora do aceite', () =
   assert.doesNotMatch(src, /só carrega depois do Aceitar/)
 })
 
-test('link com token e chave na tela vão mascarados para o Clarity', () => {
+test('a chave na tela vai mascarada para o Clarity', () => {
   for (const f of [
-    'components/business/RbClientLink.vue',
-    'pages/business/convite/[token].vue',
-    'components/business/RbPainelEquipe.vue',
     'components/conta/ContaMcp.vue',
   ]) {
     const src = readFileSync(new URL(`../app/${f}`, import.meta.url), 'utf8')
@@ -96,12 +60,7 @@ test('link com token e chave na tela vão mascarados para o Clarity', () => {
     assert.ok(codes.length > 0, `${f}: nenhum <code> de segredo achado`)
     for (const c of codes) assert.match(c, /data-clarity-mask="true"/, `${f}: ${c}`)
   }
-})
-
-test('o bloco do link de gestão na tela de sucesso vai mascarado para o Clarity (a URL não aparece em texto)', () => {
-  const src = readFileSync(new URL('../app/components/cliente/ClienteConnectSucesso.vue', import.meta.url), 'utf8')
-  const blocos = src.match(/<div[^>]*class="ccok__gestao"[^>]*>/g) ?? []
-  assert.ok(blocos.length > 0, 'bloco do link de gestão não achado')
-  for (const b of blocos) assert.match(b, /data-clarity-mask="true"/, b)
-  assert.doesNotMatch(src, /<code/, 'a URL de gestão não deve aparecer em texto')
+  // o wizard de conexão (a /mcp e a /conta) mostra a chave recém-gerada no passo 4
+  const wizard = readFileSync(new URL('../app/components/mcp/McpConexaoModal.vue', import.meta.url), 'utf8')
+  assert.match(wizard, /<pre class="rbcx__code rbcx__code--wrap" data-clarity-mask="true"><code>\{\{ plainKey \}\}<\/code><\/pre>/)
 })

@@ -61,11 +61,11 @@ test('o ticker da rota só vale para símbolo de verdade', () => {
   assert.equal(tickerDaRota('/carteira'), null)
 })
 
-test('a barra some no login, no quiz, na busca, no B2B e com o painel aberto', () => {
+test('a barra some no login, no quiz, na busca e com o painel aberto', () => {
   assert.equal(barraVisivel('/', false), true)
   assert.equal(barraVisivel('/asset/PETR4', false), true)
   assert.equal(barraVisivel('/asset/PETR4', true), false)
-  for (const p of ['/login', '/assinar', '/assinar/', '/busca', '/business', '/business/painel', '/cliente/x']) {
+  for (const p of ['/login', '/assinar', '/assinar/', '/busca']) {
     assert.equal(barraVisivel(p, false), false, p)
   }
 })
@@ -290,7 +290,7 @@ test('a pergunta do gate vence em 6 horas e ignora lixo', async () => {
 
 test('a pergunta guardada não abre o painel no meio do fluxo', async () => {
   const { podeRetomarPerguntaAqui } = await import('../app/utils/chat-painel.ts')
-  for (const p of ['/login', '/assinar', '/assinar/obrigado', '/cliente/abc', '/business']) assert.equal(podeRetomarPerguntaAqui(p), false, p)
+  for (const p of ['/login', '/assinar', '/assinar/obrigado']) assert.equal(podeRetomarPerguntaAqui(p), false, p)
   for (const p of ['/carteira', '/', '/asset/PETR4', '/assinatura']) assert.equal(podeRetomarPerguntaAqui(p), true, p)
 })
 

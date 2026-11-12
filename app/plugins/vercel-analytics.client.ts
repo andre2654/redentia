@@ -16,20 +16,11 @@
 //
 // Em localhost o endpoint não existe (404 inofensivo); em prod flui normal.
 // Carrega na inicialização, sem esperar o requestIdleCallback.
-//
-// NÃO carrega em rota com token no path (/cliente/convite, /cliente/acesso,
-// /business/convite): o pageview levaria o segredo. Ver
-// utils/analytics-privacy.ts.
-import { isSecretTokenPath } from '~/utils/analytics-privacy'
-
 export default defineNuxtPlugin(() => {
-  if (isSecretTokenPath(window.location.pathname)) return
-
   let carregado = false
 
   const instalar = () => {
     if (carregado) return
-    if (isSecretTokenPath(window.location.pathname)) return
     carregado = true
 
     const w = window as unknown as { va?: (...p: unknown[]) => void, vaq?: unknown[] }

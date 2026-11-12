@@ -3,7 +3,7 @@
 // role=switch + aria-checked pra acessibilidade. Usado no opt-in do resumo
 // diário (NuBriefingModal) e na central de notificações (/conta).
 // APORTOU (11/11/2026): desligado, o trilho usa o fio da marca (o areia de antes
-// sumia no creme da página). Nas telas de escritório fica o trilho de antes.
+// sumia no creme da página).
 const props = withDefaults(defineProps<{
   modelValue: boolean
   ariaLabel?: string
@@ -39,7 +39,6 @@ function toggle() {
   border-radius: 999px; padding: 3px; background: var(--nu-line);
   display: inline-flex; align-items: center; transition: background .2s;
 }
-.marca-redentia .ntg:not(.ntg--on) { background: var(--nu-sand-2); }
 .ntg--on { background: var(--nu-green); }
 .ntg:disabled { opacity: .5; cursor: default; }
 .ntg__knob {

@@ -136,7 +136,7 @@ test('a primeira página grava e a seguinte não cobre', () => {
   capturarAtribuicaoDeSessao(
     store,
     local({
-      pathname: `/cliente/convite/${token}`,
+      pathname: '/calculadora/preco-teto',
       search: '?utm_source=linkedin&utm_medium=paid%20social&utm_campaign=mesa&utm_content=a&utm_term=preco&email=ana@mesa.com',
     }),
     `https://www.linkedin.com/feed/${token}`,
@@ -148,7 +148,7 @@ test('a primeira página grava e a seguinte não cobre', () => {
   )
 
   const cru = JSON.parse(store.bruto()!)
-  assert.equal(cru.entry_path, undefined)
+  assert.equal(cru.entry_path, '/calculadora/preco-teto')
   assert.equal(cru.utm_source, 'linkedin')
   assert.equal(cru.utm_medium, 'paid social')
   assert.equal(cru.utm_campaign, 'mesa')
@@ -189,19 +189,6 @@ test('o header omite campo inválido, não leva dado pessoal e cabe em 2048 byte
   assert.deepEqual(JSON.parse(json), { entry_path: '/preco-teto', utm_source: 'google' })
   assert.equal(jsonDaAtribuicao({}), null)
   assert.deepEqual(cabecalhosDeAtribuicao(memoria()), {})
-})
-
-test('storage adulterado com token de convite não entra no header', () => {
-  const store = memoria()
-  const token = 'd'.repeat(48)
-  store.setItem(CHAVE_ATRIBUICAO_ENTRADA, JSON.stringify({
-    entry_path: `/cliente/acesso/${token}`,
-    utm_source: 'google',
-  }))
-  const json = cabecalhosDeAtribuicao(store)[HEADER_ATRIBUICAO]
-  assert.ok(json)
-  assert.doesNotMatch(json, new RegExp(token))
-  assert.equal(JSON.parse(json).utm_source, 'google')
 })
 
 test('o JSON corta pelo fim quando passa do limite e nunca emite objeto vazio', () => {
@@ -259,7 +246,6 @@ test('só o verify, o Google e o cadastro por senha criam conta', () => {
     '/auth/password',
     '/auth/me',
     '/auth/channels/status',
-    '/business/leads',
   ]) assert.equal(caminhoCriaConta(p), false, p)
 })
 

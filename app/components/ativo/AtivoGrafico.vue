@@ -38,7 +38,7 @@
 // tokens; a mira e o ponto chegam junto; o anel de foco é o de 3px do site; e
 // o período que troca esmaece a linha velha na curva de cor. As props e as
 // variáveis --agr-* (o topo do /asset, a /carteira, a home) não mudaram.
-// viewBox literal: o :viewBox vira prop do DOM e o Vue reclama (NuFooterLinha).
+// viewBox literal: o :viewBox vira prop do DOM e o Vue reclama.
 import type { SeriesPoint } from '~/types/acao'
 import type { LeituraDoGrafico } from '~/utils/ativoDirecoes'
 

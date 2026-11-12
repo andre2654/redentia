@@ -70,7 +70,7 @@ a:hover { color: inherit; }
      o fundo que escurece (nu-surgir): var(--nu-dur-media) var(--nu-ease-cor);
      a seta do botão (nu-seta): var(--nu-dur-lenta) var(--nu-ease-troca).
    A curva não pode morar aqui dentro: var() não vale como animation-timing-function
-   num @keyframes, e escrita à mão ela mudaria também a Redentia (B2B), que tem a dela.
+   num @keyframes, e escrita à mão ela deixaria de seguir o token.
    A entrada ao rolar é o v-revelar (plugins/revelar.ts), não estes. */
 @keyframes nu-fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes nu-fade-lg { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }

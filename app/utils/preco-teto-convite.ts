@@ -3,10 +3,9 @@
  *
  * Texto e eventos ficam aqui, sem Nuxt, para o node --test. O GA4 sai só pelo
  * gtag que o plugin de consentimento já instalou, e só com consentimento
- * granted fora de rota com segredo — o mesmo portão dos outros eventos.
+ * granted — o mesmo portão dos outros eventos.
  * Sem gtag, sem aceite ou com aceite negado, a função não chama nada.
  */
-import { isSecretTokenPath } from './analytics-privacy.ts'
 import { lerConsentimento, type ConsentChoice } from './consent.ts'
 
 export const TITULO_CONVITE_PRECO_TETO = 'Acompanhar este ticker'
@@ -68,22 +67,20 @@ export interface GtagConvite {
 export interface AmbienteConvite {
   consentimento: ConsentChoice | null
   gtag?: GtagConvite
-  caminho: string
 }
 
 export function ambienteConviteAtual(): AmbienteConvite {
-  if (typeof window === 'undefined') return { consentimento: null, caminho: '' }
+  if (typeof window === 'undefined') return { consentimento: null }
   const w = window as Window & { gtag?: GtagConvite }
   return {
     consentimento: lerConsentimento(),
     gtag: typeof w.gtag === 'function' ? w.gtag : undefined,
-    caminho: window.location.pathname,
   }
 }
 
 /**
- * Um evento, com `ticker`. Recusa sem consentimento granted, sem gtag, em
- * rota com segredo ou com ticker inválido. Não carrega script.
+ * Um evento, com `ticker`. Recusa sem consentimento granted, sem gtag ou com
+ * ticker inválido. Não carrega script.
  */
 export function dispararEventoConvitePrecoTeto(
   nome: EventoConvitePrecoTeto,
@@ -93,7 +90,6 @@ export function dispararEventoConvitePrecoTeto(
   const t = normalizarTickerConvite(ticker)
   if (!t) return 'sem-ticker'
   if (ambiente.consentimento !== 'granted') return 'recusado'
-  if (isSecretTokenPath(ambiente.caminho)) return 'recusado'
   if (typeof ambiente.gtag !== 'function') return 'recusado'
   try {
     ambiente.gtag('event', nome, { ticker: t })

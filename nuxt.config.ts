@@ -4,7 +4,6 @@
 //  - deploy git→Vercel e organização por feature (Atlas)
 // Plano mestre: docs/redentia-nu/PLANO-REDENTIA-NU.md (repo raiz).
 import { fileURLToPath } from 'node:url'
-import { businessLeadDemoLigadoNoBuild } from './app/utils/business-lead.ts'
 import { CABECALHOS_JSON_DO_PROXY } from './server/utils/backend-proxy-json.ts'
 
 /** Uma rota de app/pages/dev/ (a página ou o arquivo dela). */
@@ -17,7 +16,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
 
-  css: ['~/assets/css/tokens.css', '~/assets/css/fontes.css', '~/assets/css/tema-redentia.css', '~/assets/css/base.css'],
+  css: ['~/assets/css/tokens.css', '~/assets/css/fontes.css', '~/assets/css/base.css'],
 
   // Hover só onde há mouse (11/11/2026, robustez): no toque, o realce ficava
   // preso depois de tocar (o cartão erguido, a linha acesa, a seta adiantada).
@@ -146,34 +145,13 @@ export default defineNuxtConfig({
     // noindex). Página única com seções ancoradas (sem sub-rotas).
     '/conta': { headers: { 'cache-control': 'private, no-store' } },
     // /noticias, /asset/**, /tesouro(/**), /dividendos/**, /guias(/**),
-    // /glossario(/**), /tese/**, /teses, /calculadoras, /mcp e /business:
-    // cache público por request em server/middleware/cache-sessao.ts.
-    // PR-F do MVP B2B: cadastro e chaves VARIAM por cookie (cadastro redireciona
-    // logado pra /business/chaves; chaves é autenticada) → private/no-store,
-    // pela regra "CDN não varia por cookie". O guia de conexão é estático.
-    '/business/cadastro': { headers: { 'cache-control': 'private, no-store' } },
-    '/business/chaves': { headers: { 'cache-control': 'private, no-store' } },
-    '/business/skills': { headers: { 'cache-control': 'private, no-store' } },
-    // Convite de chave: página pública que mostra um SEGREDO uma vez (a chave
-    // nasce na tela de quem abriu o link). Nunca na borda.
-    '/business/convite/**': { headers: { 'cache-control': 'private, no-store' } },
-    // Clientes do escritório (Contrato E, 07/10/2026). O painel do dono mostra
-    // o link de convite do cliente UMA vez; as páginas do cliente final levam
-    // o token (convite ou gestão) na URL. Nenhuma das três encosta em cache de
-    // borda, e o token não pode sair no Referer de link nenhum. As páginas do
-    // cliente também são noindex/nofollow no header (além da meta), porque
-    // existem só por link pessoal. '/cliente/**' cobre convite e acesso.
-    '/business/clientes': { headers: { 'cache-control': 'private, no-store', 'referrer-policy': 'no-referrer' } },
-    '/cliente/**': {
-      headers: {
-        'cache-control': 'private, no-store',
-        'referrer-policy': 'no-referrer',
-        'x-robots-tag': 'noindex, nofollow',
-      },
-    },
-    // O guia de conexão virou o modal do painel de chaves (dono 2026-08-25,
-    // "menos é mais"): 301 exato, mesmo padrão do '/calculadora'.
-    '/business/comecar': { redirect: { to: '/business/chaves', statusCode: 301 } },
+    // /glossario(/**), /tese/**, /teses, /calculadoras e /mcp: cache público
+    // por request em server/middleware/cache-sessao.ts.
+    // O produto de escritório (a landing, o painel, os convites, as páginas do
+    // cliente final e a de campanha) saiu deste front em 12/11/2026. Os endereços
+    // antigos levam a redentia.com.br pelo middleware b2b-para-redentia, com o
+    // mapa em server/utils/destino-b2b.ts: nenhuma regra deles fica aqui (o
+    // routeRules roda antes do middleware e faria dois saltos).
     // PR10: hub mudou de /calculadora pro /calculadoras (301 preserva o link
     // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo
     // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.
@@ -271,13 +249,11 @@ export default defineNuxtConfig({
     '/guias/raio-x-da-carteira-em-crise': { redirect: { to: '/guias/como-montar-carteira-de-investimentos', statusCode: 301 } },
     // /api-portal tinha o 2º melhor CTR do site (7,83%) e é docs de integração:
     // vai pro /mcp, que é a superfície equivalente no Nu E é indexável.
-    // /whitelabel e /pricing vão pro /business, topicamente correto. Ele ficou
-    // `noindex` por trava de compliance até 20/10/2026; desde então é indexável
-    // (decisão do dono) e o 301 também passa o sinal.
+    // /whitelabel e /pricing iam para a landing do produto de escritório; desde
+    // 12/11/2026 vão direto para redentia.com.br (301), pelo middleware
+    // b2b-para-redentia, sem passar por ela.
     '/api-portal': { redirect: { to: '/mcp', statusCode: 301 } },
     '/api-portal/**': { redirect: { to: '/mcp', statusCode: 301 } },
-    '/whitelabel': { redirect: { to: '/business', statusCode: 301 } },
-    '/pricing': { redirect: { to: '/business', statusCode: 301 } },
     '/download': { redirect: { to: '/', statusCode: 301 } },
     // Achado do cruzamento de Páginas.csv: 3 URLs de /embed/ ainda rankeiam em
     // posição 3,8 a 4,1 (77 impressões) e todas dão 404. O Nu não tem embed.
@@ -375,16 +351,4 @@ export default defineNuxtConfig({
       })
     },
   ],
-
-  // Prévia do formulário de /business (`?demo=1`). Constante de build: produção
-  // da Vercel grava false, e a env pública não reverte isso. Ver business-lead.ts.
-  vite: {
-    define: {
-      __REDENTIA_BUSINESS_LEAD_DEMO__: JSON.stringify(businessLeadDemoLigadoNoBuild({
-        VERCEL_ENV: process.env.VERCEL_ENV,
-        NODE_ENV: process.env.NODE_ENV,
-        NUXT_PUBLIC_BUSINESS_LEAD_DEMO: process.env.NUXT_PUBLIC_BUSINESS_LEAD_DEMO,
-      })),
-    },
-  },
 })

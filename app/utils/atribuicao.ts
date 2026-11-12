@@ -8,7 +8,6 @@
  * quando ele é de outro site. Campo inválido sai fora. A página seguinte da
  * mesma aba não cobre a primeira.
  */
-import { isSecretTokenPath } from './analytics-privacy.ts'
 
 export const CHAVE_ATRIBUICAO_ENTRADA = 'nu:atribuicao-entrada'
 export const HEADER_ATRIBUICAO = 'X-Redentia-Attribution'
@@ -79,7 +78,6 @@ export function caminhoCriaConta(path: string): boolean {
 export function validarCaminhoDeEntrada(path: string): string | null {
   if (path.length === 0 || path.length > 255) return null
   if (path.includes('?') || path.includes('#')) return null
-  if (isSecretTokenPath(path)) return null
   if (!CAMINHO_DE_ENTRADA.test(path)) return null
   return path
 }

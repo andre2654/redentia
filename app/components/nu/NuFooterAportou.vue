@@ -10,7 +10,9 @@
 // Fica do rodapé antigo: a assinatura de "O mercado da semana" (quando ligada
 // e fora das páginas que já têm o formulário), as redes, o e-mail, o
 // "Acompanhe o André", as preferências de cookies e a porta para o produto de
-// escritório, que agora diz o nome dele: Redentia.
+// escritório, que agora diz o nome dele: Redentia. Desde 12/11/2026 ele mora
+// no site dele (redentia.com.br), e a porta é um link externo comum, na mesma
+// aba.
 //
 // ROBUSTEZ (11/11/2026): na coluna do site (--nu-coluna); as cinco colunas
 // numa linha só no computador, com o título em caixa alta pequena e cinza (a
@@ -63,8 +65,8 @@ const ano = new Date().getFullYear()
 
       <div class="nfa__pe">
         <span class="nfa__copy">© {{ ano }} {{ MARCA.nome }} · {{ MARCA.assinatura }} · {{ EMPRESA.razaoSocial }} · CNPJ {{ EMPRESA.cnpj }}</span>
-        <!-- a porta do produto de escritório: é outra marca, não outra página -->
-        <NuxtLink to="/business" class="nfa__b2b">Para escritórios: {{ MARCA.b2b }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15" /><path d="M13.5 6.5 19 12l-5.5 5.5" /></svg></NuxtLink>
+        <!-- a porta do produto de escritório: é outra marca, em outro site -->
+        <a href="https://redentia.com.br" class="nfa__b2b">Para escritórios: {{ MARCA.b2b }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15" /><path d="M13.5 6.5 19 12l-5.5 5.5" /></svg></a>
       </div>
 
       <svg v-revelar="{ y: 24 }" class="nfa__gigante" viewBox="-2 -40 681 142" role="img" aria-label="aportou">

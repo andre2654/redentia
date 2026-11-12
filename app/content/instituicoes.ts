@@ -1,11 +1,12 @@
 /**
- * Instituições da página de conexão do cliente final (/cliente/convite).
+ * Instituições com o logo de cada uma: a carteira vazia e a assinatura mostram
+ * os bancos que a pessoa conecta (ClienteInstLogo). `logo: true` = existe
+ * `public/instituicoes/{slug}.svg` (tests/instituicoes.test.ts confere no
+ * disco); sem logo o avatar mostra as iniciais (iniciaisDe).
  *
- * ESPELHO de `config/business_clients.php` (`institutions`) do Backend: o C6
- * valida o slug contra a lista de lá e grava o NOME na conexão. Slug novo
- * entra nos dois lugares. `logo: true` = existe `public/instituicoes/{slug}.svg`
- * (o teste em tests/clientes-conexao.test.ts confere no disco); sem logo o
- * avatar mostra as iniciais (iniciaisDe).
+ * Nasceu para a conexão do cliente final do escritório, espelho da lista de
+ * instituições do Backend; a tela e a busca dela saíram com o B2B em
+ * 12/11/2026, e a lista ficou para o site de investidor.
  *
  * A ordem é a de exibição: as mais usadas primeiro, como no seletor do
  * Pluggy Connect (fonte: scratchpad pluggy-ref/NOTAS.md).
@@ -57,35 +58,6 @@ export const INSTITUICOES: readonly Instituicao[] = [
   { slug: 'original', name: 'Original', logo: false, tipo: 'banco' },
   { slug: 'sofisa', name: 'Sofisa', logo: false, tipo: 'banco' },
 ]
-
-/** minúsculas, sem acento, sem espaço nas pontas — para a busca não depender de "Itaú" vs "itau" */
-export function normalizarBusca(s: string): string {
-  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
-}
-
-export type FiltroTipo = InstituicaoTipo | 'todas'
-
-/** Filtro instantâneo da lista: nome, slug ou apelido contêm a busca; aba por tipo. */
-export function filtrarInstituicoes(busca: string, tipo: FiltroTipo = 'todas'): Instituicao[] {
-  const q = normalizarBusca(busca)
-  return INSTITUICOES.filter((i) => {
-    if (tipo !== 'todas' && i.tipo !== tipo) return false
-    if (!q) return true
-    return normalizarBusca(i.name).includes(q) || i.slug.includes(q) || (i.alias ?? []).some(a => a.includes(q))
-  })
-}
-
-export function instituicaoPorSlug(slug: string | null | undefined): Instituicao | null {
-  if (!slug) return null
-  return INSTITUICOES.find(i => i.slug === slug) ?? null
-}
-
-/** Pelo NOME gravado na conexão (o C7 devolve o nome, não o slug). */
-export function instituicaoPorNome(nome: string | null | undefined): Instituicao | null {
-  if (!nome) return null
-  const n = normalizarBusca(nome)
-  return INSTITUICOES.find(i => normalizarBusca(i.name) === n) ?? null
-}
 
 /** Avatar de quem não tem logo: "Banco do Brasil" → "BR", "C6 Bank" → "C6", "Mercado Pago" → "MP". */
 export function iniciaisDe(nome: string): string {

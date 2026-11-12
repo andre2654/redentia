@@ -14,7 +14,7 @@ const mounted = ref(false)
 onMounted(() => { mounted.value = true })
 const ctaTo = computed(() => (mounted.value && isAuthenticated.value ? '/conta#mcp' : '/login?redirect=%2Fconta%23mcp'))
 
-/* O wizard de conexão é o RbConexaoModal (origem="mcp"). */
+/* O wizard de conexão é o McpConexaoModal (o mesmo da seção MCP da /conta). */
 const conexaoAberta = ref(false)
 
 /* ——— tabela comparativa (referência do dono 2026-07-18, perguntas de
@@ -40,7 +40,7 @@ const FAQS = [
   { q: 'O que são os cenários e projeções?', a: 'É o motor de projeções da Aportou dentro da sua IA, em duas ferramentas: list_scenarios lista os cenários estudados pela Aportou, com fontes, e simulate_scenario aplica um cenário (ou um choque de dólar, Selic, bolsa, petróleo ou inflação montado na hora) sobre a carteira que você descreve na conversa e devolve a faixa do patrimônio em reais de hoje, com quem mais sente o choque e por quê. O escopo vem desligado: ligue em Configurações, seção MCP, em Cenários e projeções.' },
   { q: 'A Aportou prevê o mercado?', a: 'Não. Ela mostra a faixa do que pode acontecer com uma carteira num cenário, da ponta de baixo (p10) à de cima (p90), em reais de hoje e com as premissas abertas. Cenário estudado pela Aportou vem com fontes; cenário montado na hora vem rotulado assim, sem precedente histórico que o ancore. É faixa estatística, não previsão nem promessa de retorno, e não é recomendação.' },
   { q: 'Quanto custa?', a: 'Nada. A chave é gratuita: basta ter uma conta na Aportou, gerar a chave em Configurações e colar a configuração no seu assistente.' },
-  { q: 'Existe limite de uso?', a: 'Sim, um limite de uso justo: 50 consultas por dia e 60 por minuto por chave, que renovam sozinhos. A simulação de cenário é cálculo pesado e tem um sub-limite próprio, de 10 por dia e 3 por minuto, que também conta nas 50 do dia. É bem mais do que uma conversa sobre a sua carteira consome, e existe para manter a chave gratuita de pé para todo mundo. Escritório que usa o MCP como ferramenta de trabalho tem plano próprio no Redentia For Business, o produto da mesma empresa para escritórios, com limite muito maior: redentia.com.br/business.' },
+  { q: 'Existe limite de uso?', a: 'Sim, um limite de uso justo: 50 consultas por dia e 60 por minuto por chave, que renovam sozinhos. A simulação de cenário é cálculo pesado e tem um sub-limite próprio, de 10 por dia e 3 por minuto, que também conta nas 50 do dia. É bem mais do que uma conversa sobre a sua carteira consome, e existe para manter a chave gratuita de pé para todo mundo. Escritório que usa o MCP como ferramenta de trabalho tem plano próprio na Redentia, o produto da mesma empresa para escritórios, com limite muito maior: redentia.com.br.' },
   { q: 'A IA consegue mexer na minha carteira?', a: 'Não. O acesso é somente leitura por design: o MCP responde consultas (posições, proventos, cotações, teses, notícias) e não executa nenhuma ação. Não existe ferramenta de compra, venda ou alteração de dados.' },
   { q: 'Quais assistentes funcionam hoje?', a: 'O claude.ai conecta como conector personalizado: cole a URL, clique em Connect e autorize com a sua chave. O ChatGPT conecta pelo modo desenvolvedor da OpenAI, do mesmo jeito. Cursor, Claude Code e Raycast conectam direto com a chave; o Claude Desktop, pela ponte mcp-remote.' },
   { q: 'De onde vem a minha carteira?', a: 'Do Open Finance, a conexão oficial regulada pelo Banco Central. Você conecta corretoras e bancos (XP, Nubank, Itaú, BTG e mais de 100 instituições) e a Aportou importa suas posições automaticamente, sempre somente leitura.' },
@@ -139,11 +139,11 @@ usePageSeo({
       </div>
     </section>
 
-    <!-- COMO CONECTAR — o passo a passo virou o wizard (o mesmo modal do
-         /business/chaves, origem="mcp"): uma pergunta por tela, Claude ou
-         ChatGPT. A seção só abre a porta; os prints e as configs por
-         assistente saíram com ela (decisão do dono 2026-08-25). O texto de um
-         lado, a porta do outro. -->
+    <!-- COMO CONECTAR — o passo a passo virou o wizard (McpConexaoModal, o
+         mesmo da /conta): uma pergunta por tela, Claude ou ChatGPT. A seção
+         só abre a porta; os prints e as configs por assistente saíram com
+         ela (decisão do dono 2026-08-25). O texto de um lado, a porta do
+         outro. -->
     <section id="como-conectar" class="mdoc__sec mdoc__sec--band mdoc__sec--porta">
       <div v-revelar class="mdoc__in mdoc__porta">
         <div class="mdoc__porta-txt">
@@ -250,7 +250,7 @@ usePageSeo({
       </div>
     </section>
 
-    <RbConexaoModal :open="conexaoAberta" :plain-key="null" origem="mcp" @close="conexaoAberta = false" />
+    <McpConexaoModal :open="conexaoAberta" :plain-key="null" @close="conexaoAberta = false" />
 
     <!-- CHAMADA FINAL — o painel azul do contrato, como o fecho da home: o
          corte gigante sai do canto de cima à esquerda (.nu-corte-fundo) e a

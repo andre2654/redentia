@@ -9,8 +9,8 @@
 // 1x) e permissões por escopo. A chave em claro só existe UMA vez, no
 // retorno do rotate — depois disso, só o mascarado; por isso Copiar só
 // aparece com a chave em claro, e gerar abre o wizard de conexão
-// (RbConexaoModal, origem "mcp") no lugar do antigo JSON de configuração
-// (direção do dono 2026-08-25).
+// (McpConexaoModal) no lugar do antigo JSON de configuração (direção do dono
+// 2026-08-25).
 const { status, plainKey, hydrate, rotate, setEnabled, setPermissions, busy, loading } = useMcp()
 
 // GET /me/mcp falhou → sem estado de erro, o card ficava num "gere sua chave"
@@ -43,7 +43,7 @@ const reveal = ref(false)
 // Texto da chave: a recém-gerada (revelável) senão o mascarado do banco.
 const tokenText = computed(() => (reveal.value && plainKey.value ? plainKey.value : keyMasked.value))
 
-// Wizard de conexão (o mesmo do B2B/mcp): abre sozinho quando uma chave é
+// Wizard de conexão (o mesmo da /mcp): abre sozinho quando uma chave é
 // gerada — é a única janela em que a chave em claro existe pra interpolar.
 const conexaoAberta = ref(false)
 
@@ -206,7 +206,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 
     <p class="mcp__docs"><NuLinkSeta to="/mcp" tom="claro">Ler a documentação do MCP</NuLinkSeta></p>
 
-    <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" origem="mcp" @close="conexaoAberta = false" />
+    <McpConexaoModal :open="conexaoAberta" :plain-key="plainKey" @close="conexaoAberta = false" />
   </section>
 </template>
 

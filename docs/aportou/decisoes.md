@@ -14,7 +14,7 @@ Lista curta do que já foi decidido, para todo construtor escrever igual. Comple
 | Tese da Redentia, Teses Redentia | Tese da Aportou, Teses da Aportou | |
 | Leitura da Redentia | Leitura da Aportou | |
 | "o app da Redentia" (iPhone, Mac, Watch) | "o app" (sem nome) | o app ainda se chama Redentia na App Store; não afirme um nome que a loja não mostra |
-| Redentia For Business | Redentia For Business | B2B não muda |
+| Redentia For Business | Redentia (em redentia.com.br) | o B2B saiu deste site em 12/11/2026; a porta no rodapé diz "Para escritórios: Redentia" |
 
 ## Não mudam (são contrato técnico ou externo)
 
@@ -24,15 +24,40 @@ Lista curta do que já foi decidido, para todo construtor escrever igual. Comple
 - Nomes de arquivo, de componente, de função e de variável (`appsRedentia.ts`, `marcaRedentia.ts`, `APPS_REDENTIA`…).
 - Razão social e CNPJ (`EMPRESA`).
 
-## Marca por rota
+## Marca da página
 
-`marcaDaRota(path)` (`shared/utils/marca.ts`) devolve `Redentia` em `/business`, `/cliente` e `/jantar`, e `Aportou` no resto. O título da página, o `og:site_name` e o JSON-LD já usam. Título de página não leva a marca escrita à mão: o `titleTemplate` acrescenta.
+Toda página assina `Aportou` (`MARCA.nome`): o título, o `og:site_name` e o JSON-LD. Título de página não leva a marca escrita à mão: o `titleTemplate` acrescenta. (Até 12/11/2026 o `marcaDaRota(path)` devolvia `Redentia` nas telas de escritório; ele saiu com elas.)
 
 ## Separação dos produtos (dono, 11/11/2026)
 
 - O B2C (este site) vai para **aportou.com.br**. O **redentia.com.br fica com o B2B**.
-- O Redentia For Business **sai deste repositório** numa etapa futura, que o dono conduz. Até lá `/business`, `/cliente` e `/jantar` ficam como estão: não invista neles, não os redesenhe, só não os quebre.
+- O Redentia For Business **saiu deste repositório** em 12/11/2026 (seção abaixo, "O B2B saiu do front").
 - Consequência para quem escreve código agora: nada de URL absoluta com `redentia.com.br` escrita à mão em tela de investidor; use `useSiteOrigin()` / `runtimeConfig.public.siteUrl`. Onde já existe e-mail `@redentia.com.br`, deixe (a troca de endereço vem com o domínio).
+
+## O B2B saiu do front (12/11/2026)
+
+O dono: "remova o /business daqui e tudo relacionado (só do front por enquanto) e faça o /business levar para redentia.com.br (que vai ser o site para business)". O redentia.com.br passa a ser o app novo do B2B (outra pasta, `RedentiaBusiness`); este front fica só com a Aportou.
+
+**O que saiu:** as páginas `/business/**` (landing, cadastro, chaves, clientes, skills, convite de chave), `/cliente/**` (convite e acesso do cliente final) e `/jantar`; os layouts `business` e `jantar`; `components/business/**`, `components/cliente/**` e `content/business/**`; os composables `useBusinessAccount`, `useBusinessClients`, `useClienteConexao`, `useDestinoCadastroBusiness`, `useMarcaRedentia` e `usePassosTravados`; os plugins `business-atribuicao` e `00.rotas-com-segredo`; `utils/business-lead.ts`, `utils/clientes.ts`, `utils/analytics-privacy.ts` (a guarda das rotas com token, que eram todas do B2B) e `utils/cpf.ts`; `types/clientes.ts`; o tema `tema-redentia.css` (`.marca-redentia`) e o `marcaDaRota`; as variantes business do topo, do menu, da marca e do rodapé; as regras de rota do B2B no `nuxt.config.ts` e o `__REDENTIA_BUSINESS_LEAD_DEMO__`; `/business` e `/jantar` do sitemap e do `llms.txt`; `public/business-hero` e `public/img/jantar`; os testes que só testavam isso.
+
+**Ficou, porque o site de investidor usa:** o wizard de conexão do MCP da `/mcp` e da `/conta` (era o `RbConexaoModal`, agora `components/mcp/McpConexaoModal.vue`, só com o caminho do investidor), o `ClienteInstLogo` (agora em `components/carteira/`) e a lista `content/instituicoes.ts` (a carteira vazia e a assinatura mostram os bancos). A porta do rodapé, "Para escritórios: Redentia", aponta direto para `https://redentia.com.br`.
+
+**Os redirecionamentos** moram num lugar só, `server/utils/destino-b2b.ts` (testes em `tests/destino-b2b.test.ts`), aplicado pelo middleware `server/middleware/b2b-para-redentia.ts`. A query vai junto.
+
+| Endereço antigo | Vai para | Status |
+|---|---|---|
+| `/business`, `/business/cadastro` e qualquer outro `/business/**` | `https://redentia.com.br` | 301 |
+| `/business/clientes` | `https://redentia.com.br/app/clientes` | 301 |
+| `/business/chaves`, `/business/comecar` | `https://redentia.com.br/app/escritorio` | 301 |
+| `/business/skills` | `https://redentia.com.br/app` | 301 |
+| `/whitelabel`, `/pricing` | `https://redentia.com.br` (direto, sem passar pela `/business`) | 301 |
+| `/business/convite/<token>` | `https://redentia.com.br/business/convite/<token>` | 302 (link pessoal) |
+| `/cliente` e `/cliente/**` (convite e acesso do cliente final) | o mesmo caminho em `https://redentia.com.br` | 302 |
+| `/jantar` | `https://redentia.com.br/jantar` | 302 (campanha) |
+
+**Trava contra laço:** se o host do destino (sem "www.") é o host do pedido (sem "www.") e o caminho com a query do destino é o mesmo do pedido, não redireciona: o pedido segue e dá 404. Enquanto este front ainda responder em www.redentia.com.br (o apex manda para o www), `/cliente/convite/<token>`, `/business/convite/<token>` e `/jantar` dão 404 em vez de ir e voltar para sempre; a `/business` e o painel antigo seguem redirecionando (o destino é outro caminho).
+
+**Quando pode subir:** só DEPOIS que o app novo estiver no ar em redentia.com.br e a Aportou em aportou.com.br. E o app novo precisa servir `/business/convite/<token>`, `/cliente/convite/<token>`, `/cliente/acesso/<token>` e `/jantar` antes disso, senão os links que clientes e escritórios já receberam quebram. Subir antes deixa esses links em 404 neste front, e a página de 404 carrega o analytics como qualquer outra (a guarda das rotas com token saiu junto com elas).
 
 ## Pendências que são do dono
 

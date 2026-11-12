@@ -1,6 +1,6 @@
 /**
- * A geometria da marca da Redentia (public/logo-azul.svg, a do header em
- * NuTopoMarca), para o losango do dia da home (HomeLosango, 04/11/2026; o
+ * A geometria da marca da Redentia (public/logo-azul.svg, a do header de
+ * antes da Aportou), para o losango do dia da home (HomeLosango, 04/11/2026; o
  * dono: "gostei de usarmos mais a logo da Redentia"). O desenho usa as peças
  * do próprio logo, não "um losango qualquer".
  *

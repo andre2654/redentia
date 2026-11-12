@@ -5,6 +5,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { existsSync, readFileSync } from 'node:fs'
 import { grupoAtivo, mercadoDoTopo, navDoTopo, ordenarCotacoes, rotaAtiva } from '../app/utils/topo.ts'
 
 test('visitante não vê destino que pede login', () => {
@@ -59,4 +60,14 @@ test('os outros momentos do relógio', () => {
 test('sem a data da API, o topo não diz de quando é', () => {
   assert.equal(mercadoDoTopo(new Date('2026-11-02T15:30:00-03:00'), null).referencia, null)
   assert.equal(mercadoDoTopo(new Date('2026-11-02T15:30:00-03:00'), 'lixo').referencia, null)
+})
+
+// Moravam num teste do B2B, que saiu em 12/11/2026: são do topo do site.
+test('o header é o "editorial calmo" de 02/11, com a marca no NuTopoMarca', () => {
+  const nav = readFileSync(new URL('../app/components/nu/NuHeader.vue', import.meta.url), 'utf8')
+  assert.match(nav, /\.nuh-wrap \{[^}]*background:\s*var\(--nu-white\)/)
+  assert.match(nav, /<NuTopoMarca class="nuh__marca"/)
+  assert.doesNotMatch(nav, /nuh__brand--clara|marcaClara/)
+  assert.equal(existsSync(new URL('../public/fonts/inter-latin.woff2', import.meta.url)), false)
+  assert.equal(existsSync(new URL('../public/fonts/noto-serif-display-latin.woff2', import.meta.url)), false)
 })

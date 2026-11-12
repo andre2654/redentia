@@ -21,6 +21,7 @@
  * então não há como divergir de novo. A prosa curada segue à mão, de propósito:
  * a escolha do que priorizar é editorial, não derivável.
  */
+import { ORIGEM_B2B } from '../utils/destino-b2b'
 import { getSiteSections } from '../utils/site-pages'
 
 export default defineEventHandler(async (event) => {
@@ -43,12 +44,12 @@ export default defineEventHandler(async (event) => {
 
   return `# ${MARCA.nome}
 
-> ${MARCA.descricao} Plataforma brasileira de investimentos com IA: cotações da B3, análise fundamentalista, rankings de ativos, teses de investimento, calculadoras financeiras gratuitas, notícias comentadas e um assistente com IA do lado do investidor. A ${MARCA.nome} é uma empresa ${MARCA.b2b}: para escritórios de investimento, a Redentia For Business leva o mercado e a carteira do cliente (com o consentimento dele) ao Claude ou ao ChatGPT da mesa.
+> ${MARCA.descricao} Plataforma brasileira de investimentos com IA: cotações da B3, análise fundamentalista, rankings de ativos, teses de investimento, calculadoras financeiras gratuitas, notícias comentadas e um assistente com IA do lado do investidor. A ${MARCA.nome} é uma empresa ${MARCA.b2b}, que faz tecnologia de dados para escritórios de investimento em ${ORIGEM_B2B}.
 
 ## Identidade
 
 - **Nome legal**: ${EMPRESA.razaoSocial} (CNPJ ${EMPRESA.cnpj}), que opera a ${MARCA.nome} e a ${MARCA.b2b}
-- **Marcas**: ${MARCA.nome} (plataforma para investidores) e Redentia For Business (produto para escritórios de investimento)
+- **Marcas**: ${MARCA.nome} (plataforma para investidores) e ${MARCA.b2b} (produto para escritórios de investimento, em ${ORIGEM_B2B})
 - **Nome anterior**: a ${MARCA.nome} se chamava Redentia; hoje o nome Redentia identifica só o produto para escritórios
 - **País**: Brasil (pt-BR)
 - **Categoria**: Fintech, plataforma de investimentos com IA
@@ -187,9 +188,9 @@ A ${MARCA.nome} expõe um servidor MCP (Model Context Protocol) remoto oficial. 
 - **Cenários e projeções** (escopo \`cenarios\`, desligado por padrão; o usuário liga em ${o}/conta, seção MCP): \`list_scenarios\` lista os cenários estudados pela ${MARCA.nome}, com fontes; \`simulate_scenario\` roda o motor de projeções da ${MARCA.nome} sobre uma carteira descrita na conversa (de 1 a 60 posições) e devolve a faixa do patrimônio em reais de hoje (p10 a p90, horizonte padrão de 1 ano), o impacto por ativo com o motivo e as premissas. É faixa estatística com premissas abertas, não previsão nem promessa de retorno; cenário montado na hora vem rotulado como tal. Sub-limite da chave gratuita: 10 simulações por dia e 3 por minuto
 - **Documentação e instruções por cliente**: ${o}/mcp
 
-## Redentia For Business (escritórios de investimento)
+## ${MARCA.b2b} (escritórios de investimento)
 
-- [Redentia For Business](${o}/business): para assessorias, family offices, gestoras e consultorias. A carteira do cliente chega pelo Open Finance, com o consentimento dele, e o escritório pergunta sobre ela no Claude ou no ChatGPT que já usa. Só lê: nada compra, vende ou transfere. Preço por pessoa da mesa.
+- [${MARCA.b2b}](${ORIGEM_B2B}): o produto da mesma empresa para assessorias, family offices, gestoras e consultorias, em site próprio. Não faz parte deste site.
 
 ## Transparência editorial (E-E-A-T)
 
