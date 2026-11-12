@@ -14,6 +14,9 @@ import { createJiti } from 'jiti'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const FUNCOES = join(ROOT, '.vercel/output/functions')
+// a origem canônica do build (a mesma do nuxt.config); a semente traz a de quando foi gravada
+const ORIGEM = (process.env.NUXT_PUBLIC_SITE_URL || 'https://www.redentia.com.br').replace(/\/+$/, '')
+const comOrigemDoSite = (xml) => xml.replace(/<loc>https:\/\/(?:www\.)?(?:redentia|aportou)\.com\.br(?=\/)/g, `<loc>${ORIGEM}`)
 
 function acharConfigs(dir, alvos, achados = []) {
   if (!existsSync(dir)) return achados
@@ -57,7 +60,9 @@ async function main() {
       continue
     }
     const arquivo = `${xml.arquivoDoSitemap(tipo)}-isr.prerender-fallback.xml`
-    writeFileSync(join(dirname(configPath), arquivo), semente.xml)
+    // a semente pode ter sido gravada com outra origem (antes da virada para
+    // aportou.com.br): a borda serve sempre a origem do site deste build
+    writeFileSync(join(dirname(configPath), arquivo), comOrigemDoSite(semente.xml))
     const config = JSON.parse(readFileSync(configPath, 'utf8'))
     writeFileSync(configPath, JSON.stringify(configIsrComFallback(config, arquivo), null, 2) + '\n')
     console.log(`sitemap ISR: fallback ${arquivo} (${semente.urls} urls)`)
