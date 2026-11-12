@@ -332,7 +332,13 @@ test('o componente: a barra é um elemento só, sem link, e veste só token', ()
   // o "B3 · 15 min" saiu da linha (12/11/2026, o dono): o aviso está no pé da dica e no aria-label
   assert.doesNotMatch(tela, /15 min|B3 · /)
   assert.match(tela, /<p v-if="legenda" class="nrb__dica-nota">\{\{ legenda\.nota \}\}<\/p>/)
-  assert.match(sfc, /rotuloDe\(legenda\.value, marcas\.value\.length\)/)
+  assert.match(sfc, /rotuloDe\(legenda\.value, quantasSuas\.value\)/)
+  // as ações da pessoa: a listra mora dentro do pedaço (12/11/2026, o dono: "essas bolinhas não são
+  // legais"), na tinta do ticker; a amostra dela é a legenda ("Sua carteira") e está na dica
+  assert.match(barra, /'nrb__pedaco--seu': tickers\.has\(p\.ticker\)/)
+  assert.doesNotMatch(tela, /nrb__marca\b/)
+  assert.match(tela, /<i v-if="quantasSuas" class="nrb__amostra" aria-hidden="true" \/><span class="nrb__t-longo nrb__t-medio">Sua carteira <\/span>/)
+  assert.match(tela, /class="nrb__dica-sua"><i class="nrb__amostra" aria-hidden="true" \/>Na sua carteira/)
   // a cena principal do palco: a fase (fora de cena, com os textos, larga) e a cascata a cada entrada
   assert.match(sfc, /fase: 'oculta' \| 'textos' \| 'larga'/)
   assert.match(sfc, /:key="`f\$\{ciclo\}`" class="nrb__faixa"/)
@@ -348,6 +354,8 @@ test('o componente: a barra é um elemento só, sem link, e veste só token', ()
   assert.doesNotMatch(css, /font-weight:\s*\d/, 'peso em número')
   assert.doesNotMatch(css, /cubic-bezier|\b\d+(\.\d+)?m?s\s+(ease|linear)/, 'curva ou tempo à mão')
   assert.match(css, /prefers-reduced-motion: reduce/)
+  assert.match(css, /\.nrb__pedaco::before \{[^}]*repeating-linear-gradient\(135deg, color-mix\(in srgb, currentColor/)
+  assert.match(css, /\.nrb__pedaco--seu::before \{ opacity: 1; \}/)
 })
 
 test('o palco: troca a cada minuto, pausa no mouse, no foco e na aba escondida, e não anuncia a troca', () => {

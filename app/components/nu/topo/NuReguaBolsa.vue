@@ -24,8 +24,11 @@
 // janelinha de espiar do ativo e Esc sai. Onde a janelinha não existe, o clique
 // leva à página do ativo.
 //
-// Quem tem carteira e assina ganha, só no cliente e depois de montar, o ponto
-// cobalto nas ações que tem e "Sua carteira +0,11% · tudo normal" à direita
+// Quem tem carteira e assina ganha, só no cliente e depois de montar, a listra
+// fina dentro dos pedaços das ações que tem (12/11/2026: eram pontos cobalto em
+// cima da barra; o dono, "essas bolinhas não são legais, talvez representar de
+// outro jeito dentro da barra") e "Sua carteira +0,11% · tudo normal" à direita,
+// com a amostra da listra antes, que é a legenda dela
 // (useCarteiraNoTopo, com a regra do selo da home). Até lá, a régua é a do
 // visitante; a troca é um fade, e o lugar do texto já vem reservado para quem
 // entrou (a barra não pula). O selo do dia sai junto com o número (o
@@ -37,7 +40,7 @@
 // Movimento: a cada entrada os pedaços acendem da esquerda para a direita (o
 // pregão acende, ~0,8 s); com a bolsa aberta, o dado que se renova troca as
 // cores com transição e a barra escorre para a ordem nova (cada lugar muda de
-// cor e de largura; os pontos da carteira andam junto). Movimento reduzido: sem
+// cor e de largura; a listra da carteira vai junto, porque mora no pedaço). Movimento reduzido: sem
 // cascata e sem crescer (o palco já entrega a fase 'larga').
 import { momentoDoDado, type MercadoDoTopo } from '~/utils/topo'
 import { estadoCurto, legendaDaCarteira, legendaDaRegua, pedacoNaPosicao, pedacosDaRegua, rotuloDaBarra as rotuloDe, type AcaoDoIndice, type PedacoDaRegua } from '~/utils/reguaDaBolsa'
@@ -92,8 +95,8 @@ const legCarteira = computed(() => {
   const selo = seloDoDia(frases.value, alerta.value, avisoDoMotor.value)
   return legendaDaCarteira(carteira.value?.dia?.carteiraPct, selo?.tom === 'verde' && motorPendente.value ? null : selo)
 })
-/** os pontos: o centro dos pedaços das ações que a pessoa tem */
-const marcas = computed(() => pedacos.value.filter((p) => tickers.value.has(p.ticker)).map((p) => ({ ticker: p.ticker, centro: p.inicio + p.largura / 2 })))
+/** quantas ações da barra a pessoa tem (as listradas) */
+const quantasSuas = computed(() => pedacos.value.reduce((n, p) => n + (tickers.value.has(p.ticker) ? 1 : 0), 0))
 /** quem entrou: o lugar do texto da carteira vem reservado desde a primeira pintura */
 const reservar = ref(false)
 
@@ -109,7 +112,7 @@ watch(token, (novo, antigo) => {
 /* ————— o que o leitor de tela ouve ————— */
 const idAjuda = useId()
 /** o resumo, quantas são suas e, no fim, o aviso de atraso da B3 (ou a data do fechamento) */
-const rotuloDaBarra = computed(() => (legenda.value ? rotuloDe(legenda.value, marcas.value.length) : ''))
+const rotuloDaBarra = computed(() => (legenda.value ? rotuloDe(legenda.value, quantasSuas.value) : ''))
 const falada = ref('')
 
 /* ————— o pedaço aceso: o ponteiro manda; sem ele, o teclado ————— */
@@ -271,12 +274,11 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
            de cada lugar mudam com transição e a barra escorre para a ordem nova, sem buraco -->
       <div :key="`f${ciclo}`" class="nrb__faixa" aria-hidden="true">
         <span
-          v-for="(p, i) in pedacos" :key="i" class="nrb__pedaco" :class="{ 'nrb__pedaco--clara': p.tinta === 'clara' }"
+          v-for="(p, i) in pedacos" :key="i" class="nrb__pedaco" :class="{ 'nrb__pedaco--clara': p.tinta === 'clara', 'nrb__pedaco--seu': tickers.has(p.ticker), 'nrb__pedaco--colado': i > 0 && tickers.has(p.ticker) && tickers.has(pedacos[i - 1]!.ticker) }"
           :style="{ flexGrow: p.peso, backgroundColor: p.fundo, '--x': (p.inicio / 100).toFixed(4) }"
         ><span v-if="p.rotulo" class="nrb__rotulo">{{ p.ticker }}</span></span>
       </div>
       <div class="nrb__marcas" aria-hidden="true">
-        <span v-for="m in marcas" :key="m.ticker" class="nrb__marca" :style="{ transform: `translateX(${m.centro.toFixed(3)}%)` }"><i /></span>
         <span v-if="ativo" class="nrb__foco" :style="{ transform: `translateX(${ativo.inicio.toFixed(3)}%)` }"><i :style="{ width: `calc(${ativo.largura.toFixed(3)}% + 6px)` }" /></span>
       </div>
     </div>
@@ -286,9 +288,9 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
     <span ref="ladoDir" class="nrb__lado nrb__lado--dir" :style="larguras.dir ? { width: larguras.dir } : undefined"><span :key="`d${ciclo}`" class="nrb__lado-in">
     <div class="nrb__leg">
       <!-- quem entrou: o lugar do texto mais longo da carteira, sem dado nenhum (a barra não pula na troca) -->
-      <span v-if="reservar" class="nrb__fantasma" aria-hidden="true"><span class="nrb__t-longo nrb__t-medio">Sua carteira </span><span class="nrb__t-curto">Você </span><b class="nrb__num">−00,00%</b><span class="nrb__t-longo"> · pede atenção</span><i class="nrb__cart-ponto" /></span>
+      <span v-if="reservar" class="nrb__fantasma" aria-hidden="true"><i class="nrb__amostra" /><span class="nrb__t-longo nrb__t-medio">Sua carteira </span><span class="nrb__t-curto">Você </span><b class="nrb__num">−00,00%</b><span class="nrb__t-longo"> · pede atenção</span><i class="nrb__cart-ponto" /></span>
       <Transition name="nrb-troca" mode="out-in">
-        <NuxtLink v-if="legCarteira" key="carteira" to="/carteira" class="nrb__cart" :class="{ 'nrb__cart--atencao': legCarteira.atencao }" :aria-label="legCarteira.falada"><span class="nrb__t-longo nrb__t-medio">Sua carteira </span><span class="nrb__t-curto">Você </span><b class="nrb__num">{{ legCarteira.numero }}</b><Transition name="nrb-troca" mode="out-in"><span v-if="legCarteira.estado" :key="legCarteira.estado" class="nrb__cart-estado nrb__t-longo"> · {{ legCarteira.estado }}</span></Transition><i v-if="legCarteira.atencao" class="nrb__cart-ponto" aria-hidden="true" /></NuxtLink>
+        <NuxtLink v-if="legCarteira" key="carteira" to="/carteira" class="nrb__cart" :class="{ 'nrb__cart--atencao': legCarteira.atencao }" :aria-label="legCarteira.falada"><i v-if="quantasSuas" class="nrb__amostra" aria-hidden="true" /><span class="nrb__t-longo nrb__t-medio">Sua carteira </span><span class="nrb__t-curto">Você </span><b class="nrb__num">{{ legCarteira.numero }}</b><Transition name="nrb-troca" mode="out-in"><span v-if="legCarteira.estado" :key="legCarteira.estado" class="nrb__cart-estado nrb__t-longo"> · {{ legCarteira.estado }}</span></Transition><i v-if="legCarteira.atencao" class="nrb__cart-ponto" aria-hidden="true" /></NuxtLink>
         <span v-else-if="legenda" key="indice" class="nrb__ind">
           <b class="nrb__num">{{ legenda.numero }}</b><span class="nrb__t-longo">{{ ` ${legenda.longo}` }}</span><span class="nrb__t-medio">{{ ` ${legenda.medio}` }}</span><span class="nrb__t-curto">{{ ` ${legenda.curto}` }}</span>
         </span>
@@ -305,7 +307,7 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
       >
         <p class="nrb__dica-titulo"><b>{{ ativo.dica.titulo }}</b> <span class="nrb__dica-pct" :class="`nrb__dica-pct--${ativo.dica.tom}`">{{ ativo.dica.pct }}</span></p>
         <p class="nrb__dica-linha">{{ ativo.dica.linha }}</p>
-        <p v-if="ativoEhSeu" class="nrb__dica-sua"><i aria-hidden="true" />Na sua carteira</p>
+        <p v-if="ativoEhSeu" class="nrb__dica-sua"><i class="nrb__amostra" aria-hidden="true" />Na sua carteira</p>
         <!-- o aviso de atraso da B3 (ou a data do fechamento): saiu da linha e mora aqui -->
         <p v-if="legenda" class="nrb__dica-nota">{{ legenda.nota }}</p>
       </div>
@@ -368,14 +370,34 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
 .nrb__pedaco {
   transition: background-color var(--nu-dur-lenta) var(--nu-ease-cor), color var(--nu-dur-lenta) var(--nu-ease-cor), flex-grow var(--nu-dur-lenta) var(--nu-ease-troca);
   flex: 0 1 0; min-width: 0; container-type: inline-size;
-  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
   color: var(--nu-ink);
 }
 .nrb__pedaco--clara { color: var(--nu-white); }
+/* as ações da pessoa (dono, 12/11/2026: "essas bolinhas não são legais, talvez
+   representar de outro jeito dentro da barra"): uma listra fina a 135° dentro
+   do próprio pedaço, na tinta do texto dele (carvão no claro, branco no escuro).
+   A cor segue dizendo quanto a ação andou; a listra diz "é sua", sem depender de
+   cor. Ela fica atrás do ticker e acende junto com a cascata. */
+.nrb__pedaco::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background-image: repeating-linear-gradient(135deg, color-mix(in srgb, currentColor 34%, transparent) 0 1.5px, transparent 1.5px 5px);
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor);
+}
+.nrb__pedaco--seu::before { opacity: 1; }
+/* duas ações suas lado a lado: um fio da cor da página entre elas (a listra de
+   cada uma começa na borda dela, e a emenda sem o fio parecia defeito) */
+.nrb__pedaco--colado::before { border-left: 1px solid var(--nu-page); }
+/* a amostra da listra: na legenda ("Sua carteira") e na dica ("Na sua carteira") */
+.nrb__amostra {
+  display: inline-block; flex: none; width: 14px; height: 10px; margin-right: 6px; border-radius: 3px; vertical-align: -1px;
+  background-color: var(--nu-mapa-zero);
+  background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--nu-ink) 34%, transparent) 0 1.5px, transparent 1.5px 5px);
+}
 /* o ticker dentro: só no pedaço que tem uns 62px (a largura real, pelo container) */
 /* o rótulo aparece e some em fade quando o pedaço passa dos 62px (a barra crescendo não estala) */
 .nrb__rotulo {
-  display: block; opacity: 0; transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor); font-size: 11px; font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto);
+  position: relative; display: block; opacity: 0; transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor); font-size: 11px; font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto);
   line-height: 1; white-space: nowrap; pointer-events: none; user-select: none;
 }
 @container (min-width: 62px) { .nrb__rotulo { opacity: 1; } }
@@ -390,14 +412,9 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
 }
 @keyframes nrb-acende { from { background-color: var(--nu-mapa-zero); color: transparent; } }
 
-/* os pontos da carteira e o contorno do pedaço aceso: por cima, sem o corte da faixa */
+/* o contorno do pedaço aceso: por cima, sem o corte da faixa */
 .nrb__marcas { position: absolute; inset: 0; pointer-events: none; }
-.nrb__marca, .nrb__foco { position: absolute; inset: 0; }
-.nrb__marca { transition: transform var(--nu-dur-lenta) var(--nu-ease-troca); animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
-.nrb__marca i {
-  position: absolute; left: 0; top: -4px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%;
-  background: var(--nu-blue); box-shadow: 0 0 0 1.5px var(--nu-page);
-}
+.nrb__foco { position: absolute; inset: 0; }
 .nrb__foco i {
   position: absolute; top: -3px; bottom: -3px; left: -3px; min-width: 8px;
   border: 2px solid var(--nu-ink); border-radius: 4px; box-shadow: inset 0 0 0 1px var(--nu-page);
@@ -440,8 +457,8 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
 .nrb__dica-pct--down { color: var(--nu-red-text); }
 .nrb__dica-pct--flat { color: var(--nu-gray); }
 .nrb__dica-linha { margin-top: 2px !important; color: var(--nu-gray); font-size: var(--nu-fs-xs); line-height: 1.4; font-variant-numeric: tabular-nums; }
-.nrb__dica-sua { display: flex; align-items: center; gap: 6px; margin-top: 6px !important; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
-.nrb__dica-sua i { width: 6px; height: 6px; border-radius: 50%; background: var(--nu-blue); }
+.nrb__dica-sua { display: flex; align-items: center; gap: 6px; margin-top: 6px !important; color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
+.nrb__dica-sua .nrb__amostra { margin-right: 0; }
 /* o pé: de quando é o dado (o aviso de atraso da B3), pequeno e cinza */
 .nrb__dica-nota { margin-top: 6px !important; color: var(--nu-gray); font-size: var(--nu-fs-xs); line-height: 1.4; }
 .nrb-dica-enter-active { transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor); }
@@ -470,11 +487,10 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
   .nrb__t-longo, .nrb__t-medio, .nrb__t-longo.nrb__t-medio { display: none; }
   .nrb__t-curto { display: inline; }
   .nrb__cart-ponto { display: inline-block; }
-  .nrb__marca i { top: -4px; width: 5px; height: 5px; margin-left: -2.5px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .nrb--acende .nrb__pedaco, .nrb__marca, .nrb--textos .nrb__lado-in { animation: none; }
-  .nrb__pedaco, .nrb__marca, .nrb__dica, .nrb__cart, .nrb__lado, .nrb--larga .nrb__lado, .nrb__lado-in, .nrb__rotulo { transition: none; }
+  .nrb--acende .nrb__pedaco, .nrb--textos .nrb__lado-in { animation: none; }
+  .nrb__pedaco, .nrb__pedaco::before, .nrb__dica, .nrb__cart, .nrb__lado, .nrb--larga .nrb__lado, .nrb__lado-in, .nrb__rotulo { transition: none; }
   .nrb--larga .nrb__lado-in { transform: none; filter: none; }
 }
 </style>
