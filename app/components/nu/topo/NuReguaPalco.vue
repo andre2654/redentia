@@ -7,7 +7,9 @@
 // das ações (NuReguaBolsa) é a cena principal. Quais cenas, quanto falta e a
 // frase do fechamento saem de funções puras (utils/reguaDaBolsa.ts e
 // utils/pregao.ts, com teste):
-//  - antes das 10h de um dia de pregão: a contagem e a barra do último pregão;
+//  - antes das 10h de um dia de pregão: a contagem (a frase e a régua do relógio,
+//    NuReguaRelogio: a faixa do tempo até a abertura, no nível da barra) e a
+//    barra do último pregão;
 //  - aberta: só a barra, ao vivo (o ciclo roda uma vez e ela fica larga);
 //  - depois do fechamento: a frase do fechamento e a barra de hoje;
 //  - fim de semana e feriado: a barra do último pregão e a contagem.
@@ -26,7 +28,7 @@
 // e a aba escondida.
 import type { MercadoDoTopo } from '~/utils/topo'
 import type { DadoDaRegua } from '~/composables/useReguaDaBolsa'
-import { DURACAO_DA_CENA, TEXTOS_DA_BARRA, cenasDaRegua, contagemDaRegua, fechamentoDaRegua, type CenaDaRegua } from '~/utils/reguaDaBolsa'
+import { DURACAO_DA_CENA, TEXTOS_DA_BARRA, cenasDaRegua, contagemDaRegua, fechamentoDaRegua, reguaDoRelogio, type CenaDaRegua } from '~/utils/reguaDaBolsa'
 import { agoraEmSP, janelaDaAbertura } from '~/utils/pregao'
 
 const props = defineProps<{
@@ -50,6 +52,8 @@ const relogio = computed(() => (!props.congelado && tique.value && tique.value >
 const hoje = computed(() => agoraEmSP(relogio.value).iso)
 const janela = computed(() => janelaDaAbertura(relogio.value))
 const contagem = computed(() => (janela.value ? contagemDaRegua(janela.value, relogio.value.getTime(), hoje.value) : null))
+/** a contagem desenhada: a faixa do tempo até a abertura, com a agulha em agora (NuReguaRelogio) */
+const reguaDoTempo = computed(() => (janela.value ? reguaDoRelogio(janela.value, relogio.value.getTime()) : null))
 const fechamento = computed(() => {
   const ib = props.bolsa.ibov
   return fechamentoDaRegua({ ...props.bolsa, ibov: ib ? { pct: ib.pct, data: props.data ?? ib.data } : null }, hoje.value)
@@ -206,19 +210,22 @@ onBeforeUnmount(() => {
       />
     </div>
 
-    <!-- a contagem: quanto falta para abrir e a linha que enche do último fechamento até a abertura -->
+    <!-- a contagem: quanto falta para abrir e a régua do relógio, a faixa do tempo até a abertura no nível da barra -->
     <div
       v-if="contagem && cenas.includes('contagem')" class="nrp__cena nrp__contagem" :class="{ 'nrp__cena--ativa': cena === 'contagem', 'nrp__cena--saindo': saindo === 'contagem' }"
       :aria-hidden="cena !== 'contagem' || undefined"
     >
       <span class="nrp__ponto" aria-hidden="true" />
-      <span class="nrp__texto" aria-live="off"><span class="nrp__t-longo">{{ contagem.longo }}</span><span class="nrp__t-curto">{{ contagem.curto }}</span></span>
-      <span v-if="contagem.progresso != null" class="nrp__linha" aria-hidden="true">
-        <i class="nrp__cheia" :style="{ transform: `scaleX(${contagem.progresso.toFixed(4)})` }" />
-        <span class="nrp__ponta" :style="{ transform: `translateX(${(contagem.progresso * 100).toFixed(2)}%)` }"><i /></span>
+      <span class="nrp__texto" aria-live="off">
+        <!-- no dia, a frase anda ("1h" vira "59min"): o lugar da mais comprida vem reservado, e a régua não pula -->
+        <span v-if="contagem.hoje" class="nrp__fantasma" aria-hidden="true"><span class="nrp__t-longo">A bolsa abre em 00h00min</span><span class="nrp__t-curto">Abre em 00min0</span></span>
+        <span class="nrp__frase">
+          <span class="nrp__t-longo">{{ contagem.partes[0] }} <b class="nrp__valor">{{ contagem.partes[1] }}</b>{{ contagem.partes[2] }}</span>
+          <span class="nrp__t-curto">{{ contagem.partesCurto[0] }} <b class="nrp__valor">{{ contagem.partesCurto[1] }}</b>{{ contagem.partesCurto[2] }}</span>
+        </span>
       </span>
-      <span v-else class="nrp__vao" />
-      <span class="nrp__hora">{{ contagem.hora }}</span>
+      <span class="nrp__fio" aria-hidden="true" />
+      <NuReguaRelogio v-if="reguaDoTempo" :regua="reguaDoTempo" :ponta="contagem.ponta" :ativa="cena === 'contagem'" :vivo="contagem.segundos" />
     </div>
 
     <!-- o fechamento: os fatos do dia, só os que o dado traz -->
@@ -263,35 +270,31 @@ onBeforeUnmount(() => {
   white-space: nowrap; font-variant-numeric: tabular-nums;
 }
 .nrp__t-curto { display: none; }
-.nrp__fechamento .nrp__texto { font-weight: var(--nu-w-texto); }
+/* a frase em peso de texto e o que importa (quanto falta, a variação do dia) em destaque, como o número da barra */
+.nrp__contagem .nrp__texto, .nrp__fechamento .nrp__texto { font-weight: var(--nu-w-texto); }
 .nrp__fechamento .nrp__t-longo { color: var(--nu-gray-2); }
+.nrp__valor { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
+/* a frase da contagem e o fantasma da mais comprida no mesmo lugar (a largura é a do maior) */
+.nrp__contagem .nrp__texto { display: inline-grid; justify-items: start; }
+.nrp__contagem .nrp__texto > * { grid-area: 1 / 1; }
+.nrp__fantasma { visibility: hidden; font-weight: var(--nu-w-medio); }
+/* o fio entre a frase e a régua do relógio: o mesmo da barra (16px de respiro de cada lado) */
+.nrp__fio { flex: none; width: 1px; height: 16px; margin: 0 16px; background: var(--nu-line-2); }
 .nrp__pct { font-weight: var(--nu-w-medio); }
 .nrp__pct--up { color: var(--nu-green-text); }
 .nrp__pct--down { color: var(--nu-red-text); }
 .nrp__pct--flat { color: var(--nu-ink); }
 
-/* a linha que enche do último fechamento até a abertura, com o ponto que anda na ponta */
-.nrp__linha { position: relative; flex: 1 1 auto; min-width: 40px; height: 4px; margin: 0 16px; border-radius: var(--nu-r-pill); background: var(--nu-line-2); }
-.nrp__cheia { position: absolute; inset: 0; border-radius: inherit; background: var(--nu-blue); transform-origin: left center; }
-.nrp__ponta { position: absolute; inset: 0; pointer-events: none; }
-.nrp__ponta i {
-  position: absolute; left: 0; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%;
-  background: var(--nu-blue); box-shadow: 0 0 0 2px var(--nu-page);
-}
-.nrp__vao { flex: 1 1 auto; }
-.nrp__hora { flex: none; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
-
 @media (max-width: 1023px) {
   .nrp__fato { display: none; }
-  .nrp__linha { margin: 0 12px; }
+  .nrp__fio { margin: 0 12px; }
 }
 @media (max-width: 640px) {
   .nrp__texto { font-size: var(--nu-fs-xs); }
   .nrp__t-longo { display: none; }
   .nrp__t-curto { display: inline; }
   .nrp__ponto { margin-right: 6px; }
-  .nrp__linha { margin: 0 10px; height: 3px; }
-  .nrp__ponta i { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+  .nrp__fio { width: 0; margin: 0 5px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nrp { animation: none; }

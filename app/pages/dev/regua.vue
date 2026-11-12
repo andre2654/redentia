@@ -7,8 +7,10 @@
 // parada) numa moldura com as medidas da régua (44px, 36 no celular, na coluna
 // do site). "Rever as entradas" remonta tudo (a cascata e os textos chegando de
 // novo); a barra larga tem o botão para ver o crescimento; o palco ao vivo
-// troca de cena sozinho e no botão. Embaixo, a mesma vitrine num celular de
-// 390px (esta página num iframe, com ?so=linhas). Fora do `nuxi dev` a rota nem
+// troca de cena sozinho e no botão. A contagem (a régua do relógio) aparece em
+// cada distância da abertura (as escalas do zoom) e numa linha ao vivo, com o
+// relógio acelerado, que vai até a abertura e vira a barra. Embaixo, a mesma
+// vitrine num celular de 390px (esta página num iframe, com ?so=linhas). Fora do `nuxi dev` a rota nem
 // existe (pages:extend no nuxt.config); o middleware de 404 é a segunda trava.
 import { agoraEmSP, relogioDoDev, type MomentoDoDev } from '~/utils/pregao'
 import { mercadoDoTopo } from '~/utils/topo'
@@ -56,7 +58,7 @@ interface Linha {
 }
 const LINHAS: Linha[] = [
   { id: 'esqueleto', titulo: 'Carregando', quando: 'No SSR e até o dado chegar: a forma da barra, sem número.', m: 'aberta', peca: 'esqueleto' },
-  { id: 'contagem', titulo: 'Antes da abertura · a contagem', quando: 'Quanto falta para abrir e a linha que enche desde o último fechamento. Troca com a barra a cada minuto.', m: 'pre', peca: 'cena', cena: 'contagem' },
+  { id: 'contagem', titulo: 'Antes da abertura · a contagem', quando: 'Quanto falta para abrir e a régua do relógio: a faixa do tempo até a abertura, no nível da barra. Troca com a barra a cada minuto.', m: 'pre', peca: 'cena', cena: 'contagem' },
   { id: 'pre-barra', titulo: 'Antes da abertura · a barra do último pregão', quando: 'A outra cena da manhã.', m: 'pre', peca: 'barra', fase: 'textos', visitante: true },
   { id: 'aberta', titulo: 'Pregão aberto · a barra se forma, com os textos', quando: 'Ao vivo. A cada entrada os pedaços acendem da esquerda para a direita e os textos chegam depois.', m: 'aberta', peca: 'barra', fase: 'textos', visitante: true },
   { id: 'larga', titulo: 'Pregão aberto · 15 s depois, a barra larga', quando: 'Os textos saem e a barra cresce até a coluna. Os rótulos e a dica continuam.', m: 'aberta', peca: 'barra', fase: 'larga', visitante: true },
@@ -82,6 +84,64 @@ function verCrescer(id: string) {
   tCresce = setTimeout(() => { fases[id] = 'larga' }, 1800)
 }
 
+/* ————— a contagem em cada distância da abertura (as escalas do zoom) ————— */
+const MINUTO = 60_000
+/** as 9h do pregão de hoje (ou do próximo): a base dos relógios da contagem */
+const noveDoPregao = computed(() => relogioDoDev('pre')?.agora.getTime() ?? null)
+const sabado = computed(() => {
+  const d = new Date(`${agoraEmSP().iso}T12:00:00Z`)
+  while (d.getUTCDay() !== 6) d.setUTCDate(d.getUTCDate() + 1)
+  return new Date(`${d.toISOString().slice(0, 10)}T12:00:00-03:00`)
+})
+const DISTANCIAS: { id: string; titulo: string; quando: string; min: number | 'sabado' }[] = [
+  { id: 'd-madrugada', titulo: 'A contagem de madrugada', quando: 'As últimas 12 horas, de hora em hora.', min: -510 },
+  { id: 'd-manha', titulo: 'A contagem de manhã', quando: 'Três horas, de 15 em 15 minutos. O que passou fica na areia; o que falta, do azul claro ao cobalto.', min: -70 },
+  { id: 'd-hora', titulo: 'A última hora', quando: 'De 5 em 5 minutos. A agulha são os dois entalhes: um horário atravessado por ela fica metade cinza, metade carvão.', min: 31 },
+  { id: 'd-minutos', titulo: 'Os últimos 15 minutos', quando: 'De minuto em minuto; a frase anda de segundo em segundo nos últimos 10, e a agulha respira.', min: 52 },
+  { id: 'd-sabado', titulo: 'A contagem no fim de semana', quando: 'O tempo fechado inteiro, do último fechamento até a abertura, com os dias escritos.', min: 'sabado' },
+]
+function distancia(min: number | 'sabado') {
+  const agora = min === 'sabado' ? sabado.value : noveDoPregao.value != null ? new Date(noveDoPregao.value + min * MINUTO) : null
+  if (!agora) return null
+  const data = bolsa.value?.ibov?.data ?? null
+  return { agora, data, mercado: mercadoDoTopo(agora, data) }
+}
+const distancias = computed(() => DISTANCIAS.map((d) => ({ ...d, r: distancia(d.min) })))
+
+/* ————— a contagem ao vivo: o relógio acelerado até a abertura, quando a cena vira a barra ————— */
+const VELOCIDADES = [{ v: 1, nome: 'No tempo real' }, { v: 60, nome: '1 minuto por segundo' }] as const
+const velocidade = ref<1 | 60>(60)
+/** quantos ms o relógio de mentira andou desde as 8h55 do pregão */
+const andou = ref(0)
+const PARTIDA_MIN = -5
+const FIM_MIN = 62
+let tVivo: ReturnType<typeof setInterval> | null = null
+const vivo = computed(() => {
+  if (noveDoPregao.value == null) return null
+  const agora = new Date(noveDoPregao.value + PARTIDA_MIN * MINUTO + andou.value)
+  const abriu = agora.getTime() >= noveDoPregao.value + 60 * MINUTO
+  const data = abriu ? agoraEmSP(agora).iso : (bolsa.value?.ibov?.data ?? null)
+  return { agora, data, mercado: mercadoDoTopo(agora, data), hora: agora.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', second: '2-digit' }) }
+})
+function pararVivo() {
+  if (tVivo) clearInterval(tVivo)
+  tVivo = null
+}
+function tocarVivo(doComeco = false) {
+  pararVivo()
+  if (doComeco || andou.value >= (FIM_MIN - PARTIDA_MIN) * MINUTO) andou.value = 0
+  // quatro passos por segundo: a agulha anda sem tranco em qualquer velocidade
+  tVivo = setInterval(() => {
+    andou.value += 250 * velocidade.value
+    if (andou.value >= (FIM_MIN - PARTIDA_MIN) * MINUTO) pararVivo()
+  }, 250)
+}
+function trocarVelocidade(v: 1 | 60) {
+  velocidade.value = v
+  if (v === 1) andou.value = Math.max(andou.value, 52 * MINUTO) // no tempo real, começa nos últimos 13 minutos
+  tocarVivo()
+}
+
 /* ————— o palco ao vivo ————— */
 const momentoVivo = ref<MomentoDoDev>('pre')
 const palco = ref<{ proxima: () => void; doComeco: () => void } | null>(null)
@@ -90,7 +150,10 @@ onMounted(() => {
   reduzido.value = !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
   void carregar()
 })
-onBeforeUnmount(() => { if (tCresce) clearTimeout(tCresce) })
+onBeforeUnmount(() => {
+  if (tCresce) clearTimeout(tCresce)
+  pararVivo()
+})
 </script>
 
 <template>
@@ -131,6 +194,40 @@ onBeforeUnmount(() => { if (tCresce) clearTimeout(tCresce) })
           />
         </template>
         <span v-else class="dr__nota">{{ estado === 'erro' ? 'Sem dado.' : 'Carregando o dado…' }}</span>
+      </div>
+    </section>
+
+    <section v-for="d in distancias" :key="d.id" class="dr__linha">
+      <div class="dr__legenda">
+        <h2 class="dr__titulo">{{ d.titulo }}</h2>
+        <p class="dr__quando">{{ d.quando }}</p>
+      </div>
+      <div class="dr__regua">
+        <NuReguaPalco
+          v-if="bolsa?.acoes.length && bolsa.ibov && d.r" :key="`${d.id}-${rodada}`"
+          :bolsa="bolsa" :data="d.r.data" :mercado="d.r.mercado" :agora="d.r.agora" cena-fixa="contagem" congelado
+        />
+        <span v-else class="dr__nota">{{ estado === 'erro' ? 'Sem dado.' : 'Carregando o dado…' }}</span>
+      </div>
+    </section>
+
+    <section v-if="!soLinhas" class="dr__linha dr__vivo">
+      <div class="dr__legenda">
+        <h2 class="dr__titulo">A contagem ao vivo, até a abertura</h2>
+        <p class="dr__quando">O relógio de mentira anda das 8h55 às 10h02: a régua dá zoom às 9h09 e às 9h47, e às 10h a cena vira a barra do pregão aberto.</p>
+        <div class="dr__acoes">
+          <button v-for="x in VELOCIDADES" :key="x.v" type="button" class="dr__botao dr__botao--p" :class="{ 'dr__botao--ativo': velocidade === x.v }" :aria-pressed="velocidade === x.v" @click="trocarVelocidade(x.v)">{{ x.nome }}</button>
+          <span class="dr__fio" aria-hidden="true" />
+          <button type="button" class="dr__botao dr__botao--p" @click="tocarVivo(true)">Tocar do começo</button>
+          <button type="button" class="dr__botao dr__botao--p" @click="pararVivo()">Pausar</button>
+          <span v-if="vivo" class="dr__nota dr__hora">{{ vivo.hora }}</span>
+        </div>
+      </div>
+      <div class="dr__regua">
+        <NuReguaPalco
+          v-if="bolsa?.acoes.length && bolsa.ibov && vivo"
+          :bolsa="bolsa" :data="vivo.data" :mercado="vivo.mercado" :agora="vivo.agora" cena-fixa="contagem" congelado
+        />
       </div>
     </section>
 
@@ -182,6 +279,7 @@ onBeforeUnmount(() => { if (tCresce) clearTimeout(tCresce) })
 .dr__botao--p { min-height: 32px; padding: 0 12px; font-size: var(--nu-fs-xs); }
 .dr__botao--ativo { border-color: var(--nu-ink); background: var(--nu-ink); color: var(--nu-white); }
 .dr__fio { width: 1px; height: 20px; background: var(--nu-line-2); }
+.dr__hora { font-variant-numeric: tabular-nums; }
 .dr__aviso { margin: 0 var(--nu-coluna) 16px; color: var(--nu-red-text); font-size: var(--nu-fs-sm); }
 
 /* cada modo: a legenda e a régua na moldura dela */
@@ -199,7 +297,7 @@ onBeforeUnmount(() => { if (tCresce) clearTimeout(tCresce) })
 }
 .dr__celular { margin-top: 48px; }
 .dr__iframe {
-  display: block; width: 390px; height: 1180px; margin: 0 var(--nu-coluna); border: 1px solid var(--nu-line); border-radius: var(--nu-r-card);
+  display: block; width: 390px; height: 1720px; margin: 0 var(--nu-coluna); border: 1px solid var(--nu-line); border-radius: var(--nu-r-card);
   background: var(--nu-page);
 }
 @media (max-width: 640px) {

@@ -342,46 +342,51 @@ export interface ContagemDaRegua {
   longo: string
   /** o celular: 'Abre em 1h12' / 'Abre em 4m32s' / 'Abre segunda, 10h' */
   curto: string
+  /** a frase em três partes: o começo, o que se destaca (quanto falta, ou o dia) e o fim */
+  partes: [string, string, string]
+  partesCurto: [string, string, string]
   /** nos últimos 10 minutos o texto anda de segundo em segundo */
   segundos: boolean
-  /** 0 a 1: do último fechamento até a abertura (a linha que enche); null sem o fechamento */
-  progresso: number | null
-  /** a hora da abertura, à direita da linha */
-  hora: string
+  /** a abertura é hoje: a frase anda (e a régua reserva a largura da frase mais comprida, para não pular) */
+  hoje: boolean
+  /** a ponta da régua do relógio: a hora da abertura ('10h') ou, noutro dia, o dia dela ('seg', '05/01') */
+  ponta: string
 }
 
 const DIAS_DA_SEMANA = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'] as const
+const DIA_CURTO = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'] as const
 const dois = (n: number) => String(n).padStart(2, '0')
 const diasEntre = (de: string, ate: string) => Math.round((Date.parse(`${ate.slice(0, 10)}T12:00:00Z`) - Date.parse(`${de.slice(0, 10)}T12:00:00Z`)) / 86_400_000)
+const frase = (p: [string, string, string]) => `${p[0]} ${p[1]}${p[2]}`
 
 /**
  * Quanto falta para abrir. No dia: de minuto em minuto ("em 1h12min", arredondado
- * para cima: às 8h48 faltam 72 minutos) e, nos últimos 10 minutos, de segundo em
- * segundo ("em 4min32s"). Noutro dia: o dia ("amanhã", "na segunda", "em 05/01").
- * `hoje` é o dia em São Paulo; os instantes, em ms (janelaDaAbertura).
+ * para cima: às 8h48 faltam 72 minutos; a hora cheia é "em 1h", não "1h00min") e,
+ * nos últimos 10 minutos, de segundo em segundo ("em 4min32s"). Noutro dia: o dia
+ * ("amanhã", "na segunda", "em 05/01"). `hoje` é o dia em São Paulo; os
+ * instantes, em ms (janelaDaAbertura). O desenho do quanto falta é a régua do
+ * relógio (reguaDoRelogio).
  */
 export function contagemDaRegua(j: { dia: string; abreEm: number; fechouEm: number | null }, agoraMs: number, hoje: string): ContagemDaRegua {
-  const hora = '10h00'
-  const total = j.fechouEm != null ? j.abreEm - j.fechouEm : 0
-  const progresso = total > 0 ? Math.max(0, Math.min(1, (agoraMs - j.fechouEm!) / total)) : null
+  const noDia = j.dia.slice(0, 10) === hoje.slice(0, 10)
+  const monta = (partes: [string, string, string], partesCurto: [string, string, string], segundos: boolean, ponta: string): ContagemDaRegua =>
+    ({ longo: frase(partes), curto: frase(partesCurto), partes, partesCurto, segundos, hoje: noDia, ponta })
   const falta = j.abreEm - agoraMs
-  if (j.dia.slice(0, 10) === hoje.slice(0, 10)) {
-    if (falta <= 0) return { longo: 'A bolsa abre agora', curto: 'Abre agora', segundos: false, progresso: progresso == null ? null : 1, hora }
+  if (noDia) {
+    if (falta <= 0) return monta(['A bolsa abre', 'agora', ''], ['Abre', 'agora', ''], false, '10h')
     if (falta < 10 * 60_000) {
       const s = Math.floor(falta / 1000)
       const m = Math.floor(s / 60)
-      const longo = m ? `${m}min${dois(s % 60)}s` : `${s % 60}s`
-      const curto = m ? `${m}m${dois(s % 60)}s` : `${s % 60}s`
-      return { longo: `A bolsa abre em ${longo}`, curto: `Abre em ${curto}`, segundos: true, progresso, hora }
+      return monta(['A bolsa abre em', m ? `${m}min${dois(s % 60)}s` : `${s % 60}s`, ''], ['Abre em', m ? `${m}m${dois(s % 60)}s` : `${s % 60}s`, ''], true, '10h')
     }
     const min = Math.ceil(falta / 60_000)
     const h = Math.floor(min / 60)
     const mm = min % 60
-    return {
-      longo: `A bolsa abre em ${h ? `${h}h${dois(mm)}min` : `${mm}min`}`,
-      curto: `Abre em ${h ? `${h}h${dois(mm)}` : `${mm}min`}`,
-      segundos: false, progresso, hora,
-    }
+    return monta(
+      ['A bolsa abre em', h ? `${h}h${mm ? `${dois(mm)}min` : ''}` : `${mm}min`, ''],
+      ['Abre em', h ? `${h}h${mm ? dois(mm) : ''}` : `${mm}min`, ''],
+      false, '10h',
+    )
   }
   const dias = diasEntre(hoje, j.dia)
   const semana = new Date(`${j.dia.slice(0, 10)}T12:00:00Z`).getUTCDay()
@@ -389,7 +394,106 @@ export function contagemDaRegua(j: { dia: string; abreEm: number; fechouEm: numb
   const data = `${j.dia.slice(8, 10)}/${j.dia.slice(5, 7)}`
   const quando = dias === 1 ? 'amanhã' : dias < 7 ? `${semana === 0 || semana === 6 ? 'no' : 'na'} ${nome}` : `em ${data}`
   const quandoCurto = dias === 1 ? 'amanhã' : dias < 7 ? nome : `em ${data}`
-  return { longo: `A bolsa abre ${quando}, às 10h`, curto: `Abre ${quandoCurto}, 10h`, segundos: false, progresso, hora }
+  return monta(['A bolsa abre', quando, ', às 10h'], ['Abre', quandoCurto, ', 10h'], false, dias < 7 ? DIA_CURTO[semana]! : data)
+}
+
+/** Um pedaço da régua do relógio: onde começa e quanto ocupa (0 a 1 da janela) e a força do azul (mais forte perto da abertura). */
+export interface PedacoDoRelogio { x: number; largura: number; forca: number }
+/** Um horário (ou um dia) escrito dentro da faixa, no começo do pedaço dele. */
+export interface MarcaDoRelogio { x: number; rotulo: string }
+export type EscalaDoRelogio = '15min' | '1h' | '3h' | '12h' | 'fechada'
+export interface ReguaDoRelogio {
+  escala: EscalaDoRelogio
+  /** o começo da janela, em ms (o fim é a abertura) */
+  inicio: number
+  /** agora: de 0 (o começo da janela) a 1 (a abertura) */
+  agulha: number
+  pedacos: PedacoDoRelogio[]
+  marcas: MarcaDoRelogio[]
+}
+
+const MINUTO = 60_000
+const HORA = 60 * MINUTO
+const UM_DIA = 24 * HORA
+/** o relógio de parede de São Paulo (sem horário de verão desde 2019): UTC − 3h */
+const FUSO_SP = -3 * HORA
+/** o zoom: a janela termina na abertura; `passo` é um pedaço, `maior` é de quanto em quanto vai um horário escrito */
+const ZOOMS_DO_RELOGIO: { escala: EscalaDoRelogio; janela: number; passo: number; maior: number }[] = [
+  { escala: '15min', janela: 15 * MINUTO, passo: MINUTO, maior: 5 * MINUTO },
+  { escala: '1h', janela: HORA, passo: 5 * MINUTO, maior: 15 * MINUTO },
+  { escala: '3h', janela: 3 * HORA, passo: 15 * MINUTO, maior: HORA },
+  { escala: '12h', janela: 12 * HORA, passo: HORA, maior: 3 * HORA },
+]
+/** a agulha entra numa escala com pelo menos 15% da janela para trás: antes disso a régua fica na escala maior */
+export const FOLGA_DA_AGULHA = 0.85
+/** um horário perto demais da ponta não é escrito (a ponta já diz a hora da abertura) */
+export const ROTULO_DO_RELOGIO_ATE = 0.9
+/**
+ * A força do azul do que falta: do claro (--nu-blue-pale) ao cobalto (--nu-blue),
+ * misturados em oklab. Para em 78%: até ali a tinta carvão dos horários passa de
+ * 4,5:1 (o teste confere contra o tokens.css). O cobalto cheio é o da ponta, com
+ * a hora em branco.
+ */
+export const FORCA_DO_RELOGIO = { de: 0.12, ate: 0.78 } as const
+const arredonda = (v: number) => Math.round(v * 1e5) / 1e5
+const horaDaParede = (t: number) => {
+  const d = new Date(t + FUSO_SP)
+  return `${d.getUTCHours()}h${d.getUTCMinutes() ? dois(d.getUTCMinutes()) : ''}`
+}
+const diaDaParede = (t: number) => DIA_CURTO[new Date(t + FUSO_SP).getUTCDay()]!
+
+/**
+ * A régua do relógio: a contagem para a abertura desenhada no nível da barra das
+ * ações (12/11/2026; o dono, vendo a linha fina que enchia desde o fechamento de
+ * ontem: "conseguimos melhorar isso?", "faça algo mais visual, tipo no nível da
+ * barra ali"). Uma janela de tempo que termina na abertura, em pedaços, com os
+ * horários escritos dentro, e a agulha em agora: o que passou fica apagado, o
+ * que falta acende. A janela dá zoom conforme a abertura chega: 12 horas de
+ * hora em hora, 3 horas de 15 em 15 minutos, a última hora de 5 em 5 e os
+ * últimos 15 minutos de minuto em minuto; vale a menor escala em que a agulha
+ * tem pelo menos 15% da janela para trás. Mais longe que isso (o fim de semana,
+ * o feriado), a janela é o tempo fechado inteiro, do último fechamento até a
+ * abertura, de 6 em 6 horas (de 12 em 12 quando passa de 4 dias) e com os dias
+ * escritos; sem o último fechamento, 3 dias. Os pedaços caem no relógio de
+ * parede de São Paulo, então o primeiro e o último podem ser mais curtos.
+ */
+export function reguaDoRelogio(j: { abreEm: number; fechouEm: number | null }, agoraMs: number): ReguaDoRelogio {
+  const falta = Math.max(0, j.abreEm - agoraMs)
+  const zoom = ZOOMS_DO_RELOGIO.find((z) => falta <= z.janela * FOLGA_DA_AGULHA)
+  let e = zoom
+  if (!e) {
+    const janela = j.fechouEm != null && j.fechouEm < agoraMs ? j.abreEm - j.fechouEm : Math.max(3 * UM_DIA, Math.ceil(falta / UM_DIA) * UM_DIA)
+    e = janela <= UM_DIA
+      ? { escala: 'fechada', janela, passo: HORA, maior: 3 * HORA }
+      : { escala: 'fechada', janela, passo: janela <= 4 * UM_DIA ? 6 * HORA : 12 * HORA, maior: UM_DIA }
+  }
+  const { janela, passo, maior } = e
+  const inicio = j.abreEm - janela
+  const emX = (t: number) => arredonda((t - inicio) / janela)
+  const ehMaior = (t: number) => (((t + FUSO_SP) % maior) + maior) % maior === 0
+  // as bordas dos pedaços: o começo da janela, cada passo do relógio de parede e a abertura
+  const bordas = [inicio]
+  for (let t = Math.floor((inicio + FUSO_SP) / passo) * passo + passo - FUSO_SP; t < j.abreEm; t += passo) bordas.push(t)
+  bordas.push(j.abreEm)
+  const pedacos: PedacoDoRelogio[] = []
+  for (let i = 0; i < bordas.length - 1; i++) {
+    const x = emX(bordas[i]!)
+    const largura = arredonda((bordas[i + 1]! - bordas[i]!) / janela)
+    pedacos.push({ x, largura, forca: arredonda(FORCA_DO_RELOGIO.de + (FORCA_DO_RELOGIO.ate - FORCA_DO_RELOGIO.de) * (x + largura / 2)) })
+  }
+  const dias = maior === UM_DIA
+  const marcas: MarcaDoRelogio[] = []
+  for (const t of bordas.slice(0, -1)) {
+    if (!ehMaior(t)) continue
+    const x = emX(t)
+    if (x > ROTULO_DO_RELOGIO_ATE) continue
+    // o dia da abertura já está na ponta ("seg")
+    if (dias && j.abreEm - t < UM_DIA) continue
+    marcas.push({ x, rotulo: dias ? diaDaParede(t) : horaDaParede(t) })
+  }
+  // a régua dos dias começa no meio de um dia (o do fechamento): ele também ganha o nome, se couber antes do próximo
+  if (dias && (marcas[0]?.x ?? 1) >= 0.12) marcas.unshift({ x: 0, rotulo: diaDaParede(inicio) })
+  return { escala: e.escala, inicio, agulha: arredonda(Math.max(0, Math.min(1, (agoraMs - inicio) / janela))), pedacos, marcas }
 }
 
 export interface FechamentoDaRegua {

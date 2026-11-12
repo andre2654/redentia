@@ -11,7 +11,8 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import {
-  BARRA_MAIS_LARGA, DURACAO_DA_CENA, LARGURA_DO_ROTULO, TEXTOS_DA_BARRA, TINTA_CLARA_DESDE, cenasDaRegua, contagemDaRegua, estadoCurto,
+  BARRA_MAIS_LARGA, DURACAO_DA_CENA, FOLGA_DA_AGULHA, FORCA_DO_RELOGIO, LARGURA_DO_ROTULO, ROTULO_DO_RELOGIO_ATE, TEXTOS_DA_BARRA, TINTA_CLARA_DESDE, cenasDaRegua,
+  contagemDaRegua, estadoCurto, reguaDoRelogio,
   fatiaArredondada, fatiaQueSubiu, fechamentoDaRegua, forcaDaCor, legendaDaCarteira, legendaDaRegua as legendaComMomento, pedacoNaPosicao,
   pedacosDaRegua, pontosDoPapel, rotuloDaBarra, tintaDoPedaco, type AcaoDoIndice,
 } from '../app/utils/reguaDaBolsa.ts'
@@ -164,7 +165,13 @@ test('antes das 10h num dia útil: a contagem de minuto em minuto e a linha desd
   assert.equal(j.abreEm, Date.parse('2026-11-12T10:00:00-03:00'))
   assert.equal(j.fechouEm, Date.parse('2026-11-11T18:00:00-03:00')) // depois do horário de verão dos EUA, fecha às 18h
   const c = contagemDaRegua(j, agora.getTime(), '2026-11-12')
-  assert.deepEqual({ ...c, progresso: Math.round(c.progresso! * 1000) / 1000 }, { longo: 'A bolsa abre em 1h12min', curto: 'Abre em 1h12', segundos: false, progresso: 0.925, hora: '10h00' })
+  assert.deepEqual(c, {
+    longo: 'A bolsa abre em 1h12min', curto: 'Abre em 1h12', partes: ['A bolsa abre em', '1h12min', ''], partesCurto: ['Abre em', '1h12', ''],
+    segundos: false, hoje: true, ponta: '10h',
+  })
+  // a hora cheia é "1h", não "1h00min" (12/11/2026, o dono viu "abre em 1h00min")
+  assert.deepEqual([contagemDaRegua(j, sp('2026-11-12T09:00').getTime(), '2026-11-12').longo, contagemDaRegua(j, sp('2026-11-12T09:00').getTime(), '2026-11-12').curto], ['A bolsa abre em 1h', 'Abre em 1h'])
+  assert.equal(contagemDaRegua(j, sp('2026-11-12T08:00').getTime(), '2026-11-12').longo, 'A bolsa abre em 2h')
   // arredonda o minuto para cima: às 8h48m30s ainda faltam "1h12min"
   assert.equal(contagemDaRegua(j, sp('2026-11-12T08:48:30').getTime(), '2026-11-12').longo, 'A bolsa abre em 1h12min')
   assert.equal(contagemDaRegua(j, sp('2026-11-12T09:15').getTime(), '2026-11-12').longo, 'A bolsa abre em 45min')
@@ -208,7 +215,8 @@ test('sábado: a barra do último pregão e a contagem para segunda', () => {
   assert.equal(j.fechouEm, Date.parse('2026-11-06T18:00:00-03:00'))
   const c = contagemDaRegua(j, agora.getTime(), '2026-11-07')
   assert.deepEqual([c.longo, c.curto, c.segundos], ['A bolsa abre na segunda, às 10h', 'Abre segunda, 10h', false])
-  assert.equal(Math.round(c.progresso! * 100), 28) // 18h de 64h
+  // a frase em partes (o dia em destaque) e a ponta da régua do relógio com o dia da abertura
+  assert.deepEqual([c.partes, c.partesCurto, c.hoje, c.ponta], [['A bolsa abre', 'na segunda', ', às 10h'], ['Abre', 'segunda', ', 10h'], false, 'seg'])
   // domingo: amanhã
   assert.equal(contagemDaRegua(janelaDaAbertura(sp('2026-11-08T20:00'))!, sp('2026-11-08T20:00').getTime(), '2026-11-08').longo, 'A bolsa abre amanhã, às 10h')
 })
@@ -439,4 +447,94 @@ test('a vitrine do dev e a barra mais alta: os modos lado a lado, o esqueleto co
   assert.match(barra, /const tickers = computed\(\(\) => new Set\(props\.visitante \? \[\] :/)
   assert.match(barra, /if \(props\.visitante \|\| !frases\.value\) return null/)
   assert.match(barra, /reservar\.value = !props\.visitante && isAuthenticated\.value/)
+})
+
+test('a régua do relógio: a janela termina na abertura e dá zoom conforme ela chega', () => {
+  const de = (iso: string) => { const a = sp(iso); return reguaDoRelogio(janelaDaAbertura(a)!, a.getTime()) }
+  // de madrugada: as últimas 12 horas, de hora em hora, com um horário escrito a cada 3
+  const madrugada = de('2026-11-12T00:30')
+  assert.deepEqual([madrugada.escala, madrugada.inicio, madrugada.pedacos.length, madrugada.agulha], ['12h', Date.parse('2026-11-11T22:00:00-03:00'), 12, 0.20833])
+  assert.deepEqual(madrugada.marcas, [{ x: 0.16667, rotulo: '0h' }, { x: 0.41667, rotulo: '3h' }, { x: 0.66667, rotulo: '6h' }]) // o "9h" ficaria colado na ponta
+  // o zoom entra quando a agulha tem 15% da janela para trás: às 7h26 ainda são as 12 horas; às 7h27, as 3
+  assert.equal(FOLGA_DA_AGULHA, 0.85)
+  assert.equal(de('2026-11-12T07:26').escala, '12h')
+  assert.deepEqual([de('2026-11-12T07:27').escala, de('2026-11-12T07:27').agulha], ['3h', 0.15])
+  // de manhã: 3 horas de 15 em 15 minutos; o que falta vai do azul claro ao cobalto
+  const nove = de('2026-11-12T09:00')
+  assert.deepEqual([nove.escala, nove.agulha, nove.pedacos.length], ['3h', 0.66667, 12])
+  assert.deepEqual(nove.marcas, [{ x: 0, rotulo: '7h' }, { x: 0.33333, rotulo: '8h' }, { x: 0.66667, rotulo: '9h' }])
+  assert.deepEqual([nove.pedacos[0], nove.pedacos[11]], [{ x: 0, largura: 0.08333, forca: 0.1475 }, { x: 0.91667, largura: 0.08333, forca: 0.7525 }])
+  // a última hora de 5 em 5; os últimos 15 minutos de minuto em minuto
+  assert.equal(de('2026-11-12T09:08').escala, '3h')
+  assert.deepEqual([de('2026-11-12T09:09').escala, de('2026-11-12T09:09').agulha], ['1h', 0.15])
+  assert.deepEqual(de('2026-11-12T09:30').marcas.map((m) => m.rotulo), ['9h', '9h15', '9h30', '9h45'])
+  const fim = de('2026-11-12T09:52')
+  assert.deepEqual([fim.escala, fim.pedacos.length, fim.agulha, fim.marcas.map((m) => m.rotulo)], ['15min', 15, 0.46667, ['9h45', '9h50', '9h55']])
+  // na hora da abertura a agulha chega à ponta
+  assert.equal(reguaDoRelogio({ abreEm: Date.parse('2026-11-12T10:00:00-03:00'), fechouEm: null }, Date.parse('2026-11-12T10:00:03-03:00')).agulha, 1)
+  // em toda escala: os pedaços cobrem a janela, a força fica na rampa e nenhum horário cola na ponta
+  for (const q of ['2026-11-12T00:30', '2026-11-12T08:10', '2026-11-12T09:30', '2026-11-12T09:58', '2026-11-14T12:00', '2026-11-20T12:00', '2026-12-24T19:00']) {
+    const r = de(q)
+    assert.ok(Math.abs(r.pedacos.reduce((t, p) => t + p.largura, 0) - 1) < 1e-3, `${q}: os pedaços somam a janela`)
+    for (const p of r.pedacos) assert.ok(p.largura > 0 && p.forca >= FORCA_DO_RELOGIO.de && p.forca <= FORCA_DO_RELOGIO.ate, `${q}: pedaço ${p.x}`)
+    for (const m of r.marcas) assert.ok(m.x >= 0 && m.x <= ROTULO_DO_RELOGIO_ATE, `${q}: ${m.rotulo}`)
+    assert.ok(r.agulha >= 0 && r.agulha <= 1, q)
+  }
+})
+
+test('a régua do relógio com a bolsa fechada por dias: o tempo fechado inteiro, com os dias escritos', () => {
+  const de = (iso: string) => { const a = sp(iso); return reguaDoRelogio(janelaDaAbertura(a)!, a.getTime()) }
+  // sábado ao meio-dia: de sexta às 18h até segunda às 10h (64 h), de 6 em 6 horas
+  const sabado = de('2026-11-14T12:00')
+  assert.deepEqual([sabado.escala, sabado.inicio, sabado.agulha, sabado.pedacos.length], ['fechada', Date.parse('2026-11-13T18:00:00-03:00'), 0.28125, 11])
+  // os pedaços caem no relógio de parede: o primeiro vai das 18h à meia-noite; o último, das 6h às 10h
+  assert.deepEqual([sabado.pedacos[0]!.largura, sabado.pedacos[10]!.largura], [0.09375, 0.0625])
+  // os dias no começo de cada um; o da abertura já está na ponta ("seg"), e a sexta, com 6 horas, não ganha nome
+  assert.deepEqual(sabado.marcas, [{ x: 0.09375, rotulo: 'sáb' }, { x: 0.46875, rotulo: 'dom' }])
+  // o feriado de sexta (Consciência Negra): de quinta às 18h até segunda às 10h
+  assert.deepEqual(de('2026-11-20T12:00').marcas.map((m) => m.rotulo), ['sex', 'sáb', 'dom'])
+  // mais de 4 dias fechada (o Natal de 2026): de 12 em 12 horas
+  const natal = de('2026-12-24T19:00')
+  assert.deepEqual([natal.escala, natal.pedacos.length, natal.marcas.map((m) => m.rotulo)], ['fechada', 10, ['qui', 'sex', 'sáb', 'dom']])
+  // segunda de madrugada a abertura é hoje: volta o zoom das horas
+  assert.equal(de('2026-11-16T05:00').escala, '12h')
+  // sem o último fechamento (o calendário não alcança): 3 dias até a abertura
+  const sem = reguaDoRelogio({ abreEm: Date.parse('2026-11-16T10:00:00-03:00'), fechouEm: null }, Date.parse('2026-11-14T12:00:00-03:00'))
+  assert.deepEqual([sem.escala, sem.inicio, sem.marcas.map((m) => m.rotulo)], ['fechada', Date.parse('2026-11-13T10:00:00-03:00'), ['sex', 'sáb', 'dom']])
+})
+
+test('a régua do relógio veste a paleta: o carvão lê em toda a rampa do azul, o branco no cobalto e o cinza na areia', () => {
+  const tokens = ler('app/assets/css/tokens.css')
+  const hex = (nome: string) => tokens.match(new RegExp(`--${nome}:\\s*(#[0-9A-Fa-f]{6})`))?.[1]
+  const [cobalto, claro, carvao, branco, cinza, areia] = ['nu-blue', 'nu-blue-pale', 'nu-ink', 'nu-white', 'nu-gray', 'nu-mapa-zero'].map((n) => hex(n)!)
+  const [A, B] = [oklab(cobalto), oklab(claro)]
+  // color-mix(in oklab, --nu-blue f, --nu-blue-pale): o fundo de cada pedaço que falta
+  for (let i = 0; i <= 100; i++) {
+    const f = FORCA_DO_RELOGIO.de + ((FORCA_DO_RELOGIO.ate - FORCA_DO_RELOGIO.de) * i) / 100
+    const fundo = deOklab(A.map((v, k) => v * f + B[k]! * (1 - f)))
+    assert.ok(contraste(rgb(carvao), fundo) >= 4.5, `o carvão sobre o azul de força ${f.toFixed(3)}`)
+  }
+  assert.ok(contraste(rgb(branco), rgb(cobalto)) >= 4.5, 'o branco da ponta sobre o cobalto')
+  assert.ok(contraste(rgb(cinza), rgb(areia)) >= 4.5, 'o cinza dos horários que passaram sobre a areia')
+  const peca = ler('app/components/nu/topo/NuReguaRelogio.vue')
+  assert.match(peca, /background-color: color-mix\(in oklab, var\(--nu-blue\) var\(--f, 50%\), var\(--nu-blue-pale\)\);/)
+  assert.match(peca, /\.nrr__passou \{\n  position: absolute; inset: 0; background: var\(--nu-mapa-zero\); color: var\(--nu-gray\);/)
+  assert.match(peca, /\.nrr__ponta \{[^}]*background: var\(--nu-blue\); color: var\(--nu-white\);/)
+  // no nível da barra: a mesma altura (28px; 22 no celular) e o mesmo raio
+  assert.match(peca, /\.nrr \{\n  --nrr-raio: var\(--nu-r-tag-p\);\n  position: relative; flex: 1 1 auto; min-width: 48px; height: 28px;/)
+  assert.match(peca, /\.nrr \{ height: 22px; min-width: 40px; \}/)
+  // decorativa (a frase ao lado diz o mesmo), sem hex, sem peso em número, sem curva ou tempo à mão
+  assert.match(peca, /<span class="nrr" :class="\{ 'nrr--ativa': ativa, 'nrr--vivo': vivo \}" aria-hidden="true">/)
+  const css = peca.slice(peca.indexOf('<style')).replace(/\/\*[\s\S]*?\*\//g, '')
+  assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/, 'cor em hex')
+  assert.doesNotMatch(css, /font-weight:\s*\d/, 'peso em número')
+  assert.doesNotMatch(css, /font-size:\s*\d/, 'tamanho de letra fora da escala')
+  assert.doesNotMatch(css, /cubic-bezier|\b\d+(\.\d+)?m?s\s+(ease|linear)/, 'curva ou tempo à mão')
+  assert.match(css, /prefers-reduced-motion: reduce/)
+  // o palco entrega a régua e a frase em partes; o lugar da frase mais comprida vem reservado
+  const palco = ler('app/components/nu/topo/NuReguaPalco.vue')
+  assert.match(palco, /<NuReguaRelogio v-if="reguaDoTempo" :regua="reguaDoTempo" :ponta="contagem\.ponta" :ativa="cena === 'contagem'" :vivo="contagem\.segundos" \/>/)
+  assert.match(palco, /<b class="nrp__valor">\{\{ contagem\.partes\[1\] \}\}<\/b>/)
+  assert.match(palco, /<span v-if="contagem\.hoje" class="nrp__fantasma" aria-hidden="true">/)
+  assert.doesNotMatch(palco, /nrp__linha|nrp__cheia|nrp__hora/)
 })

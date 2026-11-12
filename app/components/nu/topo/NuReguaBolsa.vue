@@ -401,7 +401,7 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
 /* o ticker dentro: só no pedaço que tem uns 62px (a largura real, pelo container) */
 /* o rótulo aparece e some em fade quando o pedaço passa dos 62px (a barra crescendo não estala) */
 .nrb__rotulo {
-  position: relative; display: block; opacity: 0; transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor); font-size: 12px; font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto);
+  position: relative; display: block; opacity: 0; transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto);
   line-height: 1; white-space: nowrap; pointer-events: none; user-select: none;
 }
 @container (min-width: 62px) { .nrb__rotulo { opacity: 1; } }
