@@ -115,7 +115,7 @@ const estiloRealce = computed(() => ({ width: `${realce.value.w}px`, transform: 
       </nav>
 
       <div class="nuh__dir">
-        <NuxtLink to="/busca" class="nuh__busca" aria-label="Buscar">
+        <NuxtLink to="/busca" class="nuh__busca" aria-label="Buscar ativo ou tese">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.2-3.2" /></svg>
           <span class="nuh__busca-texto">Buscar ativo ou tese</span>
         </NuxtLink>

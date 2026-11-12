@@ -50,7 +50,8 @@ const colunasDeNumero = computed(() => {
         </dl>
       </li>
     </ul>
-    <div class="ctc__scroll">
+    <!-- a tabela que rola de lado também rola pelo teclado (WCAG 2.1.1) -->
+    <div class="ctc__scroll" tabindex="0" role="region" :aria-label="`Tabela: ${columns.join(', ')}`">
       <table class="ctc__table">
         <thead>
           <tr><th v-for="(c, j) in columns" :key="c" :class="{ ctc__num: colunasDeNumero.has(j) }">{{ c }}</th></tr>

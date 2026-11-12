@@ -46,7 +46,7 @@
       <HomeChamada tom="escuro" porte="calmo" sem-apps class="hhv__chamada" />
     </div>
 
-    <NuxtLink to="/assinar?quiz=1&de=home-leque" class="hhv__palco" aria-label="Conectar a carteira e ver o teste dos 2.000 cenários">
+    <NuxtLink to="/assinar?quiz=1&de=home-leque" class="hhv__palco" aria-label="2.000 futuros testados para cada carteira: conectar a carteira e ver o teste">
       <div class="hhv__halo" aria-hidden="true" />
       <HomeLeque tom="carvao" class="hhv__leque" />
       <p class="hhv__pe">

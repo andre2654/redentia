@@ -72,6 +72,8 @@ export function usePageSeo(input: PageSeoInput) {
     ogDescription: input.description,
     ogUrl: canonical,
     ogImage: image,
+    // a imagem padrão tem tamanho conhecido: sem as dimensões, a prévia do WhatsApp e do LinkedIn às vezes não monta
+    ...(input.image ? {} : { ogImageWidth: 1200, ogImageHeight: 630, ogImageAlt: `${marca}: investir fica mais claro`, twitterImageAlt: `${marca}: investir fica mais claro` }),
     ogType: 'website',
     ogLocale: 'pt_BR',
     ogSiteName: marca,

@@ -95,6 +95,18 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
+    // Cabeçalhos de segurança em toda resposta (auditoria de produção, 12/11/2026). SÓ
+    // segurança: cache-control aqui vazaria para todas as rotas (a lição do PR #50).
+    // A CSP fica para depois (o GTM e o Clarity pedem uma lista própria).
+    '/**': {
+      headers: {
+        'x-frame-options': 'SAMEORIGIN',
+        'x-content-type-options': 'nosniff',
+        'referrer-policy': 'strict-origin-when-cross-origin',
+        'permissions-policy': 'camera=(), microphone=(), geolocation=()',
+        'strict-transport-security': 'max-age=31536000',
+      },
+    },
     // Proxies server-to-server (prod/Vercel).
     // O proxyRequest do h3 descarta o Accept do cliente. Estes headers vão
     // nas opções do proxy (vencem o mapa filtrado) e fazem o Laravel responder
