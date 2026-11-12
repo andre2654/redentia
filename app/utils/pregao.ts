@@ -87,6 +87,21 @@ export function proximoPregao(iso: string): string | null {
 }
 
 /**
+ * O pregão anterior a um dia ('2026-11-03' → '2026-10-30', porque 02/11 é
+ * Finados). null quando o caminho atravessa um ano sem o calendário da B3.
+ */
+export function pregaoAnterior(iso: string): string | null {
+  const d = new Date(`${iso.slice(0, 10)}T12:00:00Z`)
+  for (let i = 0; i < 15; i++) {
+    d.setUTCDate(d.getUTCDate() - 1)
+    const dia = d.toISOString().slice(0, 10)
+    if (!ANOS_COM_CALENDARIO.has(Number(dia.slice(0, 4)))) return null
+    if (!semPregao(dia)) return dia
+  }
+  return null
+}
+
+/**
  * Hora do fechamento. A B3 fecha às 17h enquanto os EUA estão no horário de
  * verão (do 2º domingo de março ao 1º domingo de novembro) e às 18h no resto
  * do ano, porque acompanha a abertura de Nova York.
@@ -136,4 +151,27 @@ export function quandoFoi(dataIso: string | null | undefined, now = new Date()):
     return semana === 6 || semana === 0 ? `no ${DIA_DA_SEMANA[semana]}` : `na ${DIA_DA_SEMANA[semana]}`
   }
   return `em ${d.slice(8, 10)}/${d.slice(5, 7)}`
+}
+
+/** Um instante do relógio de São Paulo (UTC−3: o Brasil não tem horário de verão desde 2019), em ms. */
+function emSP(iso: string, hora: number): number {
+  return Date.parse(`${iso.slice(0, 10)}T${String(hora).padStart(2, '0')}:00:00-03:00`)
+}
+
+/**
+ * Até a próxima abertura (a contagem da régua do topo, 12/11/2026): o dia da
+ * próxima abertura, a hora dela (10h de São Paulo) e o fechamento de antes,
+ * em ms. Antes das 10h de um dia de pregão é a de hoje; depois do fechamento,
+ * no fim de semana e no feriado, a do próximo pregão (Finados na segunda: a de
+ * terça). null com a bolsa aberta e quando o próximo pregão cai num ano que a
+ * B3 ainda não publicou: aí não há o que contar.
+ */
+export function janelaDaAbertura(now = new Date()): { dia: string; abreEm: number; fechouEm: number | null } | null {
+  const { estado } = estadoDoPregao(now)
+  if (estado === 'aberta') return null
+  const hoje = agoraEmSP(now).iso
+  const dia = estado === 'antes' ? hoje : proximoPregao(hoje)
+  if (!dia) return null
+  const antes = estado === 'fechada' ? hoje : pregaoAnterior(dia)
+  return { dia, abreEm: emSP(dia, 10), fechouEm: antes ? emSP(antes, horaDoFechamento(antes)) : null }
 }

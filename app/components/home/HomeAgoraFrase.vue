@@ -64,7 +64,7 @@
 //  - pesos, tracking, durações e curvas pelos tokens; o selo dos 2.000 futuros
 //    é o NuSelo azul sobre o escuro, como no herói do visitante.
 import type { CarteiraResumoVM } from '~/types/carteira'
-import { frasesDoDia } from '~/utils/diaDaCarteira'
+import { frasesDoDia, seloDoDia } from '~/utils/diaDaCarteira'
 import { estadoDoPregao } from '~/utils/pregao'
 import { avisosLiberados } from '~/utils/carteiraVisao'
 import { contraOCdi, dataDoCorte, rebase100, serieDesde, variacaoDoIndice } from '~/utils/rentabilidadeCarteira'
@@ -139,28 +139,14 @@ const apoioDoDia = computed(() => {
 // para a pessoa, rede, 5xx) o selo fica como era. A regra de quando o aviso já
 // pode aparecer é a mesma da carteira (avisosLiberados: só com a bolsa aberta
 // ou depois dela, nunca antes das 10h de um dia de pregão).
-const { token } = useAuthState()
-const avisoUrgente = ref(false)
-async function consultarAvisos() {
-  if (!token.value) return
-  try {
-    const v = await $fetch<{ avisos?: { urgente?: string | null; itens?: { id: string }[] } }>('/api/backend/me/carteira/visao', {
-      headers: { Accept: 'application/json', Authorization: `Bearer ${token.value}` },
-    })
-    const id = v.avisos?.urgente
-    avisoUrgente.value = !!id && !!v.avisos?.itens?.some((a) => a.id === id)
-  } catch { /* a home segue com o selo do dia */ }
-}
-watch(() => comCarteira.value && podeVerNumeros.value, (pode) => { if (pode && import.meta.client) void consultarAvisos() }, { immediate: true })
-const avisoDoMotor = computed(() => avisoUrgente.value && !!estado.value && avisosLiberados(estado.value))
+// A consulta mora no useAvisoDaCarteira desde 12/11/2026: a régua do topo diz o
+// mesmo selo ("Sua carteira +0,11% · pede atenção") e as duas leem uma resposta só.
+const aviso = useAvisoDaCarteira()
+watch(() => comCarteira.value && podeVerNumeros.value, (pode) => { if (pode && import.meta.client) void aviso.consultar() }, { immediate: true })
+const avisoDoMotor = computed(() => aviso.urgente.value && !!estado.value && avisosLiberados(estado.value))
 
-/** o estado ao lado do nome: 'Tudo normal' no dia comum, 'Pede atenção' no alerta do dia ou no aviso urgente do motor; em dia de movimento forte, só a data */
-const selo = computed(() => {
-  const f = frases.value
-  if (!f) return null
-  if (dia.value?.alerta || avisoDoMotor.value) return { texto: 'Pede atenção', tom: 'ambar' as const }
-  return f.titulo === 'Tudo normal.' ? { texto: 'Tudo normal', tom: 'verde' as const } : null
-})
+/** o estado ao lado do nome: 'Tudo normal' no dia comum, 'Pede atenção' no alerta do dia ou no aviso urgente do motor; em dia de movimento forte, só a data (seloDoDia, a mesma regra da régua) */
+const selo = computed(() => seloDoDia(frases.value, !!dia.value?.alerta, avisoDoMotor.value))
 
 const ESCONDIDO = 'R$ ••••••'
 const fatos = computed(() => {

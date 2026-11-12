@@ -123,3 +123,29 @@ export function mercadoDoTopo(now: Date, asOf: string | null | undefined): Merca
   }
   return { estado, rotulo, referencia }
 }
+
+/* ——— o momento do dado (a régua do mercado, 12/11/2026) ——— */
+
+export const NOTA_DO_ATRASO = 'Cotações da B3 com 15 min de atraso.'
+
+/**
+ * De quando é o dado da régua (utils/reguaDaBolsa.ts), com o mesmo relógio da
+ * referência acima: `aoVivo` só com a bolsa aberta E o dado de hoje; `quando`
+ * é o "hoje" / "ontem" / "na sexta" / "em 28/10" do pregão do dado; e a `nota`
+ * é o aviso que saiu da linha da régua (12/11/2026, o dono) e mora no pé da
+ * dica e no fim do aria-label: o pregão em curso tem o atraso de 15 minutos da
+ * B3, um fechamento diz a data ("Fechamento de sexta, 06/11."). Sem data, o
+ * aviso de atraso, que nunca mente.
+ */
+export function momentoDoDado(data: string | null | undefined, estado: EstadoDoTopo, now = new Date()): { aoVivo: boolean; quando: string | null; nota: string } {
+  const d = data && /^\d{4}-\d{2}-\d{2}/.test(data) ? data.slice(0, 10) : null
+  if (!d) return { aoVivo: false, quando: null, nota: NOTA_DO_ATRASO }
+  const quando = quandoFoi(d, now)
+  const aoVivo = estado === 'aberta' && quando === 'hoje'
+  let nota: string
+  if (aoVivo) nota = NOTA_DO_ATRASO
+  else if (quando === 'hoje') nota = 'Fechamento de hoje.'
+  else if (quando === 'ontem') nota = 'Fechamento de ontem.'
+  else nota = `Fechamento de ${DIA[new Date(`${d}T12:00:00Z`).getUTCDay()]}, ${d.slice(8, 10)}/${d.slice(5, 7)}.`
+  return { aoVivo, quando, nota }
+}

@@ -349,6 +349,21 @@ export function frasesDoDia(r: ResumoDoDia, estado: EstadoDoPregao, agora = new 
   return { ...base, sobrelinha, sobrelinhaTom, titulo, veredito, apoio: causa ? `${causa} ${fecho}` : fecho }
 }
 
+/** O selo do dia: o estado ao lado do nome na home e o fim da régua do topo ("Sua carteira +0,11% · tudo normal"). */
+export interface SeloDoDia { texto: 'Tudo normal' | 'Pede atenção'; tom: 'verde' | 'ambar' }
+
+/**
+ * A regra do selo, numa fonte só (saiu do HomeAgoraFrase em 12/11/2026, quando a
+ * régua do topo passou a dizer o mesmo): 'Pede atenção' no alerta do dia (um
+ * papel seu que caiu 5% ou mais) ou no aviso urgente do motor; 'Tudo normal' no
+ * dia comum; null no dia de movimento forte, que fica só com a data.
+ */
+export function seloDoDia(f: Pick<FrasesDoDia, 'titulo'> | null, alerta: boolean, avisoDoMotor: boolean): SeloDoDia | null {
+  if (!f) return null
+  if (alerta || avisoDoMotor) return { texto: 'Pede atenção', tom: 'ambar' }
+  return f.titulo === 'Tudo normal.' ? { texto: 'Tudo normal', tom: 'verde' } : null
+}
+
 /**
  * O texto do provento ao lado do losango ("provento · …"). O R$ só aparece com
  * os valores à vista (o olho da faixa, useValoresVisiveis); escondido, diz só

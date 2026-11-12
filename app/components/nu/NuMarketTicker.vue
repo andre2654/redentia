@@ -16,7 +16,91 @@
 // wordmark do topo e o título da página na mesma linha vertical; o número que
 // chega troca o esqueleto num fade (--nu-dur-media), sem pulo; o resto em token.
 // O deslizar do top segue o tempo do encolher do topo (.32s, o mesmo do NuHeader).
-const { itens, loading, mercado } = useMercadoDoTopo()
+// A BOLSA INTEIRA NUMA LINHA (12/11/2026, pedido do dono: "melhorar esse trem
+// aqui pra algo mais útil", depois "mais criativos ainda"): no lugar das
+// cotações, a barra das ações do Ibovespa (NuReguaBolsa, a opção 1 do esboço).
+// Os estados, na ordem:
+//  - o esqueleto no SSR e até o dado chegar (a régua acende no cliente: o
+//    payload de cada página não carrega a bolsa do dia, e o estado do pregão
+//    depende do relógio, como sempre dependeu);
+//  - com as ações (useReguaDaBolsa → /api/bolsa-do-dia), o palco (NuReguaPalco):
+//    a barra das ações e, conforme o momento da bolsa, a contagem para a
+//    abertura ou a frase do fechamento, trocando a cada ~60 s (o aviso de
+//    atraso da B3 saiu da linha em 12/11/2026, a pedido do dono: está na dica de
+//    cada pedaço e no fim do aria-label da barra);
+//  - sem as ações, a régua de antes, com as cotações (useMercadoDoTopo);
+//  - sem nada, a régua não é desenhada.
+// O /assinar segue com a variante de vendas (VENDAS), sem mudança.
+import { FERIADOS_B3, agoraEmSP, proximoPregao, semPregao } from '~/utils/pregao'
+import { mercadoDoTopo } from '~/utils/topo'
+import type { CenaDaRegua } from '~/utils/reguaDaBolsa'
+
+const { itens, loading, mercado, agora } = useMercadoDoTopo()
+const { bolsa, estado: estadoDaBolsa, carregar: carregarBolsa, manterAoVivo } = useReguaDaBolsa()
+const montado = ref(false)
+
+// Só no dev, para fotografar os estados (no padrão do ?folha-estado=):
+// ?regua-estado=pre|aberta|fechada|feriado põe o relógio da régua às 9h, 14h ou
+// 19h do pregão de hoje (ou num feriado da B3), e em aberta/fechada o dado passa
+// a ser de hoje ("sobe agora", "subiu hoje"); ?regua-agora=2026-11-12T09:12 para o
+// relógio nessa hora de São Paulo (o dado segue o de verdade); ?regua-cena=
+// contagem|fechamento|barra deixa o palco parado nessa cena. Com o relógio
+// forçado, ele não anda. `import.meta.dev` é falso no build.
+const consulta = import.meta.dev ? useRoute().query : {}
+const forcado = import.meta.dev ? String(consulta['regua-estado'] ?? '') : ''
+const agoraFixo = (() => {
+  const v = import.meta.dev ? String(consulta['regua-agora'] ?? '') : ''
+  const m = v.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/)
+  return m ? new Date(`${m[1]}T${m[2]}:${m[3]}:${m[4] ?? '00'}-03:00`) : null
+})()
+const cenaFixa = (() => {
+  const v = import.meta.dev ? String(consulta['regua-cena'] ?? '') : ''
+  return (['contagem', 'fechamento', 'barra'] as const).find((c) => c === v) ?? null
+})() as CenaDaRegua | null
+const congelado = !!agoraFixo || !!forcado
+function agoraForcado(modo: string): { agora: Date; dataDeHoje: boolean } | null {
+  const hoje = agoraEmSP().iso
+  const dia = semPregao(hoje) ? (proximoPregao(hoje) ?? hoje) : hoje
+  const hora = ({ pre: '09:00', aberta: '14:00', fechada: '19:00' } as Record<string, string>)[modo]
+  if (hora) return { agora: new Date(`${dia}T${hora}:00-03:00`), dataDeHoje: modo !== 'pre' }
+  if (modo === 'feriado') {
+    const f = Object.keys(FERIADOS_B3).find((d) => d >= hoje && new Date(`${d}T12:00:00Z`).getUTCDay() % 6 !== 0)
+    return f ? { agora: new Date(`${f}T12:00:00-03:00`), dataDeHoje: false } : null
+  }
+  return null
+}
+const relogio = computed(() => {
+  if (!agora.value) return null
+  if (agoraFixo) return { agora: agoraFixo, dataDeHoje: false }
+  const f = forcado ? agoraForcado(forcado) : null
+  return f ?? { agora: agora.value, dataDeHoje: false }
+})
+const dataDaBolsa = computed(() => {
+  const d = bolsa.value?.ibov?.data ?? null
+  const r = relogio.value
+  return d && r?.dataDeHoje ? agoraEmSP(r.agora).iso : d
+})
+const mercadoDaRegua = computed(() => (relogio.value ? mercadoDoTopo(relogio.value.agora, dataDaBolsa.value) : null))
+
+const modo = computed<'esqueleto' | 'mapa' | 'cotacoes' | 'nada'>(() => {
+  if (!montado.value) return 'esqueleto'
+  if (estadoDaBolsa.value === 'pronto' && bolsa.value?.acoes.length && bolsa.value.ibov && mercadoDaRegua.value) return 'mapa'
+  if (estadoDaBolsa.value === 'parado' || estadoDaBolsa.value === 'carregando' || loading.value) return 'esqueleto'
+  return itens.value.length ? 'cotacoes' : 'nada'
+})
+
+let pararAoVivo: () => void = () => {}
+onMounted(() => {
+  montado.value = true
+  void carregarBolsa()
+  // ao vivo com a bolsa aberta, e depois do fechamento até o fechamento de hoje chegar (a frase do fechamento espera por ele)
+  pararAoVivo = manterAoVivo(() => {
+    const e = mercadoDaRegua.value?.estado
+    const hoje = relogio.value ? agoraEmSP(relogio.value.agora).iso : null
+    return e === 'aberta' || (e === 'fechada' && !!hoje && dataDaBolsa.value !== hoje)
+  })
+})
+onBeforeUnmount(() => pararAoVivo())
 
 // No /assinar (pedido do dono, 31/10/2026: "algo que ajude a vender"), a
 // faixa troca as cotações pelo que a pessoa ganha ao conectar, girando do
@@ -59,8 +143,6 @@ onBeforeUnmount(() => {
   document.documentElement.style.removeProperty('--nut-h')
 })
 
-// larguras variadas pros bares do esqueleto (parece a régua de cotações)
-const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
 </script>
 
 <template>
@@ -86,10 +168,20 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
       </button>
     </div>
   </div>
-  <div v-else-if="loading || itens.length" ref="regua" class="nut-wrap nut-regua">
-    <div v-if="loading" class="nut-regua__sk" aria-hidden="true">
-      <NuSkeleton v-for="(w, i) in SK_WIDTHS" :key="i" variant="line" :width="`${w}px`" height="12px" radius="pill" />
+  <div v-else-if="modo !== 'nada'" ref="regua" class="nut-wrap nut-regua" :class="`nut-regua--${modo}`">
+    <!-- o esqueleto tem a forma da barra: o estado, o fio, a barra e o número -->
+    <div v-if="modo === 'esqueleto'" class="nut-regua__sk" aria-hidden="true">
+      <NuSkeleton variant="line" width="92px" height="12px" radius="pill" class="nut-regua__sk-estado" />
+      <span class="nut-regua__sk-fio" />
+      <NuSkeleton variant="block" height="18px" radius="var(--nu-r-tag-p)" class="nut-regua__sk-barra" />
+      <NuSkeleton variant="line" width="180px" height="12px" radius="pill" class="nut-regua__sk-leg" />
     </div>
+    <!-- a bolsa inteira numa linha: o palco, com a barra e as outras cenas do momento -->
+    <NuReguaPalco
+      v-else-if="modo === 'mapa'" :bolsa="bolsa!" :data="dataDaBolsa" :mercado="mercadoDaRegua!" :agora="relogio!.agora"
+      :cena-fixa="cenaFixa" :congelado="congelado"
+    />
+    <!-- sem as ações: a régua de antes, com as cotações (e o aviso de atraso da B3 na linha, porque aqui não há dica) -->
     <template v-else>
       <NuTopoEstado :mercado="mercado" curto class="nut-regua__estado" />
       <NuTopoCotacoes :itens="itens" separador class="nut-regua__cot" />
@@ -137,29 +229,42 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
   .nut__track { animation: none; }
 }
 
-/* ——— a régua do mercado ——— */
+/* ——— a régua do mercado ———
+   44px (12/11/2026, a barra das ações: 40px quando eram só cotações); no
+   celular 36. A altura vai para --nut-h (acima). */
 .nut-regua {
-  display: flex; align-items: center; gap: 24px; height: 40px; padding: 0 var(--nu-coluna);
+  display: flex; align-items: center; gap: 24px; height: 44px; padding: 0 var(--nu-coluna);
   font-size: var(--nu-fs-dense);
 }
 /* o número que chega: troca o esqueleto num fade, no mesmo lugar */
-.nut-regua__estado, .nut-regua__cot, .nut-regua__nota { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
-.nut-regua__sk { display: flex; align-items: center; gap: 28px; overflow: hidden; }
+.nut-regua__estado, .nut-regua__cot, .nut-regua--cotacoes .nut-regua__nota { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
+/* o esqueleto da barra: as mesmas medidas da NuReguaBolsa (gap 16, fio de 16, barra de 18) */
+.nut-regua--esqueleto { gap: 16px; }
+.nut-regua__sk { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 16px; overflow: hidden; }
+.nut-regua__sk-estado, .nut-regua__sk-leg { flex: none; }
+.nut-regua__sk-fio { flex: none; width: 1px; height: 16px; background: var(--nu-line-2); }
+.nut-regua__sk-barra { flex: 1 1 auto; min-width: 48px; }
 .nut-regua__estado { flex-shrink: 0; padding-right: 24px; border-right: 1px solid var(--nu-line-2); height: 16px; }
 .nut-regua__cot { flex: 1 1 0; --ntc-gap: 28px; }
 .nut-regua__relogio { display: none; margin-right: 3px; vertical-align: -1px; }
 .nut-regua__nota { flex-shrink: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); white-space: nowrap; font-variant-numeric: tabular-nums; }
 @media (max-width: 1100px) { .nut-regua__ref { display: none; } }
-/* celular: a régua mais leve, 30px, em tipo de etiqueta */
+@media (max-width: 1023px) { .nut-regua--esqueleto, .nut-regua__sk { gap: 12px; } }
+/* celular: a régua mais leve, em tipo de etiqueta (36px com a barra de 14; 30 com as cotações) */
 @media (max-width: 640px) {
   .nut-regua { height: 30px; gap: 12px; padding: 0 var(--nu-coluna); font-size: var(--nu-fs-xs); }
-  .nut-regua__sk { gap: 18px; }
+  .nut-regua--mapa, .nut-regua--esqueleto { height: 36px; }
+  .nut-regua--esqueleto, .nut-regua__sk { gap: 10px; }
+  .nut-regua__sk-estado { width: 34px !important; }
+  .nut-regua__sk-fio { display: none; }
+  .nut-regua__sk-barra { height: 14px !important; min-width: 40px; }
+  .nut-regua__sk-leg { width: 58px !important; }
   .nut-regua__estado { padding-right: 12px; height: 12px; }
   .nut-regua__cot { --ntc-gap: 16px; --ntc-h: 18px; }
   .nut-regua__b3 { display: none; }
   .nut-regua__relogio { display: inline-block; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .nut-regua__estado, .nut-regua__cot, .nut-regua__nota { animation: none; }
+  .nut-regua__estado, .nut-regua__cot, .nut-regua--cotacoes .nut-regua__nota { animation: none; }
 }
 </style>

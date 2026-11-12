@@ -1,0 +1,387 @@
+/**
+ * A régua do mercado, "a bolsa inteira numa linha" (12/11/2026). O fixture é a
+ * resposta real do /api/bolsa-do-dia (o fechamento de sexta, 06/11/2026:
+ * Ibovespa 168.498, +1,39%, as 76 ações do índice). Os casos travam a barra (a
+ * ordem, a largura, a cor, o rótulo, a dica), o número da direita em cada
+ * momento do relógio da B3, o que o leitor de tela ouve, a frase de quem assina
+ * (o selo da home, numa regra só), a tinta do ticker contra a paleta do
+ * tokens.css e o que o componente promete: um elemento só, sem link, sem hex.
+ */
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import {
+  BARRA_MAIS_LARGA, DURACAO_DA_CENA, LARGURA_DO_ROTULO, TEXTOS_DA_BARRA, TINTA_CLARA_DESDE, cenasDaRegua, contagemDaRegua, estadoCurto,
+  fatiaArredondada, fatiaQueSubiu, fechamentoDaRegua, forcaDaCor, legendaDaCarteira, legendaDaRegua as legendaComMomento, pedacoNaPosicao,
+  pedacosDaRegua, pontosDoPapel, rotuloDaBarra, tintaDoPedaco, type AcaoDoIndice,
+} from '../app/utils/reguaDaBolsa.ts'
+import { NOTA_DO_ATRASO, momentoDoDado } from '../app/utils/topo.ts'
+import { estadoDoPregao, janelaDaAbertura, pregaoAnterior } from '../app/utils/pregao.ts'
+import { frasesDoDia, montarResumoDoDia, seloDoDia } from '../app/utils/diaDaCarteira.ts'
+
+const ler = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8')
+const fixture = JSON.parse(ler('tests/fixtures/bolsa-do-dia-2026-11-06.json')) as { ibov: { data: string; pct: number }; acoes: AcaoDoIndice[] }
+const pedacos = pedacosDaRegua(fixture.acoes)
+const de = (t: string) => pedacos.find((p) => p.ticker === t)!
+const quintaCedo = new Date('2026-11-12T08:57:00-03:00')
+/** o número da direita com o momento do dado (utils/topo.ts), como o componente monta */
+const legendaDaRegua = (p: typeof pedacos, data: string | null, estado: Parameters<typeof momentoDoDado>[1], agora: Date) => legendaComMomento(p, momentoDoDado(data, estado, agora))
+const sp = (iso: string) => new Date(`${iso}-03:00`)
+
+test('a barra vai da que mais caiu à que mais subiu, com a largura do peso no índice', () => {
+  assert.equal(fixture.ibov.data, '2026-11-06')
+  assert.equal(pedacos.length, 76)
+  assert.equal(pedacos[0]!.ticker, 'NATU3') // −3,36%, a que mais caiu
+  assert.equal(pedacos[75]!.ticker, 'CSAN3') // +10,8%, a que mais subiu
+  for (let i = 1; i < pedacos.length; i++) assert.ok(pedacos[i - 1]!.pct <= pedacos[i]!.pct, `ordem em ${i}`)
+  const soma = pedacos.reduce((s, p) => s + p.largura, 0)
+  assert.ok(Math.abs(soma - 100) < 1e-9, `soma ${soma}`)
+  assert.equal(pedacos[0]!.inicio, 0)
+  for (let i = 1; i < pedacos.length; i++) assert.ok(Math.abs(pedacos[i]!.inicio - (pedacos[i - 1]!.inicio + pedacos[i - 1]!.largura)) < 1e-9)
+  // os pesos do dado fecham em 100: a largura é o próprio peso
+  assert.ok(Math.abs(de('VALE3').largura - 9.934) < 0.001)
+  // ticker repetido, sem peso ou sem variação fica de fora; sem ação, nada
+  assert.equal(pedacosDaRegua([...fixture.acoes, fixture.acoes[0]!, { ticker: 'XPTO3', empresa: 'X', pct: Number.NaN, peso: 1, pontos: 0 }]).length, 76)
+  assert.deepEqual(pedacosDaRegua([]), [])
+  assert.deepEqual(pedacosDaRegua(null), [])
+})
+
+test('a cor: areia no zero, a força pela raiz de |pct|/5 e o teto em 5%, tudo em token', () => {
+  assert.equal(de('ABEV3').lado, 'zero') // 0%
+  assert.equal(de('VBBR3').lado, 'zero') // −0,035%: a dica diz "0,0%", a cor também
+  assert.equal(de('ABEV3').fundo, 'var(--nu-mapa-zero)')
+  assert.equal(de('VALE3').lado, 'alta')
+  assert.equal(de('VALE3').fundo, 'color-mix(in oklab, var(--nu-mapa-alta) 66.1%, var(--nu-mapa-alta-claro))') // √(2,1861/5)
+  assert.equal(de('PETR4').fundo, 'color-mix(in oklab, var(--nu-mapa-queda) 50.7%, var(--nu-mapa-queda-claro))') // √(1,284/5)
+  assert.equal(de('CSAN3').forca, 1) // +10,8%: passou do teto
+  assert.equal(forcaDaCor(5), 1)
+  assert.equal(forcaDaCor(-7), 1)
+  assert.equal(forcaDaCor(0.04), 0)
+  for (const p of pedacos) assert.match(p.fundo, /^(var\(--nu-mapa-zero\)|color-mix\(in oklab, var\(--nu-mapa-(alta|queda)\) [\d.]+%, var\(--nu-mapa-(alta|queda)-claro\)\))$/, p.ticker)
+})
+
+test('o ticker vai dentro só dos pedaços largos (uns 62px na barra mais larga)', () => {
+  assert.equal(LARGURA_DO_ROTULO, 62)
+  // a barra mais larga é a coluna toda (1240), depois que os textos dos lados somem: cabe a PETR3 também
+  assert.equal(BARRA_MAIS_LARGA, 1240)
+  assert.deepEqual(pedacos.filter((p) => p.rotulo).map((p) => p.ticker), ['PETR4', 'PETR3', 'ITUB4', 'VALE3'])
+  // numa barra estreita, ninguém (o CSS ainda confere a largura real de cada pedaço)
+  assert.deepEqual(pedacosDaRegua(fixture.acoes, { larguraMaxima: 400 }).filter((p) => p.rotulo), [])
+})
+
+test('a dica: o nome, o ticker e a variação; o peso no índice e os pontos que somou ou tirou', () => {
+  assert.deepEqual(
+    { titulo: de('VALE3').dica.titulo, pct: de('VALE3').dica.pct, tom: de('VALE3').dica.tom, linha: de('VALE3').dica.linha },
+    { titulo: 'Vale · VALE3', pct: '+2,2%', tom: 'up', linha: '9,9% do Ibovespa · somou 360 pontos' }, // 360,9: truncado, como a home escreve a causa
+  )
+  assert.equal(de('PETR4').dica.titulo, 'Petrobras · PETR4')
+  assert.equal(de('PETR4').dica.pct, '−1,3%')
+  assert.equal(de('PETR4').dica.linha, '8,7% do Ibovespa · tirou 185 pontos')
+  assert.equal(de('ABEV3').dica.pct, '0,0%')
+  assert.equal(de('ABEV3').dica.tom, 'flat')
+  assert.equal(de('ABEV3').dica.linha, '2,7% do Ibovespa · não mexeu no índice')
+  assert.equal(de('VBBR3').dica.linha, '1,5% do Ibovespa · tirou menos de 1 ponto')
+  assert.equal(de('BEEF3').dica.linha, 'menos de 0,1% do Ibovespa · somou 2 pontos') // peso 0,049
+  assert.equal(de('VALE3').dica.falada, 'Vale, VALE3, mais 2,2%. 9,9% do Ibovespa; somou 360 pontos.')
+  // com a bolsa aberta, no presente
+  const vivo = pedacosDaRegua(fixture.acoes, { aoVivo: true }).find((p) => p.ticker === 'VALE3')!
+  assert.equal(vivo.dica.linha, '9,9% do Ibovespa · soma 360 pontos')
+  assert.equal(pontosDoPapel(-1.2, true), 'tira 1 ponto')
+  assert.equal(pontosDoPapel(0, true), 'não mexe no índice')
+})
+
+test('a fatia do índice que subiu é o verde da barra, e o arredondamento não apaga quem ficou de fora', () => {
+  assert.ok(Math.abs(fatiaQueSubiu(pedacos) - 71.317) < 0.01)
+  assert.equal(fatiaArredondada(fatiaQueSubiu(pedacos)), 71)
+  assert.equal(fatiaArredondada(0.3), 1)
+  assert.equal(fatiaArredondada(99.6), 99)
+  assert.equal(fatiaArredondada(0), 0)
+  assert.equal(fatiaArredondada(100), 100)
+})
+
+test('o número da direita em cada momento do relógio da B3', () => {
+  // quinta antes das 10h, com o fechamento de sexta (06/11)
+  const antes = legendaDaRegua(pedacos, '2026-11-06', 'antes', quintaCedo)!
+  assert.deepEqual({ ...antes, resumo: undefined }, { numero: '71%', longo: 'do índice subiu na sexta', medio: 'subiu na sexta', curto: 'subiu', aoVivo: false, resumo: undefined, nota: 'Fechamento de sexta, 06/11.' })
+  // bolsa aberta com o dado de hoje: o presente
+  const vivo = legendaDaRegua(pedacos, '2026-11-12', 'aberta', new Date('2026-11-12T14:00:00-03:00'))!
+  assert.deepEqual([vivo.longo, vivo.medio, vivo.curto, vivo.aoVivo], ['do índice sobe agora', 'sobe agora', 'sobe', true])
+  // bolsa aberta, mas o dado ainda é o de ontem: não finge que é agora
+  assert.equal(legendaDaRegua(pedacos, '2026-11-11', 'aberta', new Date('2026-11-12T10:05:00-03:00'))!.longo, 'do índice subiu ontem')
+  // fechou hoje
+  assert.equal(legendaDaRegua(pedacos, '2026-11-12', 'fechada', new Date('2026-11-12T19:00:00-03:00'))!.longo, 'do índice subiu hoje')
+  // dado velho: a data
+  assert.equal(legendaDaRegua(pedacos, '2026-10-30', 'antes', quintaCedo)!.medio, 'subiu em 30/10')
+  assert.equal(legendaDaRegua([], '2026-11-06', 'antes', quintaCedo), null)
+})
+
+test('o leitor de tela ouve o resumo da barra, não 76 pedaços, e no fim de quando é o dado', () => {
+  const antes = legendaDaRegua(pedacos, '2026-11-06', 'antes', quintaCedo)!
+  assert.equal(
+    rotuloDaBarra(antes),
+    '71% do Ibovespa subiu na sexta. Mais subiram: Cosan +10,8%, C&A Modas +9,0% e CSN +8,9%; mais caíram: Natura −3,4%, Ultrapar −2,7% e Caixa Seguridade −2,1%. Fechamento de sexta, 06/11.',
+  )
+  // quem assina ouve quantas são suas; o aviso de atraso fica sempre no fim
+  assert.match(rotuloDaBarra(antes, 9), /Caixa Seguridade −2,1%\. Você tem 9 delas\. Fechamento de sexta, 06\/11\.$/)
+  assert.match(rotuloDaBarra(antes, 1), / Você tem uma delas\. /)
+  const vivo = legendaDaRegua(pedacos, '2026-11-12', 'aberta', new Date('2026-11-12T14:00:00-03:00'))!
+  assert.match(rotuloDaBarra(vivo), /^71% do Ibovespa sobe agora\. Mais sobem: Cosan \+10,8%.*; mais caem: Natura −3,4%.* Cotações da B3 com 15 min de atraso\.$/)
+})
+
+test('o aviso de atraso da B3 saiu da linha e mora na dica: o atraso ao vivo, a data no fechamento', () => {
+  const nota = (d: string | null, e: Parameters<typeof momentoDoDado>[1], a: Date) => momentoDoDado(d, e, a).nota
+  assert.equal(NOTA_DO_ATRASO, 'Cotações da B3 com 15 min de atraso.')
+  assert.equal(nota('2026-11-12', 'aberta', sp('2026-11-12T14:00')), NOTA_DO_ATRASO)
+  assert.equal(nota('2026-11-06', 'antes', quintaCedo), 'Fechamento de sexta, 06/11.')
+  assert.equal(nota('2026-11-12', 'fechada', sp('2026-11-12T19:00')), 'Fechamento de hoje.')
+  // a bolsa abriu, mas o dado ainda é o fechamento de ontem: é fechamento, sem atraso (e não é ao vivo)
+  assert.deepEqual(momentoDoDado('2026-11-11', 'aberta', sp('2026-11-12T10:05')), { aoVivo: false, quando: 'ontem', nota: 'Fechamento de ontem.' })
+  assert.equal(nota('2026-11-06', 'sem-pregao', sp('2026-11-20T12:00')), 'Fechamento de sexta, 06/11.')
+  assert.equal(nota(null, 'aberta', quintaCedo), NOTA_DO_ATRASO)
+  assert.equal(legendaDaRegua(pedacos, '2026-11-12', 'aberta', sp('2026-11-12T14:00'))!.nota, NOTA_DO_ATRASO)
+})
+
+/* ————— o palco: as cenas de cada momento, a contagem e o fechamento ————— */
+
+test('as cenas de cada momento da bolsa, na ordem em que entram', () => {
+  assert.equal(DURACAO_DA_CENA, 60_000)
+  assert.equal(TEXTOS_DA_BARRA, 15_000)
+  const tem = { contagem: true, fechamento: true }
+  assert.deepEqual(cenasDaRegua('antes', tem), ['contagem', 'barra'])
+  assert.deepEqual(cenasDaRegua('aberta', tem), ['barra']) // ao vivo, sem troca
+  assert.deepEqual(cenasDaRegua('fechada', tem), ['fechamento', 'barra'])
+  assert.deepEqual(cenasDaRegua('sem-pregao', tem), ['barra', 'contagem'])
+  // sem a frase de hoje (o dado ainda é de ontem) ou sem calendário, a cena não entra
+  assert.deepEqual(cenasDaRegua('fechada', { contagem: true, fechamento: false }), ['barra'])
+  assert.deepEqual(cenasDaRegua('sem-pregao', { contagem: false, fechamento: false }), ['barra'])
+})
+
+test('antes das 10h num dia útil: a contagem de minuto em minuto e a linha desde o fechamento de ontem', () => {
+  const agora = sp('2026-11-12T08:48')
+  assert.equal(estadoDoPregao(agora).estado, 'antes')
+  const j = janelaDaAbertura(agora)!
+  assert.equal(j.dia, '2026-11-12')
+  assert.equal(j.abreEm, Date.parse('2026-11-12T10:00:00-03:00'))
+  assert.equal(j.fechouEm, Date.parse('2026-11-11T18:00:00-03:00')) // depois do horário de verão dos EUA, fecha às 18h
+  const c = contagemDaRegua(j, agora.getTime(), '2026-11-12')
+  assert.deepEqual({ ...c, progresso: Math.round(c.progresso! * 1000) / 1000 }, { longo: 'A bolsa abre em 1h12min', curto: 'Abre em 1h12', segundos: false, progresso: 0.925, hora: '10h00' })
+  // arredonda o minuto para cima: às 8h48m30s ainda faltam "1h12min"
+  assert.equal(contagemDaRegua(j, sp('2026-11-12T08:48:30').getTime(), '2026-11-12').longo, 'A bolsa abre em 1h12min')
+  assert.equal(contagemDaRegua(j, sp('2026-11-12T09:15').getTime(), '2026-11-12').longo, 'A bolsa abre em 45min')
+  assert.equal(contagemDaRegua(j, sp('2026-11-12T09:05').getTime(), '2026-11-12').curto, 'Abre em 55min')
+})
+
+test('os últimos 10 minutos andam de segundo em segundo', () => {
+  const j = janelaDaAbertura(sp('2026-11-12T09:55:28'))!
+  const c = contagemDaRegua(j, sp('2026-11-12T09:55:28').getTime(), '2026-11-12')
+  assert.deepEqual([c.longo, c.curto, c.segundos], ['A bolsa abre em 4min32s', 'Abre em 4m32s', true])
+  assert.equal(contagemDaRegua(j, sp('2026-11-12T09:59:01').getTime(), '2026-11-12').longo, 'A bolsa abre em 59s')
+  assert.equal(contagemDaRegua(j, sp('2026-11-12T09:50:00').getTime(), '2026-11-12').longo, 'A bolsa abre em 10min') // ainda de minuto
+  assert.equal(contagemDaRegua(j, sp('2026-11-12T09:50:05').getTime(), '2026-11-12').longo, 'A bolsa abre em 9min55s')
+  assert.equal(contagemDaRegua(j, sp('2026-11-12T10:00').getTime(), '2026-11-12').longo, 'A bolsa abre agora')
+})
+
+test('sexta à noite: o fechamento de hoje e a barra; sem contagem', () => {
+  const agora = sp('2026-11-06T19:00')
+  assert.equal(estadoDoPregao(agora).estado, 'fechada')
+  const f = fechamentoDaRegua(fixture as never, '2026-11-06')!
+  assert.equal(`${f.antes} ${f.pct}${f.conta}${f.fato}`, 'A bolsa fechou: Ibovespa +1,39% · 59 de 76 subiram · o melhor dia do mês') // +1,39% é o maior dos 4 pregões de novembro
+  assert.deepEqual([f.tom, f.curto], ['up', 'Fechou'])
+  // a janela já aponta para segunda (a contagem não entra depois do fechamento, mas a conta existe)
+  assert.equal(janelaDaAbertura(agora)!.dia, '2026-11-09')
+  // o fechamento é só o de hoje: no dia seguinte, ou com o dado de ontem, nada de frase
+  assert.equal(fechamentoDaRegua(fixture as never, '2026-11-07'), null)
+  // a sequência vence o mês, como o título da home (3 ou mais)
+  const seguidas = { ...fixture, seguidas: { n: 3, sentido: 'alta', ate: '2026-11-06' } }
+  assert.equal(fechamentoDaRegua(seguidas as never, '2026-11-06')!.fato, ' · a 3ª alta seguida')
+  // sem a contagem do /market/today, as próprias ações contam; mês sem confiança, sem o fato do mês
+  const semContagem = { ...fixture, contagem: null, mes: { ...(fixture as { mes: object }).mes, confiavel: false } }
+  const g = fechamentoDaRegua(semContagem as never, '2026-11-06')!
+  assert.deepEqual([g.conta, g.fato], [' · 59 de 76 subiram', ''])
+})
+
+test('sábado: a barra do último pregão e a contagem para segunda', () => {
+  const agora = sp('2026-11-07T12:00')
+  assert.equal(estadoDoPregao(agora).estado, 'sem-pregao')
+  const j = janelaDaAbertura(agora)!
+  assert.equal(j.dia, '2026-11-09')
+  assert.equal(j.fechouEm, Date.parse('2026-11-06T18:00:00-03:00'))
+  const c = contagemDaRegua(j, agora.getTime(), '2026-11-07')
+  assert.deepEqual([c.longo, c.curto, c.segundos], ['A bolsa abre na segunda, às 10h', 'Abre segunda, 10h', false])
+  assert.equal(Math.round(c.progresso! * 100), 28) // 18h de 64h
+  // domingo: amanhã
+  assert.equal(contagemDaRegua(janelaDaAbertura(sp('2026-11-08T20:00'))!, sp('2026-11-08T20:00').getTime(), '2026-11-08').longo, 'A bolsa abre amanhã, às 10h')
+})
+
+test('véspera de feriado e o feriado: a próxima abertura pula a Consciência Negra', () => {
+  // quinta, 19/11, depois do fechamento: a próxima abertura é segunda, 23/11 (20/11 é feriado)
+  const vespera = sp('2026-11-19T19:00')
+  assert.equal(estadoDoPregao(vespera).estado, 'fechada')
+  assert.equal(janelaDaAbertura(vespera)!.dia, '2026-11-23')
+  // sexta, 20/11, o feriado: barra e contagem, desde o fechamento de quinta
+  const feriado = sp('2026-11-20T12:00')
+  assert.equal(estadoDoPregao(feriado).estado, 'sem-pregao')
+  const j = janelaDaAbertura(feriado)!
+  assert.deepEqual([j.dia, j.fechouEm], ['2026-11-23', Date.parse('2026-11-19T18:00:00-03:00')])
+  assert.equal(contagemDaRegua(j, feriado.getTime(), '2026-11-20').longo, 'A bolsa abre na segunda, às 10h')
+  // Finados numa segunda: abre terça; e o pregão de antes de terça, 03/11, é sexta, 30/10
+  assert.equal(contagemDaRegua(janelaDaAbertura(sp('2026-11-02T15:00'))!, sp('2026-11-02T15:00').getTime(), '2026-11-02').longo, 'A bolsa abre amanhã, às 10h')
+  assert.equal(pregaoAnterior('2026-11-03'), '2026-10-30')
+  // com a bolsa aberta não há contagem; sem o calendário do ano seguinte, também não
+  assert.equal(janelaDaAbertura(sp('2026-11-12T14:00')), null)
+  assert.equal(janelaDaAbertura(sp('2026-12-31T12:00')), null)
+})
+
+test('o ponteiro e o toque acham o pedaço pela posição na barra', () => {
+  assert.equal(pedacoNaPosicao(pedacos, 0), 0)
+  assert.equal(pedacoNaPosicao(pedacos, 99.999), 75)
+  const vale = pedacos.findIndex((p) => p.ticker === 'VALE3')
+  assert.equal(pedacoNaPosicao(pedacos, pedacos[vale]!.inicio + 0.01), vale)
+  assert.equal(pedacoNaPosicao(pedacos, pedacos[vale]!.inicio + pedacos[vale]!.largura - 0.01), vale)
+  assert.equal(pedacoNaPosicao([], 50), -1)
+})
+
+test('o estado no celular cabe numa palavra', () => {
+  assert.equal(estadoCurto('antes', false), '10h')
+  assert.equal(estadoCurto('aberta', false), 'Aberta')
+  assert.equal(estadoCurto('fechada', false), 'Fechada')
+  assert.equal(estadoCurto('sem-pregao', true), 'Feriado')
+  assert.equal(estadoCurto('sem-pregao', false), 'Fechada')
+})
+
+test('quem assina: "Sua carteira +0,11% · tudo normal", com o selo da home numa regra só', () => {
+  // a regra do selo que saiu do HomeAgoraFrase
+  const normal = { titulo: 'Tudo normal.' }
+  assert.deepEqual(seloDoDia(normal, false, false), { texto: 'Tudo normal', tom: 'verde' })
+  assert.deepEqual(seloDoDia(normal, true, false), { texto: 'Pede atenção', tom: 'ambar' })
+  assert.deepEqual(seloDoDia(normal, false, true), { texto: 'Pede atenção', tom: 'ambar' })
+  assert.equal(seloDoDia({ titulo: 'Sua carteira caiu 3,10%.' }, false, false), null)
+  assert.equal(seloDoDia(null, true, true), null)
+  assert.deepEqual(legendaDaCarteira(0.11, { texto: 'Tudo normal', tom: 'verde' }), { numero: '+0,11%', estado: 'tudo normal', atencao: false, falada: 'Sua carteira, mais 0,11%, tudo normal.' })
+  assert.deepEqual(legendaDaCarteira(-0.4, { texto: 'Pede atenção', tom: 'ambar' }), { numero: '−0,40%', estado: 'pede atenção', atencao: true, falada: 'Sua carteira, menos 0,40%, pede atenção.' })
+  assert.equal(legendaDaCarteira(-3.1, null)!.estado, null) // dia forte: só o número, como a home fica só com a data
+  assert.equal(legendaDaCarteira(null, null), null)
+  // de ponta a ponta, com o /portfolio/today (o mesmo resumo da home): um papel com 10% da carteira caiu 6%
+  const hoje = {
+    as_of: '2026-11-06T18:30:00-03:00', price_dates: { today: '2026-11-06' },
+    totals: { value_now: 100_000, value_d1: 100_600, day_change_amount: -600, day_change_pct: -0.6 },
+    positions: [
+      { ticker: 'PETR4', name: 'Petrobras', asset_class: 'STOCK', value_now: 10_000, day_change_amount: -640, day_change_pct: -6, flags: [] },
+      { ticker: 'VALE3', name: 'Vale', asset_class: 'STOCK', value_now: 90_000, day_change_amount: 40, day_change_pct: 0.04, flags: [] },
+    ],
+    flags: [],
+  }
+  const dia = montarResumoDoDia({ today: hoje, posicoes: [], total: 100_000, ibov: null, income: null })
+  const frases = frasesDoDia(dia, 'antes', quintaCedo)
+  assert.equal(dia.alerta?.ticker, 'PETR4')
+  assert.equal(legendaDaCarteira(dia.carteiraPct, seloDoDia(frases, !!dia.alerta, false))!.estado, 'pede atenção')
+})
+
+/* ————— a tinta do ticker contra a paleta do tokens.css ————— */
+const s2lin = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+const lin2s = (c: number) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)
+const rgb = (h: string) => [0, 2, 4].map((i) => parseInt(h.replace('#', '').slice(i, i + 2), 16) / 255)
+function oklab(h: string): number[] {
+  const [r, g, b] = rgb(h).map(s2lin) as [number, number, number]
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
+  return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s]
+}
+function deOklab([L, a, b]: number[]): number[] {
+  const l = (L! + 0.3963377774 * a! + 0.2158037573 * b!) ** 3
+  const m = (L! - 0.1055613458 * a! - 0.0638541728 * b!) ** 3
+  const s = (L! - 0.0894841775 * a! - 1.291485548 * b!) ** 3
+  return [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s].map((c) => Math.max(0, Math.min(1, lin2s(c))))
+}
+const luminancia = (c: number[]) => 0.2126 * s2lin(c[0]!) + 0.7152 * s2lin(c[1]!) + 0.0722 * s2lin(c[2]!)
+const contraste = (a: number[], b: number[]) => { const [x, y] = [luminancia(a), luminancia(b)].sort((p, q) => q - p); return (x! + 0.05) / (y! + 0.05) }
+
+test('a tinta do ticker é a que mais contrasta com o fundo, na paleta do tokens.css', () => {
+  const tokens = ler('app/assets/css/tokens.css')
+  const hex = (nome: string) => tokens.match(new RegExp(`--${nome}:\\s*(#[0-9A-Fa-f]{6})`))?.[1]
+  const tinta = { escura: rgb(hex('nu-ink')!), clara: rgb(hex('nu-white')!) }
+  for (const lado of ['alta', 'queda'] as const) {
+    const forte = hex(`nu-mapa-${lado}`)
+    const claro = hex(`nu-mapa-${lado}-claro`)
+    assert.ok(forte && claro, `--nu-mapa-${lado}`)
+    const [A, B] = [oklab(forte), oklab(claro)]
+    for (let i = 0; i <= 100; i++) {
+      const t = i / 100
+      // color-mix(in oklab, forte t, claro): o fundo que o componente pinta
+      const fundo = deOklab(A.map((v, k) => v * t + B[k]! * (1 - t)))
+      const escolhida = tintaDoPedaco(lado, t)
+      const outra = escolhida === 'clara' ? 'escura' : 'clara'
+      assert.ok(contraste(tinta[escolhida], fundo) >= contraste(tinta[outra], fundo), `${lado} força ${t}: ${escolhida}`)
+    }
+  }
+  assert.deepEqual(TINTA_CLARA_DESDE, { alta: 0.75, queda: 0.63 })
+  assert.match(tokens, /--nu-mapa-zero: #E6DCCD;/)
+})
+
+test('o componente: a barra é um elemento só, sem link, e veste só token', () => {
+  const sfc = ler('app/components/nu/topo/NuReguaBolsa.vue')
+  const tela = sfc.slice(sfc.indexOf('<template>'), sfc.lastIndexOf('</template>')).replace(/<!--[\s\S]*?-->/g, '')
+  assert.equal((tela.match(/role="application"/g) ?? []).length, 1)
+  const barra = tela.slice(tela.indexOf('class="nrb__barra"'), tela.indexOf(':id="idAjuda"'))
+  assert.match(barra, /:aria-label="rotuloDaBarra"/)
+  assert.match(barra, /class="nrb__faixa" aria-hidden="true"/)
+  assert.match(barra, /class="nrb__marcas" aria-hidden="true"/)
+  assert.doesNotMatch(barra, /<a\b|<NuxtLink|href=/) // os pedaços não são links (nem 76 paradas de Tab)
+  assert.match(tela, /aria-live="polite"/)
+  // o "B3 · 15 min" saiu da linha (12/11/2026, o dono): o aviso está no pé da dica e no aria-label
+  assert.doesNotMatch(tela, /15 min|B3 · /)
+  assert.match(tela, /<p v-if="legenda" class="nrb__dica-nota">\{\{ legenda\.nota \}\}<\/p>/)
+  assert.match(sfc, /rotuloDe\(legenda\.value, marcas\.value\.length\)/)
+  // a cena principal do palco: a fase (fora de cena, com os textos, larga) e a cascata a cada entrada
+  assert.match(sfc, /fase: 'oculta' \| 'textos' \| 'larga'/)
+  assert.match(sfc, /:key="`f\$\{ciclo\}`" class="nrb__faixa"/)
+  for (const k of ['ArrowRight', 'ArrowLeft', 'Home', 'End', 'Enter', 'Escape']) assert.match(sfc, new RegExp(`'${k}'`), k)
+  assert.match(sfc, /espiar\.abrir\(p\.ticker, barra\.value\)/)
+  assert.match(sfc, /navigateTo\(destino\)/)
+  const css = sfc.slice(sfc.indexOf('<style')).replace(/\/\*[\s\S]*?\*\//g, '')
+  assert.match(css, /\.nrb--larga \.nrb__lado \{[^}]*opacity: 0; visibility: hidden;/)
+  assert.match(css, /width var\(--nu-dur-lenta\) var\(--nu-ease-troca\)/)
+  assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/, 'cor em hex')
+  assert.doesNotMatch(css, /font-weight:\s*\d/, 'peso em número')
+  assert.doesNotMatch(css, /cubic-bezier|\b\d+(\.\d+)?m?s\s+(ease|linear)/, 'curva ou tempo à mão')
+  assert.match(css, /prefers-reduced-motion: reduce/)
+})
+
+test('o palco: troca a cada minuto, pausa no mouse, no foco e na aba escondida, e não anuncia a troca', () => {
+  const palco = ler('app/components/nu/topo/NuReguaPalco.vue')
+  assert.match(palco, /@pointerenter="sobre = true" @pointerleave="sobre = false" @focusin="aoFocar" @focusout="aoDesfocar"/)
+  assert.match(palco, /const pausado = computed\(\(\) => sobre\.value \|\| dentro\.value \|\| escondida\.value\)/)
+  assert.match(palco, /visibilitychange/)
+  assert.match(palco, /aria-live="off"/)
+  assert.doesNotMatch(palco, /aria-live="(polite|assertive)"/)
+  // a que sai desce e some, a que entra sobe 6px, na curva de mudar de lugar
+  assert.match(palco, /\.nrp__cena:not\(\.nrp__cena--ativa\) \{ opacity: 0; transform: translateY\(6px\);/)
+  assert.match(palco, /transition: opacity var\(--nu-dur-lenta\) var\(--nu-ease-troca\), transform var\(--nu-dur-lenta\) var\(--nu-ease-troca\)/)
+  assert.match(palco, /prefers-reduced-motion: reduce/)
+  const css = palco.slice(palco.indexOf('<style')).replace(/\/\*[\s\S]*?\*\//g, '')
+  assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/, 'cor em hex')
+  assert.doesNotMatch(css, /font-weight:\s*\d/, 'peso em número')
+  assert.doesNotMatch(css, /cubic-bezier|\b\d+(\.\d+)?m?s\s+(ease|linear)/, 'curva ou tempo à mão')
+})
+
+test('a régua: o /assinar segue vendendo, o dev força o estado e nada da carteira sai do cliente', () => {
+  const regua = ler('app/components/nu/NuMarketTicker.vue')
+  assert.match(regua, /const vendendo = computed\(\(\) => route\.path === '\/assinar'\)/)
+  assert.match(regua, /'Nubank, Itaú, XP e mais de 100 bancos e corretoras'/)
+  assert.match(regua, /const consulta = import\.meta\.dev \? useRoute\(\)\.query : \{\}/)
+  for (const q of ['regua-estado', 'regua-agora', 'regua-cena']) assert.match(regua, new RegExp(`import\\.meta\\.dev \\? String\\(consulta\\['${q}'\\]`), q)
+  assert.match(regua, /<NuReguaPalco\s/)
+  // a home e a régua dividem a consulta dos avisos e a regra do selo
+  const home = ler('app/components/home/HomeAgoraFrase.vue')
+  assert.match(home, /useAvisoDaCarteira\(\)/)
+  assert.match(home, /seloDoDia\(frases\.value, !!dia\.value\?\.alerta, avisoDoMotor\.value\)/)
+  assert.doesNotMatch(home, /\/me\/carteira\/visao'/)
+  for (const p of ['app/composables/useAvisoDaCarteira.ts', 'app/composables/useCarteiraNoTopo.ts', 'app/composables/useReguaDaBolsa.ts']) {
+    const src = ler(p)
+    assert.match(src, /if \(!import\.meta\.client/, `${p}: só no cliente`)
+    assert.doesNotMatch(src, /useState<[^>]*>\('[^']*token/i, `${p}: o token não vai para o estado`)
+  }
+  // a barra que gruda embaixo da régua usa a altura que ela publica
+  assert.match(ler('app/components/teses/TesesGrade.vue'), /top: calc\(var\(--nuh-h, 72px\) \+ var\(--nut-h, 44px\) - 1px\)/)
+})

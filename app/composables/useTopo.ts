@@ -216,5 +216,6 @@ export function useMercadoDoTopo() {
   onBeforeUnmount(() => { if (t) clearInterval(t) })
   const itens = computed(() => ordenarCotacoes(items.value))
   const mercado = computed(() => (agora.value ? mercadoDoTopo(agora.value, asOf.value) : null))
-  return { itens, loading, mercado }
+  // o relógio vai junto: a régua do mercado diz "na sexta" / "agora" a partir dele (12/11/2026)
+  return { itens, loading, mercado, agora }
 }

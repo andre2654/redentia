@@ -440,4 +440,29 @@
   --nu-veu: color-mix(in srgb, var(--nu-ink) 52%, transparent);
   /* a borda do campo sob o ponteiro (a Redentia redefine junto com a borda) */
   --nu-borda-campo-hover: color-mix(in srgb, var(--nu-borda-campo), var(--nu-ink) 30%);
+
+  /* ——— A régua do mercado (12/11/2026): a bolsa inteira numa linha ———
+     A paleta divergente da barra das ações do Ibovespa (NuReguaBolsa). Cada braço
+     é um tom só, do claro (a menor variação) ao forte (5% ou mais, o teto); a
+     areia é o zero. O componente mistura o forte ao claro em oklab
+     (color-mix, utils/reguaDaBolsa.ts: força = raiz de |pct|/5).
+     Validada em 12/11/2026 com o validate_palette.js do skill de dataviz, sobre
+     o creme da página (#F9F3EC), nos passos de força 0,2/0,4/0,6/0,8/1:
+       alta  (--ordinal) #78BAA2 #61A88D #489679 #2D8466 #007353: tom único
+         (4°), claro→escuro, passos de ΔL ≥ 0,06, o mais claro a 2,04:1. PASSA.
+       queda (--ordinal) #E19282 #D47967 #C75F4C #B9432F #AA2209: tom único
+         (0°), passos de ΔL ≥ 0,06, o mais claro a 2,21:1. PASSA.
+       os polos #AA2209 × #007353 (categórico): CVD ΔE 8,5 (deutan; alvo 8),
+         visão normal 25,7, os dois acima de 3:1. PASSA.
+     O verde puxa para o azul (h 166) e o vermelho para o laranja (h 32): com o
+     verde e o vermelho da marca (h 151 e h 29) os polos davam CVD ΔE 4,1 (quem
+     não distingue verde de vermelho via os dois iguais). Mesmo assim o lado
+     também sai pela ordem (a barra vai da que mais caiu à que mais subiu) e pela
+     dica. O ticker dentro do pedaço: branco a partir da força 0,75 na alta e
+     0,63 na queda (TINTA_CLARA_DESDE; o teste refaz a conta com estes hex). */
+  --nu-mapa-zero: #E6DCCD;         /* areia: o papel que não andou (o "0,0%" da dica) */
+  --nu-mapa-alta-claro: #90CDB7;   /* a ponta clara do braço da alta (força 0) */
+  --nu-mapa-alta: #007353;         /* alta de 5% ou mais */
+  --nu-mapa-queda-claro: #EDAB9E;  /* a ponta clara do braço da queda (força 0) */
+  --nu-mapa-queda: #AA2209;        /* queda de 5% ou mais */
 }

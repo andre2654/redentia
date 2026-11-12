@@ -41,6 +41,13 @@ function comoAssinanteNoDev(e: EntitlementsApi | null): EntitlementsApi | null {
   }
 }
 
+/**
+ * A leitura do /me/entitlements em curso, uma só para todas as instâncias no
+ * navegador (12/11/2026): a home e a régua do topo montam juntas e pedem juntas;
+ * o `emVoo` do controle é de cada instância e deixava sair dois pedidos iguais.
+ */
+let entitlementsEmVoo: Promise<EntitlementsApi | null> | null = null
+
 export function useAssinatura() {
   const { token, isAuthenticated } = useAuthState()
 
@@ -63,7 +70,11 @@ export function useAssinatura() {
   const controle = criarControleAssinatura({
     estado,
     logado: () => isAuthenticated.value,
-    buscarEntitlements: () => assinaturaFetchEntitlements(base, headers()).then(comoAssinanteNoDev),
+    buscarEntitlements: () => {
+      if (!import.meta.client) return assinaturaFetchEntitlements(base, headers()).then(comoAssinanteNoDev)
+      entitlementsEmVoo ??= assinaturaFetchEntitlements(base, headers()).then(comoAssinanteNoDev).finally(() => { entitlementsEmVoo = null })
+      return entitlementsEmVoo
+    },
     postCheckout: (dados) => assinaturaPostCheckout(base, headers(), dados),
     postPortal: () => assinaturaPostPortal(base, headers()),
     irPara: (url) => { window.location.assign(url) },

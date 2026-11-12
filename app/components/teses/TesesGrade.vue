@@ -230,9 +230,10 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
 
 /* ——— a barra ——— */
 .tgr__barra {
-  /* gruda embaixo do header e da régua do mercado (NuMarketTicker: 40 px, 30
-     no celular), com o fio de cima por baixo do fio da régua */
-  position: sticky; top: calc(var(--nuh-h, 72px) + 39px); z-index: 30;
+  /* gruda embaixo do header e da régua do mercado pela altura que a régua
+     publica (--nut-h, NuMarketTicker: 44 px, 36 no celular desde 12/11/2026),
+     com o fio de cima por baixo do fio da régua */
+  position: sticky; top: calc(var(--nuh-h, 72px) + var(--nut-h, 44px) - 1px); z-index: 30;
   background: color-mix(in srgb, var(--nu-page) 92%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px);
   border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2);
@@ -357,7 +358,7 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
   .tgr__seg, .tgr__ordem-r { display: none; }
   .tgr__select { display: block; }
 }
-@media (max-width: 640px) { .tgr__barra { top: calc(var(--nuh-h, 52px) + 29px); } }
+@media (max-width: 640px) { .tgr__barra { top: calc(var(--nuh-h, 52px) + var(--nut-h, 36px) - 1px); } }
 @media (max-width: 900px) {
   .tgr__barra-in { padding: 6px 0 6px var(--lado); gap: 10px; }
   .tgr__chips { flex: 1; overflow-x: auto; scrollbar-width: none; padding: 2px var(--lado) 2px 0; }
