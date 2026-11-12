@@ -39,6 +39,8 @@ export function useTopo(alturas: { normal: number; encolhido: number; celular?: 
   function publicarAltura() {
     const a = celular?.matches && alturas.celular ? alturas.celular : alturas
     document.documentElement.style.setProperty('--nuh-h', `${shrunk.value ? a.encolhido : a.normal}px`)
+    // a altura sem encolher: a capa do maximizar (EspiarAtivo) sabe onde a página nova começa, que abre no topo
+    document.documentElement.style.setProperty('--nuh-h-normal', `${a.normal}px`)
   }
   watch(shrunk, publicarAltura)
   onMounted(() => {
@@ -49,6 +51,7 @@ export function useTopo(alturas: { normal: number; encolhido: number; celular?: 
   onBeforeUnmount(() => {
     celular?.removeEventListener('change', publicarAltura)
     document.documentElement.style.removeProperty('--nuh-h')
+    document.documentElement.style.removeProperty('--nuh-h-normal')
   })
 
   /* ——— painéis (nav, conta, mercado) ——— */

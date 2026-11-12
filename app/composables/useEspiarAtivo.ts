@@ -24,6 +24,20 @@ type Resultado =
 
 const VALIDADE_MS = 5 * 60 * 1000
 const cache = new Map<string, { em: number; p: Promise<Resultado>; valor?: Resultado }>()
+/** a capa do maximizar está na tela (só no cliente; quem liga e desliga é o EspiarAtivo) */
+let capaNaTela = false
+
+/**
+ * A página do ativo chega por baixo da capa do maximizar? Ela já mostrou o
+ * nome, o preço e a linha se desenhando: o topo da página (TopoBolsa) não
+ * refaz a entrada nem o desenho, e a troca é só o fade da capa. Sem argumento,
+ * lê; com, marca. No servidor é sempre false.
+ */
+export function capaDoMaximizar(na?: boolean): boolean {
+  if (!import.meta.client) return false
+  if (na !== undefined) capaNaTela = na
+  return capaNaTela
+}
 /** o link que abriu a janela: o foco volta para ele ao fechar */
 let origem: HTMLElement | null = null
 let montadas = 0

@@ -28,7 +28,11 @@
 // cobalto nas ações que tem e "Sua carteira +0,11% · tudo normal" à direita
 // (useCarteiraNoTopo, com a regra do selo da home). Até lá, a régua é a do
 // visitante; a troca é um fade, e o lugar do texto já vem reservado para quem
-// entrou (a barra não pula).
+// entrou (a barra não pula). O selo do dia sai junto com o número (o
+// /portfolio/today é leve); o aviso do motor (o "pede atenção" de um aviso
+// urgente da /carteira) chega depois, adiado para não disputar com a página
+// (useAvisoDaCarteira: depois do page:finish, ocioso, nunca com a janelinha de
+// um ativo aberta, e guardado na aba por 5 minutos), e troca o selo num fade.
 //
 // Movimento: a cada entrada os pedaços acendem da esquerda para a direita (o
 // pregão acende, ~0,8 s); com a bolsa aberta, o dado que se renova troca as
@@ -78,22 +82,26 @@ const frases = computed(() => (carteira.value?.dia ? frasesDoDia(carteira.value.
 const alerta = computed(() => !!carteira.value?.dia?.alerta)
 const liberados = computed(() => avisosLiberados(estado.value))
 const avisoDoMotor = computed(() => cart.aviso.urgente.value && liberados.value)
-// o selo só sai quando é o final: o alerta do dia já decide; sem ele, espera o motor (se os avisos já valem)
-const seloFinal = computed(() => alerta.value || !liberados.value || cart.aviso.consultado.value)
+// o "pede atenção" do dia sai na hora; o "tudo normal" só depois que o vigia
+// olhou (a consulta adiada do motor), para a régua nunca dizer "tudo normal" e
+// trocar para "pede atenção" segundos depois. Antes da liberação dos avisos
+// (avisosLiberados) o selo é só o do dia, sem esperar o motor.
+const motorPendente = computed(() => liberados.value && !cart.aviso.consultado.value)
 const legCarteira = computed(() => {
   if (!frases.value) return null
-  const selo = seloFinal.value ? seloDoDia(frases.value, alerta.value, avisoDoMotor.value) : null
-  return legendaDaCarteira(carteira.value?.dia?.carteiraPct, selo)
+  const selo = seloDoDia(frases.value, alerta.value, avisoDoMotor.value)
+  return legendaDaCarteira(carteira.value?.dia?.carteiraPct, selo?.tom === 'verde' && motorPendente.value ? null : selo)
 })
 /** os pontos: o centro dos pedaços das ações que a pessoa tem */
 const marcas = computed(() => pedacos.value.filter((p) => tickers.value.has(p.ticker)).map((p) => ({ ticker: p.ticker, centro: p.inicio + p.largura / 2 })))
 /** quem entrou: o lugar do texto da carteira vem reservado desde a primeira pintura */
 const reservar = ref(false)
 
-watch(() => cart.estado.value === 'pronto' && liberados.value && !alerta.value, (pode) => { if (pode) void cart.aviso.consultar() }, { immediate: true })
+// o vigia não disputa com a página: a consulta sai adiada (a home pergunta na hora, lá o aviso é o assunto)
+watch(() => cart.estado.value === 'pronto' && liberados.value && !alerta.value, (pode) => { if (pode) void cart.aviso.consultar({ adiado: true }) }, { immediate: true })
 watch(token, (novo, antigo) => {
   if (novo === antigo) return
-  cart.esquecer()
+  cart.esquecer(!novo)
   reservar.value = !!novo
   if (novo) void cart.carregar()
 })
@@ -280,7 +288,7 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
       <!-- quem entrou: o lugar do texto mais longo da carteira, sem dado nenhum (a barra não pula na troca) -->
       <span v-if="reservar" class="nrb__fantasma" aria-hidden="true"><span class="nrb__t-longo nrb__t-medio">Sua carteira </span><span class="nrb__t-curto">Você </span><b class="nrb__num">−00,00%</b><span class="nrb__t-longo"> · pede atenção</span><i class="nrb__cart-ponto" /></span>
       <Transition name="nrb-troca" mode="out-in">
-        <NuxtLink v-if="legCarteira" key="carteira" to="/carteira" class="nrb__cart" :class="{ 'nrb__cart--atencao': legCarteira.atencao }" :aria-label="legCarteira.falada"><span class="nrb__t-longo nrb__t-medio">Sua carteira </span><span class="nrb__t-curto">Você </span><b class="nrb__num">{{ legCarteira.numero }}</b><Transition name="nrb-troca"><span v-if="legCarteira.estado" class="nrb__cart-estado nrb__t-longo"> · {{ legCarteira.estado }}</span></Transition><i v-if="legCarteira.atencao" class="nrb__cart-ponto" aria-hidden="true" /></NuxtLink>
+        <NuxtLink v-if="legCarteira" key="carteira" to="/carteira" class="nrb__cart" :class="{ 'nrb__cart--atencao': legCarteira.atencao }" :aria-label="legCarteira.falada"><span class="nrb__t-longo nrb__t-medio">Sua carteira </span><span class="nrb__t-curto">Você </span><b class="nrb__num">{{ legCarteira.numero }}</b><Transition name="nrb-troca" mode="out-in"><span v-if="legCarteira.estado" :key="legCarteira.estado" class="nrb__cart-estado nrb__t-longo"> · {{ legCarteira.estado }}</span></Transition><i v-if="legCarteira.atencao" class="nrb__cart-ponto" aria-hidden="true" /></NuxtLink>
         <span v-else-if="legenda" key="indice" class="nrb__ind">
           <b class="nrb__num">{{ legenda.numero }}</b><span class="nrb__t-longo">{{ ` ${legenda.longo}` }}</span><span class="nrb__t-medio">{{ ` ${legenda.medio}` }}</span><span class="nrb__t-curto">{{ ` ${legenda.curto}` }}</span>
         </span>

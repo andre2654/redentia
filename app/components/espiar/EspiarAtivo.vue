@@ -41,9 +41,21 @@
 // link da base (NuLinkSeta; no erro, "Tentar de novo" sem seta); os tempos e
 // as curvas são os dos tokens; o clique do maximizar vem na captura, antes do
 // RouterLink (uma navegação só, a do fim do crescimento).
+// Carregando (12/11/2026, o dono: "demora muito para abrir gráficos e etc.,
+// temos que mostrar um loading"): a capa é o EspiarCapa, o topo do /asset no
+// lugar dele, com a linha de 12 meses se desenhando no cartão do gráfico, o
+// brilho que corre por ela enquanto a página não chega e a linha de progresso
+// no alto. Ela cobre do fim do topo fixo para baixo (o header, o aviso de
+// cookies, a régua e a faixa do recado ficam) e põe o conteúdo onde a página
+// nova vai começar, no alto dela. A barra do Nuxt (app.vue) se esconde enquanto
+// isso (html.nu-maximizando): uma barra só. A capa só sai com a página pronta
+// (page:finish, depois da rolagem para o topo assentar), com um erro, com a
+// navegação que não aconteceu ou no teto de 8 s; no teto, a barra do Nuxt
+// volta e segue até a página chegar.
 import { barraVisivel } from '~/utils/chat-painel'
 import { ALTURA_BARRA_AO_LADO, barraAoLado, direitaDoCartao, LINHA_ALTURA, LINHA_LARGURA, VAO_BARRA_CARTAO } from '~/utils/espiarAtivo'
 import type { ContextoDoChat } from '~/composables/useChatPainel'
+import EspiarCapa, { type DadosDaCapa } from './EspiarCapa.vue'
 
 const espiar = useEspiarAtivo()
 const painel = useChatPainel()
@@ -155,8 +167,44 @@ function carteira() {
 
 /* ——— maximizar: o cartão vira a página ——— */
 let crescendo = false
-const capa = ref<{ ticker: string; nome: string; preco: string | null; topo: number } | null>(null)
-const capaEl = ref<HTMLElement | null>(null)
+const capa = ref<{ dados: DadosDaCapa; topo: number; conteudo: number } | null>(null)
+const capaEl = ref<InstanceType<typeof EspiarCapa> | null>(null)
+const indicador = useLoadingIndicator()
+const TETO_MS = 8000
+
+/** Liga e desliga a capa: a página do ativo sabe que chega por baixo dela, e a barra do Nuxt se esconde. */
+function marcarCapa(na: boolean) {
+  capaDoMaximizar(na)
+  if (na) document.documentElement.classList.add('nu-maximizando')
+}
+/** A barra do Nuxt volta quando a dela já terminou de sumir (senão ela piscaria cheia no fim). */
+function devolverBarra(agora = false) {
+  const tira = () => document.documentElement.classList.remove('nu-maximizando')
+  if (agora || !indicador.isLoading.value) { tira(); return }
+  const teto = setTimeout(() => { pare(); tira() }, 1500)
+  const pare = watch(indicador.isLoading, (v) => { if (!v) { clearTimeout(teto); pare(); tira() } })
+}
+
+type Chegada = 'pronta' | 'erro' | 'falhou' | 'teto'
+/** A página nova pronta (o useAsyncData dela resolvido), um erro, a navegação que não aconteceu ou o teto. */
+function esperarPagina() {
+  let feito = false
+  let avisar: (r: Chegada) => void = () => {}
+  const p = new Promise<Chegada>((ok) => { avisar = ok })
+  const teto = setTimeout(() => sair('teto'), TETO_MS)
+  const tiraF = nuxtApp.hooks.hookOnce('page:finish', () => sair('pronta'))
+  const tiraE = nuxtApp.hooks.hookOnce('app:error', () => sair('erro'))
+  function sair(r: Chegada) {
+    if (feito) return
+    feito = true
+    clearTimeout(teto)
+    tiraF()
+    tiraE()
+    avisar(r)
+  }
+  return { p, desistir: () => sair('falhou') }
+}
+const quadro = () => new Promise<void>((ok) => { requestAnimationFrame(() => ok()) })
 
 async function maximizar(e?: Event) {
   e?.preventDefault()
@@ -166,49 +214,68 @@ async function maximizar(e?: Event) {
   if (!el || calmo()) { espiar.fechar(false); await navigateTo(alvo); return }
   crescendo = true
   const r = el.getBoundingClientRect()
-  // cresce até o corpo da página: o header e a faixa do mercado ficam (eles não mudam de uma página para a outra)
-  const topo = topoLivre()
-  capa.value = { ticker: t.value, nome: vm.value?.nome ?? '', preco: vm.value?.precoFmt ?? null, topo }
+  const g = geometriaDaCapa()
+  const v = vm.value
+  capa.value = {
+    dados: {
+      ticker: t.value, nome: v?.nome ?? '', bolsa: v?.bolsa ?? 'B3', preco: v?.precoFmt ?? null,
+      linha: v?.linha ? { serie: v.linha.serie, variacao: v.linha.variacao, dir: v.linha.dir } : null,
+    },
+    topo: g.topo,
+    conteudo: g.conteudo,
+  }
+  marcarCapa(true)
   await nextTick()
   const c = capaEl.value
-  if (!c) { crescendo = false; capa.value = null; espiar.fechar(false); await navigateTo(alvo); return }
-  const raio = celular.value ? '26px 26px 0 0' : '24px'
-  const de = `inset(${r.top}px ${window.innerWidth - r.right}px ${Math.max(0, window.innerHeight - r.bottom)}px ${r.left}px round ${raio})`
-  // a curva e os tempos dos tokens (var() não vale numa Web Animation: lê o valor calculado)
-  const css = getComputedStyle(document.documentElement)
-  const ms = (nome: string, padrao: number) => parseFloat(css.getPropertyValue(nome)) || padrao
-  const troca = css.getPropertyValue('--nu-ease-troca').trim() || 'ease-in-out'
-  const saida = css.getPropertyValue('--nu-ease-saida').trim() || 'ease-out'
-  const lenta = ms('--nu-dur-lenta', 520)
-  const cresce = c.animate(
-    [{ clipPath: de }, { clipPath: `inset(${topo}px 0px 0px 0px round 0px)` }],
-    { duration: lenta, easing: troca, fill: 'forwards' },
-  )
-  // o branco do cartão se apaga no creme da página (o topo do ativo)
-  c.querySelector('.esp-capa__branco')?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: lenta, easing: css.getPropertyValue('--nu-ease-cor').trim() || 'ease', fill: 'forwards' })
-  c.querySelector('.esp-capa__miolo')?.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: lenta, delay: 160, easing: saida, fill: 'backwards' })
+  if (!c) { capa.value = null; marcarCapa(false); devolverBarra(true); crescendo = false; espiar.fechar(false); await navigateTo(alvo); return }
+  const cresce = c.crescer(r, celular.value ? '26px 26px 0 0' : '24px')
   espiar.fechar(false)
-  // a página nova pronta (o useAsyncData dela resolvido), com um teto para nunca prender a tela
-  const pronta = new Promise<void>((ok) => {
-    const teto = setTimeout(ok, 8000)
-    nuxtApp.hooks.hookOnce('page:finish', () => { clearTimeout(teto); ok() })
-  })
-  const nav = navigateTo(alvo)
-  await Promise.all([cresce.finished.catch(() => null), pronta, Promise.resolve(nav).catch(() => null)])
-  await nextTick()
-  await c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms('--nu-dur-media', 280), easing: css.getPropertyValue('--nu-ease-cor').trim() || 'ease', fill: 'forwards' }).finished.catch(() => null)
-  capa.value = null
+  const chegada = esperarPagina()
+  // a navegação que não aconteceu (a mesma rota, um guarda que barrou) não espera o teto
+  Promise.resolve(navigateTo(alvo)).then((x) => { if (x === false || x instanceof Error) chegada.desistir() }, () => chegada.desistir())
+  const [, como] = await Promise.all([cresce, chegada.p])
+  if (como === 'pronta') {
+    await nextTick()
+    // a página nova abre no topo: a rolagem vem um quadro depois do page:finish, e o header que
+    // estava encolhido volta à altura dele no tempo do topo; a capa assenta no lugar final
+    if (g.rolada) { await quadro(); await quadro() }
+    if (g.encolhido) await new Promise((ok) => setTimeout(ok, parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nu-dur-topo')) || 320))
+    await c.sumir(true)
+    capa.value = null
+    capaDoMaximizar(false)
+    devolverBarra()
+  } else {
+    // o teto, um erro ou a navegação que não aconteceu: a capa sai e a barra do Nuxt segue com o que falta
+    devolverBarra(true)
+    await c.sumir(false)
+    capa.value = null
+    capaDoMaximizar(false)
+  }
   crescendo = false
 }
 
-/** Onde acabam o header e a faixa sticky (o mesmo corte do ChatSeletor). */
-function topoLivre(): number {
+/**
+ * Onde a capa começa e onde o conteúdo da página nova vai estar. `topo`: o fim
+ * do que fica no alto agora, de cima para baixo e sem vão (o header, o aviso
+ * de cookies, a régua ou a faixa de seções, a faixa do recado): o corte do
+ * ChatSeletor mais o aviso e o recado. `conteudo`: o começo do <main> com a
+ * página no alto e o header na altura normal (--nuh-h-normal), que é como a
+ * página nova abre.
+ */
+function geometriaDaCapa() {
   let y = 0
-  for (const el of Array.from(document.querySelectorAll('.nuh-wrap, .nut-wrap, .nsr-wrap'))) {
+  for (const el of Array.from(document.querySelectorAll<HTMLElement>('.nuh-wrap, .ck, .nut-wrap, .nsr-wrap, .rfx'))) {
     const q = el.getBoundingClientRect()
-    if (q.top <= y + 1 && q.bottom > y) y = q.bottom
+    if (q.height > 0 && q.top <= y + 1 && q.bottom > y) y = q.bottom
   }
-  return Math.round(y)
+  const css = getComputedStyle(document.documentElement)
+  const normal = parseFloat(css.getPropertyValue('--nuh-h-normal')) || 0
+  const atual = parseFloat(css.getPropertyValue('--nuh-h')) || normal
+  const encolhido = normal - atual > 0.5
+  const main = document.querySelector('main')
+  const topo = Math.round(y)
+  const conteudo = main ? main.getBoundingClientRect().top + window.scrollY + Math.max(0, normal - atual) : topo
+  return { topo, conteudo, rolada: window.scrollY > 0, encolhido }
 }
 
 /* ——— celular: arrastar a folha ——— */
@@ -247,7 +314,8 @@ onBeforeUnmount(() => {
   desliga?.()
   document.removeEventListener('keydown', onKey)
   window.removeEventListener('resize', posicionar)
-  document.documentElement.classList.remove('nu-espiar-aberto')
+  document.documentElement.classList.remove('nu-espiar-aberto', 'nu-maximizando')
+  capaDoMaximizar(false)
   espiar.aoLado.value = false
   espiar.geometria.value = null
 })
@@ -376,19 +444,8 @@ onBeforeUnmount(() => {
     </section>
   </Transition>
 
-  <!-- o maximizar: o cartão crescendo até virar a página -->
-  <div v-if="capa" ref="capaEl" class="esp-capa" :style="{ '--capa-topo': `${capa.topo}px` }" aria-hidden="true">
-    <div class="esp-capa__branco" />
-    <div class="esp-capa__miolo">
-      <div class="esp-capa__id">
-        <p class="esp-capa__empresa"><span v-if="capa.nome" class="esp-capa__nome">{{ capa.nome }}</span><NuSelo tom="carvao">{{ capa.ticker }}</NuSelo></p>
-        <p v-if="capa.preco" class="esp-capa__preco">{{ capa.preco }}</p>
-        <NuSkeleton v-else variant="block" radius="tile" class="esp-capa__preco-sk" />
-      </div>
-      <!-- enquanto a página chega: o esqueleto do cartão do gráfico, no lugar dele -->
-      <NuSkeleton variant="card" tone="navy" radius="card" class="esp-capa__palco" />
-    </div>
-  </div>
+  <!-- o maximizar: o cartão crescendo até virar a página (o topo do /asset carregando) -->
+  <EspiarCapa v-if="capa" ref="capaEl" :dados="capa.dados" :topo="capa.topo" :conteudo="capa.conteudo" />
 </template>
 
 <style scoped>
@@ -516,32 +573,6 @@ onBeforeUnmount(() => {
   .esp-leave-active { transition: transform var(--nu-dur-media) var(--nu-ease-cor); }
 }
 
-/* ——— a capa do maximizar: vira o topo do /asset (creme), com o nome e o preço no lugar dele ——— */
-.esp-capa {
-  position: fixed; inset: 0; z-index: 60; isolation: isolate; pointer-events: none;
-  background: var(--nu-page); color: var(--nu-ink);
-}
-.esp-capa__branco { position: absolute; inset: 0; z-index: -1; background: var(--nu-white); }
-/* a coluna e o respiro do topo (TopoBolsa): o nome e o preço caem onde a página vai desenhá-los */
-.esp-capa__miolo {
-  max-width: 1240px; margin: 0 auto; box-sizing: content-box;
-  padding: calc(var(--capa-topo, 0px) + clamp(28px, 3.4vw, 48px)) clamp(20px, 4vw, 56px) 0;
-}
-.esp-capa__preco-sk { width: min(360px, 70%); height: clamp(64px, 8vw, 112px); margin-top: clamp(48px, 5vw, 64px); }
-.esp-capa__palco { display: none; }
-/* no desktop, as duas colunas do topo: o cartão do gráfico à direita, em esqueleto */
-@media (min-width: 1080px) {
-  .esp-capa__miolo { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); column-gap: clamp(36px, 4.4vw, 72px); align-items: start; }
-  .esp-capa__palco { display: block; height: calc(clamp(260px, 25vw, 372px) + 200px); }
-}
-.esp-capa__empresa { display: flex; align-items: center; gap: 8px; margin: 0; }
-.esp-capa__nome { margin-right: 4px; font-size: clamp(24px, 2.6vw, 34px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.1; }
-.esp-capa__preco {
-  margin: clamp(48px, 5vw, 64px) 0 0; font-size: clamp(64px, 17vw, 132px); font-weight: var(--nu-w-display);
-  letter-spacing: var(--nu-ls-display); line-height: .92; font-variant-numeric: tabular-nums; white-space: nowrap;
-}
-@media (min-width: 1080px) { .esp-capa__preco { font-size: clamp(84px, 8.4vw, 132px); } }
-
 @media (prefers-reduced-motion: reduce) {
   .esp, .esp-enter-active, .esp-leave-active, .esp-troca-enter-active, .esp-troca-leave-active,
   .esp__icone, .esp__botoes :deep(.nfb) { transition: none; }
@@ -555,4 +586,6 @@ onBeforeUnmount(() => {
 @media (max-width: 640px) {
   html.nu-espiar-aberto .cba { visibility: hidden; opacity: 0; pointer-events: none; }
 }
+/* Durante o maximizar a capa tem a linha de progresso dela: a barra do Nuxt (app.vue) espera */
+html.nu-maximizando .nuxt-loading-indicator { opacity: 0 !important; }
 </style>

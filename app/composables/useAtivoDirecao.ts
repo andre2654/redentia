@@ -9,6 +9,7 @@
 import type { AcaoPayload, AcaoRange, AcaoSeriesPair } from '~/types/acao'
 import type { AcaoPosition } from '~/composables/useAcao'
 import type { ContextoDoChat } from '~/composables/useChatPainel'
+import type { OpcaoDoTrilho } from '~/components/nu/NuTrilho.vue'
 
 export interface AtivoDirecaoVM {
   acao: AcaoPayload
@@ -25,6 +26,12 @@ export interface AtivoDirecaoVM {
 }
 
 export const ROTULO_PERIODO: Record<AcaoRange, string> = { '1mo': '1 mês', '6mo': '6 meses', '12mo': '12 meses', '5y': '5 anos' }
+// O seletor do período do gráfico (NuTrilho): '12M' à vista, '12 meses' para o
+// leitor de tela. O topo do /asset (TopoBolsa) e a capa do maximizar
+// (EspiarCapa) desenham o mesmo. 5 anos: GET /tickers/{t}/prices?mode=5y e
+// /indices/IBOV/prices?mode=5y (~1.250 pregões, 03/11/2026)
+const CURTO_PERIODO: Record<AcaoRange, string> = { '1mo': '1M', '6mo': '6M', '12mo': '12M', '5y': '5A' }
+export const PERIODOS_DO_GRAFICO: OpcaoDoTrilho<AcaoRange>[] = (['1mo', '6mo', '12mo', '5y'] as const).map((v) => ({ valor: v, rotulo: CURTO_PERIODO[v], extenso: ROTULO_PERIODO[v] }))
 
 export function useAtivoDirecao(vm: () => AtivoDirecaoVM) {
   const v = computed(vm)

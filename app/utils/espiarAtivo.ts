@@ -92,6 +92,12 @@ export interface EspiarIndicador { rotulo: string; valor: string }
 export interface EspiarLinha {
   /** o path do SVG no viewBox 0 0 LARGURA ALTURA */
   d: string
+  /**
+   * a série inteira, pregão a pregão (data e preço, em ordem): a capa do
+   * maximizar desenha com ela a linha no tamanho e na conta do gráfico da
+   * página (caminhosDoGrafico), no lugar onde a página vai desenhá-la
+   */
+  serie: Array<{ t: string; v: number }>
   /** o ponto de hoje */
   x: number
   y: number
@@ -237,10 +243,11 @@ function reduzir<T>(xs: T[], max = 90): T[] {
 
 /** A linha de 12 meses, sem eixo: o desenho e o ponto de hoje. Menos de 2 pontos → null. */
 export function linhaDoAtivo(serie: Array<{ market_price: number | null; price_at: string }> | null | undefined): EspiarLinha | null {
-  const pts = (serie ?? [])
+  const pontos = (serie ?? [])
     .filter((p) => p && typeof p.market_price === 'number' && Number.isFinite(p.market_price) && p.market_price > 0 && !!p.price_at)
     .sort((a, b) => (a.price_at < b.price_at ? -1 : a.price_at > b.price_at ? 1 : 0))
-    .map((p) => p.market_price as number)
+    .map((p) => ({ t: p.price_at, v: p.market_price as number }))
+  const pts = pontos.map((p) => p.v)
   if (pts.length < 2) return null
   const vs = reduzir(pts)
   const min = Math.min(...vs), max = Math.max(...vs)
@@ -254,6 +261,7 @@ export function linhaDoAtivo(serie: Array<{ market_price: number | null; price_a
   const v = a ? ((z - a) / a) * 100 : null
   return {
     d,
+    serie: pontos,
     x: LINHA_LARGURA,
     y: Number(yDe(vs[vs.length - 1]!).toFixed(1)),
     variacao: v == null ? null : `${v > 0 ? '+' : ''}${nf2.format(v)}%`,

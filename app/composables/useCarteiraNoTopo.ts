@@ -69,10 +69,11 @@ export function useCarteiraNoTopo() {
     return emVoo
   }
 
-  function esquecer() {
+  /** a sessão trocou (ou saiu, `saiu`: o aviso guardado na aba vai junto) */
+  function esquecer(saiu = false) {
     carteira.value = null
     estado.value = 'parado'
-    aviso.esquecer()
+    aviso.esquecer({ saiu })
   }
 
   return { carteira, estado, carregar, esquecer, aviso }

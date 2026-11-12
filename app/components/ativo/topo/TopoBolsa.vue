@@ -25,12 +25,17 @@
 // no peso de exibição; os números do gráfico em fileiras de rótulo em cima e
 // valor embaixo (o rótulo não quebra mais ao lado do valor); e o simulador é
 // o link com seta (NuLinkSeta). A linha se desenha no tempo dos tokens.
+// Pelo maximizar da janelinha (12/11/2026): a capa (EspiarCapa) já mostrou o
+// nome, o preço, as ações e o cartão no lugar deles, com a linha se
+// desenhando; a página que chega por baixo dela não refaz a entrada desses
+// blocos nem o desenho (capaDoMaximizar), e a troca é só o fade da capa. Os
+// números e o pé, que a capa não tem, entram como sempre. Só no cliente: o
+// HTML do servidor é o mesmo.
 import type { AcaoPayload, AcaoRange, AcaoSeriesPair, AcaoStatRow } from '~/types/acao'
 import type { AcaoPosition } from '~/composables/useAcao'
 import type { LeituraDoGrafico, LegendaItem } from '~/utils/ativoDirecoes'
-import type { OpcaoDoTrilho } from '~/components/nu/NuTrilho.vue'
 import type { ValorContextoChat } from '~/utils/contexto-chat-registro'
-import { ROTULO_PERIODO } from '~/composables/useAtivoDirecao'
+import { PERIODOS_DO_GRAFICO as PERIODOS } from '~/composables/useAtivoDirecao'
 import TopoAcoes from './TopoAcoes.vue'
 import TopoPreco from './TopoPreco.vue'
 
@@ -52,10 +57,7 @@ const props = defineProps<{
   contextoGrafico: ValorContextoChat
 }>()
 const emit = defineEmits<{ periodo: [AcaoRange]; perguntar: [string]; abrir: [] }>()
-// o seletor do período (NuTrilho): '12M' à vista, '12 meses' para o leitor de tela. 5 anos:
-// GET /tickers/{t}/prices?mode=5y e /indices/IBOV/prices?mode=5y (~1.250 pregões, 03/11/2026)
-const CURTO: Record<AcaoRange, string> = { '1mo': '1M', '6mo': '6M', '12mo': '12M', '5y': '5A' }
-const PERIODOS: OpcaoDoTrilho<AcaoRange>[] = (['1mo', '6mo', '12mo', '5y'] as const).map((v) => ({ valor: v, rotulo: CURTO[v], extenso: ROTULO_PERIODO[v] }))
+// o seletor do período (NuTrilho, PERIODOS_DO_GRAFICO): '12M' à vista, '12 meses' para o leitor de tela
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const leitura = ref<LeituraDoGrafico | null>(null)
 const logoFalhou = ref(false)
@@ -73,9 +75,11 @@ const rotuloFaixa = computed(() => props.tituloGrafico.replace(/\.$/, ''))
 const tomDe = (dir: string | null | undefined) => (dir === 'down' ? 'vermelho' : dir === 'up' ? 'verde' : 'neutro')
 
 const palco = ref<HTMLElement | null>(null)
+// chegou por baixo da capa do maximizar: ela já fez a entrada e o desenho
+const daCapa = import.meta.client && capaDoMaximizar()
 onMounted(() => {
   const el = palco.value
-  if (!el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (daCapa || !el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   const r = el.getBoundingClientRect()
   if (r.top >= window.innerHeight || r.bottom <= 0) return
   // a curva e os tempos vêm dos tokens (var() não vale numa Web Animation: lê o valor calculado)
@@ -89,7 +93,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section v-contexto-chat="contexto" class="tbo" aria-labelledby="tbo-h1">
+  <section v-contexto-chat="contexto" class="tbo" :class="{ 'tbo--da-capa': daCapa }" aria-labelledby="tbo-h1">
     <p v-if="renamedFrom" class="tbo__trocou">{{ renamedFrom }} agora negocia como {{ t }}.</p>
     <div class="tbo__grade">
       <div class="tbo__id">
@@ -175,6 +179,8 @@ onMounted(() => {
 }
 /* a entrada do topo: cada bloco sobe com fade, em cascata de 60ms (tokens de entrada) */
 .tbo__id, .tbo__preco-linha, .tbo__acoes, .tbo__palco, .tbo__nums, .tbo__pe { animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+/* por baixo da capa do maximizar: o que ela já mostrou fica parado no lugar (a troca é o fade dela) */
+.tbo--da-capa .tbo__id, .tbo--da-capa .tbo__preco-linha, .tbo--da-capa .tbo__acoes, .tbo--da-capa .tbo__palco { animation: none; }
 .tbo__id { grid-area: id; display: flex; align-items: center; gap: 12px 14px; flex-wrap: wrap; min-width: 0; }
 .tbo__logo { width: 40px; height: 40px; border-radius: var(--nu-r-chip); background: var(--nu-white); object-fit: cover; box-shadow: var(--nu-shadow-branco); }
 .tbo__quem { min-width: 0; }
