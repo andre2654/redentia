@@ -175,3 +175,25 @@ export function janelaDaAbertura(now = new Date()): { dia: string; abreEm: numbe
   const antes = estado === 'fechada' ? hoje : pregaoAnterior(dia)
   return { dia, abreEm: emSP(dia, 10), fechouEm: antes ? emSP(antes, horaDoFechamento(antes)) : null }
 }
+
+/** Os momentos da bolsa que o dev força na régua. */
+export type MomentoDoDev = 'pre' | 'aberta' | 'fechada' | 'feriado'
+
+/**
+ * Só para o dev (o ?regua-estado= da régua e a vitrine /dev/regua): o relógio
+ * de um momento da bolsa. 9h, 14h ou 19h do pregão de hoje (no fim de semana e
+ * no feriado, do próximo pregão), ou o meio-dia do próximo feriado da B3 num
+ * dia útil. `dataDeHoje`: o dado da régua passa a ser desse dia ("sobe agora",
+ * "subiu hoje"); antes da abertura e no feriado, o dado segue o do último pregão.
+ * null quando o momento não existe (um feriado fora do calendário).
+ */
+export function relogioDoDev(modo: string, hoje = agoraEmSP().iso): { agora: Date; dataDeHoje: boolean } | null {
+  const dia = semPregao(hoje) ? (proximoPregao(hoje) ?? hoje) : hoje
+  const hora = ({ pre: '09:00', aberta: '14:00', fechada: '19:00' } as Record<string, string>)[modo]
+  if (hora) return { agora: new Date(`${dia}T${hora}:00-03:00`), dataDeHoje: modo !== 'pre' }
+  if (modo === 'feriado') {
+    const f = Object.keys(FERIADOS_B3).find((d) => d >= hoje && new Date(`${d}T12:00:00Z`).getUTCDay() % 6 !== 0)
+    return f ? { agora: new Date(`${f}T12:00:00-03:00`), dataDeHoje: false } : null
+  }
+  return null
+}

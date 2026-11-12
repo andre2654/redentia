@@ -143,6 +143,8 @@ function entrar(i: number) {
 function proxima() {
   entrar((indice.value + 1) % Math.max(1, cenas.value.length))
 }
+// a vitrine do dev (/dev/regua) passa as cenas na mão e recomeça a primeira
+defineExpose({ proxima, doComeco: () => entrar(0) })
 
 let montado = false
 // o momento mudou (abriu, fechou, o fechamento de hoje chegou): a cena que segue valendo fica, a lista recomeça dela

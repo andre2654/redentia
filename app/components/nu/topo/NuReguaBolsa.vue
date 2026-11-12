@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // A régua do mercado, "a bolsa inteira numa linha" (12/11/2026, a opção 1 do
 // esboço que o dono aprovou). Numa linha de 44px: o estado da bolsa; UMA barra
+// (28px de alto, 22 no celular: 12/11/2026, o dono, "mais alta essa barra, com
+// menos padding")
 // com as ações do Ibovespa, da que mais caiu à que mais subiu, a largura pelo
 // peso no índice e a cor por quanto andou (a paleta --nu-mapa-*, validada; a
 // conta em utils/reguaDaBolsa.ts); o número que a barra mostra ("71% do índice
@@ -60,6 +62,8 @@ const props = defineProps<{
   ciclo: number
   /** a cascata desta entrada (sem ela no movimento reduzido) */
   acender: boolean
+  /** a régua do visitante mesmo com sessão, sem a carteira (a vitrine do dev, /dev/regua) */
+  visitante?: boolean
 }>()
 
 const route = useRoute()
@@ -80,7 +84,7 @@ const mercadoCurto = computed<MercadoDoTopo>(() => ({
 /* ————— a carteira de quem assina (só no cliente) ————— */
 const cart = useCarteiraNoTopo()
 const carteira = cart.carteira
-const tickers = computed(() => new Set(carteira.value?.tickers ?? []))
+const tickers = computed(() => new Set(props.visitante ? [] : (carteira.value?.tickers ?? [])))
 const frases = computed(() => (carteira.value?.dia ? frasesDoDia(carteira.value.dia, estado.value, props.agora) : null))
 const alerta = computed(() => !!carteira.value?.dia?.alerta)
 const liberados = computed(() => avisosLiberados(estado.value))
@@ -91,7 +95,7 @@ const avisoDoMotor = computed(() => cart.aviso.urgente.value && liberados.value)
 // (avisosLiberados) o selo é só o do dia, sem esperar o motor.
 const motorPendente = computed(() => liberados.value && !cart.aviso.consultado.value)
 const legCarteira = computed(() => {
-  if (!frases.value) return null
+  if (props.visitante || !frases.value) return null
   const selo = seloDoDia(frases.value, alerta.value, avisoDoMotor.value)
   return legendaDaCarteira(carteira.value?.dia?.carteiraPct, selo?.tom === 'verde' && motorPendente.value ? null : selo)
 })
@@ -101,9 +105,9 @@ const quantasSuas = computed(() => pedacos.value.reduce((n, p) => n + (tickers.v
 const reservar = ref(false)
 
 // o vigia não disputa com a página: a consulta sai adiada (a home pergunta na hora, lá o aviso é o assunto)
-watch(() => cart.estado.value === 'pronto' && liberados.value && !alerta.value, (pode) => { if (pode) void cart.aviso.consultar({ adiado: true }) }, { immediate: true })
+watch(() => !props.visitante && cart.estado.value === 'pronto' && liberados.value && !alerta.value, (pode) => { if (pode) void cart.aviso.consultar({ adiado: true }) }, { immediate: true })
 watch(token, (novo, antigo) => {
-  if (novo === antigo) return
+  if (novo === antigo || props.visitante) return
   cart.esquecer(!novo)
   reservar.value = !!novo
   if (novo) void cart.carregar()
@@ -245,8 +249,8 @@ watch(() => props.fase, async (fase, antes) => {
 }, { immediate: true })
 
 onMounted(() => {
-  reservar.value = isAuthenticated.value
-  if (isAuthenticated.value) void cart.carregar()
+  reservar.value = !props.visitante && isAuthenticated.value
+  if (reservar.value) void cart.carregar()
 })
 onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
 </script>
@@ -355,12 +359,12 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
 
 /* ——— a barra ——— */
 .nrb__barra {
-  position: relative; flex: 1 1 auto; min-width: 48px; height: 18px;
+  position: relative; flex: 1 1 auto; min-width: 48px; height: 28px;
   border-radius: var(--nu-r-tag-p); cursor: pointer; touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
-/* o alvo do ponteiro é a altura toda da régua, não só os 18px da barra */
-.nrb__barra::before { content: ''; position: absolute; inset: -13px 0; }
+/* o alvo do ponteiro é a altura toda da régua, não só os 28px da barra */
+.nrb__barra::before { content: ''; position: absolute; inset: -8px 0; }
 .nrb__faixa {
   position: relative; display: flex; width: 100%; height: 100%;
   border-radius: var(--nu-r-tag-p); overflow: hidden;
@@ -397,7 +401,7 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
 /* o ticker dentro: só no pedaço que tem uns 62px (a largura real, pelo container) */
 /* o rótulo aparece e some em fade quando o pedaço passa dos 62px (a barra crescendo não estala) */
 .nrb__rotulo {
-  position: relative; display: block; opacity: 0; transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor); font-size: 11px; font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto);
+  position: relative; display: block; opacity: 0; transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor); font-size: 12px; font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto);
   line-height: 1; white-space: nowrap; pointer-events: none; user-select: none;
 }
 @container (min-width: 62px) { .nrb__rotulo { opacity: 1; } }
@@ -473,7 +477,7 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
   .nrb__t-longo { display: none; }
   .nrb__t-medio, .nrb__t-longo.nrb__t-medio { display: inline; }
 }
-/* ——— celular: "10h", a barra de 14px sem rótulo e "71% subiu" ——— */
+/* ——— celular: "10h", a barra de 22px sem rótulo e "71% subiu" ——— */
 @media (max-width: 640px) {
   .nrb { font-size: var(--nu-fs-xs); }
   .nrb__lado-in { gap: 10px; }
@@ -481,8 +485,8 @@ onBeforeUnmount(() => { if (tApaga) clearTimeout(tApaga) })
   .nrb__lado--dir .nrb__lado-in { padding-left: 10px; }
   .nrb__estado-longo, .nrb__fio { display: none; }
   .nrb__estado-curto { display: inline-flex; }
-  .nrb__barra { height: 14px; min-width: 40px; }
-  .nrb__barra::before { inset: -11px 0; }
+  .nrb__barra { height: 22px; min-width: 40px; }
+  .nrb__barra::before { inset: -7px 0; }
   .nrb__rotulo { display: none !important; }
   .nrb__t-longo, .nrb__t-medio, .nrb__t-longo.nrb__t-medio { display: none; }
   .nrb__t-curto { display: inline; }

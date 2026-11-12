@@ -16,7 +16,7 @@ import {
   pedacosDaRegua, pontosDoPapel, rotuloDaBarra, tintaDoPedaco, type AcaoDoIndice,
 } from '../app/utils/reguaDaBolsa.ts'
 import { NOTA_DO_ATRASO, momentoDoDado } from '../app/utils/topo.ts'
-import { estadoDoPregao, janelaDaAbertura, pregaoAnterior } from '../app/utils/pregao.ts'
+import { estadoDoPregao, janelaDaAbertura, pregaoAnterior, relogioDoDev } from '../app/utils/pregao.ts'
 import { frasesDoDia, montarResumoDoDia, seloDoDia } from '../app/utils/diaDaCarteira.ts'
 
 const ler = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8')
@@ -396,4 +396,47 @@ test('a régua: o /assinar segue vendendo, o dev força o estado e nada da carte
   }
   // a barra que gruda embaixo da régua usa a altura que ela publica
   assert.match(ler('app/components/teses/TesesGrade.vue'), /top: calc\(var\(--nuh-h, 72px\) \+ var\(--nut-h, 44px\) - 1px\)/)
+})
+
+test('o relógio do dev: 9h, 14h e 19h do pregão de hoje (ou do próximo) e o próximo feriado num dia útil', () => {
+  const quinta = '2026-11-12'
+  assert.deepEqual(relogioDoDev('pre', quinta), { agora: sp('2026-11-12T09:00:00'), dataDeHoje: false })
+  assert.deepEqual(relogioDoDev('aberta', quinta), { agora: sp('2026-11-12T14:00:00'), dataDeHoje: true })
+  assert.deepEqual(relogioDoDev('fechada', quinta), { agora: sp('2026-11-12T19:00:00'), dataDeHoje: true })
+  // sábado: o próximo pregão é segunda
+  assert.deepEqual(relogioDoDev('aberta', '2026-11-14'), { agora: sp('2026-11-16T14:00:00'), dataDeHoje: true })
+  // o feriado: Consciência Negra, sexta 20/11
+  assert.deepEqual(relogioDoDev('feriado', quinta), { agora: sp('2026-11-20T12:00:00'), dataDeHoje: false })
+  assert.equal(relogioDoDev('qualquer', quinta), null)
+})
+
+test('a vitrine do dev e a barra mais alta: os modos lado a lado, o esqueleto com a medida da barra', () => {
+  const vitrine = ler('app/pages/dev/regua.vue')
+  // só no dev: a rota sai do build (pages:extend) e o middleware devolve 404
+  assert.match(vitrine, /if \(!import\.meta\.dev\) return abortNavigation\(createError\(\{ statusCode: 404/)
+  assert.match(vitrine, /robots: 'noindex, nofollow'/)
+  for (const c of ["cena: 'contagem'", "cena: 'fechamento'", "fase: 'textos'", "fase: 'larga'", "m: 'feriado'", "peca: 'esqueleto'"]) assert.ok(vitrine.includes(c), c)
+  assert.match(vitrine, /<NuReguaEsqueleto/)
+  assert.match(vitrine, /:visitante="l\.visitante"/)
+  assert.match(vitrine, /palco\?\.proxima\(\)/)
+  assert.match(vitrine, /src="\/dev\/regua\?so=linhas"/)
+  // o palco abre a troca de cena para a vitrine; a régua do site usa o mesmo relógio do dev
+  assert.match(ler('app/components/nu/topo/NuReguaPalco.vue'), /defineExpose\(\{ proxima, doComeco: \(\) => entrar\(0\) \}\)/)
+  const ticker = ler('app/components/nu/NuMarketTicker.vue')
+  assert.match(ticker, /relogioDoDev\(forcado\)/)
+  assert.match(ticker, /<NuReguaEsqueleto v-if="modo === 'esqueleto'" \/>/)
+  // a barra: 28px na linha de 44 (22 na de 36, no celular), e o esqueleto na mesma medida
+  const barra = ler('app/components/nu/topo/NuReguaBolsa.vue')
+  const esq = ler('app/components/nu/topo/NuReguaEsqueleto.vue')
+  assert.match(barra, /\.nrb__barra \{\n  position: relative; flex: 1 1 auto; min-width: 48px; height: 28px;/)
+  assert.match(barra, /\.nrb__barra::before \{ content: ''; position: absolute; inset: -8px 0; \}/)
+  assert.match(barra, /\.nrb__barra \{ height: 22px; min-width: 40px; \}/)
+  assert.match(esq, /<NuSkeleton variant="block" height="28px"/)
+  assert.match(esq, /\.nre__barra \{ height: 22px !important;/)
+  assert.match(ticker, /height: 44px;/)
+  assert.match(ticker, /\.nut-regua--mapa, \.nut-regua--esqueleto \{ height: 36px; \}/)
+  // o visitante mesmo com sessão (a vitrine): sem a listra, sem "Sua carteira" e sem buscar a carteira
+  assert.match(barra, /const tickers = computed\(\(\) => new Set\(props\.visitante \? \[\] :/)
+  assert.match(barra, /if \(props\.visitante \|\| !frases\.value\) return null/)
+  assert.match(barra, /reservar\.value = !props\.visitante && isAuthenticated\.value/)
 })
