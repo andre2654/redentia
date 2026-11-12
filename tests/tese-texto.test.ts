@@ -8,7 +8,7 @@ import assert from 'node:assert/strict'
 import {
   dataBr,
   dataCurta,
-  dataPorExtenso,
+  dataDoExtenso,
   marcadoresDoTexto,
   partesDoCatalyst,
   partesDoStatus,
@@ -40,12 +40,12 @@ const SEM_PREFIXO = /Revalida(?:ç|c)(?:ã|a)o de [^:]{1,40}:\s*/g
 /* ————— datas ————— */
 
 test('a data por extenso vira AAAA-MM-DD, com 1º e com março', () => {
-  assert.equal(dataPorExtenso('10 de novembro de 2026'), '2026-11-10')
-  assert.equal(dataPorExtenso('1º de outubro de 2026'), '2026-10-01')
-  assert.equal(dataPorExtenso('3 de março de 2027'), '2027-03-03')
-  assert.equal(dataPorExtenso('3 de marco de 2027'), '2027-03-03')
-  assert.equal(dataPorExtenso('ontem'), null)
-  assert.equal(dataPorExtenso('40 de maio de 2026'), null)
+  assert.equal(dataDoExtenso('10 de novembro de 2026'), '2026-11-10')
+  assert.equal(dataDoExtenso('1º de outubro de 2026'), '2026-10-01')
+  assert.equal(dataDoExtenso('3 de março de 2027'), '2027-03-03')
+  assert.equal(dataDoExtenso('3 de marco de 2027'), '2027-03-03')
+  assert.equal(dataDoExtenso('ontem'), null)
+  assert.equal(dataDoExtenso('40 de maio de 2026'), null)
   assert.equal(dataCurta('2026-11-10'), '10/11')
   assert.equal(dataBr('2026-11-10'), '10/11/2026')
   assert.equal(dataCurta(null), '')

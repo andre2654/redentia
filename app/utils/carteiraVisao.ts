@@ -10,8 +10,10 @@ const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFr
 
 export const brl0 = (v: number) => `R$ ${nf0.format(Math.round(v))}`
 export const brl2 = (v: number) => `R$ ${nf2.format(v)}`
-/** 'R$ 204 mil' para valores grandes; 'R$ 9.800' abaixo de 10 mil */
-export function brlCurto(v: number): string {
+/** 'R$ 204 mil' para valores grandes; 'R$ 9.800' abaixo de 10 mil. (O nome não é brlCurto: esse é o
+ * das calculadoras, em calculadora-frase.ts, que diz 'mi' nos milhões; com dois brlCurto o auto-import
+ * pegava este e as calculadoras mostravam 'R$ 11.390 mil'.) */
+export function brlMil(v: number): string {
   if (Math.abs(v) >= 10_000) return `R$ ${nf0.format(Math.round(v / 1000))} mil`
   return brl0(v)
 }

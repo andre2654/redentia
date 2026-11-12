@@ -20,7 +20,7 @@ const MESES: Record<string, number> = {
 const semAcento = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '')
 
 /** "10 de novembro de 2026" | "1º de outubro de 2026" → '2026-11-10'; fora do formato, null. */
-export function dataPorExtenso(texto: string): string | null {
+export function dataDoExtenso(texto: string): string | null {
   const m = /^\s*(\d{1,2})\s*(?:º|°|o)?\s+de\s+([A-Za-zçÇ]+)\s+de\s+(\d{4})\s*$/.exec(semAcento(texto).replace(/ç/g, 'c'))
   if (!m) return null
   const mes = MESES[m[2]!.toLowerCase()]
@@ -69,7 +69,7 @@ export function partesDoStatus(status: string | null | undefined): PartesDoStatu
   const m = REVALIDACAO.exec(cru)
   if (m) {
     const antes = cru.slice(0, m.index).trim()
-    const data = dataPorExtenso(m[1]!)
+    const data = dataDoExtenso(m[1]!)
     const depois = cru.slice(m.index + m[0].length).trim()
     // o que vem antes do marcador é o selo quando é curto; se não for, é texto e fica
     const seloCurto = antes.length > 0 && antes.length <= 24
@@ -103,7 +103,7 @@ export function partesDoCatalyst(catalyst: string | null | undefined): PartesDoC
   const marcas: { ini: number; fim: number; data: string | null }[] = []
   REVALIDACAO.lastIndex = 0
   for (let m = REVALIDACAO.exec(cru); m; m = REVALIDACAO.exec(cru)) {
-    marcas.push({ ini: m.index, fim: m.index + m[0].length, data: dataPorExtenso(m[1]!) })
+    marcas.push({ ini: m.index, fim: m.index + m[0].length, data: dataDoExtenso(m[1]!) })
   }
   if (!marcas.length) return { gatilho: cru, revisoes: [] }
   const revisoes = marcas.map((mk, i) => {

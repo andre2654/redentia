@@ -6,7 +6,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { CENARIOS, relatorioMock, visaoMock } from '../app/dev/carteiraVisaoMock.ts'
-import { brlCurto, cobertura, confereComOTopo, ehRendaFixa, fraseDosAtivos, grupoDaPosicao, gruposDeAvisos, nomeCurto, pctTxt, quandoAtualizou, rotuloDaPosicao, semQuebraNoReal, textoDosRetidos, tituloDosAvisos, avisosLiberados } from '../app/utils/carteiraVisao.ts'
+import { brlMil, cobertura, confereComOTopo, ehRendaFixa, fraseDosAtivos, grupoDaPosicao, gruposDeAvisos, nomeCurto, pctTxt, quandoAtualizou, rotuloDaPosicao, semQuebraNoReal, textoDosRetidos, tituloDosAvisos, avisosLiberados } from '../app/utils/carteiraVisao.ts'
 import { mesesEmOrdem } from '../app/utils/impostoVisao.ts'
 import { mediana } from '../app/utils/relatorioCarteira.ts'
 import type { MesImposto } from '../app/types/carteiraVisao.ts'
@@ -148,8 +148,8 @@ test('números e datas em pt-BR', () => {
   assert.equal(pctTxt(6.02), '6%')
   assert.equal(pctTxt(4.51), '4,5%')
   assert.equal(pctTxt(0.4), 'menos de 1%')
-  assert.equal(brlCurto(203544), 'R$ 204 mil')
-  assert.equal(brlCurto(9800), 'R$ 9.800')
+  assert.equal(brlMil(203544), 'R$ 204 mil')
+  assert.equal(brlMil(9800), 'R$ 9.800')
   const agora = new Date(2026, 10, 6, 15, 0)
   assert.equal(quandoAtualizou(new Date(2026, 10, 6, 9, 12).toISOString(), agora), 'hoje, 9h12')
   assert.equal(quandoAtualizou(new Date(2026, 10, 5, 18, 40).toISOString(), agora), 'ontem, 18h40')
