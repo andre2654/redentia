@@ -16,8 +16,8 @@
  */
 import type { BolsaDoDia } from '~/utils/bolsaDoDia'
 
-/** o que a régua lê: as ações (a barra), o índice e o que a frase do fechamento diz (a contagem, a sequência, o mês, a série) */
-export type DadoDaRegua = Pick<BolsaDoDia, 'acoes' | 'ibov' | 'contagem' | 'seguidas' | 'mes' | 'diarias'>
+/** o que a régua lê: as ações (a barra), o índice, o que a frase do fechamento diz (a contagem, a sequência, o mês, a série) e o pregão minuto a minuto (a faixa do fechamento) */
+export type DadoDaRegua = Pick<BolsaDoDia, 'acoes' | 'ibov' | 'contagem' | 'seguidas' | 'mes' | 'diarias'> & Partial<Pick<BolsaDoDia, 'intradia'>>
 export type EstadoDaRegua = 'parado' | 'carregando' | 'pronto' | 'erro'
 
 /** o cache do /api/bolsa-do-dia: renovar antes disso só devolve a mesma resposta */
@@ -34,7 +34,7 @@ export function useReguaDaBolsa() {
 
   function guardar(d: BolsaDoDia | null | undefined) {
     bolsa.value = d
-      ? { acoes: Array.isArray(d.acoes) ? d.acoes : [], ibov: d.ibov ?? null, contagem: d.contagem ?? null, seguidas: d.seguidas ?? null, mes: d.mes ?? null, diarias: Array.isArray(d.diarias) ? d.diarias : [] }
+      ? { acoes: Array.isArray(d.acoes) ? d.acoes : [], ibov: d.ibov ?? null, contagem: d.contagem ?? null, seguidas: d.seguidas ?? null, mes: d.mes ?? null, diarias: Array.isArray(d.diarias) ? d.diarias : [], intradia: d.intradia ?? null }
       : null
     buscadoEm.value = Date.now()
     estado.value = 'pronto'

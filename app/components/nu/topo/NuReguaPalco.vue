@@ -11,7 +11,8 @@
 //    NuReguaRelogio: a faixa do tempo até a abertura, no nível da barra) e a
 //    barra do último pregão;
 //  - aberta: só a barra, ao vivo (o ciclo roda uma vez e ela fica larga);
-//  - depois do fechamento: a frase do fechamento e a barra de hoje;
+//  - depois do fechamento: o fechamento (a frase e o pregão do dia desenhado numa
+//    faixa, NuReguaPregao; sem o minuto a minuto, só a frase) e a barra de hoje;
 //  - fim de semana e feriado: a barra do último pregão e a contagem.
 // A barra, a cada entrada: se forma (a cascata), os textos dos lados aparecem e,
 // 15 s depois, somem enquanto ela cresce até a coluna (NuReguaBolsa, `fase`).
@@ -28,8 +29,8 @@
 // e a aba escondida.
 import type { MercadoDoTopo } from '~/utils/topo'
 import type { DadoDaRegua } from '~/composables/useReguaDaBolsa'
-import { DURACAO_DA_CENA, TEXTOS_DA_BARRA, cenasDaRegua, contagemDaRegua, fechamentoDaRegua, reguaDoRelogio, type CenaDaRegua } from '~/utils/reguaDaBolsa'
-import { agoraEmSP, janelaDaAbertura } from '~/utils/pregao'
+import { DURACAO_DA_CENA, TEXTOS_DA_BARRA, cenasDaRegua, contagemDaRegua, faixaDoPregao, fechamentoDaRegua, reguaDoRelogio, type CenaDaRegua } from '~/utils/reguaDaBolsa'
+import { agoraEmSP, horaDoFechamento, janelaDaAbertura } from '~/utils/pregao'
 
 const props = defineProps<{
   bolsa: DadoDaRegua
@@ -57,6 +58,15 @@ const reguaDoTempo = computed(() => (janela.value ? reguaDoRelogio(janela.value,
 const fechamento = computed(() => {
   const ib = props.bolsa.ibov
   return fechamentoDaRegua({ ...props.bolsa, ibov: ib ? { pct: ib.pct, data: props.data ?? ib.data } : null }, hoje.value)
+})
+/** o fechamento desenhado: o perfil do pregão das 10h ao fechamento (NuReguaPregao); sem o minuto a minuto, só a frase */
+const faixaDoDia = computed(() => (fechamento.value ? faixaDoPregao(props.bolsa.intradia, props.bolsa.ibov, horaDoFechamento(hoje.value)) : null))
+/** com a faixa, a frase se divide: o fechamento à esquerda, e à direita quantas subiram e o fato do dia */
+const depoisDoFechamento = computed(() => {
+  const f = fechamento.value
+  if (!f) return null
+  const solto = (t: string) => t.replace(/^ · /, '')
+  return f.conta ? { conta: solto(f.conta), fato: f.fato } : f.fato ? { conta: solto(f.fato), fato: '' } : null
 })
 const cenas = computed<CenaDaRegua[]>(() => {
   const f = props.cenaFixa
@@ -228,13 +238,23 @@ onBeforeUnmount(() => {
       <NuReguaRelogio v-if="reguaDoTempo" :regua="reguaDoTempo" :ponta="contagem.ponta" :ativa="cena === 'contagem'" :vivo="contagem.segundos" />
     </div>
 
-    <!-- o fechamento: os fatos do dia, só os que o dado traz -->
+    <!-- o fechamento: os fatos do dia, só os que o dado traz. Com o pregão minuto a minuto, o dia
+         desenhado numa faixa (NuReguaPregao) entre o fechamento e os outros fatos; sem ele, a frase inteira -->
     <div
       v-if="fechamento && cenas.includes('fechamento')" class="nrp__cena nrp__fechamento" :class="{ 'nrp__cena--ativa': cena === 'fechamento', 'nrp__cena--saindo': saindo === 'fechamento' }"
       :aria-hidden="cena !== 'fechamento' || undefined"
     >
       <span class="nrp__ponto" aria-hidden="true" />
-      <span class="nrp__texto">
+      <template v-if="faixaDoDia">
+        <span class="nrp__texto">
+          <span class="nrp__t-longo">{{ fechamento.antes }} <b class="nrp__pct" :class="`nrp__pct--${fechamento.tom}`">{{ fechamento.pct }}</b></span>
+          <span class="nrp__t-curto">{{ fechamento.curto }} <b class="nrp__pct" :class="`nrp__pct--${fechamento.tom}`">{{ fechamento.pct }}</b></span>
+        </span>
+        <span class="nrp__fio" aria-hidden="true" />
+        <NuReguaPregao :faixa="faixaDoDia" :ativa="cena === 'fechamento'" />
+        <span v-if="depoisDoFechamento" class="nrp__depois">{{ depoisDoFechamento.conta }}<span class="nrp__fato">{{ depoisDoFechamento.fato }}</span></span>
+      </template>
+      <span v-else class="nrp__texto">
         <span class="nrp__t-longo">{{ fechamento.antes }} <b class="nrp__pct" :class="`nrp__pct--${fechamento.tom}`">{{ fechamento.pct }}</b>{{ fechamento.conta }}<span class="nrp__fato">{{ fechamento.fato }}</span></span>
         <span class="nrp__t-curto">{{ fechamento.curto }} <b class="nrp__pct" :class="`nrp__pct--${fechamento.tom}`">{{ fechamento.pct }}</b></span>
       </span>
@@ -278,8 +298,13 @@ onBeforeUnmount(() => {
 .nrp__contagem .nrp__texto { display: inline-grid; justify-items: start; }
 .nrp__contagem .nrp__texto > * { grid-area: 1 / 1; }
 .nrp__fantasma { visibility: hidden; font-weight: var(--nu-w-medio); }
-/* o fio entre a frase e a régua do relógio: o mesmo da barra (16px de respiro de cada lado) */
+/* o fio entre a frase e a faixa (a régua do relógio, o pregão do dia): o mesmo da barra (16px de respiro de cada lado) */
 .nrp__fio { flex: none; width: 1px; height: 16px; margin: 0 16px; background: var(--nu-line-2); }
+/* à direita da faixa do fechamento: quantas subiram e o fato do dia, como o número à direita da barra */
+.nrp__depois {
+  flex: none; padding-left: 16px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto);
+  white-space: nowrap; font-variant-numeric: tabular-nums;
+}
 .nrp__pct { font-weight: var(--nu-w-medio); }
 .nrp__pct--up { color: var(--nu-green-text); }
 .nrp__pct--down { color: var(--nu-red-text); }
@@ -288,6 +313,7 @@ onBeforeUnmount(() => {
 @media (max-width: 1023px) {
   .nrp__fato { display: none; }
   .nrp__fio { margin: 0 12px; }
+  .nrp__depois { padding-left: 12px; }
 }
 @media (max-width: 640px) {
   .nrp__texto { font-size: var(--nu-fs-xs); }
@@ -295,6 +321,7 @@ onBeforeUnmount(() => {
   .nrp__t-curto { display: inline; }
   .nrp__ponto { margin-right: 6px; }
   .nrp__fio { width: 0; margin: 0 5px; }
+  .nrp__depois { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nrp { animation: none; }

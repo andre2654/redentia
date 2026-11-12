@@ -11,8 +11,8 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import {
-  BARRA_MAIS_LARGA, DURACAO_DA_CENA, FOLGA_DA_AGULHA, FORCA_DO_RELOGIO, LARGURA_DO_ROTULO, ROTULO_DO_RELOGIO_ATE, TEXTOS_DA_BARRA, TINTA_CLARA_DESDE, cenasDaRegua,
-  contagemDaRegua, estadoCurto, reguaDoRelogio,
+  AMPLITUDE_MINIMA, BARRA_MAIS_LARGA, DURACAO_DA_CENA, FOLGA_DA_AGULHA, FORCA_DO_RELOGIO, LARGURA_DO_ROTULO, ROTULO_DO_RELOGIO_ATE, TETO_DO_INDICE, TEXTOS_DA_BARRA,
+  TINTA_CLARA_DESDE, cenasDaRegua, contagemDaRegua, estadoCurto, faixaDoPregao, forcaDoIndice, reguaDoRelogio,
   fatiaArredondada, fatiaQueSubiu, fechamentoDaRegua, forcaDaCor, legendaDaCarteira, legendaDaRegua as legendaComMomento, pedacoNaPosicao,
   pedacosDaRegua, pontosDoPapel, rotuloDaBarra, tintaDoPedaco, type AcaoDoIndice,
 } from '../app/utils/reguaDaBolsa.ts'
@@ -537,4 +537,119 @@ test('a régua do relógio veste a paleta: o carvão lê em toda a rampa do azul
   assert.match(palco, /<b class="nrp__valor">\{\{ contagem\.partes\[1\] \}\}<\/b>/)
   assert.match(palco, /<span v-if="contagem\.hoje" class="nrp__fantasma" aria-hidden="true">/)
   assert.doesNotMatch(palco, /nrp__linha|nrp__cheia|nrp__hora/)
+})
+
+/** O pregão real de 12/11/2026 (Ibovespa 171.324, −0,43%), montado como a rota monta: os campos que a régua lê, com o minuto a minuto da B3. */
+const dia12 = JSON.parse(ler('tests/fixtures/bolsa-do-dia-2026-11-12.json')) as {
+  ibov: { pontos: number; pct: number; data: string }
+  intradia: { data: string; anterior: number; pontos: [number, number][] }
+  acoes: AcaoDoIndice[]
+}
+/** um pregão de mentira, um ponto por minuto, em % sobre o fechamento de ontem (100.000 pontos) */
+const pregao = (minutos: number, pct: (m: number) => number) => ({ anterior: 100_000, pontos: Array.from({ length: minutos }, (_, m) => [m, 100_000 * (1 + pct(m) / 100)] as [number, number]) })
+const alturas = (linha: string) => linha.slice(1).split(' L').map((p) => Number(p.split(',')[1]))
+
+test('o pregão do dia numa faixa: o perfil real de 12/11/2026, das 10h ao fechamento, contra o fechamento de ontem', () => {
+  assert.deepEqual([dia12.ibov.data, dia12.intradia.data, dia12.intradia.pontos.length], ['2026-11-12', '2026-11-12', 495])
+  const f = faixaDoPregao(dia12.intradia, dia12.ibov, 18)!
+  // a janela: das 10h às 18h (480 minutos), com um fio em cada hora cheia depois da abertura
+  assert.equal(f.fim, 480)
+  assert.deepEqual(f.horas, [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875])
+  // o dia inteiro abaixo de ontem: o zero fica em cima e a área desce dele; não há lado da alta
+  assert.equal(f.base, 0)
+  assert.deepEqual([Math.round(f.minimo * 100) / 100, Math.round(f.maximo * 100) / 100], [-1.23, -0])
+  assert.equal(f.corAlta, null)
+  assert.equal(f.corQueda, 'color-mix(in oklab, var(--nu-mapa-queda) 78.5%, var(--nu-mapa-queda-claro))') // a cor do índice: −1,23% é raiz(1,23 / 2)
+  // o desenho: fecha no zero, tem um ponto por minuto e nenhum número quebrado
+  assert.match(f.area, /^M0,0 L0,0\.3 L2\.1,2\.6 /)
+  assert.match(f.area, / L1000,32\.3 L1000,0 Z$/)
+  assert.match(f.linha, /^M0,0\.3 L2\.1,2\.6 /)
+  assert.doesNotMatch(f.area + f.linha, /NaN|Infinity|undefined/)
+  const ys = alturas(f.linha)
+  assert.equal(ys.length, 481)
+  assert.ok(Math.min(...ys) >= 0 && Math.max(...ys) <= 100)
+  // o extremo do dia chega a 92,6% da altura (8% de folga)
+  assert.equal(Math.max(...ys), 92.6)
+  // a ponta da janela é o fechamento oficial (o leilão sai depois das 18h): −0,43%, e não os −0,60% das 17h59
+  assert.deepEqual(ys.slice(-2), [44.9, 32.3])
+  // a ponta: os pontos do fechamento, na cor do dia (a tinta que mais contrasta, a regra da barra)
+  assert.deepEqual(f.ponta, { rotulo: '171.324', fundo: 'color-mix(in oklab, var(--nu-mapa-queda) 46.4%, var(--nu-mapa-queda-claro))', tinta: 'escura' })
+})
+
+test('a faixa do pregão: a alta sobe do chão, o dia que cruza ontem ganha os dois lados, o dia parado fica baixo', () => {
+  // a força do índice: a curva dos papéis (raiz) com o teto dele (2%, contra 5%)
+  assert.equal(TETO_DO_INDICE, 2)
+  assert.deepEqual([0.03, 0.5, 2, 3].map((p) => Math.round(forcaDoIndice(p) * 1000) / 1000), [0, 0.5, 1, 1])
+  assert.equal(forcaDoIndice(-0.5), forcaDoIndice(0.5))
+  // um dia de alta até +1,5%: o zero embaixo, a linha sobe, a ponta no verde com a tinta branca
+  const alta = faixaDoPregao(pregao(481, (m) => (m / 480) * 1.5), { pontos: 101_500, pct: 1.5 }, 18)!
+  assert.deepEqual([alta.base, alta.corQueda], [100, null])
+  assert.equal(alta.corAlta, 'color-mix(in oklab, var(--nu-mapa-alta) 86.6%, var(--nu-mapa-alta-claro))')
+  assert.deepEqual(alta.ponta, { rotulo: '101.500', fundo: 'color-mix(in oklab, var(--nu-mapa-alta) 86.6%, var(--nu-mapa-alta-claro))', tinta: 'clara' })
+  assert.deepEqual([alturas(alta.linha)[0], alturas(alta.linha).at(-1)], [100, 7.4])
+  assert.match(alta.area, /^M0,100 L0,100 /)
+  // um dia que cruzou o fechamento de ontem e voltou a ele: o zero no meio, os dois lados, a ponta na areia
+  const misto = faixaDoPregao(pregao(481, (m) => Math.sin((m / 480) * Math.PI * 2) * 0.8), { pontos: 100_000, pct: 0 }, 18)!
+  assert.equal(misto.base, 50)
+  assert.ok(misto.corQueda && misto.corAlta)
+  assert.deepEqual(misto.ponta, { rotulo: '100.000', fundo: 'var(--nu-mapa-zero)', tinta: 'escura' })
+  // um dia parado (±0,04%): a escala não estica além da amplitude mínima, e o perfil usa um quarto da altura
+  assert.equal(AMPLITUDE_MINIMA, 0.3)
+  const parado = alturas(faixaDoPregao(pregao(481, (m) => Math.sin(m / 30) * 0.04), { pontos: 100_010, pct: 0.01 }, 18)!.linha)
+  assert.deepEqual([Math.min(...parado), Math.max(...parado)], [37.7, 62.3])
+  // o pregão que fecha às 17h (o horário de verão dos EUA): 420 minutos, seis fios
+  const cedo = faixaDoPregao(pregao(421, (m) => -m / 420), { pontos: 99_000, pct: -1 }, 17)!
+  assert.deepEqual([cedo.fim, cedo.horas.length], [420, 6])
+  // sem a série, com menos de uma hora dela, cortada antes do fechamento ou começando tarde: nada (a cena fica só com a frase)
+  assert.equal(faixaDoPregao(null, { pontos: 1, pct: 1 }, 18), null)
+  assert.equal(faixaDoPregao(pregao(40, () => 1), { pontos: 101_000, pct: 1 }, 18), null)
+  assert.equal(faixaDoPregao(pregao(300, (m) => m / 300), { pontos: 101_000, pct: 1 }, 18), null)
+  const tarde = pregao(481, () => 1)
+  assert.equal(faixaDoPregao({ ...tarde, pontos: tarde.pontos.slice(30) }, { pontos: 101_000, pct: 1 }, 18), null)
+  assert.equal(faixaDoPregao(pregao(481, () => 1), null, 18), null)
+  assert.equal(faixaDoPregao({ anterior: 0, pontos: pregao(481, () => 1).pontos }, { pontos: 101_000, pct: 1 }, 18), null)
+})
+
+test('a cena do fechamento: o pregão do dia na faixa entre o fechamento e os outros fatos; sem o minuto a minuto, a frase', () => {
+  const palco = ler('app/components/nu/topo/NuReguaPalco.vue')
+  assert.match(palco, /const faixaDoDia = computed\(\(\) => \(fechamento\.value \? faixaDoPregao\(props\.bolsa\.intradia, props\.bolsa\.ibov, horaDoFechamento\(hoje\.value\)\) : null\)\)/)
+  assert.match(palco, /<template v-if="faixaDoDia">/)
+  assert.match(palco, /<NuReguaPregao :faixa="faixaDoDia" :ativa="cena === 'fechamento'" \/>/)
+  assert.match(palco, /<span v-if="depoisDoFechamento" class="nrp__depois">\{\{ depoisDoFechamento\.conta \}\}<span class="nrp__fato">\{\{ depoisDoFechamento\.fato \}\}<\/span><\/span>/)
+  // a frase inteira segue de reserva
+  assert.match(palco, /<span v-else class="nrp__texto">\s*<span class="nrp__t-longo">\{\{ fechamento\.antes \}\} <b class="nrp__pct"[^>]*>\{\{ fechamento\.pct \}\}<\/b>\{\{ fechamento\.conta \}\}/)
+  // a régua guarda o minuto a minuto que a rota já manda
+  const dado = ler('app/composables/useReguaDaBolsa.ts')
+  assert.match(dado, /Partial<Pick<BolsaDoDia, 'intradia'>>/)
+  assert.match(dado, /intradia: d\.intradia \?\? null \}/)
+  // a peça: irmã da régua do relógio (a mesma altura, o mesmo raio, a ponta), decorativa, só token
+  const peca = ler('app/components/nu/topo/NuReguaPregao.vue')
+  const relogio = ler('app/components/nu/topo/NuReguaRelogio.vue')
+  assert.match(peca, /<span class="nrd" :class="\{ 'nrd--ativa': ativa \}" aria-hidden="true">/)
+  assert.match(peca, /\.nrd \{\n  --nrd-raio: var\(--nu-r-tag-p\);\n  position: relative; flex: 1 1 auto; min-width: 48px; height: 28px; display: flex;/)
+  assert.match(peca, /\.nrd \{ height: 22px; min-width: 40px; \}/)
+  for (const medida of [/flex: none; min-width: 52px; padding: 0 12px; display: grid; place-items: center;/, /min-width: 40px; padding: 0 8px;/]) {
+    assert.match(peca, medida)
+    assert.match(relogio, medida)
+  }
+  assert.match(peca, /\.nrd__mapa \{[^}]*background: var\(--nu-mapa-zero\);/)
+  assert.match(peca, /\.nrd__linha--queda \{ stroke: var\(--nu-mapa-queda\); \}/)
+  assert.match(peca, /\.nrd__linha--alta \{ stroke: var\(--nu-mapa-alta\); \}/)
+  assert.match(peca, /vector-effect: non-scaling-stroke/)
+  // no SVG, as medidas que mudam vão como atributo (na hidratação o Vue tentava gravar como propriedade e avisava)
+  assert.doesNotMatch(peca, /:(y|y1|y2|height)="/)
+  assert.equal((peca.match(/:(y|y1|y2|height)\.attr="/g) ?? []).length, 7)
+  // o dia se redesenha a cada entrada, e não com movimento reduzido
+  assert.match(peca, /\.nrd--ativa \.nrd__desenho \{ animation: nrd-desenha /)
+  assert.match(peca, /@keyframes nrd-desenha \{ from \{ clip-path: inset\(0 100% 0 0\); \} to \{ clip-path: inset\(0 0 0 0\); \} \}/)
+  const css = peca.slice(peca.indexOf('<style')).replace(/\/\*[\s\S]*?\*\//g, '')
+  assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/, 'cor em hex')
+  assert.doesNotMatch(css, /font-weight:\s*\d/, 'peso em número')
+  assert.doesNotMatch(css, /font-size:\s*\d/, 'tamanho de letra fora da escala')
+  assert.doesNotMatch(css, /cubic-bezier|\b\d+(\.\d+)?m?s\s+(ease|linear)/, 'curva ou tempo à mão')
+  assert.match(css, /prefers-reduced-motion: reduce/)
+  // a vitrine mostra a cena com um dia real inteiro (a API local não traz o minuto a minuto do dia dela)
+  const vitrine = ler('app/pages/dev/regua.vue')
+  assert.match(vitrine, /import diaRealJson from '~~\/tests\/fixtures\/bolsa-do-dia-2026-11-12\.json'/)
+  assert.match(vitrine, /:bolsa="diaReal" :data="noiteReal\.data" :mercado="noiteReal\.mercado" :agora="noiteReal\.agora" cena-fixa="fechamento" congelado/)
 })

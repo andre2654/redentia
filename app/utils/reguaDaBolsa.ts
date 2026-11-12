@@ -556,3 +556,96 @@ export function fechamentoDaRegua(b: DadoDoFechamento, hoje: string): Fechamento
   }
   return { antes: 'A bolsa fechou: Ibovespa', pct, tom, conta, fato, curto: 'Fechou' }
 }
+
+/* ————— o pregão do dia numa faixa: a cena do fechamento, no nível da barra ————— */
+
+/** o índice anda menos que um papel: a cor cheia aos 2% (os papéis, aos 5%, TETO_DA_COR) */
+export const TETO_DO_INDICE = 2
+/** a altura mínima da escala, em pontos percentuais: um dia parado não vira montanha */
+export const AMPLITUDE_MINIMA = 0.3
+/** A força da cor do índice, de 0 a 1: a mesma curva dos papéis (raiz), com o teto dele. */
+export function forcaDoIndice(pct: number): number {
+  const a = Math.abs(pct)
+  if (!Number.isFinite(a) || a < ZERO_DA_COR) return 0
+  return Math.sqrt(Math.min(a, TETO_DO_INDICE) / TETO_DO_INDICE)
+}
+
+export interface FaixaDoPregao {
+  /** o fim da janela, em minutos desde as 10h: o fechamento do dia (480 = 18h) */
+  fim: number
+  /** a área e a linha do pregão num quadro de 1000 × 100 (x: das 10h ao fechamento; y: 0 em cima) */
+  area: string
+  linha: string
+  /** onde fica o fechamento de ontem no quadro: 0 em cima (o dia inteiro abaixo dele), 100 embaixo (o dia inteiro acima) */
+  base: number
+  /** a cor da área no extremo de cada lado (o token misturado); null quando o dia não foi para aquele lado */
+  corQueda: string | null
+  corAlta: string | null
+  /** as horas cheias depois da abertura (11h, 12h…): o lugar do fio de cada uma, de 0 a 1 */
+  horas: number[]
+  /** a ponta: os pontos do fechamento, na cor do dia */
+  ponta: { rotulo: string; fundo: string; tinta: 'escura' | 'clara' }
+  /** a mínima e a máxima do dia, em % sobre o fechamento de ontem */
+  minimo: number
+  maximo: number
+}
+
+/**
+ * O pregão do dia desenhado numa faixa (12/11/2026; o dono, depois da régua do
+ * relógio: "ficou ótimo, agora faça esse depois do fechamento de um jeito
+ * bacana"). A janela vai das 10h ao fechamento do dia (`fechaAs`, a hora); a
+ * área é a distância do Ibovespa ao fechamento de ontem, minuto a minuto: para
+ * baixo dele (queda) ou para cima (alta), com o fechamento de ontem onde a
+ * escala do dia põe o zero. O último ponto é o fechamento oficial (o leilão sai
+ * depois da hora cheia e entra na ponta da janela). A escala vertical é a do
+ * próprio dia, com uma amplitude mínima (um dia parado fica baixo) e 8% de folga
+ * no extremo; a cor é a do índice (cheia aos 2%). As horas cheias levam só um
+ * fio: escritas dentro, a linha do pregão passava por cima dos números (ou
+ * sobrava um horário sozinho onde ela deixava). Sem a série, com menos de uma
+ * hora dela ou com ela cortada antes do fechamento: null, e a cena fica só com
+ * a frase.
+ */
+export function faixaDoPregao(
+  intradia: { anterior: number; pontos: [number, number][] } | null | undefined,
+  ibov: { pontos: number; pct: number } | null | undefined,
+  fechaAs: number,
+): FaixaDoPregao | null {
+  const fim = (fechaAs - 10) * 60
+  const pts = intradia?.pontos
+  if (!intradia || !ibov || !pts || !(intradia.anterior > 0) || !Number.isFinite(ibov.pct) || !Number.isFinite(ibov.pontos) || fim <= 0) return null
+  if (pts.length < 60 || pts[0]![0] > 15 || pts[pts.length - 1]![0] < fim - 20) return null
+  const emPct = (v: number) => (v / intradia.anterior - 1) * 100
+  // do começo até o minuto antes do fechamento; na ponta, o último valor da série (o fechamento oficial)
+  const serie: [number, number][] = pts.filter(([m, v]) => m >= 0 && m < fim && v > 0).map(([m, v]) => [m, emPct(v)])
+  serie.push([fim, emPct(pts[pts.length - 1]![1])])
+  const minimo = Math.min(...serie.map((p) => p[1]))
+  const maximo = Math.max(...serie.map((p) => p[1]))
+  // a escala do dia: o zero (ontem) sempre dentro dela, a amplitude mínima e a folga no extremo
+  let lo = Math.min(0, minimo)
+  let hi = Math.max(0, maximo)
+  if (hi - lo < AMPLITUDE_MINIMA) {
+    const k = hi - lo > 0 ? AMPLITUDE_MINIMA / (hi - lo) : 0
+    if (k) { lo *= k; hi *= k } else { lo = -AMPLITUDE_MINIMA / 2; hi = AMPLITUDE_MINIMA / 2 }
+  }
+  lo *= 1.08
+  hi *= 1.08
+  const um = (v: number) => Math.round(v * 10) / 10
+  const emY = (p: number) => um(((hi - p) / (hi - lo)) * 100)
+  const base = emY(0)
+  const pontos = serie.map(([m, p]) => [m, emY(p)] as [number, number])
+  const caminho = pontos.map(([m, y]) => `${um((m / fim) * 1000)},${y}`)
+  const linha = `M${caminho.join(' L')}`
+  const area = `M0,${base} L${caminho.join(' L')} L1000,${base} Z`
+  const horas: number[] = []
+  for (let h = 11; h < fechaAs; h++) horas.push(arredonda(((h - 10) * 60) / fim))
+  const lado = ladoDe(ibov.pct)
+  const forca = forcaDoIndice(ibov.pct)
+  return {
+    fim, area, linha, base,
+    corQueda: minimo < 0 ? fundoDoPedaco('queda', forcaDoIndice(minimo)) : null,
+    corAlta: maximo > 0 ? fundoDoPedaco('alta', forcaDoIndice(maximo)) : null,
+    horas,
+    ponta: { rotulo: nf0.format(Math.round(ibov.pontos)), fundo: fundoDoPedaco(lado, forca), tinta: tintaDoPedaco(lado, forca) },
+    minimo, maximo,
+  }
+}

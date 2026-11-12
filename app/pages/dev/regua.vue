@@ -9,12 +9,16 @@
 // novo); a barra larga tem o botão para ver o crescimento; o palco ao vivo
 // troca de cena sozinho e no botão. A contagem (a régua do relógio) aparece em
 // cada distância da abertura (as escalas do zoom) e numa linha ao vivo, com o
-// relógio acelerado, que vai até a abertura e vira a barra. Embaixo, a mesma
-// vitrine num celular de 390px (esta página num iframe, com ?so=linhas). Fora do `nuxi dev` a rota nem
+// relógio acelerado, que vai até a abertura e vira a barra. O fechamento com
+// o pregão do dia na faixa usa um dia real inteiro (12/11/2026, o fixture dos
+// testes): a API local não traz o pregão minuto a minuto do dia dela. Embaixo,
+// a mesma vitrine num celular de 390px (esta página num iframe, com ?so=linhas). Fora do `nuxi dev` a rota nem
 // existe (pages:extend no nuxt.config); o middleware de 404 é a segunda trava.
 import { agoraEmSP, relogioDoDev, type MomentoDoDev } from '~/utils/pregao'
 import { mercadoDoTopo } from '~/utils/topo'
 import type { CenaDaRegua } from '~/utils/reguaDaBolsa'
+import type { DadoDaRegua } from '~/composables/useReguaDaBolsa'
+import diaRealJson from '~~/tests/fixtures/bolsa-do-dia-2026-11-12.json'
 
 definePageMeta({
   layout: false,
@@ -63,7 +67,7 @@ const LINHAS: Linha[] = [
   { id: 'aberta', titulo: 'Pregão aberto · a barra se forma, com os textos', quando: 'Ao vivo. A cada entrada os pedaços acendem da esquerda para a direita e os textos chegam depois.', m: 'aberta', peca: 'barra', fase: 'textos', visitante: true },
   { id: 'larga', titulo: 'Pregão aberto · 15 s depois, a barra larga', quando: 'Os textos saem e a barra cresce até a coluna. Os rótulos e a dica continuam.', m: 'aberta', peca: 'barra', fase: 'larga', visitante: true },
   { id: 'assinante', titulo: 'Pregão aberto · para quem assina', quando: 'A listra nas ações da carteira e "Sua carteira" à direita, com a amostra da listra.', m: 'aberta', peca: 'barra', fase: 'textos' },
-  { id: 'fechamento', titulo: 'Depois do fechamento · a frase do dia', quando: 'Os fatos do pregão que o dado traz. Troca com a barra de hoje.', m: 'fechada', peca: 'cena', cena: 'fechamento' },
+  { id: 'fechamento', titulo: 'Depois do fechamento · sem o minuto a minuto, só a frase', quando: 'Quando a série da B3 não vem (é o caso da API local), a cena fica com os fatos do pregão por escrito.', m: 'fechada', peca: 'cena', cena: 'fechamento' },
   { id: 'fechada-barra', titulo: 'Depois do fechamento · a barra de hoje', quando: 'A outra cena da noite.', m: 'fechada', peca: 'barra', fase: 'textos', visitante: true },
   { id: 'feriado-barra', titulo: 'Feriado ou fim de semana · a barra do último pregão', quando: 'Com o nome do feriado à esquerda.', m: 'feriado', peca: 'barra', fase: 'textos', visitante: true },
   { id: 'feriado-contagem', titulo: 'Feriado ou fim de semana · a contagem', quando: 'Quanto falta para o próximo pregão.', m: 'feriado', peca: 'cena', cena: 'contagem' },
@@ -83,6 +87,13 @@ function verCrescer(id: string) {
   rodada.value++
   tCresce = setTimeout(() => { fases[id] = 'larga' }, 1800)
 }
+
+/* ————— o fechamento com o pregão do dia na faixa: um dia real inteiro (12/11/2026) ————— */
+const diaReal = diaRealJson as unknown as DadoDaRegua
+const noiteReal = (() => {
+  const agora = new Date('2026-11-12T19:00:00-03:00')
+  return { agora, data: '2026-11-12', mercado: mercadoDoTopo(agora, '2026-11-12') }
+})()
 
 /* ————— a contagem em cada distância da abertura (as escalas do zoom) ————— */
 const MINUTO = 60_000
@@ -197,6 +208,25 @@ onBeforeUnmount(() => {
       </div>
     </section>
 
+    <section class="dr__linha">
+      <div class="dr__legenda">
+        <h2 class="dr__titulo">Depois do fechamento · o pregão do dia na faixa</h2>
+        <p class="dr__quando">O perfil do Ibovespa das 10h ao fechamento contra o fechamento de ontem, com os pontos do fechamento na ponta. Dado real de 12/11/2026 (−0,43%). Troca com a barra do mesmo dia.</p>
+      </div>
+      <div class="dr__regua">
+        <NuReguaPalco :key="`real-${rodada}`" :bolsa="diaReal" :data="noiteReal.data" :mercado="noiteReal.mercado" :agora="noiteReal.agora" cena-fixa="fechamento" congelado />
+      </div>
+    </section>
+    <section class="dr__linha">
+      <div class="dr__legenda">
+        <h2 class="dr__titulo">Depois do fechamento · a barra do mesmo dia</h2>
+        <p class="dr__quando">As 76 ações de 12/11/2026, a outra cena da noite.</p>
+      </div>
+      <div class="dr__regua">
+        <NuReguaBolsa :key="`real-barra-${rodada}`" :acoes="diaReal.acoes" :data="noiteReal.data" :mercado="noiteReal.mercado" :agora="noiteReal.agora" fase="textos" :ciclo="rodada" :acender="!reduzido" visitante />
+      </div>
+    </section>
+
     <section v-for="d in distancias" :key="d.id" class="dr__linha">
       <div class="dr__legenda">
         <h2 class="dr__titulo">{{ d.titulo }}</h2>
@@ -234,7 +264,7 @@ onBeforeUnmount(() => {
     <section v-if="!soLinhas" class="dr__linha dr__vivo">
       <div class="dr__legenda">
         <h2 class="dr__titulo">O palco ao vivo</h2>
-        <p class="dr__quando">As cenas do momento trocando sozinhas, a cada minuto, como no site (pausa com o mouse em cima). Os botões passam na mão.</p>
+        <p class="dr__quando">As cenas do momento trocando sozinhas, a cada minuto, como no site (pausa com o mouse em cima). Os botões passam na mão. Depois do fechamento, o dia é o real de 12/11/2026.</p>
         <div class="dr__acoes">
           <button v-for="x in MOMENTOS" :key="x.m" type="button" class="dr__botao dr__botao--p" :class="{ 'dr__botao--ativo': momentoVivo === x.m }" :aria-pressed="momentoVivo === x.m" @click="momentoVivo = x.m">{{ x.nome }}</button>
           <span class="dr__fio" aria-hidden="true" />
@@ -244,7 +274,11 @@ onBeforeUnmount(() => {
       </div>
       <div class="dr__regua">
         <NuReguaPalco
-          v-if="bolsa?.acoes.length && bolsa.ibov && momentos[momentoVivo]" ref="palco" :key="momentoVivo"
+          v-if="momentoVivo === 'fechada'" ref="palco" key="fechada-real"
+          :bolsa="diaReal" :data="noiteReal.data" :mercado="noiteReal.mercado" :agora="noiteReal.agora" congelado
+        />
+        <NuReguaPalco
+          v-else-if="bolsa?.acoes.length && bolsa.ibov && momentos[momentoVivo]" ref="palco" :key="momentoVivo"
           :bolsa="bolsa" :data="momentos[momentoVivo]!.data" :mercado="momentos[momentoVivo]!.mercado" :agora="momentos[momentoVivo]!.agora" congelado
         />
       </div>
@@ -297,7 +331,7 @@ onBeforeUnmount(() => {
 }
 .dr__celular { margin-top: 48px; }
 .dr__iframe {
-  display: block; width: 390px; height: 1720px; margin: 0 var(--nu-coluna); border: 1px solid var(--nu-line); border-radius: var(--nu-r-card);
+  display: block; width: 390px; height: 1900px; margin: 0 var(--nu-coluna); border: 1px solid var(--nu-line); border-radius: var(--nu-r-card);
   background: var(--nu-page);
 }
 @media (max-width: 640px) {
