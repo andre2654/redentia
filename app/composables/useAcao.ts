@@ -1559,7 +1559,10 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     // Backend fora do ar: PETR4 (a página de referência do design) degrada pro
     // seed completo; qualquer outro ticker responde 503 (temporário, não 404 —
     // um 404 transitório envenenaria o índice do Google).
-    if (ticker === 'PETR4') return petr4Seed()
+    // O seed do design só no dev: em produção ele saía com status 200 e cache
+    // público na borda, com preço inventado ("R$ 38,25 … atualizado às 12:47")
+    // sob o nome da B3 (auditoria de produção, 12/11/2026). Lá, 503 como os outros.
+    if (ticker === 'PETR4' && import.meta.dev) return petr4Seed()
     throw createError({ statusCode: 503, statusMessage: 'Dados temporariamente indisponíveis' })
   }
 

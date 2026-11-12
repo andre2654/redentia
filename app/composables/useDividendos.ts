@@ -693,7 +693,8 @@ async function loadDividendos(base: string, ticker: string): Promise<DividendosP
     if (status === 410) {
       throw delistedError(ticker, delistedAtOfError(e))
     }
-    if (ticker === 'PETR4') return petr4Seed()
+    // o seed do design só no dev (em produção era provento inventado com cache público)
+    if (ticker === 'PETR4' && import.meta.dev) return petr4Seed()
     throw createError({ statusCode: 503, statusMessage: 'Dados temporariamente indisponíveis' })
   }
 

@@ -921,7 +921,8 @@ async function loadTese(base: string, slug: string, exemplo = false): Promise<Te
     // Backend fora do ar: só a tese exemplar do design degrada pro seed
     // completo; qualquer outro slug responde 503 (temporário, não 404 —
     // mesma política do PR2: um 404 transitório envenenaria o índice).
-    if (slug === TESE_SEED_SLUG) return teseSeed()
+    // (só no dev: em produção o seed saía como a tese de verdade, com cache público)
+    if (slug === TESE_SEED_SLUG && import.meta.dev) return teseSeed()
     throw createError({ statusCode: 503, statusMessage: 'Dados temporariamente indisponíveis' })
   }
 
