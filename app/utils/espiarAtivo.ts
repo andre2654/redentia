@@ -398,6 +398,21 @@ export interface EspiarGeometria {
  * os dois lado a lado no canto); sem espaço, ela dá lugar ao painel (null): o
  * ativo já foi junto como anexo da conversa.
  */
+/**
+ * A barra do chat vai para baixo do cartão, na largura dele, e passa a
+ * perguntar sobre o ativo (dono, 12/11/2026: "deixar o input ali de
+ * ladinho"). Só no computador: com o cartão (acima de 640px) E a barra na
+ * forma larga (acima de 760px; abaixo ela é a cápsula do celular) E a barra
+ * à vista (fora do login, da /busca e com o painel fechado).
+ */
+export const BARRA_LARGA_DESDE = 761
+export const ALTURA_BARRA_AO_LADO = 62 // a barra no foco (58 em repouso)
+export const VAO_BARRA_CARTAO = 12
+
+export function barraAoLado(g: { vw: number, celular: boolean, barraVisivel: boolean }): boolean {
+  return !g.celular && g.vw >= BARRA_LARGA_DESDE && g.barraVisivel
+}
+
 export function direitaDoCartao(g: EspiarGeometria): number | null {
   if (!g.painelAberto) return g.margem
   const direita = g.painelOcupa + g.margem

@@ -41,6 +41,20 @@ const { isAuthenticated } = useAuthState()
 const visivel = computed(() => barraVisivel(route.path, painel.aberto.value))
 const sugestoes = computed(() => sugestoesDaRota(route.path).slice(0, 4))
 
+const PADRAO = 'Pergunte à Aportou'
+
+/* ——— ao lado do cartão de um ativo (dono, 12/11/2026: "deixar o input ali de ladinho") ———
+   Com o cartão do espiar aberto no computador, a barra desliza para baixo dele,
+   na largura dele, e pergunta sobre o ativo; fechou, ela volta ao centro. Quem
+   decide é o EspiarAtivo (aoLado e geometria); aqui só se segue. */
+const espiar = useEspiarAtivo()
+const aoLado = computed(() => espiar.aoLado.value && !!espiar.ticker.value && !!espiar.geometria.value)
+const estiloAoLado = computed(() => {
+  const g = espiar.geometria.value
+  return aoLado.value && g ? { left: `calc(100% - ${g.direita}px - ${g.largura}px)`, width: `${g.largura}px`, transform: 'none' } : undefined
+})
+const rotulo = computed(() => (aoLado.value ? `Pergunte sobre ${espiar.ticker.value}` : PADRAO))
+
 const texto = ref('')
 const focado = ref(false)
 const ativa = ref(-1)
@@ -48,12 +62,12 @@ const campo = ref<HTMLInputElement | null>(null)
 const raiz = ref<HTMLElement | null>(null)
 const listaId = useId()
 
-const mostrarSugestoes = computed(() => focado.value && !texto.value.trim() && sugestoes.value.length > 0)
+// ao lado do cartão, sem sugestões: elas subiriam por cima do cartão
+const mostrarSugestoes = computed(() => !aoLado.value && focado.value && !texto.value.trim() && sugestoes.value.length > 0)
 
 /* ——— a cápsula do celular ——— */
 const movel = ref(false)
 const recolhida = computed(() => movel.value && !focado.value && !texto.value)
-const PADRAO = 'Pergunte à Aportou'
 const dica = ref(PADRAO)
 let relogio: ReturnType<typeof setTimeout> | null = null
 let mq: MediaQueryList | null = null
@@ -122,9 +136,13 @@ function perguntar(q?: string) {
   ativa.value = -1
   focado.value = false
   campo.value?.blur()
+  // ao lado do cartão de um ativo, a pergunta leva o ativo anexado (sem texto, a
+  // seta abre o painel já com ele, como o "Perguntar sobre X" do cartão fazia)
+  const ativo = aoLado.value ? espiar.contextoParaChat(route.path) : null
+  if (ativo && !t) { painel.abrir(undefined, [ativo]); return }
   // sem texto, a seta abre o painel vazio (com as sugestões dele); sem conta,
   // a pergunta abre a folha de cadastro (useChatPainel.perguntar)
-  painel.perguntar(t)
+  painel.perguntar(t, ativo ? [ativo] : [])
 }
 
 function sairDaBarra() {
@@ -168,7 +186,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
 
 <template>
   <Transition name="cba">
-    <div v-if="visivel" ref="raiz" class="cba" :class="{ 'cba--capsula': recolhida, 'cba--foco': focado }" @focusout="onFocusOut">
+    <div v-if="visivel" ref="raiz" class="cba" :class="{ 'cba--capsula': recolhida, 'cba--foco': focado, 'cba--ao-lado': aoLado }" :style="estiloAoLado" @focusout="onFocusOut">
       <Transition name="cba-sug">
         <ul v-if="mostrarSugestoes" :id="listaId" class="cba__sugs" role="listbox" aria-label="Sugestões de pergunta">
           <li v-for="(s, k) in sugestoes" :key="s" role="presentation" :style="{ '--k': k }">
@@ -181,7 +199,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
         </ul>
       </Transition>
 
-      <form class="cba__form" role="search" aria-label="Pergunte à Aportou" @submit.prevent="perguntar()">
+      <form class="cba__form" role="search" :aria-label="rotulo" @submit.prevent="perguntar()">
         <ChatPilula :aceso="focado || !!texto">
           <div class="cba__linha" @click="campo?.focus()">
             <span class="cba__lado" :class="{ 'cba__lado--aberto': focado, 'cba__lado--dois': focado && isAuthenticated }">
@@ -201,7 +219,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
             </span>
             <input
               ref="campo" v-model="texto" class="cba__campo" type="text" enterkeyhint="send" autocomplete="off"
-              :placeholder="movel ? dica : PADRAO" aria-label="Pergunte à Aportou"
+              :placeholder="movel ? dica : rotulo" :aria-label="rotulo"
               role="combobox" :aria-expanded="mostrarSugestoes" :aria-controls="listaId" aria-autocomplete="list"
               :aria-activedescendant="mostrarSugestoes && ativa >= 0 ? `${listaId}-${ativa}` : undefined"
               @focus="focado = true" @keydown="onKey"
@@ -220,6 +238,11 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
 .cba {
   position: fixed; z-index: 45; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom));
   width: min(560px, calc(100% - 32px)); transform: translateX(-50%);
+  /* do centro para baixo do cartão do ativo (e de volta): a curva do que muda de lugar */
+  transition: left var(--nu-dur-lenta) var(--nu-ease-troca), width var(--nu-dur-lenta) var(--nu-ease-troca), transform var(--nu-dur-lenta) var(--nu-ease-troca);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cba { transition: none; }
 }
 .cba__form { --cpi-raio: 999px; }
 /* 58px em repouso; no foco cresce para 62 (o input mágico do quadro) */

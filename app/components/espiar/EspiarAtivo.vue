@@ -15,8 +15,12 @@
 // lado a lado no canto (o "Perguntar sobre X" abre o painel com o ativo
 // anexado, e a pessoa lê os números enquanto escreve). Sem espaço para os
 // dois (abaixo de ~860px), a janelinha dá lugar ao painel: o ativo já foi
-// junto como anexo. Nunca cobre a barra do chat: quando as duas se cruzam na
-// horizontal, a janelinha sobe acima dela.
+// junto como anexo. No computador, a barra do chat vem para baixo do cartão,
+// na largura dele, e pergunta sobre o ativo (dono, 12/11/2026: "deixar o input
+// ali de ladinho"): o cartão e a pergunta ficam juntos no canto e a página
+// fica livre. Por isso o "Perguntar sobre X" do cartão sai nessa hora: a
+// barra é a pergunta. Onde a barra não vem (entre 641 e 760px ela é a
+// cápsula), o cartão nunca a cobre: quando as duas se cruzam, ele sobe.
 //
 // No celular (até 640px) vira uma folha que sobe do pé: arrastar para baixo
 // fecha, para cima maximiza. Enquanto ela está aberta, a barra do chat sai
@@ -38,7 +42,7 @@
 // as curvas são os dos tokens; o clique do maximizar vem na captura, antes do
 // RouterLink (uma navegação só, a do fim do crescimento).
 import { barraVisivel } from '~/utils/chat-painel'
-import { direitaDoCartao, LINHA_ALTURA, LINHA_LARGURA } from '~/utils/espiarAtivo'
+import { ALTURA_BARRA_AO_LADO, barraAoLado, direitaDoCartao, LINHA_ALTURA, LINHA_LARGURA, VAO_BARRA_CARTAO } from '~/utils/espiarAtivo'
 import type { ContextoDoChat } from '~/composables/useChatPainel'
 
 const espiar = useEspiarAtivo()
@@ -61,9 +65,7 @@ const pe = ref(20)
 const desloc = ref(0)
 const arrastando = ref(false)
 
-const contexto = computed<ContextoDoChat | null>(() => (vm.value && t.value
-  ? { id: `ativo:${t.value}`, tipo: 'ativo', rotulo: t.value, texto: vm.value.contexto, rota: route.path }
-  : null))
+const contexto = computed<ContextoDoChat | null>(() => (vm.value && t.value ? espiar.contextoParaChat(route.path) : null))
 
 const pagina = computed(() => `/asset/${t.value ?? ''}`)
 const triangulo = computed(() => (vm.value?.dir === 'down' ? 'esp__tri--baixo' : ''))
@@ -81,6 +83,9 @@ function posicionar() {
   if (!import.meta.client || !aberto.value) return
   celular.value = window.matchMedia('(max-width: 640px)').matches
   if (celular.value) {
+    // no celular a barra sai enquanto a folha está aberta (nunca vem ao lado)
+    espiar.aoLado.value = false
+    espiar.geometria.value = null
     // o painel no celular é a tela inteira: a folha dá lugar a ele
     if (painel.aberto.value) espiar.fechar(false)
     return
@@ -95,9 +100,14 @@ function posicionar() {
   const d = direitaDoCartao({ vw, painelAberto: painel.aberto.value, painelOcupa, largura, margem: MARGEM })
   if (d == null) { espiar.fechar(false); return }
   direita.value = d
-  // a barra do chat: se cruza com o cartão na horizontal, o cartão sobe acima dela
+  // no computador a barra do chat vem para baixo do cartão (a ChatBarra segue o aoLado)
+  const visivel = barraVisivel(route.path, painel.aberto.value)
+  espiar.aoLado.value = barraAoLado({ vw, celular: false, barraVisivel: visivel })
+  espiar.geometria.value = espiar.aoLado.value ? { direita: d, largura } : null
+  if (espiar.aoLado.value) { pe.value = PE_BARRA + ALTURA_BARRA_AO_LADO + VAO_BARRA_CARTAO; return }
+  // sem ela ao lado: se a barra cruza com o cartão na horizontal, o cartão sobe acima dela
   let bottom = PE_BARRA
-  const barra = barraVisivel(route.path, painel.aberto.value) ? document.querySelector<HTMLElement>('.cba') : null
+  const barra = visivel ? document.querySelector<HTMLElement>('.cba') : null
   if (barra) {
     const b = barra.getBoundingClientRect()
     const x0 = vw - d - largura, x1 = vw - d
@@ -110,7 +120,7 @@ function posicionar() {
 watch(t, async (agora, antes) => {
   if (!import.meta.client) return
   document.documentElement.classList.toggle('nu-espiar-aberto', !!agora)
-  if (!agora) { desloc.value = 0; return }
+  if (!agora) { desloc.value = 0; espiar.aoLado.value = false; espiar.geometria.value = null; return }
   await nextTick()
   posicionar()
   // abrir (ou trocar de ativo) leva o foco ao cartão; ele é não modal, o Tab segue pela página
@@ -238,6 +248,8 @@ onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKey)
   window.removeEventListener('resize', posicionar)
   document.documentElement.classList.remove('nu-espiar-aberto')
+  espiar.aoLado.value = false
+  espiar.geometria.value = null
 })
 </script>
 
@@ -248,7 +260,7 @@ onBeforeUnmount(() => {
       ref="cartao"
       v-contexto-chat="contexto"
       class="esp"
-      :class="{ 'esp--arrastando': arrastando }"
+      :class="{ 'esp--arrastando': arrastando, 'esp--com-barra': espiar.aoLado.value && !celular }"
       :style="celular ? { transform: desloc ? `translateY(${desloc}px)` : undefined } : { right: `${direita}px`, bottom: `${pe}px` }"
       role="dialog"
       aria-modal="false"
@@ -300,7 +312,7 @@ onBeforeUnmount(() => {
             <NuSkeleton variant="pill" width="104px" height="40px" />
             <NuSkeleton variant="line" width="148px" height="14px" radius="pill" />
           </div>
-          <NuSkeleton variant="pill" width="100%" height="48px" class="esp__sk-perguntar" />
+          <NuSkeleton v-if="!espiar.aoLado.value || celular" variant="pill" width="100%" height="48px" class="esp__sk-perguntar" />
         </div>
 
         <div v-else-if="estado === 'erro'" key="erro" class="esp__corpo">
@@ -357,7 +369,8 @@ onBeforeUnmount(() => {
             <SeguirAtivo :ticker="vm.ticker" :path="`/asset/${vm.ticker}`" />
             <NuLinkSeta tom="tinta" @click="carteira">Adicionar à carteira</NuLinkSeta>
           </div>
-          <NuBotaoSeta class="esp__perguntar" variante="carvao" tamanho="m" largo @click="perguntar">Perguntar sobre {{ vm.ticker }}</NuBotaoSeta>
+          <!-- com a barra do chat embaixo do cartão, ela é a pergunta: o botão sai -->
+          <NuBotaoSeta v-if="!espiar.aoLado.value || celular" class="esp__perguntar" variante="carvao" tamanho="m" largo @click="perguntar">Perguntar sobre {{ vm.ticker }}</NuBotaoSeta>
         </div>
       </Transition>
     </section>
@@ -480,6 +493,8 @@ onBeforeUnmount(() => {
 .esp__botoes :deep(.nfb--on), .esp__botoes :deep(.nfb--on:hover) { background: var(--nu-blue-bg); color: var(--nu-blue-text); box-shadow: none; }
 .esp__botoes :deep(.sga__msg--on) { font-size: var(--nu-fs-dense); }
 .esp__perguntar { margin-top: 12px; }
+/* a barra do chat embaixo: o cartão cabe acima dela */
+.esp--com-barra { max-height: calc(100dvh - 32px - 74px); }
 .esp__botoes :deep(.nfb:focus-visible) { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .esp__sk-perguntar { margin-top: 12px; }
 

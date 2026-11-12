@@ -12,6 +12,7 @@
  * Só o perfil é obrigatório; o resto que falhar some do cartão.
  */
 import { montarEspiar, type EspiarVM } from '~/utils/espiarAtivo'
+import type { ContextoDoChat } from '~/composables/useChatPainel'
 
 export type EspiarEstado = 'fechado' | 'carregando' | 'pronto' | 'erro' | 'saiu'
 
@@ -80,6 +81,16 @@ export function useEspiarAtivo() {
   const estado = useState<EspiarEstado>('nu:espiar:estado', () => 'fechado')
   const vm = useState<EspiarVM | null>('nu:espiar:vm', () => null)
   const mensagem = useState<string>('nu:espiar:mensagem', () => '')
+  /** a barra do chat está embaixo do cartão (quem decide é o EspiarAtivo; a ChatBarra segue) */
+  const aoLado = useState<boolean>('nu:espiar:ao-lado', () => false)
+  /** onde o cartão está: a distância da borda direita e a largura, em px */
+  const geometria = useState<{ direita: number, largura: number } | null>('nu:espiar:geometria', () => null)
+
+  /** O ativo como anexo da conversa (o "Perguntar sobre X" e a barra ao lado). */
+  function contextoParaChat(rota: string): ContextoDoChat | null {
+    const t = ticker.value
+    return vm.value && t ? { id: `ativo:${t}`, tipo: 'ativo', rotulo: t, texto: vm.value.contexto, rota } : null
+  }
 
   /** A janela só abre onde o EspiarAtivo está montado (o layout padrão). */
   function disponivel() {
@@ -137,5 +148,5 @@ export function useEspiarAtivo() {
     return () => { montadas = Math.max(0, montadas - 1) }
   }
 
-  return { ticker, estado, vm, mensagem, disponivel, abrir, recarregar, fechar, registrar }
+  return { ticker, estado, vm, mensagem, aoLado, geometria, contextoParaChat, disponivel, abrir, recarregar, fechar, registrar }
 }

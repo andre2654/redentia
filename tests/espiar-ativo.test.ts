@@ -249,3 +249,26 @@ test('nada de "compre/venda" nem ✦ no cartão', () => {
     assert.doesNotMatch(s, /✦/)
   }
 })
+
+test('a barra do chat vai para baixo do cartão só no computador, com a barra larga e à vista', async () => {
+  const { barraAoLado, BARRA_LARGA_DESDE } = await import('../app/utils/espiarAtivo.ts')
+  assert.equal(barraAoLado({ vw: 1440, celular: false, barraVisivel: true }), true)
+  assert.equal(barraAoLado({ vw: BARRA_LARGA_DESDE, celular: false, barraVisivel: true }), true)
+  // entre 641 e 760px a barra é a cápsula do celular: fica no centro e o cartão sobe acima dela
+  assert.equal(barraAoLado({ vw: 720, celular: false, barraVisivel: true }), false)
+  assert.equal(barraAoLado({ vw: 390, celular: true, barraVisivel: true }), false)
+  // painel aberto, login ou /busca: não há barra para trazer
+  assert.equal(barraAoLado({ vw: 1440, celular: false, barraVisivel: false }), false)
+})
+
+test('com a barra ao lado, o cartão tira o "Perguntar" e a barra pergunta sobre o ativo, com ele anexado', () => {
+  const cartao = readFileSync(new URL('../app/components/espiar/EspiarAtivo.vue', import.meta.url), 'utf8')
+  assert.match(cartao, /<NuBotaoSeta v-if="!espiar\.aoLado\.value \|\| celular" class="esp__perguntar"/)
+  assert.match(cartao, /pe\.value = PE_BARRA \+ ALTURA_BARRA_AO_LADO \+ VAO_BARRA_CARTAO/)
+  const barra = readFileSync(new URL('../app/components/chat/ChatBarra.vue', import.meta.url), 'utf8')
+  assert.match(barra, /`Pergunte sobre \$\{espiar\.ticker\.value\}`/)
+  assert.match(barra, /painel\.perguntar\(t, ativo \? \[ativo\] : \[\]\)/)
+  assert.match(barra, /if \(ativo && !t\) \{ painel\.abrir\(undefined, \[ativo\]\); return \}/)
+  // as sugestões não sobem por cima do cartão
+  assert.match(barra, /const mostrarSugestoes = computed\(\(\) => !aoLado\.value &&/)
+})
