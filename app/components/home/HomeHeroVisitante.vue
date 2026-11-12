@@ -28,10 +28,11 @@
 //
 // Robustez (11/11/2026, docs/aportou/robustez.md): o selo dos 2.000 futuros era
 // uma pílula cobalto cheia, a coisa mais forte do herói depois do título, e lia
-// como um segundo botão ao lado da chamada. Virou o NuSelo azul sobre o escuro
-// (a legenda do palco, não uma ação): a chamada é a única coisa cheia na dobra.
-// Sob o ponteiro, o palco inteiro avisa que é clicável: o selo acende e sobe
-// 2 px; apertado, afunda. Pesos, tracking, espaços (8 px) e a entrada vêm dos
+// como um segundo botão ao lado da chamada. Virou a legenda do palco, não uma
+// ação: a chamada é a única coisa cheia na dobra. Em 12/11/2026 o dono pediu a
+// legenda com a mesma letra da linha embaixo da chamada e tirou a nota
+// "Ilustração do método…". Sob o ponteiro, o palco inteiro avisa que é
+// clicável: a legenda clareia. Pesos, tracking, espaços (8 px) e a entrada vêm dos
 // tokens (--nu-dur-entrada, --nu-ease-saida, cascata de 60 ms).
 </script>
 
@@ -49,8 +50,7 @@
       <div class="hhv__halo" aria-hidden="true" />
       <HomeLeque tom="carvao" class="hhv__leque" />
       <p class="hhv__pe">
-        <NuSelo tom="azul" sobre="escuro" class="hhv__selo"><strong>2.000</strong> futuros testados para cada carteira</NuSelo>
-        <span class="hhv__nota">Ilustração do método. O resultado da sua carteira aparece depois de conectar.</span>
+        <span class="hhv__legenda"><strong>2.000</strong> futuros testados para cada carteira</span>
       </p>
       <div class="hhv__horizonte" aria-hidden="true" />
     </NuxtLink>
@@ -115,17 +115,17 @@
   position: absolute; left: 0; right: 0; bottom: 0; height: var(--chao); margin: 0;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 16px; padding-top: 16px;
 }
-/* a legenda do palco: o NuSelo azul sobre o escuro, um pouco maior que o de
-   linha (é a legenda de uma ilustração de 1.080 px); o número em branco */
-.hhv__selo {
-  height: 32px; padding: 0 12px; gap: 6px; font-size: 14px;
-  transition: transform var(--nu-dur-media) var(--nu-ease-saida), background-color var(--nu-dur-media) var(--nu-ease-cor);
+/* a legenda do palco (dono, 12/11/2026: "deixe esse texto igual ao texto de
+   cima"): a mesma letra da linha embaixo da chamada (a .hch__letra, que este
+   herói pinta com --nu-agora-sub): o número em branco, o resto no mesmo tom; sem selo */
+.hhv__legenda {
+  color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto);
+  letter-spacing: var(--nu-ls-texto); line-height: 1.55;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.hhv__selo strong { color: var(--nu-white); font-weight: var(--nu-w-forte); }
-/* o palco inteiro é o clique: o selo acende e sobe; apertado, afunda */
-.hhv__palco:hover .hhv__selo { --nsl-fundo: color-mix(in srgb, var(--nu-blue-on-dark) 30%, transparent); transform: translateY(-2px); }
-.hhv__palco:active .hhv__selo { transform: scale(.98); transition-duration: var(--nu-dur-rapida); }
-.hhv__nota { color: var(--nu-agora-sub); font-size: 13px; font-weight: var(--nu-w-texto); line-height: 1.4; }
+.hhv__legenda strong { color: var(--nu-white); font-weight: var(--nu-w-medio); }
+/* o palco inteiro é o clique: a legenda clareia sob o ponteiro */
+.hhv__palco:hover .hhv__legenda { color: var(--nu-white); }
 .hhv__palco:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 6px; border-radius: var(--nu-r-card); }
 
 /* a linha de luz: o anel do input mágico (cobalto, céu, sálvia e areia),
@@ -160,7 +160,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .hhv__dek, .hhv__chamada, .hhv__palco, .hhv__horizonte { animation: none; }
-  .hhv__selo { transition: none; }
+  .hhv__legenda { transition: none; }
 }
 
 /* tablet: a frase de apoio sai (o "Você não precisa acompanhar tudo." logo
