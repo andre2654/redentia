@@ -106,6 +106,7 @@ Cada passo só começa com o anterior conferido. O dono dá os cliques.
 1. Na Vercel, mover `www.redentia.com.br` e `redentia.com.br` do projeto da Aportou para o projeto do B2B. O DNS do redentia.com.br já está na Vercel, então é só trocar de projeto.
 2. No `.env` da VPS:
    - `APORTOU_URL=https://aportou.com.br`. As imagens dos e-mails da Aportou e a política de privacidade vão junto, a menos que `EMAIL_LOGO_APORTOU_URL`, `EMAIL_LOGO_APORTOU_WHITE_URL`, `EMAIL_ICONE_APORTOU_URL` ou `PRIVACY_URL` estejam definidas: se estiverem, trocar também.
+   - **Não mexer em `FRONTEND_URL`.** Na `main` (e com o #26), o convite da chave, o convite e o acesso do cliente final montam o link com ela (`BusinessInvite.php`, `BusinessClientInvite.php`: `config('app.frontend_url') ?: config('services.frontend.url')`, que é `env('FRONTEND_URL')`). Trocada para aportou.com.br, os links que os escritórios mandam abririam na Aportou. O endereço da Aportou vai em `APORTOU_URL`. A regra deixa de valer quando o `SiteDoB2B` (lê `app.url_b2b`; commit 1e7e9b8 na `feat/b2b-conversa`) chegar à `main` (sessão do B2B, 13/11/2026).
    - `B2B_URL=https://www.redentia.com.br`: é o padrão, não precisa escrever.
    - `B2B_PRIVACY_URL=https://www.redentia.com.br/privacidade`, com a página de privacidade do B2B no ar. Antes disso, o código de acesso da Redentia aponta para a política de hoje.
    - `BILLING_SUCCESS_URL`, `BILLING_CANCEL_URL` e `BILLING_PORTAL_RETURN_URL` em aportou.com.br.
