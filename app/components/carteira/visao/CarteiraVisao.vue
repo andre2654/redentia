@@ -59,6 +59,8 @@ function trocarCenario(c: Cenario) {
 // o mock passa pelo mesmo `marcaNaResposta` da resposta real (useCarteiraVisao): a carteira real local é texto do backend
 const doMock = computed<Visao | null>(() => (import.meta.dev ? marcaNaResposta(cenario.value === 'real' && real ? real : visaoMock(cenario.value as CenarioVisao), marcaNoTexto) : null))
 const visao = computed<Visao>(() => (props.visao ?? doMock.value)!)
+// o futuro (os 2.000 caminhos do motor) é pedido uma vez e dividido entre o gráfico do topo e a seção dos 5 anos; no mock não há motor
+if (!mock.value) proverCarteiraFuturo()
 
 /* ————— o topo ————— */
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })

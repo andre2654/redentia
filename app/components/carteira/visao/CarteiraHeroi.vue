@@ -21,6 +21,7 @@ import {
   contraOCdi, inicioDoPeriodo, periodosDoDesempenho, rebase100, serieDesde, variacaoDoIndice, type PeriodoDesempenho,
 } from '~/utils/rentabilidadeCarteira'
 import CarteiraAvisos from './CarteiraAvisos.vue'
+import CarteiraHorizonte from './CarteiraHorizonte.vue'
 
 const props = defineProps<{
   agora: CarteiraAgoraVM
@@ -69,6 +70,11 @@ const quandoTxt = computed(() => (periodo.value === 'tudo' && inicio.value ? `De
 const bem = computed(() => (series.value && pedido.value ? contraOCdi(series.value, pedido.value, NOMES[periodo.value][1]) : null))
 const temGrafico = computed(() => linha.value.length >= 2)
 const tituloGrafico = computed(() => `A rentabilidade da carteira contra o CDI, ${quandoTxt.value.toLowerCase()}`)
+/* o futuro no mesmo gráfico (13/11, CarteiraHorizonte): os 2.000 caminhos do motor, que a página pede uma vez
+   (proverCarteiraFuturo) e divide com a seção dos 5 anos; fora dela (o mock), o gráfico fica como era */
+const futuroDaPagina = useCarteiraFuturoDaPagina()
+const futuro = computed(() => (futuroDaPagina?.estado.value === 'pronto' ? futuroDaPagina.dados.value : null))
+const caminhosDoFuturo = computed(() => futuroDaPagina?.caminhos.value ?? null)
 /** o rótulo da faixa da marca: 'Você em 12 meses' · 'Você desde 14/05/25' */
 const rotuloFaixa = computed(() => `Você ${quandoTxt.value.charAt(0).toLowerCase()}${quandoTxt.value.slice(1)}`)
 /** a legenda do cartão: você, o CDI e o mesmo mix de classes, os números que a frase já diz */
@@ -235,7 +241,8 @@ const contexto = computed(() => ({
             </span>
           </p>
           <div class="chv__grafico chv2__grafico">
-            <AtivoGrafico :ativo="linha" :ibov="linhaCdi" ticker="Você" rotulo-hoje="Você no período" :atual="twr != null ? pctAtivo(twr) : ''" unidade="%" comparacao="CDI" tom="luz" :rotulo="tituloGrafico" />
+            <!-- a rentabilidade contra o CDI e, à direita de hoje, o leque do motor: arrastar para a direita abre o horizonte -->
+            <CarteiraHorizonte :linha="linha" :comparada="linhaCdi" :atual="twr != null ? pctAtivo(twr) : ''" :rotulo="tituloGrafico" :futuro="futuro" :caminhos="caminhosDoFuturo" :mascarado="!revelado" />
           </div>
           <!-- no celular o período desce para baixo do gráfico, largo (o mesmo gesto do /asset) -->
           <NuTrilho v-if="opcoes.length > 1" v-model="periodo" :opcoes="opcoesDoTrilho" tom="escuro" largo rotulo="Período do gráfico" class="chv2__periodos--pe" />

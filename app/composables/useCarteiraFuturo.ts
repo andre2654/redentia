@@ -18,6 +18,12 @@
  *  - 'invalida'   → 422 `invalid_portfolio`: frase calma, sem botão (repetir
  *                   não muda a resposta)
  *  - 'bloqueado'  → 402 assinatura_necessaria (o gate do servidor; a página cuida)
+ *
+ * UM PEDIDO POR PÁGINA (13/11/2026): a /carteira nova mostra o futuro em dois
+ * lugares, o gráfico do topo (CarteiraHorizonte) e a seção dos 5 anos
+ * (CarteiraFuturo). A página provê o futuro (proverCarteiraFuturo) e os dois
+ * leem o mesmo; quem usa `useCarteiraFuturo` fora dela (a tela antiga) segue
+ * pedindo o seu.
  */
 import type { FuturoDadosApi } from '~/types/assinatura'
 import { erroDeAssinatura, statusHttpDoErro } from '~/utils/assinatura'
@@ -27,7 +33,25 @@ import { caminhosDoLeque, listaDeFora, montarFuturo, type CaminhosDoLeque, type 
 
 export type EstadoDoFuturo = 'carregando' | 'pronto' | 'vazio' | 'fora' | 'erro' | 'invalida' | 'bloqueado'
 
-export function useCarteiraFuturo() {
+type FuturoDaCarteira = ReturnType<typeof criarCarteiraFuturo>
+const CHAVE_DO_FUTURO: InjectionKey<FuturoDaCarteira> = Symbol('carteira:futuro')
+
+/** A página pede o futuro uma vez e o divide com quem está abaixo dela. */
+export function proverCarteiraFuturo(): FuturoDaCarteira {
+  const f = criarCarteiraFuturo()
+  provide(CHAVE_DO_FUTURO, f)
+  return f
+}
+/** O futuro que a página proveu; null fora dela (a tela antiga, o mock do dev). */
+export function useCarteiraFuturoDaPagina(): FuturoDaCarteira | null {
+  return inject(CHAVE_DO_FUTURO, null)
+}
+/** O futuro da página, quando ela o proveu; senão, um pedido próprio. */
+export function useCarteiraFuturo(): FuturoDaCarteira {
+  return inject(CHAVE_DO_FUTURO, null) ?? criarCarteiraFuturo()
+}
+
+function criarCarteiraFuturo() {
   const { token } = useAuthState()
   const estado = ref<EstadoDoFuturo>('carregando')
   const dados = shallowRef<FuturoDadosApi | null>(null)
