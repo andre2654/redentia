@@ -76,6 +76,8 @@ O que ainda depende do backend novo, que sobe depois, com o OK do dono:
 - Depois do pagamento, a Stripe volta para o site de hoje (`BILLING_*` no `.env`).
 - A carteira nova só aparece para quem está na flag `carteira.visao_usuarios`; os outros, e qualquer falha da rota nova, veem a tela de hoje.
 
+A API de produção aceita a Aportou pelo [andre2654/redentia-api#27](https://github.com/andre2654/redentia-api/pull/27) (`fix/cors-aportou`, saindo da `main`): CORS e Sanctum com aportou.com.br. Em 13/11, antes dele, o preflight de `https://aportou.com.br` voltava sem `Access-Control-Allow-Origin`. O tenant não muda: sem cabeçalho de tenant e pelo proxy da Vercel, o `TenantContext` cai no padrão `redentia`. Se o `.env` da VPS definir `CORS_ALLOWED_ORIGIN_PATTERNS` ou `SANCTUM_STATEFUL_DOMAINS`, elas vencem o código e precisam ganhar a Aportou.
+
 Na troca (passo 4), desligar o `NUXT_PUBLIC_PRE_LANCAMENTO`.
 
 ## 5. A ordem da subida
