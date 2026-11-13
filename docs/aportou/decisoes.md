@@ -74,6 +74,43 @@ O dono: "deixe o footer mais bacana, talvez com uns carrosséis de ativos com a 
 - **O movimento é a exceção combinada** à regra do custo (`contrato.md`, seção 5). Só anima `transform`, para quando a esteira sai da tela e não existe com movimento reduzido. O botão de pausa saiu da tela, mas segue existindo para quem navega pelo teclado: aparece com o foco (o que se mexe sozinho por mais de 5 segundos precisa de um jeito de parar, WCAG 2.2.2).
 - **O recorte do rodapé virou `overflow: clip`.** Com `hidden` o rodapé vira a caixa de rolagem do que está dentro, e a animação ligada à rolagem da página fica parada.
 
+## O filme no herói do visitante (13/11/2026)
+
+O dono, com o filme de lançamento na mão (`aportou-lancamento-v3`, 52 segundos, em 16:9 e em 9:16): "vamos trocar a hero para quando não tem usuário logado para mostrar o nosso vídeo em full".
+
+**O que ficou** (`HomeHeroVisitante.vue`, `HomeFilme.vue`, `public/video/`): o filme abre a home do visitante na largura inteira da tela, logo abaixo da régua, e acaba logo acima da barra do chat. O título (o único H1), a linha de apoio e a chamada vêm embaixo, depois da dobra, ainda no escuro. Saíram do herói o wordmark em cima do título e o palco com o leque (o filme mostra o teste; o `HomeLeque` segue no "como funciona", na home de quem tem conta e no /assinar).
+
+**Decisões que não aparecem na tela:**
+
+- **O filme aparece inteiro, sem corte** (`object-fit: contain`). Ele traz letras miúdas próprias na beira de baixo ("Simulação com carteira de exemplo. Não é promessa de retorno.", a linha do cartão final), e cortar para encher a tela as esconderia.
+- **As faixas dos lados continuam o filme.** Numa janela mais larga que o filme sobram faixas dos lados (221 px de cada lado num MacBook de 1512 × 860). Cada linha da faixa tem a cor em que o filme acaba naquela altura (a média dos 3% de fora do quadro de agora), então o fundo dele segue até a beira da janela e a emenda some. É uma tela de 4 por 17 atrás do filme, refeita seis vezes por segundo, só quando há faixa (0,2 ms cada vez). A primeira versão ampliava o quadro inteiro com desfoque, como uma luz na parede; como o filme é mais escuro nas beiras que no meio, as faixas ficavam mais claras que a borda e o filme parecia uma caixa.
+- **O filme acaba acima da barra do chat**, que flutua no pé da janela. Por cima do filme, a barra cobria a letra miúda da cena do número. O teto é a altura da janela menos o que há em cima do palco e menos a barra (88 px; 74 no celular), com um piso de 35% da largura para janela baixa demais. O que há em cima é medido: quando a pessoa fecha o aviso de cookies, o palco sobe e o filme cresce junto até encostar de novo na barra. O título começa depois da dobra, para a barra não ficar em cima dele.
+- **No celular em pé entra o 9:16**; nos demais, o 16:9.
+- **Toca sozinho, sem som, e repete.** É o que o navegador permite. A capa é uma imagem (o quadro "Sua carteira é boa?", a 1,5 s), que chega antes do vídeo; a primeira volta parte desse mesmo quadro, para a imagem parada virar filme sem voltar atrás.
+- **Não toca sozinho com "movimento reduzido" nem com economia de dados**, e aí nenhum vídeo é baixado: fica a capa com o botão "Assistir ao filme", que toca com som.
+- **O som é escolha de quem vê.** "Ativar som" recomeça do início; com som o filme toca uma vez e para no cartão final. O botão de pausa fica sempre à vista (WCAG 2.2.2). Os dois ficam no canto de cima à direita: embaixo estão as letras miúdas do filme e a barra do chat.
+- **Para sozinho fora da tela** e com a aba escondida, e volta de onde parou.
+- **É a segunda exceção à regra do custo** ("nada de animação infinita", `contrato.md`, seção 5), depois da esteira do rodapé: um filme que repete. Por isso ele para fora da tela e não toca para quem pediu menos movimento.
+
+**Os arquivos** (`public/video/aportou-lancamento-*`): para cada formato, HEVC primeiro (iPhone, Mac e Chrome tocam; pesa a metade) e H.264 de reserva, com o som em AAC, o índice no começo do arquivo e um quadro-chave em 1,5 s. O filme é caro de comprimir (céu com grão e milhares de linhas finas), e o alívio leve do grão (`hqdn3d`) é o que o faz caber:
+
+| Arquivo | Tamanho | Receita (ffmpeg) |
+|---|---|---|
+| `…-16x9.hevc.mp4` (1920×1080) | 8,9 MB | `-vf hqdn3d=1:1:4:4 -c:v libx265 -preset medium -crf 30 -tag:v hvc1 -g 60 -force_key_frames 1.5 -x265-params aq-mode=3` |
+| `…-16x9.mp4` (1920×1080) | 13,3 MB | `-vf hqdn3d=1:1:4:4 -c:v libx264 -preset slow -b:v 2000k -maxrate 3200k -bufsize 6400k` em duas passadas, `-profile:v high -level 4.1 -g 60 -force_key_frames 1.5` |
+| `…-9x16.hevc.mp4` (864×1536) | 5,3 MB | como o primeiro, com `scale=864:1536:flags=lanczos` antes do `hqdn3d` |
+| `…-9x16.mp4` (720×1280) | 8,9 MB | como o segundo, com `scale=720:1280:flags=lanczos`, `-b:v 1300k -maxrate 2200k -bufsize 4400k -level 4.0` |
+| `…-16x9.webp`, `…-9x16.webp` | 44 e 32 KB | o quadro 45 (1,5 s) do original, WebP em qualidade 80 |
+
+Todos com `-pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 128k -ac 2`. Os originais (53 e 62 MB) ficam com o dono, fora do repositório. Filme novo: mesma receita, mesmos nomes; se o quadro de abertura mudar, mude `COMECA_EM` no `HomeFilme.vue` e o quadro-chave.
+
+**Em aberto com o dono:**
+
+- **Os quatro vídeos somam 36 MB dentro do repositório**, num commit só deles (dá para tirar sem mexer no resto). Hospedar fora (um CDN de vídeo) é a alternativa; aí só muda `BASE` no `HomeFilme.vue`.
+- **A barra do chat come um pedaço da dobra.** Com ela, o filme tem 1.070 px de largura numa tela de 1.512 (no Mac de 14 polegadas). Esconder a barra enquanto o filme está na tela deixaria o filme encher a dobra; isso muda a barra em todo o site, então fica com o dono.
+- **Não foi testado no Safari** (aqui só há o Chrome). O código já trata o caso conhecido dele (o tempo marcado antes dos metadados), mas falta ver num iPhone e num Mac de verdade.
+- **Legenda.** Se o som do filme tem narração, o vídeo precisa de legenda (`<track>`) para quem não ouve.
+
 ## Pendências que são do dono
 
 - Registrar e apontar aportou.com.br (o site segue servindo em redentia.com.br até lá), com os 301 do domínio antigo.

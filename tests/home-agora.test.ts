@@ -77,14 +77,18 @@ test('os apps: só o que está na App Store vira link; o resto diz "em breve" (0
   for (const f of ['app/components/home/HomeChamada.vue', 'app/components/home/HomeHeroVisitante.vue', 'app/composables/useMercado.ts'])
     assert.doesNotMatch(ler(f), /apps\.apple\.com|Disponível na App Store/i, f)
   // o herói do visitante não fala de app nem de loja (11/11/2026, pedido do dono: "uma hero
-  // melhor, que não fale de apps e que seja boa para trabalhar como CTA"): a prova é o leque,
-  // a ação é uma só, e a chamada vai sem a linha dos aparelhos
+  // melhor, que não fale de apps e que seja boa para trabalhar como CTA"): a ação é uma só, e
+  // a chamada vai sem a linha dos aparelhos. A prova era o leque; desde 13/11/2026 é o filme de
+  // lançamento, na largura da tela ("vamos trocar a hero ... para mostrar o nosso vídeo em full")
   const heroi = ler('app/components/home/HomeHeroVisitante.vue')
   const tela = heroi.slice(heroi.indexOf('<template>'), heroi.lastIndexOf('</template>'))
   assert.doesNotMatch(tela, /iPhone|Apple|App Store|\bMac\b|Watch|fraseDosApps|seloDoApp/)
   assert.match(tela, /<HomeChamada[^>]*sem-apps/)
-  assert.match(tela, /<HomeLeque\b/)
+  assert.match(tela, /<HomeFilme class="hhv__filme" \/>/)
+  assert.doesNotMatch(tela, /<HomeLeque\b/)
   assert.equal((tela.match(/<HomeChamada\b/g) ?? []).length, 1)
+  // o filme vem antes do título: ele abre a página, e o H1 segue logo depois dele no HTML
+  assert.ok(tela.indexOf('<HomeFilme') < tela.indexOf('<h1 '), 'o filme abre o herói')
   // a linha de luz acende com a rolagem da PÁGINA: o herói recorta com `clip` (com `hidden` ele virava a caixa de
   // rolagem do horizonte, e a linha ficava travada a meia-luz)
   assert.match(heroi, /\.hhv__horizonte \{ animation: hhv-acende linear both; animation-timeline: view\(\);/)
@@ -106,7 +110,7 @@ test('a home fala Aportou: nenhum texto visível diz Redentia e nenhuma peça es
   // o contrato da marca (docs/aportou/contrato.md): o produto do investidor se chama Aportou, e
   // componente só usa var(--nu-*). O HomeLosango é o desenho da marca antiga (segue no dev e na
   // /carteira antiga, fora da home) e não entra na conta.
-  const pecas = ['HomeAgoraFrase', 'HomeBolsa', 'HomeBolsaMercados', 'HomeChamada', 'HomeComoFunciona', 'HomeContent', 'HomeFecho', 'HomeHeroVisitante', 'HomeLeque', 'HomeMais', 'HomeOQueNaoE', 'HomeRankings', 'HomeTermo']
+  const pecas = ['HomeAgoraFrase', 'HomeBolsa', 'HomeBolsaMercados', 'HomeChamada', 'HomeComoFunciona', 'HomeContent', 'HomeFecho', 'HomeFilme', 'HomeHeroVisitante', 'HomeLeque', 'HomeMais', 'HomeOQueNaoE', 'HomeRankings', 'HomeTermo']
   for (const p of pecas) {
     const sfc = ler(`app/components/home/${p}.vue`)
     const tela = sfc.slice(sfc.indexOf('<template>'), sfc.lastIndexOf('</template>')).replace(/<!--[\s\S]*?-->/g, '')
