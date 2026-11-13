@@ -70,12 +70,12 @@ const quandoTxt = computed(() => (periodo.value === 'tudo' && inicio.value ? `De
 const bem = computed(() => (series.value && pedido.value ? contraOCdi(series.value, pedido.value, NOMES[periodo.value][1]) : null))
 const temGrafico = computed(() => linha.value.length >= 2)
 const tituloGrafico = computed(() => `A rentabilidade da carteira contra o CDI, ${quandoTxt.value.toLowerCase()}`)
-/* o futuro no mesmo gráfico (13/11, CarteiraHorizonte): os 2.000 caminhos do motor, que a página pede uma vez
+/* o futuro no mesmo gráfico (12/11, CarteiraHorizonte): os 2.000 caminhos do motor, que a página pede uma vez
    (proverCarteiraFuturo) e divide com a seção dos 5 anos; fora dela (o mock), o gráfico fica como era */
 const futuroDaPagina = useCarteiraFuturoDaPagina()
 const futuro = computed(() => (futuroDaPagina?.estado.value === 'pronto' ? futuroDaPagina.dados.value : null))
 const caminhosDoFuturo = computed(() => futuroDaPagina?.caminhos.value ?? null)
-/* o futuro à vista no gráfico (CarteiraHorizonte avisa até que ano a janela vai; null em repouso). 14/11, o
+/* o futuro à vista no gráfico (CarteiraHorizonte avisa até que ano a janela vai; null em repouso). 12/11, o
    dono: "quando estiver colocando no futuro altere esse texto Você em 12 meses, e pode tirar esses textos
    para o gráfico ir ocupando mais espaço": o rótulo da faixa passa a dizer até onde o gráfico vai e a
    legenda (os números do passado) sai, com o gráfico subindo para o lugar dela */
@@ -267,7 +267,7 @@ const contexto = computed(() => ({
         </NuFaixaMarca>
       </div>
       <!-- o esqueleto no tom do cartão que vem (carvão): claro, a tela piscava de creme para escuro quando o gráfico chegava -->
-      <NuSkeleton v-else-if="carregando" tone="navy" height="clamp(320px, 34vw, 470px)" radius="card" class="chv2__palco" />
+      <NuSkeleton v-else-if="carregando" tone="navy" height="var(--chv-esqueleto)" radius="card" class="chv2__palco" />
 
       <dl class="chv2__fatos">
         <div class="chv2__fato nu-cartao">
@@ -350,7 +350,20 @@ const contexto = computed(() => ({
 .chv2__frase b { color: var(--nu-blue); font-weight: inherit; white-space: nowrap; }
 .chv2__dek { margin: 20px 0 0; max-width: 58ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) .06s backwards; }
 /* a grade do topo: o cartão do gráfico e, ao lado, os três fatos empilhados (no celular, um embaixo do outro) */
-.chv2__grade { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: clamp(14px, 1.6vw, 20px); margin-top: clamp(26px, 3.4vw, 44px); }
+/* a altura do gráfico (12/11/2026, o dono: "aumentar esse card da carteira, em questão de altura, tá muito pequeno"):
+   o leque dos 2.000 caminhos precisa de altura para abrir; eram 230 a 340px. Ela vem da largura (--chv-larga) e a
+   altura da janela também manda: o cartão inteiro cabe entre o topo grudado e a barra do chat, para o rótulo de
+   cima e o aviso do pé aparecerem juntos.
+   --chv-fora é o que a janela perde fora do cartão: o topo grudado depois de rolar (a navegação encolhida e a barra
+   das seções, 105px; valor fixo, porque --nuh-h muda com a rolagem e o gráfico mudaria de altura junto), a barra do
+   chat (83px) e 8px de respiro de cada lado. --chv-moldura é o que o cartão tem além do gráfico (a faixa, a legenda
+   e os recuos). O esqueleto tem a altura do cartão que vem */
+.chv2__grade {
+  --chv-larga: 35vw; --chv-fora: 204px; --chv-moldura: 216px;
+  --chv-grafico-min: clamp(320px, min(var(--chv-larga), calc(100vh - var(--chv-fora) - var(--chv-moldura))), 520px);
+  --chv-esqueleto: calc(var(--chv-grafico-min) + var(--chv-moldura));
+  display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: clamp(14px, 1.6vw, 20px); margin-top: clamp(26px, 3.4vw, 44px);
+}
 .chv2__grade--so { grid-template-columns: minmax(0, 1fr); }
 .chv2__palco { position: relative; min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) .1s backwards; }
 /* o cartão carvão com a faixa da marca: o rótulo do período na aba e o seletor à direita dela */
@@ -369,7 +382,6 @@ const contexto = computed(() => ({
 .chv2__traco--cdi { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
 /* o gráfico vai de beira a beira do cartão; o ponto de hoje e o rótulo recuam, as marcas começam na margem do texto (as variáveis do AtivoGrafico, como no /asset) */
 .chv2__grafico {
-  --chv-grafico-min: clamp(230px, 24vw, 340px);
   flex: 1 1 auto; min-height: var(--chv-grafico-min); margin-top: 14px;
   --agr-esq: var(--pad); --agr-dir: max(var(--pad), 44px); --agr-rotulo-esq: var(--pad);
   --agr-hoje-bg: var(--nu-creme); --agr-hoje-fg: var(--nu-ink); --agr-hoje-sub: var(--nu-gray);
@@ -413,10 +425,16 @@ const contexto = computed(() => ({
 .chv2__link:focus-visible::after { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 
 @media (max-width: 1000px) {
-  .chv2__grade { grid-template-columns: minmax(0, 1fr); }
+  /* numa coluna só o cartão tem a largura da tela (no computador, pouco mais da metade): a mesma proporção pede 60vw,
+     senão o gráfico do tablet ficava com a largura do de computador e 60% da altura. A legenda cabe numa linha, e o
+     cartão tem menos além do gráfico */
+  .chv2__grade { grid-template-columns: minmax(0, 1fr); --chv-larga: 60vw; --chv-moldura: 144px; }
   .chv2__fatos { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
 }
 @media (max-width: 760px) {
+  /* no celular a legenda empilha e o período desce (o cartão tem mais além do gráfico); o topo grudado tem 91px e
+     a barra do chat, 65px */
+  .chv2__grade { --chv-moldura: 274px; --chv-fora: 172px; }
   /* no celular o período desce para baixo do gráfico, largo */
   .chv2__cartao :deep(.nfm__acoes) { display: none; }
   .chv2__periodos--pe { display: flex; }
