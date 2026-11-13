@@ -14,27 +14,42 @@
 //  - o passado É o AtivoGrafico, sem mudança: ele mora numa caixa que esta peça
 //    estreita e achata (o SVG dele escala), então a mira, a medida e o teclado
 //    do passado seguem como eram;
-//  - o futuro é um SVG desenhado uma vez (as faixas de 8 e de 5 em cada 10
-//    caminhos, uma amostra de caminhos e o mais provável tracejado) dentro de
-//    uma janela que corta em hoje e na beira; a peça só muda a caixa dele;
+//  - o futuro é uma tela (canvas) do tamanho do desenho, redesenhada quando a
+//    janela muda: os caminhos do motor, as faixas de 8 e de 5 em cada 10 e o
+//    mais provável tracejado. Em repouso cabem os 2.000; com o horizonte
+//    aberto, os primeiros da ordem de nascimento (quantosCaminhosCabem), mais
+//    fortes, para o leque pesar o mesmo;
+//  - A ABERTURA (14/11; o dono: "quando abrir a carteira quero ver as linhas
+//    sendo formadas, primeiro 1, depois outra e assim por diante, começando
+//    lento e indo mais rápido até 2k"): toda vez que a carteira abre, os
+//    caminhos nascem um a um em ordem aleatória, de hoje para a beira, com o
+//    contador "futuros testados" no lugar do convite; o total dobra a cada
+//    mesmo intervalo (nascidosEm), então a primeira linha se desenha sozinha e
+//    no fim entram centenas por quadro. Só depois do último chegam as faixas, o
+//    mais provável e o convite. O ponteiro que entra no futuro no meio da
+//    abertura a termina na hora;
 //  - a leitura do futuro (o mês sob o ponteiro: o mais provável e a faixa de 8
-//    em cada 10) usa o cartãozinho da dica do gráfico;
+//    em cada 10) usa o cartãozinho da dica do gráfico, dentro do desenho;
 //  - em repouso, o convite: o mais provável no fim do horizonte e o botão
 //    "Arraste para o futuro", que também abre e fecha o horizonte no clique e
 //    no teclado (aí as setas andam mês a mês e Esc volta).
+// Quem hospeda acompanha (o evento `horizonte`, com o ano até onde a janela
+// vai): o topo troca o rótulo "Você em 12 meses" e tira a legenda do passado.
 // O zoom segue o ponteiro com um amortecimento curto (entra e sai sem tranco);
 // o toque fica onde o dedo soltou e sai com um toque fora. Sem o futuro (o
 // motor carregando, fora do ar, a carteira sem o que simular, o mock do dev), a
 // peça é só o gráfico de antes, na largura toda; quando o futuro chega, ele
 // entra abrindo espaço (o estado muda na hora; por ~0,8 s a caixa do passado
-// e a janela andam em transição de CSS, que não depende dos quadros do script). O R$ segue o olho da visita (`mascarado`): escondido,
-// a leitura fica só em %. Movimento reduzido: sem amortecimento e sem entrada.
+// anda em transição de CSS, que não depende dos quadros do script) e então os
+// caminhos nascem. O R$ segue o olho da visita (`mascarado`): escondido, a
+// leitura fica só em %. Movimento reduzido: sem amortecimento, sem entrada e
+// sem a abertura (o leque aparece pronto).
 import type { SeriesPoint } from '~/types/acao'
 import type { FuturoDadosApi } from '~/types/assinatura'
-import { anoDoFim, brlDoLeque, mesDoLeque, type CaminhosDoLeque } from '~/utils/futuro'
+import { anoDoFim, brlDoLeque, mesDoLeque, rgbDaCor, type CaminhosDoLeque } from '~/utils/futuro'
 import {
-  caixaNoDominio, daquiAQuanto, dominioDoHorizonte, futuroAVista, mesSobOPonteiro, mesesDoPassado, ondeFicaHoje, ondeFicaOMes, quantisNoMes,
-  zoomDoPonteiro, PASSADO_EM_REPOUSO,
+  NASCER_EM_MS, alfaDosCaminhos, caixaNoDominio, daquiAQuanto, desenhadoEm, dominioDoHorizonte, futuroAVista, mesSobOPonteiro, mesesDoPassado, nascidosEm,
+  ondeFicaHoje, ondeFicaOMes, quantisNoMes, quantosCaminhosCabem, zoomDoPonteiro,
 } from '~/utils/horizonteDaCarteira'
 
 const props = withDefaults(defineProps<{
@@ -48,11 +63,13 @@ const props = withDefaults(defineProps<{
   rotulo: string
   /** a resposta do motor; null enquanto não há futuro para mostrar */
   futuro?: FuturoDadosApi | null
-  /** os caminhos do motor (a textura do leque); sem eles, só as faixas */
+  /** os caminhos do motor (o leque); sem eles, só as faixas */
   caminhos?: CaminhosDoLeque | null
   /** o olho da visita fechado: o R$ some, o % fica */
   mascarado?: boolean
 }>(), { futuro: null, caminhos: null, mascarado: false })
+/** com o futuro à vista, até que ano a janela vai ('2029'); null em repouso. Só muda quando o ano muda, não a cada quadro. */
+const emit = defineEmits<{ horizonte: [ate: string | null] }>()
 
 /* ————— o que o motor mandou, pronto para desenhar ————— */
 const serie = computed(() => props.futuro?.series ?? [])
@@ -62,12 +79,14 @@ const base = computed(() => serie.value[0]?.p50 ?? 0)
 const passado = computed(() => mesesDoPassado(props.linha))
 const hojeIndice = computed(() => props.linha[props.linha.length - 1]?.v ?? 0)
 const temFuturo = computed(() => horizonte.value >= 2 && base.value > 0 && passado.value > 0 && hojeIndice.value > 0)
+/** os caminhos, quando batem com a série do motor */
+const fios = computed(() => (temFuturo.value && props.caminhos && props.caminhos.pontos === serie.value.length ? props.caminhos : null))
 
 /* ————— o zoom: 0 em repouso, 1 com o horizonte inteiro ————— */
 const z = ref(0)
 /** o futuro no lugar: 0 sem ele (o gráfico de antes, na largura toda), 1 com ele */
 const presenca = computed(() => (temFuturo.value ? 1 : 0))
-/** o futuro entrando (ou saindo): por ~0,8 s a caixa do passado e a janela andam em transição de CSS, e o ponteiro espera */
+/** o futuro entrando (ou saindo): por ~0,8 s a caixa do passado anda em transição de CSS, e o ponteiro espera */
 const chegando = ref(false)
 let fimDaChegada: ReturnType<typeof setTimeout> | null = null
 let alvoDoZoom = 0
@@ -93,13 +112,6 @@ function mirar(novo: number) {
   if (quadro == null) antes = performance.now()
   pedirQuadro()
 }
-// o futuro chega (ou some): o estado muda na hora; a transição é só o acabamento, e não roda com movimento reduzido
-watch(temFuturo, () => {
-  if (fimDaChegada) clearTimeout(fimDaChegada)
-  if (calmo()) { chegando.value = false; return }
-  chegando.value = true
-  fimDaChegada = setTimeout(() => { chegando.value = false }, 800)
-})
 
 /* ————— a geometria à vista ————— */
 const aVista = computed(() => futuroAVista(z.value, passado.value, horizonte.value))
@@ -111,45 +123,211 @@ const dominioDoPassado = computed(() => {
 })
 const dominio = computed(() => {
   const p = dominioDoPassado.value
-  if (!temFuturo.value) return p
-  const d = dominioDoHorizonte(p, serie.value, hojeIndice.value, base.value, aVista.value, z.value)
-  return { lo: p.lo + (d.lo - p.lo) * presenca.value, hi: p.hi + (d.hi - p.hi) * presenca.value }
+  return temFuturo.value ? dominioDoHorizonte(p, serie.value, hojeIndice.value, base.value, aVista.value, z.value) : p
 })
 const emIndice = (v: number) => (hojeIndice.value * v) / base.value
 /** onde um valor do leque (R$) cai na altura do desenho, de 0 (em cima) a 1 */
 const alturaDe = (v: number) => (dominio.value.hi - emIndice(v)) / (dominio.value.hi - dominio.value.lo)
 const caixaDoPassado = computed(() => caixaNoDominio(dominioDoPassado.value, dominio.value))
 
-/* ————— o leque, desenhado uma vez num quadro de (horizonte) × 1000 ————— */
-const ALTO = 1000
-const AMOSTRA = 44
-const leque = computed(() => {
+/* ————— a abertura: os caminhos nascendo ————— */
+/** quantos caminhos já nasceram na abertura; null fora dela (o leque pronto) */
+const contados = ref<number | null>(null)
+/** as faixas e o mais provável: 0 durante a abertura, 1 depois (entram em ~0,5 s) */
+const resultado = ref(1)
+/** a ordem em que os caminhos nascem (aleatória, uma por montagem); com o horizonte aberto, os primeiros dela são a amostra */
+let ordem: Uint32Array | null = null
+let comecouEm = 0
+let abertura: number | null = null
+let fimDaAbertura: ReturnType<typeof setTimeout> | null = null
+let esperaDaAbertura: ReturnType<typeof setTimeout> | null = null
+const nfContador = new Intl.NumberFormat('pt-BR')
+function embaralhar(n: number): Uint32Array {
+  const o = new Uint32Array(n)
+  for (let i = 0; i < n; i++) o[i] = i
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const t = o[i]!
+    o[i] = o[j]!
+    o[j] = t
+  }
+  return o
+}
+function pararAbertura() {
+  if (abertura != null) cancelAnimationFrame(abertura)
+  abertura = null
+  if (fimDaAbertura) clearTimeout(fimDaAbertura)
+  if (esperaDaAbertura) clearTimeout(esperaDaAbertura)
+  fimDaAbertura = esperaDaAbertura = null
+}
+/** o leque pronto: todos nascidos, as faixas e o mais provável à vista */
+function terminarAbertura(suave = false) {
+  pararAbertura()
+  const estava = contados.value != null
+  contados.value = null
+  if (!suave || !estava || calmo() || typeof requestAnimationFrame === 'undefined') {
+    resultado.value = 1
+    desenhar()
+    return
+  }
+  // as faixas e o mais provável chegam em ~0,5 s
+  const t0 = performance.now()
+  const sobe = (agora: number) => {
+    resultado.value = Math.min(1, (agora - t0) / 520)
+    desenhar()
+    abertura = resultado.value < 1 ? requestAnimationFrame(sobe) : null
+  }
+  abertura = requestAnimationFrame(sobe)
+  // se os quadros não rodam (a aba escondida), o relógio fecha a conta
+  fimDaAbertura = setTimeout(() => terminarAbertura(), 900)
+}
+function abrirOLeque() {
+  pararAbertura()
+  const c = fios.value
+  if (!c || calmo() || typeof requestAnimationFrame === 'undefined') { terminarAbertura(); return }
+  if (!ordem || ordem.length !== c.n) ordem = embaralhar(c.n)
+  contados.value = 0
+  resultado.value = 0
+  desenhar()
+  // espera o gráfico abrir espaço (a chegada) e então nasce o primeiro
+  esperaDaAbertura = setTimeout(() => {
+    comecouEm = performance.now()
+    const passo = (agora: number) => {
+      const t = agora - comecouEm
+      if (t >= NASCER_EM_MS) { terminarAbertura(true); return }
+      contados.value = Math.floor(nascidosEm(t, c.n))
+      desenhar(t)
+      abertura = requestAnimationFrame(passo)
+    }
+    abertura = requestAnimationFrame(passo)
+    // se os quadros não rodam (a aba escondida), o relógio fecha a conta
+    fimDaAbertura = setTimeout(() => terminarAbertura(), NASCER_EM_MS + 1500)
+  }, chegando.value ? 820 : 120)
+}
+
+/* ————— a tela do futuro ————— */
+const tela = ref<HTMLCanvasElement | null>(null)
+let ctx: CanvasRenderingContext2D | null = null
+let largura = 0
+let altura = 0
+let medidor: ResizeObserver | null = null
+let corDosFios: [number, number, number] = [169, 196, 255]
+let corDoMeio: [number, number, number] = [91, 140, 255]
+let corDoTraco: [number, number, number] = [220, 230, 255]
+let corDoFundo: [number, number, number] = [17, 24, 39]
+const rgba = (c: [number, number, number], a: number) => `rgba(${c[0]},${c[1]},${c[2]},${a})`
+function medirTela() {
+  const el = tela.value
+  if (!el) { ctx = null; return }
+  const r = el.getBoundingClientRect()
+  const dpr = Math.min(window.devicePixelRatio || 1, 2)
+  largura = r.width
+  altura = r.height
+  el.width = Math.max(1, Math.round(largura * dpr))
+  el.height = Math.max(1, Math.round(altura * dpr))
+  ctx = el.getContext('2d')
+  ctx?.setTransform(dpr, 0, 0, dpr, 0, 0)
+  const estilo = getComputedStyle(el)
+  corDosFios = rgbDaCor(estilo.getPropertyValue('--nu-blue-soft')) ?? corDosFios
+  corDoMeio = rgbDaCor(estilo.getPropertyValue('--nu-blue-on-dark')) ?? corDoMeio
+  corDoTraco = rgbDaCor(estilo.getPropertyValue('--nu-blue-on-blue-2')) ?? corDoTraco
+  corDoFundo = rgbDaCor(estilo.getPropertyValue('--nu-ink')) ?? corDoFundo
+  desenhar()
+}
+/**
+ * O leque na janela de agora. `t` é o tempo da abertura (ms desde o primeiro
+ * caminho); sem ele, o leque pronto.
+ */
+function desenhar(t?: number) {
+  if (!ctx || largura <= 0 || altura <= 0) return
+  ctx.clearRect(0, 0, largura, altura)
+  if (!temFuturo.value) return
   const s = serie.value
-  if (!temFuturo.value) return null
-  let lo = Infinity
-  let hi = -Infinity
-  for (const p of s) { lo = Math.min(lo, p.p10); hi = Math.max(hi, p.p90) }
-  const y = (v: number) => (((hi - v) / (hi - lo)) * ALTO).toFixed(1)
-  const ida = (q: 'p10' | 'p25' | 'p50' | 'p75' | 'p90') => s.map((p, i) => `${i},${y(p[q])}`)
-  const faixa = (cima: 'p90' | 'p75', baixo: 'p10' | 'p25') => `M${ida(cima).join(' L')} L${ida(baixo).reverse().join(' L')} Z`
-  // uma amostra dos caminhos, espalhada pelo ranking do fim (do pior ao melhor)
-  const fios: string[] = []
-  const c = props.caminhos
-  if (c && c.pontos === s.length) {
-    const k = Math.min(AMOSTRA, c.n)
-    for (let j = 0; j < k; j++) {
-      const i = Math.min(c.n - 1, Math.floor(((j + 0.5) / k) * c.n))
-      let d = ''
-      for (let t = 0; t < c.pontos; t++) d += `${t ? ' L' : 'M'}${t},${y(c.valores[i * c.pontos + t]!)}`
-      fios.push(d)
+  const P = passado.value
+  const F = aVista.value
+  if (!(F > 0)) return
+  const xDe = (m: number) => largura * ((P + m) / (P + F))
+  const yDe = (v: number) => altura * alturaDe(v)
+  const x0 = xDe(0)
+  // um mês além da beira: o último trecho sai da tela inteiro
+  const ultimo = Math.min(horizonte.value, Math.ceil(F) + 1)
+  ctx.save()
+  ctx.beginPath()
+  ctx.rect(x0, 0, largura - x0, altura)
+  ctx.clip()
+  ctx.lineJoin = 'round'
+
+  // as faixas: 8 e 5 em cada 10 caminhos
+  if (resultado.value > 0) {
+    const faixa = (cima: 'p90' | 'p75', baixo: 'p10' | 'p25', a: number) => {
+      ctx!.beginPath()
+      for (let m = 0; m <= ultimo; m++) ctx!.lineTo(xDe(m), yDe(s[m]![cima]))
+      for (let m = ultimo; m >= 0; m--) ctx!.lineTo(xDe(m), yDe(s[m]![baixo]))
+      ctx!.closePath()
+      ctx!.fillStyle = rgba(corDoMeio, a * resultado.value)
+      ctx!.fill()
+    }
+    faixa('p90', 'p10', 0.13)
+    faixa('p75', 'p25', 0.12)
+  }
+
+  // os caminhos: na abertura, os que já nasceram (o mais novo ainda se desenhando); depois, os que cabem na janela
+  const c = fios.value
+  if (c && ordem) {
+    const nasceram = t == null ? c.n : Math.min(c.n, Math.ceil(nascidosEm(t, c.n)))
+    const quantos = Math.min(nasceram, quantosCaminhosCabem(c.n, F))
+    ctx.lineWidth = largura < 420 ? 0.8 : 1
+    ctx.strokeStyle = rgba(corDosFios, alfaDosCaminhos(quantos))
+    const P1 = c.pontos
+    for (let k = 0; k < quantos; k++) {
+      const o = ordem[k]! * P1
+      // quanto deste caminho já se desenhou (de hoje para a beira); 1 fora da abertura
+      const feito = t == null ? 1 : desenhadoEm(k, t, c.n)
+      if (feito <= 0) continue
+      const ate = feito >= 1 ? Infinity : x0 + (largura - x0) * feito
+      ctx.beginPath()
+      ctx.moveTo(x0, yDe(c.valores[o]!))
+      let xa = x0
+      let ya = yDe(c.valores[o]!)
+      for (let m = 1; m <= ultimo; m++) {
+        const x = xDe(m)
+        const y = yDe(c.valores[o + m]!)
+        if (x > ate) {
+          // o trecho para na ponta que ainda se desenha
+          const f = (ate - xa) / (x - xa)
+          ctx.lineTo(ate, ya + (y - ya) * f)
+          break
+        }
+        ctx.lineTo(x, y)
+        xa = x
+        ya = y
+      }
+      ctx.stroke()
     }
   }
-  return { lo, hi, larga: faixa('p90', 'p10'), estreita: faixa('p75', 'p25'), meio: `M${ida('p50').join(' L')}`, fios }
-})
-const caixaDoLeque = computed(() => {
-  const l = leque.value
-  return l ? caixaNoDominio({ lo: emIndice(l.lo), hi: emIndice(l.hi) }, dominio.value) : { topo: 0, altura: 1 }
-})
+
+  // o mais provável, tracejado: um leito escuro por baixo o separa das linhas, e o traço claro continua a linha do passado
+  if (resultado.value > 0) {
+    const meio = () => {
+      ctx!.beginPath()
+      for (let m = 0; m <= ultimo; m++) ctx!.lineTo(xDe(m), yDe(s[m]!.p50))
+    }
+    ctx.lineCap = 'round'
+    meio()
+    ctx.lineWidth = 5
+    ctx.strokeStyle = rgba(corDoFundo, 0.5 * resultado.value)
+    ctx.stroke()
+    meio()
+    ctx.setLineDash([6, 6])
+    ctx.lineWidth = 2
+    ctx.strokeStyle = rgba(corDoTraco, resultado.value)
+    ctx.stroke()
+    ctx.setLineDash([])
+  }
+  ctx.restore()
+}
+// a janela mudou (o zoom, o período, o tamanho): a tela acompanha. Durante a abertura, o próprio passo redesenha.
+watch([z, dominio, hoje], () => { if (contados.value == null) desenhar() }, { flush: 'post' })
 
 /* ————— a leitura do futuro: o mês sob o ponteiro (ou sob as setas) ————— */
 const raiz = ref<HTMLElement | null>(null)
@@ -213,6 +391,12 @@ const inicioDoEixo = computed(() => {
 })
 const fimDoEixo = computed(() => (props.futuro ? mesDoLeque(props.futuro.as_of, Math.max(1, Math.round(aVista.value))) : ''))
 const noFuturo = computed(() => z.value > 0.02)
+/**
+ * Quem hospeda o gráfico acompanha (14/11/2026; o dono: "quando estiver colocando no futuro altere esse
+ * texto Você em 12 meses, e pode tirar esses textos para o gráfico ir ocupando mais espaço").
+ */
+const ateOAno = computed(() => (noFuturo.value ? (fimDoEixo.value.split('/')[1] ?? null) : null))
+watch(ateOAno, (ano) => emit('horizonte', ano))
 
 /* ————— o ponteiro: o mouse passa, o dedo arrasta ————— */
 let medindo = false
@@ -226,6 +410,8 @@ function seguir(e: PointerEvent) {
   mesDoTeclado.value = null
   if (aberto.value) { ponteiro.value = u; return }
   const pede = zoomDoPonteiro(u)
+  // quem entra no futuro no meio da abertura não espera: o leque fica pronto
+  if (pede > 0 && contados.value != null) terminarAbertura()
   // sobre o passado, com o horizonte fechado, a leitura é do gráfico de sempre
   ponteiro.value = pede > 0 || z.value > 0.002 ? u : null
   mirar(pede)
@@ -272,6 +458,7 @@ function toqueFora(e: PointerEvent) {
 /* ————— o botão e o teclado ————— */
 const janela = ref<HTMLElement | null>(null)
 function alternar() {
+  if (contados.value != null) terminarAbertura()
   aberto.value = !aberto.value
   ponteiro.value = null
   mesDoTeclado.value = aberto.value ? horizonte.value : null
@@ -295,19 +482,40 @@ function aoTeclar(e: KeyboardEvent) {
   mesDoTeclado.value = Math.min(horizonte.value, Math.max(1, m))
 }
 
-onMounted(() => document.addEventListener('pointerdown', toqueFora, { passive: true }))
-onBeforeUnmount(() => {
-  document.removeEventListener('pointerdown', toqueFora)
-  if (quadro != null) cancelAnimationFrame(quadro)
+/* ————— a vida da peça ————— */
+// o futuro chega (ou some): o estado muda na hora; a transição é só o acabamento, e não roda com movimento reduzido
+watch(temFuturo, (tem) => {
   if (fimDaChegada) clearTimeout(fimDaChegada)
+  chegando.value = !calmo()
+  if (chegando.value) fimDaChegada = setTimeout(() => { chegando.value = false }, 800)
+  if (!tem) { pararAbertura(); contados.value = null; resultado.value = 1 }
 })
-// o período troca (ou o futuro some): tudo volta ao repouso
-watch(() => [props.linha, temFuturo.value], () => {
+// a tela existe (o futuro chegou, ou a peça montou já com ele): mede, e os caminhos nascem
+watch(tela, (el, velha) => {
+  if (velha) medidor?.unobserve(velha)
+  if (!el) { ctx = null; return }
+  medidor ??= new ResizeObserver(() => medirTela())
+  medidor.observe(el)
+  medirTela()
+  abrirOLeque()
+}, { flush: 'post' })
+// os caminhos chegam depois da tela, ou trocam: a abertura recomeça com eles
+watch(fios, (novo, velho) => { if (tela.value && novo && novo !== velho) abrirOLeque() }, { flush: 'post' })
+// o período troca: tudo volta ao repouso (o leque fica como está)
+watch(() => props.linha, () => {
   aberto.value = false
   ponteiro.value = null
   mesDoTeclado.value = null
   alvoDoZoom = 0
   z.value = 0
+})
+onMounted(() => document.addEventListener('pointerdown', toqueFora, { passive: true }))
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', toqueFora)
+  if (quadro != null) cancelAnimationFrame(quadro)
+  if (fimDaChegada) clearTimeout(fimDaChegada)
+  pararAbertura()
+  medidor?.disconnect()
 })
 
 const vars = computed(() => ({
@@ -315,58 +523,56 @@ const vars = computed(() => ({
   '--pres': String(presenca.value),
   '--pt': caixaDoPassado.value.topo.toFixed(5),
   '--ph': caixaDoPassado.value.altura.toFixed(5),
-  '--lt': caixaDoLeque.value.topo.toFixed(5),
-  '--lh': caixaDoLeque.value.altura.toFixed(5),
-  '--lw': (aVista.value > 0 ? horizonte.value / aVista.value : 1).toFixed(5),
 }))
 </script>
 
 <template>
   <div
-    ref="raiz" class="cho" :class="{ 'cho--futuro': temFuturo, 'cho--chegando': chegando, 'cho--zoom': noFuturo, 'cho--lendo': !!leitura, 'cho--aberto': aberto }" :style="vars"
+    ref="raiz" class="cho"
+    :class="{ 'cho--futuro': temFuturo, 'cho--chegando': chegando, 'cho--zoom': noFuturo, 'cho--lendo': !!leitura, 'cho--aberto': aberto, 'cho--testando': contados != null }"
+    :style="vars"
     @pointerdown="aoApertar" @pointermove="aoMover" @pointerup="aoSoltar" @pointercancel="aoCancelar" @pointerleave="aoSair"
   >
     <div class="cho__palco">
-      <!-- o futuro: a janela corta em hoje e na beira; o leque, desenhado uma vez, só muda de caixa -->
-      <div
-        v-if="leque" ref="janela" class="cho__janela" :tabindex="aberto ? 0 : -1" :role="aberto ? 'group' : undefined"
-        :aria-label="aberto ? 'O futuro da carteira, mês a mês. Setas movem a leitura; Esc volta para hoje.' : undefined" :aria-hidden="aberto ? undefined : true"
-        @keydown="aoTeclar"
-      >
-        <svg class="cho__leque" :viewBox="`0 0 ${horizonte} 1000`" preserveAspectRatio="none" focusable="false" aria-hidden="true">
-          <path :d="leque.larga" class="cho__faixa" />
-          <path :d="leque.estreita" class="cho__faixa cho__faixa--dentro" />
-          <path v-for="(d, i) in leque.fios" :key="i" :d="d" class="cho__fio" />
-          <path :d="leque.meio" class="cho__meio" />
-        </svg>
-      </div>
+      <!-- o futuro: a tela do tamanho do desenho; o leque é redesenhado na janela de agora -->
+      <canvas v-if="temFuturo" ref="tela" class="cho__tela" aria-hidden="true" />
 
       <!-- o passado: o gráfico de sempre, numa caixa que estreita e achata -->
       <div class="cho__passado">
         <AtivoGrafico :ativo="linha" :ibov="comparada" ticker="Você" rotulo-hoje="Você no período" :atual="atual" unidade="%" comparacao="CDI" tom="luz" :rotulo="rotulo" />
       </div>
 
-      <div v-if="leque" ref="plot" class="cho__plot" aria-hidden="true">
-        <span class="cho__hoje" :style="{ left: `${hoje * 100}%` }"><b>hoje</b></span>
-        <span v-if="fim && fim.x <= 100.5" class="cho__fim" :style="{ left: `${fim.x}%`, top: `${fim.y}%` }" />
-        <template v-if="leitura">
-          <span class="cho__mira" :style="{ left: `${leitura.x}%` }" />
-          <span class="cho__ponto" :style="{ left: `${leitura.x}%`, top: `${leitura.y}%` }" />
-          <span class="cho__dica" :style="ancora(leitura.x)">
-            <span class="cho__dica-d">{{ leitura.quando }}</span>
-            <span class="cho__dica-l"><span class="cho__dica-p">{{ leitura.valor }}</span><span class="cho__dica-v" :class="`cho__dica-v--${leitura.dir}`">{{ leitura.var }}</span></span>
-            <span class="cho__dica-i">{{ leitura.faixa }}</span>
-          </span>
+      <!-- com o horizonte aberto, o futuro recebe o foco e as setas -->
+      <div
+        v-if="temFuturo" ref="janela" class="cho__janela" :tabindex="aberto ? 0 : -1" :role="aberto ? 'group' : undefined"
+        :aria-label="aberto ? 'O futuro da carteira, mês a mês. Setas movem a leitura; Esc volta para hoje.' : undefined" :aria-hidden="aberto ? undefined : true"
+        @keydown="aoTeclar"
+      />
+
+      <div ref="plot" class="cho__plot" aria-hidden="true">
+        <template v-if="temFuturo">
+          <span class="cho__hoje" :style="{ left: `${hoje * 100}%` }"><b>hoje</b></span>
+          <span v-if="fim && fim.x <= 100.5" class="cho__fim" :style="{ left: `${fim.x}%`, top: `${fim.y}%` }" />
+          <template v-if="leitura">
+            <span class="cho__mira" :style="{ left: `${leitura.x}%` }" />
+            <span class="cho__ponto" :style="{ left: `${leitura.x}%`, top: `${leitura.y}%` }" />
+            <span class="cho__dica" :style="ancora(leitura.x)">
+              <span class="cho__dica-d">{{ leitura.quando }}</span>
+              <span class="cho__dica-l"><span class="cho__dica-p">{{ leitura.valor }}</span><span class="cho__dica-v" :class="`cho__dica-v--${leitura.dir}`">{{ leitura.var }}</span></span>
+              <span class="cho__dica-i">{{ leitura.faixa }}</span>
+            </span>
+          </template>
         </template>
       </div>
-      <!-- sem o futuro, o desenho ainda precisa da medida do plot (o ponteiro lê por ela) -->
-      <div v-else ref="plot" class="cho__plot" aria-hidden="true" />
-
     </div>
 
-    <!-- o convite: o mais provável no fim do horizonte e o botão que abre e fecha (no celular, embaixo do eixo) -->
-    <div v-if="leque && fim" class="cho__convite">
-      <p class="cho__convite-t"><span>mais provável em {{ fim.ano }}</span><b>{{ fim.valor }}</b></p>
+    <!-- o convite: na abertura, o contador dos futuros testados; depois, o mais provável no fim do horizonte
+         e o botão que abre e fecha (no celular, embaixo do eixo) -->
+    <div v-if="temFuturo && fim" class="cho__convite">
+      <p class="cho__convite-t">
+        <template v-if="contados != null"><span>futuros testados</span><b aria-hidden="true">{{ nfContador.format(contados) }}</b><span class="nu-sr">Testando a carteira em {{ nfContador.format(futuro?.paths ?? 0) }} futuros.</span></template>
+        <template v-else><span>mais provável em {{ fim.ano }}</span><b>{{ fim.valor }}</b></template>
+      </p>
       <button type="button" class="cho__botao" :aria-pressed="aberto" @click="alternar">
         <template v-if="aberto">Voltar para hoje</template>
         <template v-else>Arraste para o futuro</template>
@@ -375,7 +581,7 @@ const vars = computed(() => ({
     </div>
 
     <!-- as pontas do eixo e, entre elas, o que o número do futuro é (o aviso do motor) -->
-    <p v-if="leque" class="cho__eixo" aria-hidden="true">
+    <p v-if="temFuturo" class="cho__eixo" aria-hidden="true">
       <span>{{ inicioDoEixo }}</span>
       <span class="cho__eixo-nota">{{ futuro?.disclaimer }}</span>
       <span>{{ fimDoEixo }}</span>
@@ -402,10 +608,9 @@ const vars = computed(() => ({
   width: calc(var(--cho-hoje) + var(--cho-dir) * (1 - var(--pres, 0)));
   --agr-dir: calc(var(--cho-dir) * (1 - var(--pres, 0)));
 }
-/* o futuro chegando: a caixa do passado estreita e a janela aparece, em transição (o zoom, depois, anda quadro a quadro, sem ela) */
+/* o futuro chegando: a caixa do passado estreita, em transição (o zoom, depois, anda quadro a quadro, sem ela) */
 .cho--chegando .cho__passado { transition: width var(--nu-dur-entrada) var(--nu-ease-saida), top var(--nu-dur-entrada) var(--nu-ease-saida), height var(--nu-dur-entrada) var(--nu-ease-saida); }
 .cho--chegando .cho__passado :deep(.agr__plot) { transition: right var(--nu-dur-entrada) var(--nu-ease-saida); }
-.cho--chegando .cho__janela { transition: left var(--nu-dur-entrada) var(--nu-ease-saida), opacity var(--nu-dur-entrada) var(--nu-ease-cor); }
 .cho--chegando .cho__plot, .cho--chegando .cho__eixo { transition: opacity var(--nu-dur-entrada) var(--nu-ease-cor); }
 /* com o horizonte aberto, o passado é contexto: as marcas, o rótulo de hoje e a leitura dele saem */
 .cho__passado :deep(.agr__marca), .cho__passado :deep(.agr__hoje) { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
@@ -414,24 +619,20 @@ const vars = computed(() => ({
 .cho--zoom .cho__passado :deep(.agr) { cursor: default; }
 
 /* ——— o futuro ——— */
-.cho__janela {
-  position: absolute; top: 0; bottom: 0; left: var(--cho-hoje); right: var(--cho-dir); overflow: hidden; opacity: var(--pres, 0); outline: none;
+.cho__tela {
+  position: absolute; top: 0; bottom: 0; left: var(--cho-esq); right: var(--cho-dir); width: var(--cho-largura); height: 100%; pointer-events: none;
   /* em repouso o leque passa do teto: ele some na beira de cima, sem corte seco */
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, var(--nu-ink) 12%); mask-image: linear-gradient(to bottom, transparent 0, var(--nu-ink) 12%);
 }
+.cho__janela { position: absolute; top: 0; bottom: 0; left: var(--cho-hoje); right: var(--cho-dir); outline: none; }
 .cho__janela:focus-visible { box-shadow: inset 0 0 0 3px var(--nu-blue-on-dark); border-radius: 6px; }
-.cho__leque { position: absolute; left: 0; top: calc(var(--lt, 0) * 100%); width: calc(var(--lw, 1) * 100%); height: calc(var(--lh, 1) * 100%); overflow: visible; }
-.cho__faixa { fill: color-mix(in srgb, var(--nu-blue-on-dark) 13%, transparent); }
-.cho__faixa--dentro { fill: color-mix(in srgb, var(--nu-blue-on-dark) 16%, transparent); }
-.cho__fio { fill: none; stroke: color-mix(in srgb, var(--nu-blue-soft) 22%, transparent); stroke-width: 1; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-.cho__meio { fill: none; stroke: var(--nu-blue-on-dark); stroke-width: 2; stroke-dasharray: 5 5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 
 /* ——— por cima: hoje, o fim, a leitura ——— */
-.cho__plot { position: absolute; top: 0; bottom: 0; left: var(--cho-esq); right: var(--cho-dir); pointer-events: none; opacity: var(--pres, 0); }
+.cho__plot { position: absolute; top: 0; bottom: 0; left: var(--cho-esq); right: var(--cho-dir); pointer-events: none; }
 .cho__hoje { position: absolute; top: 0; bottom: 0; width: 1px; transform: translateX(-.5px); background: var(--nu-cream-text-14); }
+/* a palavra fica no pé da linha: em cima moram a dica e o convite */
 .cho__hoje b {
-  position: absolute; top: 2px; left: 8px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto);
-  transition: opacity var(--nu-dur-media) var(--nu-ease-cor);
+  position: absolute; bottom: 2px; left: 8px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto);
 }
 .cho__fim {
   position: absolute; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%);
@@ -442,13 +643,16 @@ const vars = computed(() => ({
   position: absolute; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%);
   background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-blue-on-dark), 0 0 0 7px var(--nu-blue-28);
 }
-/* a dica: o mesmo cartãozinho do gráfico (AtivoGrafico, .agr__dica) */
+/* a dica: o mesmo cartãozinho do gráfico (AtivoGrafico, .agr__dica). Fica dentro do desenho, no alto: com o
+   futuro à vista o gráfico sobe para o lugar da legenda, e por cima dele estão o rótulo e os períodos */
 .cho__dica {
-  position: absolute; top: 0; transform: translate(var(--cho-dica-x, -50%), calc(-100% - 12px)); z-index: 2;
+  position: absolute; top: 8px; transform: translateX(var(--cho-dica-x, -50%)); z-index: 2;
   display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 12px; border-radius: var(--nu-r-chip); white-space: nowrap;
   background: var(--nu-navy-2); color: var(--nu-cream-text); font-variant-numeric: tabular-nums;
   box-shadow: 0 0 0 1px var(--nu-cream-text-12), var(--nu-shadow-float);
 }
+/* com o horizonte aberto pelo botão, "Voltar para hoje" fica no canto de cima: a dica desce para baixo dele */
+.cho--aberto .cho__dica { top: 46px; }
 .cho__dica-d, .cho__dica-i { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); }
 .cho__dica-l { display: flex; align-items: baseline; gap: 8px; }
 .cho__dica-p { font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-titulo); }
@@ -457,10 +661,7 @@ const vars = computed(() => ({
 .cho__dica-v--down { color: var(--nu-red-soft); }
 
 /* ——— o convite ——— */
-.cho__convite {
-  position: absolute; top: 0; right: var(--cho-dir); display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
-  opacity: var(--pres, 0); transition: opacity var(--nu-dur-media) var(--nu-ease-cor);
-}
+.cho__convite { position: absolute; top: 0; right: var(--cho-dir); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 .cho__convite-t {
   display: flex; flex-direction: column; align-items: flex-end; gap: 2px; margin: 0; padding: 8px 12px; border-radius: var(--nu-r-chip);
   background: color-mix(in srgb, var(--nu-navy-2) 82%, transparent); box-shadow: 0 0 0 1px var(--nu-cream-text-12);
@@ -483,12 +684,14 @@ const vars = computed(() => ({
 .cho--aberto .cho__botao svg { transform: rotate(180deg); }
 /* com o ponteiro já no futuro, o convite de arrastar cumpriu o papel (o de voltar, com o horizonte aberto, fica) */
 .cho--zoom:not(.cho--aberto) .cho__botao { opacity: 0; pointer-events: none; }
+/* na abertura o convite é o contador; o botão chega com o resultado */
+.cho--testando .cho__botao { opacity: 0; pointer-events: none; }
 
 /* ——— as pontas do eixo ——— */
 .cho__eixo {
   flex: none; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 8px 0 0; padding: 0 var(--cho-dir) 0 var(--cho-esq);
   color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); font-variant-numeric: tabular-nums;
-  white-space: nowrap; opacity: var(--pres, 0);
+  white-space: nowrap;
 }
 /* o que o número do futuro é: o aviso do motor, sempre à vista junto do convite (a seção dos 5 anos conta o teste inteiro) */
 .cho__eixo-nota { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
@@ -504,13 +707,14 @@ const vars = computed(() => ({
   .cho__botao { min-height: 36px; }
   .cho--lendo .cho__convite-t { opacity: 1; }
   .cho--zoom:not(.cho--aberto) .cho__botao { opacity: 1; pointer-events: auto; }
+  .cho--aberto .cho__dica { top: 8px; }
   .cho--futuro .cho__passado :deep(.agr__hoje) { display: none; }
   /* o aviso desce para uma linha própria, inteiro, entre as pontas do eixo e o convite */
   .cho__eixo { flex-wrap: wrap; row-gap: 6px; }
   .cho__eixo-nota { order: 3; flex: 1 0 100%; white-space: normal; overflow: visible; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cho__passado, .cho__passado :deep(.agr__plot), .cho__janela, .cho__plot, .cho__eixo,
-  .cho__passado :deep(.agr__marca), .cho__passado :deep(.agr__hoje), .cho__hoje b, .cho__convite, .cho__convite-t, .cho__botao, .cho__botao svg { transition: none; }
+  .cho__passado, .cho__passado :deep(.agr__plot), .cho__plot, .cho__eixo,
+  .cho__passado :deep(.agr__marca), .cho__passado :deep(.agr__hoje), .cho__convite-t, .cho__botao, .cho__botao svg { transition: none; }
 }
 </style>

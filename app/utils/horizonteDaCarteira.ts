@@ -154,3 +154,59 @@ export function daquiAQuanto(meses: number): string {
   const r = resto ? `${resto} ${resto === 1 ? 'mês' : 'meses'}` : ''
   return `em ${[a, r].filter(Boolean).join(' e ')}`
 }
+
+/* ————— A abertura: os caminhos nascendo (14/11/2026) —————
+   O dono: "quando abrir a carteira quero ver as linhas sendo formadas, primeiro
+   1, depois outra e assim por diante, começando lento e indo mais rápido até
+   2k". O total nascido cresce em progressão geométrica: 1 no começo, o dobro a
+   cada mesmo intervalo, n no fim. Dá para ver a primeira linha se desenhar
+   sozinha, a segunda, a terceira; no fim entram centenas por quadro. */
+
+/** quanto dura a abertura, do primeiro caminho ao último */
+export const NASCER_EM_MS = 4200
+/** quanto um caminho leva para se desenhar de hoje até a beira (os primeiros; depois o intervalo entre eles manda) */
+export const DESENHAR_EM_MS = 420
+/** quantos segmentos de reta o leque desenha por quadro, no máximo (o zoom redesenha a cada quadro) */
+export const TETO_DE_SEGMENTOS = 16_000
+
+/** Quando o caminho de ordem k (0 é o primeiro) nasce, em ms desde o começo da abertura. */
+export function nasceEm(k: number, n: number, dur = NASCER_EM_MS): number {
+  if (n <= 1 || k <= 0) return 0
+  return dur * (Math.log(Math.min(k, n - 1) + 1) / Math.log(n))
+}
+
+/** Quantos caminhos já nasceram t ms depois do começo (de 1 a n; com fração enquanto o próximo não chega). */
+export function nascidosEm(t: number, n: number, dur = NASCER_EM_MS): number {
+  if (n <= 0) return 0
+  if (t >= dur || n === 1) return n
+  if (t <= 0) return 1
+  return Math.min(n, Math.exp((t / dur) * Math.log(n)))
+}
+
+/**
+ * Quanto do caminho de ordem k já se desenhou (0 a 1) t ms depois do começo: os
+ * primeiros levam DESENHAR_EM_MS de hoje até a beira; quando os nascimentos
+ * apertam, cada um se desenha no intervalo até o seguinte (nunca menos que um
+ * quadro, 16 ms).
+ */
+export function desenhadoEm(k: number, t: number, n: number, dur = NASCER_EM_MS): number {
+  const nasce = nasceEm(k, n, dur)
+  if (t <= nasce) return 0
+  const leva = Math.min(DESENHAR_EM_MS, Math.max(16, (nasceEm(k + 1, n, dur) - nasce) * 1.1))
+  return Math.min(1, (t - nasce) / leva)
+}
+
+/**
+ * Quantos caminhos o leque desenha com tantos meses à vista: todos enquanto a
+ * conta de segmentos couber no teto; com o horizonte aberto, os primeiros da
+ * ordem de nascimento (uma amostra sempre a mesma, e uma dentro da outra).
+ */
+export function quantosCaminhosCabem(n: number, mesesAVista: number, teto = TETO_DE_SEGMENTOS): number {
+  if (n <= 0) return 0
+  return Math.max(1, Math.min(n, Math.floor(teto / (Math.ceil(Math.max(0, mesesAVista)) + 2))))
+}
+
+/** A opacidade de cada caminho para que o leque tenha o mesmo peso com poucos ou com muitos: forte sozinho, leve entre 2.000. */
+export function alfaDosCaminhos(quantos: number): number {
+  return Math.min(0.62, Math.max(0.055, 2.6 / Math.sqrt(Math.max(1, quantos))))
+}

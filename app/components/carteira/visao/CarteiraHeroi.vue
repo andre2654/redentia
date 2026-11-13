@@ -75,8 +75,26 @@ const tituloGrafico = computed(() => `A rentabilidade da carteira contra o CDI, 
 const futuroDaPagina = useCarteiraFuturoDaPagina()
 const futuro = computed(() => (futuroDaPagina?.estado.value === 'pronto' ? futuroDaPagina.dados.value : null))
 const caminhosDoFuturo = computed(() => futuroDaPagina?.caminhos.value ?? null)
-/** o rótulo da faixa da marca: 'Você em 12 meses' · 'Você desde 14/05/25' */
-const rotuloFaixa = computed(() => `Você ${quandoTxt.value.charAt(0).toLowerCase()}${quandoTxt.value.slice(1)}`)
+/* o futuro à vista no gráfico (CarteiraHorizonte avisa até que ano a janela vai; null em repouso). 14/11, o
+   dono: "quando estiver colocando no futuro altere esse texto Você em 12 meses, e pode tirar esses textos
+   para o gráfico ir ocupando mais espaço": o rótulo da faixa passa a dizer até onde o gráfico vai e a
+   legenda (os números do passado) sai, com o gráfico subindo para o lugar dela */
+const futuroAte = ref<string | null>(null)
+/** o rótulo da faixa da marca: 'Você em 12 meses' · 'Você desde 14/05/25' · com o futuro à vista, 'Você até 2029' */
+const rotuloFaixa = computed(() => (futuroAte.value ? `Você até ${futuroAte.value}` : `Você ${quandoTxt.value.charAt(0).toLowerCase()}${quandoTxt.value.slice(1)}`))
+/* a altura da legenda, medida: é quanto o gráfico sobe quando ela sai (o cartão não muda de altura) */
+const legendaEl = ref<HTMLElement | null>(null)
+const alturaDaLegenda = ref(0)
+let medidor: ResizeObserver | null = null
+onMounted(() => {
+  medidor = new ResizeObserver(() => { alturaDaLegenda.value = legendaEl.value?.offsetHeight ?? 0 })
+  watch(legendaEl, (el, antes) => {
+    if (antes) medidor?.unobserve(antes)
+    if (el) medidor?.observe(el)
+    alturaDaLegenda.value = el?.offsetHeight ?? 0
+  }, { immediate: true })
+})
+onBeforeUnmount(() => medidor?.disconnect())
 /** a legenda do cartão: você, o CDI e o mesmo mix de classes, os números que a frase já diz */
 const legenda = computed(() => {
   const b = bem.value
@@ -230,11 +248,11 @@ const contexto = computed(() => ({
     <!-- o gráfico no cartão carvão com a faixa da marca (como no /asset) e, ao lado, os três fatos em cartões -->
     <div class="chv2__grade" :class="{ 'chv2__grade--so': !temGrafico && !carregando }">
       <div v-if="temGrafico" class="chv2__palco">
-        <NuFaixaMarca :rotulo="rotuloFaixa" como="p" :altura="56" class="chv2__cartao">
+        <NuFaixaMarca :rotulo="rotuloFaixa" como="p" :altura="56" class="chv2__cartao" :class="{ 'chv2__cartao--futuro': !!futuroAte }" :style="{ '--chv-legenda': `${alturaDaLegenda}px` }">
           <template v-if="opcoes.length > 1" #acoes>
             <NuTrilho v-model="periodo" :opcoes="opcoesDoTrilho" tom="escuro" tamanho="p" rotulo="Período do gráfico" class="chv2__periodos" />
           </template>
-          <p v-if="legenda.length" class="chv2__legenda">
+          <p v-if="legenda.length" ref="legendaEl" class="chv2__legenda" :aria-hidden="futuroAte ? true : undefined">
             <span v-for="(l, i) in legenda" :key="l.rotulo" class="chv2__leg" :class="{ 'chv2__leg--1': i === 0 }">
               <b :class="l.dir ? `chv2__leg--${l.dir}` : ''">{{ l.pct }}</b>
               <span class="chv2__leg-r"><i v-if="l.traco" class="chv2__traco" :class="{ 'chv2__traco--cdi': l.traco === 'cdi' }" aria-hidden="true" />{{ l.rotulo }}</span>
@@ -242,7 +260,7 @@ const contexto = computed(() => ({
           </p>
           <div class="chv__grafico chv2__grafico">
             <!-- a rentabilidade contra o CDI e, à direita de hoje, o leque do motor: arrastar para a direita abre o horizonte -->
-            <CarteiraHorizonte :linha="linha" :comparada="linhaCdi" :atual="twr != null ? pctAtivo(twr) : ''" :rotulo="tituloGrafico" :futuro="futuro" :caminhos="caminhosDoFuturo" :mascarado="!revelado" />
+            <CarteiraHorizonte :linha="linha" :comparada="linhaCdi" :atual="twr != null ? pctAtivo(twr) : ''" :rotulo="tituloGrafico" :futuro="futuro" :caminhos="caminhosDoFuturo" :mascarado="!revelado" @horizonte="futuroAte = $event" />
           </div>
           <!-- no celular o período desce para baixo do gráfico, largo (o mesmo gesto do /asset) -->
           <NuTrilho v-if="opcoes.length > 1" v-model="periodo" :opcoes="opcoesDoTrilho" tom="escuro" largo rotulo="Período do gráfico" class="chv2__periodos--pe" />
@@ -338,7 +356,9 @@ const contexto = computed(() => ({
 /* o cartão carvão com a faixa da marca: o rótulo do período na aba e o seletor à direita dela */
 .chv2__cartao { --pad: clamp(18px, 2.2vw, 30px); height: 100%; box-sizing: border-box; display: flex; flex-direction: column; padding-bottom: clamp(16px, 2vw, 24px); }
 .chv2__cartao :deep(.nfm__acoes) { padding: 6px 10px 0 0; }
-.chv2__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(18px, 2vw, 26px) var(--pad) 0; }
+.chv2__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(18px, 2vw, 26px) var(--pad) 0; transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+/* o futuro à vista: a legenda (os números do passado) sai e o gráfico sobe para o lugar dela; o cartão não muda de altura */
+.chv2__cartao--futuro .chv2__legenda { opacity: 0; pointer-events: none; }
 .chv2__leg { display: inline-flex; align-items: baseline; gap: 10px; }
 .chv2__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums; }
 .chv2__leg--1 b { font-size: clamp(38px, 4.4vw, 58px); letter-spacing: var(--nu-ls-display); line-height: 1; }
@@ -349,10 +369,15 @@ const contexto = computed(() => ({
 .chv2__traco--cdi { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
 /* o gráfico vai de beira a beira do cartão; o ponto de hoje e o rótulo recuam, as marcas começam na margem do texto (as variáveis do AtivoGrafico, como no /asset) */
 .chv2__grafico {
-  flex: 1 1 auto; min-height: clamp(230px, 24vw, 340px); margin-top: 14px;
+  --chv-grafico-min: clamp(230px, 24vw, 340px);
+  flex: 1 1 auto; min-height: var(--chv-grafico-min); margin-top: 14px;
   --agr-esq: var(--pad); --agr-dir: max(var(--pad), 44px); --agr-rotulo-esq: var(--pad);
   --agr-hoje-bg: var(--nu-creme); --agr-hoje-fg: var(--nu-ink); --agr-hoje-sub: var(--nu-gray);
+  transition: margin-top var(--nu-dur-lenta) var(--nu-ease-troca), min-height var(--nu-dur-lenta) var(--nu-ease-troca);
 }
+/* o gráfico sobe a altura da legenda (medida) e cresce o mesmo tanto: no desktop ele já estica até o pé do
+   cartão; no celular, onde o cartão tem a altura do conteúdo, a altura mínima cresce junto e nada abaixo pula */
+.chv2__cartao--futuro .chv2__grafico { margin-top: calc(-1 * var(--chv-legenda, 0px)); min-height: calc(var(--chv-grafico-min) + var(--chv-legenda, 0px) + 14px); }
 /* o cartão estica até a altura dos três fatos, e o gráfico ocupa o que sobra (o AtivoGrafico pede 100% de altura: aqui ele se prende às quatro beiras) */
 .chv2__grafico :deep(.agr) { position: absolute; inset: 0; height: auto; }
 .chv2__periodos--pe { display: none; margin: 16px var(--pad) 0; }
@@ -399,6 +424,7 @@ const contexto = computed(() => ({
 @media (prefers-reduced-motion: reduce) {
   .chv2__link svg { transition: none; }
   .chv2__frase, .chv2__dek, .chv2__fato, .chv2__palco { animation: none; }
+  .chv2__legenda, .chv2__grafico { transition: none; }
   .chv2__fato { transition: none; }
 }
 </style>

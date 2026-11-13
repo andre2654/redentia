@@ -11,8 +11,9 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import {
-  LEQUE_CABE_EM, MES_EM_MS, PASSADO_EM_REPOUSO, caixaNoDominio, daquiAQuanto, dominioDoHorizonte, extremosDoLeque, futuroAVista, mesSobOPonteiro,
-  mesesDoPassado, ondeFicaHoje, ondeFicaOMes, quantisNoMes, zoomDoPonteiro,
+  DESENHAR_EM_MS, LEQUE_CABE_EM, MES_EM_MS, NASCER_EM_MS, PASSADO_EM_REPOUSO, TETO_DE_SEGMENTOS, alfaDosCaminhos, caixaNoDominio, daquiAQuanto, desenhadoEm,
+  dominioDoHorizonte, extremosDoLeque, futuroAVista, mesSobOPonteiro, mesesDoPassado, nasceEm, nascidosEm, ondeFicaHoje, ondeFicaOMes, quantisNoMes,
+  quantosCaminhosCabem, zoomDoPonteiro,
 } from '../app/utils/horizonteDaCarteira.ts'
 import { lequeDeExemplo } from '../app/utils/futuro.ts'
 
@@ -145,6 +146,47 @@ test('a caixa de cada desenho dentro do domínio à vista, e o tempo em palavras
   assert.deepEqual([0.2, 5.1, 12, 18, 23.6, 45, 60].map(daquiAQuanto), ['em 1 mês', 'em 5 meses', 'em 1 ano', 'em 1 ano e 6 meses', 'em 2 anos', 'em 3 anos e 9 meses', 'em 5 anos'])
 })
 
+test('a abertura: os caminhos nascem um a um, devagar no começo e cada vez mais depressa, até os 2.000', () => {
+  const N = 2000
+  assert.equal(NASCER_EM_MS, 4200)
+  // o primeiro nasce na hora; o segundo, 0,38 s depois; o décimo, a 1,3 s; o centésimo, a 2,5 s; o último, no fim
+  assert.deepEqual([0, 1, 2, 9, 99, 999, 1999].map((k) => Math.round(nasceEm(k, N))), [0, 383, 607, 1272, 2545, 3817, 4200])
+  // os intervalos só encolhem: cada caminho chega mais perto do anterior
+  let intervalo = Infinity
+  for (let k = 1; k < N; k++) {
+    const d = nasceEm(k, N) - nasceEm(k - 1, N)
+    assert.ok(d > 0 && d < intervalo, `caminho ${k}`)
+    intervalo = d
+  }
+  // o total nascido: 1 no começo, o dobro a cada mesmo intervalo, todos no fim (e nunca mais que todos)
+  assert.equal(nascidosEm(0, N), 1)
+  assert.equal(nascidosEm(-50, N), 1)
+  const passo = nasceEm(1, N)
+  for (const k of [1, 2, 3, 6]) perto(nascidosEm(passo * k, N), 2 ** k, 1e-6)
+  assert.equal(nascidosEm(NASCER_EM_MS, N), N)
+  assert.equal(nascidosEm(NASCER_EM_MS * 3, N), N)
+  assert.equal(nascidosEm(1000, 0), 0)
+  assert.equal(nascidosEm(1000, 1), 1)
+  // a conta bate com a agenda: no instante em que o caminho k nasce, k + 1 nasceram
+  for (const k of [1, 7, 150, 1500]) perto(nascidosEm(nasceEm(k, N), N), k + 1, 1e-6)
+  // os primeiros se desenham de hoje até a beira em 0,42 s; quando os nascimentos apertam, no intervalo até o seguinte
+  assert.equal(DESENHAR_EM_MS, 420)
+  assert.equal(desenhadoEm(0, 0, N), 0)
+  perto(desenhadoEm(0, 210, N), 0.5)
+  assert.equal(desenhadoEm(0, 420, N), 1)
+  assert.equal(desenhadoEm(3, nasceEm(3, N) - 1, N), 0)
+  assert.equal(desenhadoEm(500, nasceEm(500, N) + 16, N), 1) // no meio da enchente, um quadro basta
+  // quantos caminhos o leque desenha: todos em repouso, uma amostra com o horizonte aberto (o teto de segmentos por quadro)
+  assert.equal(TETO_DE_SEGMENTOS, 16_000)
+  assert.deepEqual([5.1, 12, 30, 60].map((f) => quantosCaminhosCabem(N, f)), [2000, 1142, 500, 258])
+  assert.equal(quantosCaminhosCabem(40, 60), 40)
+  assert.equal(quantosCaminhosCabem(0, 60), 0)
+  // e o peso de cada um: forte sozinho, leve entre 2.000; o produto (quantos × opacidade) só cresce, o leque nunca rareia
+  assert.deepEqual([1, 10, 100, 2000].map((q) => Math.round(alfaDosCaminhos(q) * 1000) / 1000), [0.62, 0.62, 0.26, 0.058])
+  let peso = 0
+  for (let q = 1; q <= N; q += 7) { const w = q * alfaDosCaminhos(q); assert.ok(w >= peso); peso = w }
+})
+
 test('as peças: o gráfico de antes por dentro, um pedido só do motor, o olho, o teclado e o movimento reduzido', () => {
   const peca = ler('app/components/carteira/visao/CarteiraHorizonte.vue')
   // o passado é o AtivoGrafico de sempre, com as mesmas props do topo
@@ -174,7 +216,24 @@ test('as peças: o gráfico de antes por dentro, um pedido só do motor, o olho,
   assert.match(peca, /\.cho--chegando \.cho__passado \{ transition: width var\(--nu-dur-entrada\) var\(--nu-ease-saida\)/)
   // movimento reduzido: sem perseguir o alvo e sem a entrada
   assert.match(peca, /if \(calmo\(\)\) \{ z\.value = alvoDoZoom; return \}/)
-  assert.match(peca, /if \(calmo\(\)\) \{ chegando\.value = false; return \}/)
+  assert.match(peca, /chegando\.value = !calmo\(\)/)
+  // o leque é uma tela redesenhada na janela de agora: todos os caminhos em repouso, os que cabem com o horizonte aberto
+  assert.match(peca, /<canvas v-if="temFuturo" ref="tela" class="cho__tela" aria-hidden="true" \/>/)
+  assert.match(peca, /const quantos = Math\.min\(nasceram, quantosCaminhosCabem\(c\.n, F\)\)/)
+  assert.match(peca, /ctx\.strokeStyle = rgba\(corDosFios, alfaDosCaminhos\(quantos\)\)/)
+  // a abertura: os caminhos nascem em ordem aleatória, com o contador no lugar do convite; o resultado só chega depois
+  assert.match(peca, /if \(!ordem \|\| ordem\.length !== c\.n\) ordem = embaralhar\(c\.n\)/)
+  assert.match(peca, /contados\.value = Math\.floor\(nascidosEm\(t, c\.n\)\)/)
+  assert.match(peca, /<template v-if="contados != null"><span>futuros testados<\/span><b aria-hidden="true">\{\{ nfContador\.format\(contados\) \}\}<\/b>/)
+  assert.match(peca, /if \(t >= NASCER_EM_MS\) \{ terminarAbertura\(true\); return \}/)
+  // quem entra no futuro no meio da abertura não espera; sem quadros (a aba escondida), o relógio fecha a conta
+  assert.match(peca, /if \(pede > 0 && contados\.value != null\) terminarAbertura\(\)/)
+  assert.match(peca, /fimDaAbertura = setTimeout\(\(\) => terminarAbertura\(\), NASCER_EM_MS \+ 1500\)/)
+  // movimento reduzido: o leque aparece pronto
+  assert.match(peca, /if \(!c \|\| calmo\(\) \|\| typeof requestAnimationFrame === 'undefined'\) \{ terminarAbertura\(\); return \}/)
+  // a peça avisa quem a hospeda até que ano a janela vai
+  assert.match(peca, /const emit = defineEmits<\{ horizonte: \[ate: string \| null\] \}>\(\)/)
+  assert.match(peca, /watch\(ateOAno, \(ano\) => emit\('horizonte', ano\)\)/)
   const css = peca.slice(peca.indexOf('<style')).replace(/\/\*[\s\S]*?\*\//g, '')
   assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/, 'cor em hex')
   assert.doesNotMatch(css, /font-weight:\s*\d/, 'peso em número')
@@ -185,7 +244,12 @@ test('as peças: o gráfico de antes por dentro, um pedido só do motor, o olho,
   // o topo entrega a linha, o CDI e o futuro que a página proveu
   const topo = ler('app/components/carteira/visao/CarteiraHeroi.vue')
   assert.match(topo, /const futuroDaPagina = useCarteiraFuturoDaPagina\(\)/)
-  assert.match(topo, /<CarteiraHorizonte :linha="linha" :comparada="linhaCdi" [^>]*:futuro="futuro" :caminhos="caminhosDoFuturo" :mascarado="!revelado" \/>/)
+  assert.match(topo, /<CarteiraHorizonte :linha="linha" :comparada="linhaCdi" [^>]*:futuro="futuro" :caminhos="caminhosDoFuturo" :mascarado="!revelado" @horizonte="futuroAte = \$event" \/>/)
+  // com o futuro à vista, o rótulo da faixa diz até onde o gráfico vai e a legenda do passado sai (o gráfico sobe a altura dela, medida)
+  assert.match(topo, /futuroAte\.value \? `Você até \$\{futuroAte\.value\}` : /)
+  assert.match(topo, /\.chv2__cartao--futuro \.chv2__legenda \{ opacity: 0; pointer-events: none; \}/)
+  assert.match(topo, /\.chv2__cartao--futuro \.chv2__grafico \{ margin-top: calc\(-1 \* var\(--chv-legenda, 0px\)\); min-height: calc\(var\(--chv-grafico-min\) \+ var\(--chv-legenda, 0px\) \+ 14px\); \}/)
+  assert.match(topo, /alturaDaLegenda\.value = legendaEl\.value\?\.offsetHeight \?\? 0/)
   assert.doesNotMatch(topo, /<AtivoGrafico /)
   // um pedido por página: a /carteira nova provê o futuro, e a seção dos 5 anos lê o mesmo
   const dado = ler('app/composables/useCarteiraFuturo.ts')
