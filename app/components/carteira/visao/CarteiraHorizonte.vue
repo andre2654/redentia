@@ -28,8 +28,13 @@
 //    no fim entram centenas por quadro. Só depois do último chegam as faixas, o
 //    mais provável e o convite. O ponteiro que entra no futuro no meio da
 //    abertura a termina na hora;
-//  - a leitura do futuro (o mês sob o ponteiro: o mais provável e a faixa de 8
-//    em cada 10) usa o cartãozinho da dica do gráfico, dentro do desenho;
+//  - a leitura do futuro (14/11; o dono, com o hover do leque grande na mão:
+//    "no zoom seria legal ter uma visão tipo essa"): no mês sob o ponteiro
+//    acendem os três caminhos REAIS que ali estão no p90, no p50 e no p10
+//    (caminhosDoMes, a regra do leque da seção dos 5 anos), em verde, branco
+//    e rosa, e o resto do leque apaga um pouco; ao lado da mira, o valor de
+//    cada um ("se for bem", "o mais provável", "se for mal") e, no alto, o
+//    mês. Sem os caminhos, os três valores são os quantis do motor;
 //  - em repouso, o convite: o mais provável no fim do horizonte e o botão
 //    "Arraste para o futuro", que também abre e fecha o horizonte no clique e
 //    no teclado (aí as setas andam mês a mês e Esc volta).
@@ -46,7 +51,7 @@
 // sem a abertura (o leque aparece pronto).
 import type { SeriesPoint } from '~/types/acao'
 import type { FuturoDadosApi } from '~/types/assinatura'
-import { anoDoFim, brlDoLeque, mesDoLeque, rgbDaCor, type CaminhosDoLeque } from '~/utils/futuro'
+import { afastarRotulos, anoDoFim, brlDoLeque, caminhosDoMes, mesDoLeque, rgbDaCor, type CaminhosDoLeque } from '~/utils/futuro'
 import {
   NASCER_EM_MS, alfaDosCaminhos, caixaNoDominio, daquiAQuanto, desenhadoEm, dominioDoHorizonte, futuroAVista, mesSobOPonteiro, mesesDoPassado, nascidosEm,
   ondeFicaHoje, ondeFicaOMes, quantisNoMes, quantosCaminhosCabem, zoomDoPonteiro,
@@ -186,6 +191,7 @@ function abrirOLeque() {
   const c = fios.value
   if (!c || calmo() || typeof requestAnimationFrame === 'undefined') { terminarAbertura(); return }
   if (!ordem || ordem.length !== c.n) ordem = embaralhar(c.n)
+  comecouEm = 0
   contados.value = 0
   resultado.value = 0
   desenhar()
@@ -215,7 +221,13 @@ let corDosFios: [number, number, number] = [169, 196, 255]
 let corDoMeio: [number, number, number] = [91, 140, 255]
 let corDoTraco: [number, number, number] = [220, 230, 255]
 let corDoFundo: [number, number, number] = [17, 24, 39]
+let corDoBem: [number, number, number] = [134, 239, 172]
+let corDoMal: [number, number, number] = [252, 165, 165]
+let corDoCreme: [number, number, number] = [246, 242, 233]
 const rgba = (c: [number, number, number], a: number) => `rgba(${c[0]},${c[1]},${c[2]},${a})`
+const misturar = (a: [number, number, number], b: [number, number, number], t: number): [number, number, number] => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t].map(Math.round) as [number, number, number]
+/** os três caminhos acesos pela leitura (a tela os desenha por cima); null sem leitura ou sem os caminhos */
+let acesos: { i: number; papel: Papel; abaixo: boolean }[] | null = null
 function medirTela() {
   const el = tela.value
   if (!el) { ctx = null; return }
@@ -227,21 +239,29 @@ function medirTela() {
   el.height = Math.max(1, Math.round(altura * dpr))
   ctx = el.getContext('2d')
   ctx?.setTransform(dpr, 0, 0, dpr, 0, 0)
+  alturaDoDesenho.value = altura
+  larguraDoDesenho.value = largura
   const estilo = getComputedStyle(el)
   corDosFios = rgbDaCor(estilo.getPropertyValue('--nu-blue-soft')) ?? corDosFios
   corDoMeio = rgbDaCor(estilo.getPropertyValue('--nu-blue-on-dark')) ?? corDoMeio
   corDoTraco = rgbDaCor(estilo.getPropertyValue('--nu-blue-on-blue-2')) ?? corDoTraco
   corDoFundo = rgbDaCor(estilo.getPropertyValue('--nu-ink')) ?? corDoFundo
+  corDoBem = rgbDaCor(estilo.getPropertyValue('--nu-green-soft')) ?? corDoBem
+  corDoMal = rgbDaCor(estilo.getPropertyValue('--nu-red-soft')) ?? corDoMal
+  corDoCreme = rgbDaCor(estilo.getPropertyValue('--nu-cream-text')) ?? corDoCreme
   desenhar()
 }
 /**
  * O leque na janela de agora. `t` é o tempo da abertura (ms desde o primeiro
  * caminho); sem ele, o leque pronto.
  */
-function desenhar(t?: number) {
+function desenhar(tempo?: number) {
   if (!ctx || largura <= 0 || altura <= 0) return
   ctx.clearRect(0, 0, largura, altura)
   if (!temFuturo.value) return
+  // quem redesenha no meio da abertura (a tela que mediu o tamanho, a janela que mudou) desenha o que já nasceu,
+  // e nada antes do primeiro: o leque inteiro aparecia por um instante antes de recomeçar do zero (14/11, o dono)
+  const t = tempo ?? (contados.value != null ? (comecouEm ? performance.now() - comecouEm : 0) : undefined)
   const s = serie.value
   const P = passado.value
   const F = aVista.value
@@ -277,7 +297,7 @@ function desenhar(t?: number) {
     const nasceram = t == null ? c.n : Math.min(c.n, Math.ceil(nascidosEm(t, c.n)))
     const quantos = Math.min(nasceram, quantosCaminhosCabem(c.n, F))
     ctx.lineWidth = largura < 420 ? 0.8 : 1
-    ctx.strokeStyle = rgba(corDosFios, alfaDosCaminhos(quantos))
+    ctx.strokeStyle = rgba(corDosFios, alfaDosCaminhos(quantos) * (acesos ? 0.5 : 1))
     const P1 = c.pontos
     for (let k = 0; k < quantos; k++) {
       const o = ordem[k]! * P1
@@ -306,8 +326,29 @@ function desenhar(t?: number) {
     }
   }
 
+  // os três caminhos da leitura, acesos: o de baixo e o de cima primeiro, o mais provável por cima
+  if (c && acesos) {
+    const P1 = c.pontos
+    for (const r of [acesos[2]!, acesos[0]!, acesos[1]!]) {
+      const o = r.i * P1
+      const linha = () => {
+        ctx!.beginPath()
+        for (let m = 0; m <= ultimo; m++) ctx!.lineTo(xDe(m), yDe(c.valores[o + m]!))
+      }
+      linha()
+      ctx.lineWidth = 5
+      ctx.strokeStyle = rgba(corDoFundo, 0.55)
+      ctx.stroke()
+      linha()
+      ctx.lineWidth = r.papel === 'meio' ? 2.2 : 1.8
+      ctx.strokeStyle = rgba(r.papel === 'otimista' ? corDoBem : r.papel === 'meio' ? corDoCreme : r.abaixo ? corDoMal : misturar(corDoCreme, corDoMal, 0.6), 1)
+      ctx.stroke()
+    }
+  }
+
   // o mais provável, tracejado: um leito escuro por baixo o separa das linhas, e o traço claro continua a linha do passado
-  if (resultado.value > 0) {
+  // (com os três caminhos acesos, ele recua: o caminho branco é quem fala)
+  if (resultado.value > 0 && !acesos) {
     const meio = () => {
       ctx!.beginPath()
       for (let m = 0; m <= ultimo; m++) ctx!.lineTo(xDe(m), yDe(s[m]!.p50))
@@ -326,8 +367,6 @@ function desenhar(t?: number) {
   }
   ctx.restore()
 }
-// a janela mudou (o zoom, o período, o tamanho): a tela acompanha. Durante a abertura, o próprio passo redesenha.
-watch([z, dominio, hoje], () => { if (contados.value == null) desenhar() }, { flush: 'post' })
 
 /* ————— a leitura do futuro: o mês sob o ponteiro (ou sob as setas) ————— */
 const raiz = ref<HTMLElement | null>(null)
@@ -344,22 +383,53 @@ const mes = computed<number | null>(() => {
   return mesDoTeclado.value
 })
 const pctSobreHoje = (v: number) => (v / base.value - 1) * 100
-const dinheiro = (v: number) => (props.mascarado ? 'R$ ••••' : brlDoLeque(v))
+/** os três caminhos de cada mês: os reais que ali estão no p90, no p50 e no p10 (uma conta só, na primeira leitura) */
+const trios = computed(() => {
+  const c = fios.value
+  return c ? Array.from({ length: c.pontos }, (_, t) => caminhosDoMes(c, serie.value, t)) : null
+})
+/** o valor de um caminho num mês fracionário */
+function noCaminho(i: number, m: number): number {
+  const c = fios.value!
+  const a = Math.min(c.pontos - 1, Math.floor(m))
+  const b = Math.min(c.pontos - 1, a + 1)
+  const o = i * c.pontos
+  return c.valores[o + a]! + (c.valores[o + b]! - c.valores[o + a]!) * (m - a)
+}
+type Papel = 'otimista' | 'meio' | 'pessimista'
+const PAPEIS: { papel: Papel; nome: string; quantil: 'p90' | 'p50' | 'p10' }[] = [
+  { papel: 'otimista', nome: 'se for bem', quantil: 'p90' },
+  { papel: 'meio', nome: 'o mais provável', quantil: 'p50' },
+  { papel: 'pessimista', nome: 'se for mal', quantil: 'p10' },
+]
+/** o desenho em px (a tela o mede): os três rótulos se afastam em px e ficam do lado da mira em que cabem */
+const alturaDoDesenho = ref(0)
+const larguraDoDesenho = ref(0)
 const leitura = computed(() => {
   const m = mes.value
   const q = m != null ? quantisNoMes(serie.value, m) : null
   if (m == null || !q || m < 0.05) return null
   const p = pctSobreHoje(q.p50)
+  const trio = trios.value?.[Math.min(horizonte.value, Math.max(1, Math.round(m)))] ?? null
+  // os três valores: o de cada caminho aceso naquele ponto; sem os caminhos, os quantis do motor
+  const tres = PAPEIS.map((r) => {
+    const v = trio ? noCaminho(trio[r.papel], m) : q[r.quantil]
+    return { ...r, i: trio ? trio[r.papel] : -1, v, y: alturaDe(v), texto: props.mascarado ? pctAtivo(pctSobreHoje(v)) : brlDoLeque(v), abaixo: v < base.value }
+  })
+  const H = alturaDoDesenho.value
+  const tops = H > 0 ? afastarRotulos(tres.map((r) => r.y * H), 30, 46, H - 16) : tres.map((r) => r.y * H)
+  // de que lado da mira os rótulos ficam: à esquerda, dentro do futuro, quando cabem ali; senão à direita; sem
+  // lugar em nenhum, do lado maior (perto de hoje eles caíam em cima da linha do passado)
+  const x = ondeFicaOMes(m, z.value, passado.value, horizonte.value)
+  const W = larguraDoDesenho.value
+  const cabe = W < 420 ? 96 : 210
+  const esquerda = (x - hoje.value) * W
+  const direita = (1 - x) * W
   return {
-    x: ondeFicaOMes(m, z.value, passado.value, horizonte.value) * 100,
-    y: alturaDe(q.p50) * 100,
+    x: x * 100,
+    naDireita: esquerda < cabe && (direita >= cabe || direita > esquerda),
+    tres: tres.map((r, k) => ({ ...r, topo: tops[k]! })),
     quando: `${mesDoLeque(props.futuro!.as_of, Math.max(1, Math.round(m)))} · ${daquiAQuanto(m)}`,
-    valor: dinheiro(q.p50),
-    var: pctAtivo(p),
-    dir: p < 0 ? 'down' : 'up',
-    faixa: props.mascarado
-      ? `8 em cada 10 entre ${pctAtivo(pctSobreHoje(q.p10))} e ${pctAtivo(pctSobreHoje(q.p90))}`
-      : `8 em cada 10 entre ${brlDoLeque(q.p10)} e ${brlDoLeque(q.p90)}`,
     falada: `${mesDoLeque(props.futuro!.as_of, Math.max(1, Math.round(m)))}, ${daquiAQuanto(m)}: o mais provável é ${props.mascarado ? pctAtivo(p) : `${brlDoLeque(q.p50)} (${pctAtivo(p)})`}; `
       + `8 em cada 10 caminhos ficam entre ${props.mascarado ? pctAtivo(pctSobreHoje(q.p10)) : brlDoLeque(q.p10)} e ${props.mascarado ? pctAtivo(pctSobreHoje(q.p90)) : brlDoLeque(q.p90)}, em dinheiro de hoje.`,
   }
@@ -370,6 +440,14 @@ function ancora(x: number): Record<string, string> {
   if (x > 75) return { left: `${x}%`, '--cho-dica-x': 'calc(-100% + 8px)' }
   return { left: `${x}%`, '--cho-dica-x': '-50%' }
 }
+
+// a janela mudou (o zoom, o período, o tamanho) ou a leitura andou: a tela acompanha, com os três caminhos da
+// leitura acesos. Durante a abertura, o próprio passo redesenha.
+watch([z, dominio, hoje, mes], () => {
+  const l = leitura.value
+  acesos = l && l.tres[0]!.i >= 0 ? l.tres.map((r) => ({ i: r.i, papel: r.papel, abaixo: r.abaixo })) : null
+  if (contados.value == null) desenhar()
+}, { flush: 'post' })
 
 /* ————— o convite e as pontas do eixo ————— */
 const fim = computed(() => {
@@ -555,12 +633,16 @@ const vars = computed(() => ({
           <span v-if="fim && fim.x <= 100.5" class="cho__fim" :style="{ left: `${fim.x}%`, top: `${fim.y}%` }" />
           <template v-if="leitura">
             <span class="cho__mira" :style="{ left: `${leitura.x}%` }" />
-            <span class="cho__ponto" :style="{ left: `${leitura.x}%`, top: `${leitura.y}%` }" />
-            <span class="cho__dica" :style="ancora(leitura.x)">
-              <span class="cho__dica-d">{{ leitura.quando }}</span>
-              <span class="cho__dica-l"><span class="cho__dica-p">{{ leitura.valor }}</span><span class="cho__dica-v" :class="`cho__dica-v--${leitura.dir}`">{{ leitura.var }}</span></span>
-              <span class="cho__dica-i">{{ leitura.faixa }}</span>
-            </span>
+            <!-- o mês, no alto da mira -->
+            <span class="cho__dica" :style="ancora(leitura.x)">{{ leitura.quando }}</span>
+            <!-- os três caminhos acesos: o ponto de cada um na mira e o valor ao lado (do lado em que cabe) -->
+            <template v-for="r in leitura.tres" :key="r.papel">
+              <span class="cho__ponto" :class="[`cho__ponto--${r.papel}`, { 'cho__ponto--abaixo': r.abaixo }]" :style="{ left: `${leitura.x}%`, top: `${r.y * 100}%` }" />
+              <span
+                class="cho__rotulo" :class="[`cho__rotulo--${r.papel}`, { 'cho__rotulo--abaixo': r.abaixo, 'cho__rotulo--direita': leitura.naDireita }]"
+                :style="{ left: `${leitura.x}%`, top: `${r.topo}px` }"
+              ><b>{{ r.texto }}</b><span>{{ r.nome }}</span></span>
+            </template>
           </template>
         </template>
       </div>
@@ -643,22 +725,36 @@ const vars = computed(() => ({
   position: absolute; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%);
   background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-blue-on-dark), 0 0 0 7px var(--nu-blue-28);
 }
-/* a dica: o mesmo cartãozinho do gráfico (AtivoGrafico, .agr__dica). Fica dentro do desenho, no alto: com o
-   futuro à vista o gráfico sobe para o lugar da legenda, e por cima dele estão o rótulo e os períodos */
+/* o mês da leitura: uma etiqueta no alto da mira (o cartãozinho da dica do gráfico, pequeno). Fica dentro do desenho:
+   com o futuro à vista o gráfico sobe para o lugar da legenda, e por cima dele estão o rótulo e os períodos */
 .cho__dica {
   position: absolute; top: 8px; transform: translateX(var(--cho-dica-x, -50%)); z-index: 2;
-  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 12px; border-radius: var(--nu-r-chip); white-space: nowrap;
-  background: var(--nu-navy-2); color: var(--nu-cream-text); font-variant-numeric: tabular-nums;
-  box-shadow: 0 0 0 1px var(--nu-cream-text-12), var(--nu-shadow-float);
+  padding: 6px 10px; border-radius: var(--nu-r-chip); white-space: nowrap;
+  background: var(--nu-navy-2); color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto);
+  font-variant-numeric: tabular-nums; box-shadow: 0 0 0 1px var(--nu-cream-text-12), var(--nu-shadow-float);
 }
-/* com o horizonte aberto pelo botão, "Voltar para hoje" fica no canto de cima: a dica desce para baixo dele */
+/* com o horizonte aberto pelo botão, "Voltar para hoje" fica no canto de cima: a etiqueta desce para baixo dele */
 .cho--aberto .cho__dica { top: 46px; }
-.cho__dica-d, .cho__dica-i { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); }
-.cho__dica-l { display: flex; align-items: baseline; gap: 8px; }
-.cho__dica-p { font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-titulo); }
-.cho__dica-v { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
-.cho__dica-v--up { color: var(--nu-green-soft); }
-.cho__dica-v--down { color: var(--nu-red-soft); }
+/* os três caminhos acesos: o ponto de cada um na mira, na cor dele, e o valor ao lado */
+.cho__ponto {
+  position: absolute; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;
+  background: var(--nu-cream-text); box-shadow: 0 0 0 2.5px var(--nu-ink);
+}
+.cho__ponto--otimista { background: var(--nu-green-soft); }
+/* o "se for mal" que segue acima de hoje é rosado, sem o rosa cheio do prejuízo; abaixo de hoje, o rosa cheio */
+.cho__ponto--pessimista { background: color-mix(in srgb, var(--nu-cream-text) 40%, var(--nu-red-soft)); }
+.cho__ponto--pessimista.cho__ponto--abaixo { background: var(--nu-red-soft); }
+.cho__rotulo {
+  position: absolute; z-index: 2; transform: translate(calc(-100% - 14px), -50%); display: inline-flex; align-items: baseline; gap: 8px;
+  padding: 5px 10px; border-radius: var(--nu-r-chip); white-space: nowrap; font-variant-numeric: tabular-nums;
+  background: color-mix(in srgb, var(--nu-navy-2) 92%, transparent); box-shadow: 0 0 0 1px var(--nu-cream-text-12);
+}
+.cho__rotulo--direita { transform: translate(14px, -50%); }
+.cho__rotulo b { color: var(--nu-cream-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-titulo); }
+.cho__rotulo span { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); }
+.cho__rotulo--otimista b { color: var(--nu-green-soft); }
+.cho__rotulo--pessimista b { color: color-mix(in srgb, var(--nu-cream-text) 40%, var(--nu-red-soft)); }
+.cho__rotulo--pessimista.cho__rotulo--abaixo b { color: var(--nu-red-soft); }
 
 /* ——— o convite ——— */
 .cho__convite { position: absolute; top: 0; right: var(--cho-dir); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
@@ -708,6 +804,10 @@ const vars = computed(() => ({
   .cho--lendo .cho__convite-t { opacity: 1; }
   .cho--zoom:not(.cho--aberto) .cho__botao { opacity: 1; pointer-events: auto; }
   .cho--aberto .cho__dica { top: 8px; }
+  /* no celular os rótulos ficam só com o valor (a cor e a ordem dizem qual é qual) */
+  .cho__rotulo { padding: 4px 8px; transform: translate(calc(-100% - 10px), -50%); }
+  .cho__rotulo--direita { transform: translate(10px, -50%); }
+  .cho__rotulo span { display: none; }
   .cho--futuro .cho__passado :deep(.agr__hoje) { display: none; }
   /* o aviso desce para uma linha própria, inteiro, entre as pontas do eixo e o convite */
   .cho__eixo { flex-wrap: wrap; row-gap: 6px; }

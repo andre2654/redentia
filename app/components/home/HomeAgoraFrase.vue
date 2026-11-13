@@ -186,6 +186,14 @@ const linhaCdi = computed(() => (series.value ? semanal(serieDesde(series.value.
 // a conta da legenda é da série diária inteira (o primeiro e o último ponto são os mesmos)
 const twr = computed(() => variacaoDoIndice(linhaDiaria.value))
 const bem = computed(() => (series.value ? contraOCdi(series.value, desde.value, 'em 12 meses') : null))
+/* o convite no fim da linha (14/11/2026; o dono: "deixe um desenho no final para o cara clicar e ir para a
+   carteira para ver mais"): depois do ponto de hoje, um leque esquemático (sem dado: a home não chama o motor)
+   e a seta redonda; o cartão inteiro já leva à /carteira, onde o gráfico abre o futuro de verdade.
+   A altura em que a linha parou sai da mesma conta do AtivoGrafico (caminhosDoGrafico). */
+const convite = computed(() => {
+  const fim = caminhosDoGrafico(linha.value, linhaCdi.value, 1000, 300).fim
+  return fim ? lequeDoConvite((fim.y / 300) * 100) : null
+})
 const graficoCarregando = computed(() => rel.estado.value === 'fechado' || rel.estado.value === 'carregando')
 /** o relatório não veio (rede, 5xx): o cartão diz e oferece de novo o mesmo pedido */
 const graficoErro = computed(() => podeVerNumeros.value && rel.estado.value === 'erro')
@@ -270,7 +278,7 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
           </div>
         </div>
         <!-- o desenho: a carteira contra o CDI em 12 meses, no cartão carvão com a faixa da marca (como no /asset e na /carteira) -->
-        <NuxtLink v-if="linha.length >= 2" v-contexto-chat="contextoGrafico" to="/carteira" class="haf__graf haf__graf--vivo" aria-label="Ver a rentabilidade na carteira">
+        <NuxtLink v-if="linha.length >= 2" v-contexto-chat="contextoGrafico" to="/carteira" class="haf__graf haf__graf--vivo" aria-label="Ver a rentabilidade e o futuro da carteira">
           <NuFaixaMarca rotulo="Você em 12 meses" como="span" :altura="52" class="haf__cartao">
             <!-- o cartão inteiro é o clique: a seta no canto diz isso (anda 3 px no hover) -->
             <template #acoes><span class="haf__abre" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span></template>
@@ -289,6 +297,16 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
                 :ativo="linha" :ibov="linhaCdi" ticker="Você" rotulo-hoje="Você em 12 meses" :atual="twr != null ? pct(twr) : ''"
                 unidade="%" comparacao="CDI" tom="luz" sem-marcas rotulo="A rentabilidade da carteira contra o CDI em 12 meses" :rotulo-abaixo-ate="45"
               />
+              <!-- o convite: o leque esquemático depois de hoje e a seta (o desenho é do cartão, que é o clique) -->
+              <span v-if="convite" class="haf__futuro" :class="{ 'haf__futuro--baixo': convite.y > 64 }" :style="{ '--y': `${convite.y}%` }" aria-hidden="true">
+                <svg class="haf__futuro-leque" viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
+                  <path :d="convite.area" class="haf__futuro-area" />
+                  <path v-for="(d, i) in convite.raios" :key="i" :d="d" class="haf__futuro-raio" />
+                  <path :d="convite.meio" class="haf__futuro-meio" />
+                </svg>
+                <span class="haf__futuro-ir"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+                <span class="haf__futuro-t">ver o futuro</span>
+              </span>
             </span>
           </NuFaixaMarca>
         </NuxtLink>
@@ -484,6 +502,33 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
   --agr-esq: var(--pad); --agr-dir: max(var(--pad), 44px); --agr-rotulo-esq: var(--pad);
   --agr-hoje-bg: var(--nu-creme); --agr-hoje-fg: var(--nu-ink); --agr-hoje-sub: var(--nu-gray);
 }
+/* com o gráfico, a linha para antes da beira e o convite do futuro ocupa o fim (um quarto da largura; no celular, 104px) */
+a.haf__graf .haf__graf-area { --agr-dir: clamp(104px, 25%, 270px); }
+/* o convite: o leque esquemático que sai do ponto de hoje (some para a direita) e a seta redonda no fim do raio do meio */
+.haf__futuro { position: absolute; top: 0; bottom: 0; left: calc(100% - var(--agr-dir)); right: var(--pad); pointer-events: none; animation: nu-surgir var(--nu-dur-lenta) var(--nu-ease-cor) var(--nu-dur-media) both; }
+.haf__futuro-leque {
+  position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;
+  -webkit-mask-image: linear-gradient(to right, var(--nu-ink) 0, var(--nu-ink) 46%, transparent 92%); mask-image: linear-gradient(to right, var(--nu-ink) 0, var(--nu-ink) 46%, transparent 92%);
+}
+.haf__futuro-area { fill: color-mix(in srgb, var(--nu-blue-on-dark) 14%, transparent); transition: fill var(--nu-dur-media) var(--nu-ease-cor); }
+.haf__futuro-raio { fill: none; stroke: color-mix(in srgb, var(--nu-blue-soft) 46%, transparent); stroke-width: 1; vector-effect: non-scaling-stroke; transition: stroke var(--nu-dur-media) var(--nu-ease-cor); }
+.haf__futuro-meio { fill: none; stroke: var(--nu-blue-on-blue-2); stroke-width: 2; stroke-dasharray: 5 5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.haf__futuro-ir {
+  position: absolute; right: 0; top: var(--y); display: grid; place-items: center; width: 30px; height: 30px; margin-top: -15px; border-radius: 50%;
+  background: var(--nu-navy-2); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nu-blue-on-dark) 60%, transparent); color: var(--nu-blue-on-blue-2);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.haf__futuro-ir svg { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+.haf__futuro-t {
+  position: absolute; right: 0; top: calc(var(--y) + 22px); color: var(--nu-blue-on-blue-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); white-space: nowrap;
+}
+/* a linha parou embaixo: a legenda do convite sobe para cima da seta */
+.haf__futuro--baixo .haf__futuro-t { top: calc(var(--y) - 40px); }
+/* o cartão sob o ponteiro: o leque acende e a seta anda, como a do canto */
+.haf__graf--vivo:hover .haf__futuro-area { fill: color-mix(in srgb, var(--nu-blue-on-dark) 22%, transparent); }
+.haf__graf--vivo:hover .haf__futuro-raio { stroke: color-mix(in srgb, var(--nu-blue-soft) 70%, transparent); }
+.haf__graf--vivo:hover .haf__futuro-ir { background: var(--nu-blue); box-shadow: inset 0 0 0 1px var(--nu-blue); color: var(--nu-white); }
+.haf__graf--vivo:hover .haf__futuro-ir svg { transform: translateX(2px); }
 /* o dado que chega no cartão (depois do esqueleto): fade de 280 ms, o cartão não se mexe */
 a.haf__graf .haf__legenda, a.haf__graf .haf__graf-area { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
 /* carregando: o esqueleto escuro nas medidas da legenda (as variáveis do cartão) e da linha */
@@ -549,7 +594,9 @@ dl.haf__fatos .haf__fato:active { transform: scale(.995); transition-duration: v
   .haf__esq-dek .haf__esq-3 { display: block; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .haf__link svg, .haf__olho, .haf__graf, .haf__fato, .haf__abre, .haf__abre svg, .haf__selo-link .haf__selo { transition: none; }
+  .haf__link svg, .haf__olho, .haf__graf, .haf__fato, .haf__abre, .haf__abre svg, .haf__selo-link .haf__selo,
+  .haf__futuro-area, .haf__futuro-raio, .haf__futuro-ir, .haf__futuro-ir svg { transition: none; }
+  .haf__futuro { animation: none; }
   .haf__graf--vivo:hover, .haf__graf--vivo:active, dl.haf__fatos .haf__fato:hover, dl.haf__fatos .haf__fato:active { transform: none; }
 }
 </style>

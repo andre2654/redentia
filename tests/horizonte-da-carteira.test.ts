@@ -12,8 +12,8 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import {
   DESENHAR_EM_MS, LEQUE_CABE_EM, MES_EM_MS, NASCER_EM_MS, PASSADO_EM_REPOUSO, TETO_DE_SEGMENTOS, alfaDosCaminhos, caixaNoDominio, daquiAQuanto, desenhadoEm,
-  dominioDoHorizonte, extremosDoLeque, futuroAVista, mesSobOPonteiro, mesesDoPassado, nasceEm, nascidosEm, ondeFicaHoje, ondeFicaOMes, quantisNoMes,
-  quantosCaminhosCabem, zoomDoPonteiro,
+  dominioDoHorizonte, extremosDoLeque, futuroAVista, lequeDoConvite, mesSobOPonteiro, mesesDoPassado, nasceEm, nascidosEm, ondeFicaHoje, ondeFicaOMes,
+  quantisNoMes, quantosCaminhosCabem, zoomDoPonteiro,
 } from '../app/utils/horizonteDaCarteira.ts'
 import { lequeDeExemplo } from '../app/utils/futuro.ts'
 
@@ -198,8 +198,16 @@ test('as peças: o gráfico de antes por dentro, um pedido só do motor, o olho,
   // a medida do gráfico (o botão do mouse apertado sobre o passado) não abre o horizonte
   assert.match(peca, /medindo = !!\(e\.target as HTMLElement \| null\)\?\.closest\('\.cho__passado'\) && z\.value < 0\.002/)
   // o olho fechado: o R$ some da leitura e do convite; o % fica
-  assert.match(peca, /const dinheiro = \(v: number\) => \(props\.mascarado \? 'R\$ ••••' : brlDoLeque\(v\)\)/)
+  assert.match(peca, /texto: props\.mascarado \? pctAtivo\(pctSobreHoje\(v\)\) : brlDoLeque\(v\)/)
   assert.match(peca, /valor: props\.mascarado \? pctAtivo\(p\) : brlDoLeque\(q\.p50\),/)
+  // a leitura do futuro: os três caminhos REAIS do mês (p90, p50, p10), acesos na tela, com o valor de cada um ao lado da mira
+  assert.match(peca, /Array\.from\(\{ length: c\.pontos \}, \(_, t\) => caminhosDoMes\(c, serie\.value, t\)\)/)
+  for (const nome of ['se for bem', 'o mais provável', 'se for mal']) assert.ok(peca.includes(`nome: '${nome}'`), nome)
+  assert.match(peca, /afastarRotulos\(tres\.map\(\(r\) => r\.y \* H\), 30, 46, H - 16\)/)
+  assert.match(peca, /naDireita: esquerda < cabe && \(direita >= cabe \|\| direita > esquerda\),/)
+  assert.match(peca, /<span class="cho__dica" :style="ancora\(leitura\.x\)">\{\{ leitura\.quando \}\}<\/span>/)
+  // quem redesenha no meio da abertura desenha só o que já nasceu (o leque inteiro aparecia antes de recomeçar)
+  assert.match(peca, /const t = tempo \?\? \(contados\.value != null \? \(comecouEm \? performance\.now\(\) - comecouEm : 0\) : undefined\)/)
   // o botão abre e fecha; com o horizonte aberto as setas andam mês a mês e Esc volta
   assert.match(peca, /<button type="button" class="cho__botao" :aria-pressed="aberto" @click="alternar">/)
   for (const k of ['ArrowRight', 'ArrowLeft', 'Home', 'End', 'Escape']) assert.match(peca, new RegExp(`'${k}'`), k)
@@ -220,7 +228,7 @@ test('as peças: o gráfico de antes por dentro, um pedido só do motor, o olho,
   // o leque é uma tela redesenhada na janela de agora: todos os caminhos em repouso, os que cabem com o horizonte aberto
   assert.match(peca, /<canvas v-if="temFuturo" ref="tela" class="cho__tela" aria-hidden="true" \/>/)
   assert.match(peca, /const quantos = Math\.min\(nasceram, quantosCaminhosCabem\(c\.n, F\)\)/)
-  assert.match(peca, /ctx\.strokeStyle = rgba\(corDosFios, alfaDosCaminhos\(quantos\)\)/)
+  assert.match(peca, /ctx\.strokeStyle = rgba\(corDosFios, alfaDosCaminhos\(quantos\) \* \(acesos \? 0\.5 : 1\)\)/)
   // a abertura: os caminhos nascem em ordem aleatória, com o contador no lugar do convite; o resultado só chega depois
   assert.match(peca, /if \(!ordem \|\| ordem\.length !== c\.n\) ordem = embaralhar\(c\.n\)/)
   assert.match(peca, /contados\.value = Math\.floor\(nascidosEm\(t, c\.n\)\)/)
@@ -259,4 +267,34 @@ test('as peças: o gráfico de antes por dentro, um pedido só do motor, o olho,
   const pagina = ler('app/components/carteira/visao/CarteiraVisao.vue')
   assert.match(pagina, /if \(!mock\.value\) proverCarteiraFuturo\(\)/)
   assert.match(ler('app/components/carteira/CarteiraFuturo.vue'), /= useCarteiraFuturo\(\)/)
+})
+
+test('o convite da home: um leque esquemático depois de hoje, sem dado e sem direção, e o cartão leva à carteira', () => {
+  // a linha parou no meio: o leque abre 30 para cada lado, simétrico, e o raio do meio segue reto
+  const meio = lequeDoConvite(50)
+  assert.deepEqual([meio.y, meio.abertura, meio.raios.length], [50, 30, 6])
+  assert.equal(meio.meio, 'M0,50 L100,50')
+  assert.equal(meio.raios[0], 'M0,50 Q46,41.6 100,20')
+  assert.equal(meio.raios[5], 'M0,50 Q46,58.4 100,80')
+  // simétrico: cada raio de cima tem o espelho embaixo (o desenho não diz que a carteira sobe)
+  const fins = meio.raios.map((d) => Number(d.split(',').pop()))
+  for (let i = 0; i < 3; i++) perto(fins[i]! - 50, -(fins[5 - i]! - 50), 1e-9)
+  assert.match(meio.area, /^M0,50 Q46,41\.6 100,20 L100,80 Q46,58\.4 0,50 Z$/)
+  // a linha parou perto do alto ou do pé: o leque abre o que cabe, nunca menos que 10, e não sai do quadro
+  assert.equal(lequeDoConvite(20).abertura, 14)
+  assert.equal(lequeDoConvite(90).abertura, 10)
+  for (const y of [0, 4, 38.2, 96, 100]) {
+    const l = lequeDoConvite(y)
+    for (const d of [...l.raios, l.area]) for (const n of d.match(/-?\d+(\.\d+)?/g)!.map(Number)) assert.ok(n >= 0 && n <= 100, `${y}: ${d}`)
+  }
+  assert.equal(lequeDoConvite(Number.NaN).y, 50)
+  // o cartão da home: a altura do ponto de hoje sai da conta do gráfico, o desenho é decorativo e o clique é o do cartão
+  const home = ler('app/components/home/HomeAgoraFrase.vue')
+  assert.match(home, /const fim = caminhosDoGrafico\(linha\.value, linhaCdi\.value, 1000, 300\)\.fim\n  return fim \? lequeDoConvite\(\(fim\.y \/ 300\) \* 100\) : null/)
+  assert.match(home, /to="\/carteira" class="haf__graf haf__graf--vivo" aria-label="Ver a rentabilidade e o futuro da carteira"/)
+  assert.match(home, /<span v-if="convite" class="haf__futuro" [^\n]*aria-hidden="true">/)
+  assert.match(home, /<span class="haf__futuro-t">ver o futuro<\/span>/)
+  assert.match(home, /a\.haf__graf \.haf__graf-area \{ --agr-dir: clamp\(104px, 25%, 270px\); \}/)
+  // a home não chama o motor
+  assert.doesNotMatch(home, /useCarteiraFuturo|carteira\/futuro'/)
 })

@@ -210,3 +210,37 @@ export function quantosCaminhosCabem(n: number, mesesAVista: number, teto = TETO
 export function alfaDosCaminhos(quantos: number): number {
   return Math.min(0.62, Math.max(0.055, 2.6 / Math.sqrt(Math.max(1, quantos))))
 }
+
+/* ————— O convite da home (14/11/2026) —————
+   O dono, no cartão "Você em 12 meses" da tela inicial: "deixe um desenho no
+   final para o cara clicar e ir para a carteira para ver mais". A home não
+   chama o motor (são 2.000 caminhos), então o desenho é um leque ESQUEMÁTICO,
+   sem dado de ninguém: raios lisos e simétricos em torno de onde a linha parou,
+   com o do meio reto, tracejado. Não sobe nem desce: quem diz para onde a
+   carteira pode ir é o teste, na /carteira. */
+
+export interface LequeDoConvite {
+  /** onde a linha parou, na altura do quadro (0 em cima, 100 embaixo) */
+  y: number
+  /** quanto o leque abre para cada lado no fim, em unidades do quadro */
+  abertura: number
+  /** o miolo do leque, os raios e o do meio, num quadro de 100 × 100 (x: de hoje à beira) */
+  area: string
+  raios: string[]
+  meio: string
+}
+
+/** O leque do convite a partir da altura em que a linha do passado parou (0 a 100). */
+export function lequeDoConvite(y0: number): LequeDoConvite {
+  const y = Math.round(entre(Number.isFinite(y0) ? y0 : 50, 0, 100) * 10) / 10
+  // abre o que couber dos dois lados, entre 10 e 30
+  const abertura = Math.round(Math.max(10, Math.min(30, y - 6, 94 - y)) * 10) / 10
+  const um = (v: number) => Math.round(entre(v, 2, 98) * 10) / 10
+  const raio = (k: number) => `M0,${y} Q46,${um(y + k * abertura * 0.28)} 100,${um(y + k * abertura)}`
+  return {
+    y, abertura,
+    area: `M0,${y} Q46,${um(y - abertura * 0.28)} 100,${um(y - abertura)} L100,${um(y + abertura)} Q46,${um(y + abertura * 0.28)} 0,${y} Z`,
+    raios: [-1, -0.64, -0.3, 0.3, 0.64, 1].map(raio),
+    meio: `M0,${y} L100,${y}`,
+  }
+}
