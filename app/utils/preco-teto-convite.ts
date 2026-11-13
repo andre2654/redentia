@@ -22,9 +22,15 @@ export type EventoConvitePrecoTeto = typeof EVENTO_VIEW_CONVITE_PRECO_TETO | typ
 
 export type ResultadoConvitePrecoTeto = 'enviado' | 'recusado' | 'repetido' | 'sem-ticker'
 
-const TICKER = /^[A-Z]{4}\d{1,2}$/
+// A forma de ticker da B3: a mesma expressão do utils/tickerClass.ts
+// (B3_TICKER_RE), que decide se a página /calculadora/preco-teto/{TICKER}
+// existe. Até 13/11/2026 valia aqui uma cópia que pedia quatro letras antes do
+// número, e a página da B3SA3 existia sem o convite. Fica escrita, e não
+// importada, porque cada import com `.ts` (o node --test precisa dele) soma um
+// TS5097 ao vue-tsc; o teste confere que as duas são a mesma, letra por letra.
+const TICKER = /^[A-Z][A-Z0-9]{3}\d{1,2}$/
 
-/** PETR4, TAEE11. Qualquer outra coisa não vira evento nem frase. */
+/** PETR4, TAEE11, B3SA3. Qualquer outra coisa não vira evento nem frase. */
 export function normalizarTickerConvite(raw: string): string | null {
   const t = raw.trim().toUpperCase()
   return TICKER.test(t) ? t : null

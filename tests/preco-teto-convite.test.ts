@@ -24,6 +24,8 @@ import {
   type AmbienteConvite,
   type GtagConvite,
 } from '../app/utils/preco-teto-convite.ts'
+import { tickerDePaginaPrecoTeto } from '../app/utils/preco-teto-pagina.ts'
+import { B3_TICKER_RE } from '../app/utils/tickerClass.ts'
 
 const VEDADOS = /\b(compre|comprar|compra|vender|venda|oportunidade|recomend\w*|barato|upside|imperd[ií]vel)\b/i
 
@@ -109,6 +111,34 @@ test('a view dispara uma vez com o ticker e o submit dispara com o ticker', () =
   ])
   assert.equal(dispararEventoConvitePrecoTeto('preco_teto_convite_view', 'xxx', ok), 'sem-ticker')
   assert.equal(chamadas.length, 3)
+})
+
+test('o convite vale para todo ticker que tem página: com dígito no meio também (B3SA3)', () => {
+  // Até 13/11/2026 o convite tinha uma cópia da regra de quatro letras: a
+  // página da B3SA3 existia (a regra dela é a do tickerClass.ts) e o convite não aparecia.
+  assert.equal(tickerDePaginaPrecoTeto({ ticker: 'B3SA3', type: 'STOCK', market_price: 14.76 }), 'B3SA3')
+  assert.equal(rotuloBotaoConvitePrecoTeto('b3sa3'), 'Acompanhar B3SA3')
+  assert.equal(rotuloJaSegueConvite('B3SA3'), 'Você segue B3SA3')
+  assert.equal(confirmacaoListaConvite('B3SA3'), 'Você está seguindo B3SA3.')
+  assert.equal(corpoConvitePrecoTeto('B3SA3', null), 'B3SA3 entra na sua lista de ativos seguidos. A cotação do último pregão fica na sua página inicial.')
+  const chamadas: unknown[][] = []
+  const gtag: GtagConvite = (comando, nome, params) => { chamadas.push([comando, nome, params]) }
+  const ok = ambiente('granted', gtag)
+  assert.equal(viewConviteNoConjunto('b3sa3', new Set<string>(), ok), 'enviado')
+  assert.deepEqual(chamadas, [['event', 'preco_teto_convite_view', { ticker: 'B3SA3' }]])
+  // quem não é ticker da B3 segue sem frase e sem evento
+  for (const t of ['BTC', 'AAPL', 'TESOURO SELIC 2029', 'CDB', '']) {
+    assert.equal(rotuloBotaoConvitePrecoTeto(t), '', t)
+    assert.equal(corpoConvitePrecoTeto(t, 'R$ 10,00'), '', t)
+    assert.equal(dispararEventoConvitePrecoTeto('preco_teto_convite_view', t, ok), 'sem-ticker', t)
+  }
+  assert.equal(chamadas.length, 1)
+  // a expressão do convite é a da regra única, letra por letra (ela fica escrita no util, sem import)
+  assert.ok(ler('../app/utils/preco-teto-convite.ts').includes(`\nconst TICKER = ${B3_TICKER_RE}\n`), 'a regra do convite saiu de sincronia com o tickerClass.ts')
+  // o componente só aparece com o ticker que esta regra devolve
+  const comp = ler('../app/components/calc/CalcConvitePrecoTeto.vue')
+  assert.match(comp, /const papel = computed\(\(\) => normalizarTickerConvite\(props\.ticker\)\)/)
+  assert.match(comp, /<section v-if="papel" ref="raiz" class="ptc"/)
 })
 
 test('sem consentimento nada dispara, e a view recusada não queima o ticker', () => {

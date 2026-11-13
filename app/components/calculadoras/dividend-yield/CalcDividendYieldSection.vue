@@ -154,8 +154,11 @@ const tickerDaConta = ref<string | null>(null)
 // seed→real→degrade; paridade com a pré-seleção via API da página antiga).
 // Preço da rota canônica /tickers/{t}; dividendo = soma dos proventos pagos
 // nos últimos 365d (fallback DY×preço); LPA e payout derivados do overview.
+// Só ticker da B3, pela regra única do utils/tickerClass.ts. Até 13/11/2026
+// valia aqui uma cópia que pedia quatro letras antes do número, e o
+// ?ticker=B3SA3 abria a conta com os números de exemplo, sem o nome dela.
 async function seedFromBackend(t: string) {
-  if (!/^[A-Z]{4}\d{1,2}$/.test(t)) return
+  if (symbolShape(t) !== 'b3') return
   try {
     const [quote, dividends, overview] = await Promise.all([
       $fetch<any>(`/api/backend/tickers/${t}`),

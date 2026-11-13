@@ -126,8 +126,12 @@ async function fetchSectorPE(sectorName: string): Promise<number | null> {
 // Semântica idêntica à antiga: LPA/VPA dos fundamentos, dividendo = soma dos
 // proventos pagos nos últimos 365d (fallback DY×preço), preço da rota
 // canônica /tickers/{t}. Falhou qualquer coisa → seeds/sliders ficam como estão.
+// Só ticker da B3, pela regra única do utils/tickerClass.ts. Até 13/11/2026
+// valia aqui uma cópia que pedia quatro letras antes do número: escolher a
+// B3SA3 trocava o nome do ativo e deixava os números do anterior (os três
+// endpoints respondem por ela).
 async function seedFromBackend(t: string) {
-  if (!/^[A-Z]{4}\d{1,2}$/.test(t)) return
+  if (symbolShape(t) !== 'b3') return
   try {
     const [overview, quote, dividends] = await Promise.all([
       $fetch<any>(`/api/backend/fundamentals/${t}/overview`),
