@@ -150,9 +150,9 @@ test('as peças: o gráfico de antes por dentro, um pedido só do motor, o olho,
   // o passado é o AtivoGrafico de sempre, com as mesmas props do topo
   assert.match(peca, /<AtivoGrafico :ativo="linha" :ibov="comparada" ticker="Você" rotulo-hoje="Você no período" :atual="atual" unidade="%" comparacao="CDI" tom="luz" :rotulo="rotulo" \/>/)
   // sem o futuro, hoje fica na beira (o gráfico na largura toda) e o ponteiro não mexe em nada
-  assert.match(peca, /const presenca = ref\(temFuturo\.value \? 1 : 0\)/)
+  assert.match(peca, /const presenca = computed\(\(\) => \(temFuturo\.value \? 1 : 0\)\)/)
   assert.match(peca, /const hoje = computed\(\(\) => 1 \+ \(ondeFicaHoje\(z\.value, passado\.value, horizonte\.value\) - 1\) \* presenca\.value\)/)
-  assert.match(peca, /if \(!temFuturo\.value \|\| presenca\.value < 1 \|\| medindo\) return/)
+  assert.match(peca, /if \(!temFuturo\.value \|\| chegando\.value \|\| medindo\) return/)
   // a medida do gráfico (o botão do mouse apertado sobre o passado) não abre o horizonte
   assert.match(peca, /medindo = !!\(e\.target as HTMLElement \| null\)\?\.closest\('\.cho__passado'\) && z\.value < 0\.002/)
   // o olho fechado: o R$ some da leitura e do convite; o % fica
@@ -168,9 +168,13 @@ test('as peças: o gráfico de antes por dentro, um pedido só do motor, o olho,
   // a rolagem vertical é da página; a página que toma o gesto recolhe o horizonte
   assert.match(peca, /touch-action: pan-y/)
   assert.match(peca, /@pointercancel="aoCancelar"/)
+  // o zoom persegue o alvo pelo relógio (igual a 60 e a 120 quadros por segundo)
+  assert.match(peca, /z\.value \+ dz \* \(1 - Math\.exp\(-dt \/ 72\)\)/)
+  // a chegada do futuro muda o estado na hora; a transição é de CSS e dura o tempo da entrada
+  assert.match(peca, /\.cho--chegando \.cho__passado \{ transition: width var\(--nu-dur-entrada\) var\(--nu-ease-saida\)/)
   // movimento reduzido: sem perseguir o alvo e sem a entrada
   assert.match(peca, /if \(calmo\(\)\) \{ z\.value = alvoDoZoom; return \}/)
-  assert.match(peca, /if \(calmo\(\)\) \{ presenca\.value = tem \? 1 : 0; return \}/)
+  assert.match(peca, /if \(calmo\(\)\) \{ chegando\.value = false; return \}/)
   const css = peca.slice(peca.indexOf('<style')).replace(/\/\*[\s\S]*?\*\//g, '')
   assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}\b/, 'cor em hex')
   assert.doesNotMatch(css, /font-weight:\s*\d/, 'peso em número')

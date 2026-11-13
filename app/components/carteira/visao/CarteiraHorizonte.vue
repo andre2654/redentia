@@ -26,7 +26,8 @@
 // o toque fica onde o dedo soltou e sai com um toque fora. Sem o futuro (o
 // motor carregando, fora do ar, a carteira sem o que simular, o mock do dev), a
 // peça é só o gráfico de antes, na largura toda; quando o futuro chega, ele
-// entra abrindo espaço. O R$ segue o olho da visita (`mascarado`): escondido,
+// entra abrindo espaço (o estado muda na hora; por ~0,8 s a caixa do passado
+// e a janela andam em transição de CSS, que não depende dos quadros do script). O R$ segue o olho da visita (`mascarado`): escondido,
 // a leitura fica só em %. Movimento reduzido: sem amortecimento e sem entrada.
 import type { SeriesPoint } from '~/types/acao'
 import type { FuturoDadosApi } from '~/types/assinatura'
@@ -64,20 +65,23 @@ const temFuturo = computed(() => horizonte.value >= 2 && base.value > 0 && passa
 
 /* ————— o zoom: 0 em repouso, 1 com o horizonte inteiro ————— */
 const z = ref(0)
-/** o futuro entrando: 0 sem ele (o gráfico de antes), 1 com ele no lugar */
-const presenca = ref(temFuturo.value ? 1 : 0)
+/** o futuro no lugar: 0 sem ele (o gráfico de antes, na largura toda), 1 com ele */
+const presenca = computed(() => (temFuturo.value ? 1 : 0))
+/** o futuro entrando (ou saindo): por ~0,8 s a caixa do passado e a janela andam em transição de CSS, e o ponteiro espera */
+const chegando = ref(false)
+let fimDaChegada: ReturnType<typeof setTimeout> | null = null
 let alvoDoZoom = 0
 let quadro: number | null = null
+let antes = 0
 const calmo = () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-function andar() {
+/** o zoom persegue o alvo com meia-vida de ~50 ms, pelo relógio (igual a 60 e a 120 quadros por segundo) */
+function andar(agora: number) {
   quadro = null
+  const dt = Math.min(64, Math.max(0, agora - antes))
+  antes = agora
   const dz = alvoDoZoom - z.value
-  const presente = temFuturo.value ? 1 : 0
-  const dp = presente - presenca.value
-  // o zoom persegue o alvo (um quinto do que falta por quadro); a presença anda em passo fixo (~0,7 s)
-  z.value = Math.abs(dz) < 0.0015 ? alvoDoZoom : z.value + dz * 0.2
-  presenca.value = Math.abs(dp) < 0.03 ? presente : presenca.value + Math.sign(dp) * 0.025
-  if (z.value !== alvoDoZoom || presenca.value !== presente) pedirQuadro()
+  z.value = Math.abs(dz) < 0.0015 ? alvoDoZoom : z.value + dz * (1 - Math.exp(-dt / 72))
+  if (z.value !== alvoDoZoom) pedirQuadro()
 }
 function pedirQuadro() {
   if (quadro != null || typeof requestAnimationFrame === 'undefined') return
@@ -86,11 +90,15 @@ function pedirQuadro() {
 function mirar(novo: number) {
   alvoDoZoom = Math.min(1, Math.max(0, novo))
   if (calmo()) { z.value = alvoDoZoom; return }
+  if (quadro == null) antes = performance.now()
   pedirQuadro()
 }
-watch(temFuturo, (tem) => {
-  if (calmo()) { presenca.value = tem ? 1 : 0; return }
-  pedirQuadro()
+// o futuro chega (ou some): o estado muda na hora; a transição é só o acabamento, e não roda com movimento reduzido
+watch(temFuturo, () => {
+  if (fimDaChegada) clearTimeout(fimDaChegada)
+  if (calmo()) { chegando.value = false; return }
+  chegando.value = true
+  fimDaChegada = setTimeout(() => { chegando.value = false }, 800)
 })
 
 /* ————— a geometria à vista ————— */
@@ -153,7 +161,7 @@ const mesDoTeclado = ref<number | null>(null)
 /** o horizonte aberto pelo botão ou pelo teclado: o zoom fica em 1 até fechar */
 const aberto = ref(false)
 const mes = computed<number | null>(() => {
-  if (!temFuturo.value || presenca.value < 1) return null
+  if (!temFuturo.value) return null
   if (ponteiro.value != null) return mesSobOPonteiro(ponteiro.value, z.value, passado.value, horizonte.value)
   return mesDoTeclado.value
 })
@@ -223,7 +231,7 @@ function seguir(e: PointerEvent) {
   mirar(pede)
 }
 function aoApertar(e: PointerEvent) {
-  if (!temFuturo.value || presenca.value < 1) return
+  if (!temFuturo.value || chegando.value) return
   if (e.pointerType === 'mouse') {
     // o botão apertado sobre o passado é a medida do AtivoGrafico: o horizonte não mexe até soltar
     medindo = !!(e.target as HTMLElement | null)?.closest('.cho__passado') && z.value < 0.002
@@ -233,7 +241,7 @@ function aoApertar(e: PointerEvent) {
   seguir(e)
 }
 function aoMover(e: PointerEvent) {
-  if (!temFuturo.value || presenca.value < 1 || medindo) return
+  if (!temFuturo.value || chegando.value || medindo) return
   if (e.pointerType !== 'mouse' && e.pointerId !== dedo) return
   seguir(e)
 }
@@ -291,6 +299,7 @@ onMounted(() => document.addEventListener('pointerdown', toqueFora, { passive: t
 onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', toqueFora)
   if (quadro != null) cancelAnimationFrame(quadro)
+  if (fimDaChegada) clearTimeout(fimDaChegada)
 })
 // o período troca (ou o futuro some): tudo volta ao repouso
 watch(() => [props.linha, temFuturo.value], () => {
@@ -303,7 +312,7 @@ watch(() => [props.linha, temFuturo.value], () => {
 
 const vars = computed(() => ({
   '--a': hoje.value.toFixed(5),
-  '--pres': presenca.value.toFixed(3),
+  '--pres': String(presenca.value),
   '--pt': caixaDoPassado.value.topo.toFixed(5),
   '--ph': caixaDoPassado.value.altura.toFixed(5),
   '--lt': caixaDoLeque.value.topo.toFixed(5),
@@ -314,7 +323,7 @@ const vars = computed(() => ({
 
 <template>
   <div
-    ref="raiz" class="cho" :class="{ 'cho--futuro': temFuturo, 'cho--zoom': noFuturo, 'cho--lendo': !!leitura, 'cho--aberto': aberto }" :style="vars"
+    ref="raiz" class="cho" :class="{ 'cho--futuro': temFuturo, 'cho--chegando': chegando, 'cho--zoom': noFuturo, 'cho--lendo': !!leitura, 'cho--aberto': aberto }" :style="vars"
     @pointerdown="aoApertar" @pointermove="aoMover" @pointerup="aoSoltar" @pointercancel="aoCancelar" @pointerleave="aoSair"
   >
     <div class="cho__palco">
@@ -393,6 +402,11 @@ const vars = computed(() => ({
   width: calc(var(--cho-hoje) + var(--cho-dir) * (1 - var(--pres, 0)));
   --agr-dir: calc(var(--cho-dir) * (1 - var(--pres, 0)));
 }
+/* o futuro chegando: a caixa do passado estreita e a janela aparece, em transição (o zoom, depois, anda quadro a quadro, sem ela) */
+.cho--chegando .cho__passado { transition: width var(--nu-dur-entrada) var(--nu-ease-saida), top var(--nu-dur-entrada) var(--nu-ease-saida), height var(--nu-dur-entrada) var(--nu-ease-saida); }
+.cho--chegando .cho__passado :deep(.agr__plot) { transition: right var(--nu-dur-entrada) var(--nu-ease-saida); }
+.cho--chegando .cho__janela { transition: left var(--nu-dur-entrada) var(--nu-ease-saida), opacity var(--nu-dur-entrada) var(--nu-ease-cor); }
+.cho--chegando .cho__plot, .cho--chegando .cho__eixo { transition: opacity var(--nu-dur-entrada) var(--nu-ease-cor); }
 /* com o horizonte aberto, o passado é contexto: as marcas, o rótulo de hoje e a leitura dele saem */
 .cho__passado :deep(.agr__marca), .cho__passado :deep(.agr__hoje) { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .cho--zoom .cho__passado :deep(.agr__marca), .cho--zoom .cho__passado :deep(.agr__hoje),
@@ -496,6 +510,7 @@ const vars = computed(() => ({
   .cho__eixo-nota { order: 3; flex: 1 0 100%; white-space: normal; overflow: visible; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .cho__passado, .cho__passado :deep(.agr__plot), .cho__janela, .cho__plot, .cho__eixo,
   .cho__passado :deep(.agr__marca), .cho__passado :deep(.agr__hoje), .cho__hoje b, .cho__convite, .cho__convite-t, .cho__botao, .cho__botao svg { transition: none; }
 }
 </style>
