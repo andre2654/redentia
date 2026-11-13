@@ -4,8 +4,8 @@
  * junto e a trava contra laço estão em server/utils/destino-b2b.ts.
  *
  * Roda antes do render (e antes do cache-sessao.ts, pela ordem dos arquivos).
- * Pedido que não começa com /business, /cliente, /jantar, /whitelabel ou
- * /pricing sai na hora. O host é o que o visitante pediu (X-Forwarded-Host na
+ * Pedido que não começa com /business, /cliente, /jantar, /whitelabel,
+ * /pricing, /relatorio ou /entrar sai na hora. O host é o que o visitante pediu (X-Forwarded-Host na
  * Vercel), para a trava reconhecer quando este front ainda responde em
  * www.redentia.com.br. Link com token (ehLinkPessoal) nunca chega ao app: no
  * 302 e no 404 da trava vão sem cache, sem Referer e fora do índice.

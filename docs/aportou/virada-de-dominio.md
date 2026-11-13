@@ -44,6 +44,8 @@ Este arquivo é o contrato entre as duas sessões que constroem os sites: a do B
 | `/video/**`, `/media/**` | Os arquivos públicos do app novo (o herói da landing é um vídeo em `/video/`). A Aportou também tem `/video/` (o filme), mas só em aportou.com.br: o filme estreia lá e nunca esteve em redentia.com.br, então não há link antigo a preservar |
 | `/jantar` e `/img/jantar/**` | O app novo porta a página da campanha. Se o dono disser que ela acabou, vira 301 para `/` |
 | `/cliente/**`, `/business/convite/**` | Links pessoais que já foram mandados (convite da chave, convite e acesso do cliente final). O app novo serve os mesmos caminhos (`/cliente/convite/[token]`, `/cliente/acesso/[token]`, `/business/convite/[token]`) contra as rotas públicas do Laravel que já estão em produção (`business/client-invites/{token}` com `consent` e `connection`, `business/client-access/{token}` com `revoke`, `business/invites/{token}` com `redeem`), com `no-store`, `noindex` e `Referrer-Policy: no-referrer`. O widget da Pluggy do cliente final continua na origem redentia.com.br |
+| `/relatorio/{token}` | O relatório que o escritório compartilha com o cliente (30 dias; `BusinessReportController`, `share_url`). Link pessoal: `no-store`, `noindex`, `no-referrer` |
+| `/entrar?convite={token}` | O convite da equipe (`BusinessMember::inviteUrlFor`). O app novo responde 302 para `/?entrar=1`, sem o token: a pessoa aceita entrando com o próprio e-mail |
 | `/business/**` (o resto), `/whitelabel`, `/pricing` | Os endereços antigos do B2B, com a mesma tabela de `server/utils/destino-b2b.ts` do front da Aportou (`/business` → `/`, `/business/clientes` → `/app/clientes`, `/business/chaves` e `/business/comecar` → `/app/escritorio`, `/business/skills` → `/app`, 301; links pessoais, 302) |
 | Privacidade e Termos do B2B | Em caminhos novos (proposta: `/privacidade` e `/termos`), para não disputar o `/institucional/*` da Aportou |
 | `/robots.txt`, `/sitemap.xml`, `/llms.txt`, favicon | Os do B2B |
@@ -51,7 +53,7 @@ Este arquivo é o contrato entre as duas sessões que constroem os sites: a do B
 
 **Todo o resto em redentia.com.br vai para a Aportou com 301, no mesmo caminho e com a mesma query** (no app novo, um middleware do Nitro com a lista fechada do que é do B2B; ele liga por configuração, para não atrapalhar o localhost, e **tem de estar ligado em produção antes da troca**): `https://aportou.com.br{caminho}{?query}`. Isso cobre as calculadoras, os rankings, os ativos, as teses, os guias, `/login`, `/carteira`, `/assinar`, `/mcp`, `/institucional/*`, os sitemaps antigos e o que vier de link velho. Sem lista fechada: o que não é do B2B é da Aportou.
 
-**Na Aportou (aportou.com.br):** os caminhos de hoje, sem mudança. Os endereços do B2B (`/business`, `/cliente`, `/jantar`, `/whitelabel`, `/pricing`) já levam para redentia.com.br (`server/middleware/b2b-para-redentia.ts`).
+**Na Aportou (aportou.com.br):** os caminhos de hoje, sem mudança. Os endereços do B2B (`/business`, `/cliente`, `/jantar`, `/whitelabel`, `/pricing`, `/relatorio`, `/entrar`) já levam para redentia.com.br (`server/middleware/b2b-para-redentia.ts`). Enquanto o front da Aportou ainda responde em www.redentia.com.br, um link pessoal do B2B que chega lá (convite, relatório) mostra "Este link não está disponível", sem cache e fora do índice, em vez de ir para a Aportou. Ele volta a abrir depois da troca, com o app do B2B no domínio.
 
 ## 4. A rede de segurança no front da Aportou
 
@@ -74,6 +76,7 @@ Cada passo só começa com o anterior conferido. O dono dá os cliques.
 
 **1. Backend que serve os dois (antes de tudo)**
 - B2C (sessão do B2C; feito em 13/11/2026 na `feat/aportou-marca` do `be-aportou`, commit 7939ad7, suíte inteira verde): o endereço de cada site no `config/app.php`, `url_frontend` (env `APORTOU_URL`) e `url_b2b` (env `B2B_URL`), os dois com `https://www.redentia.com.br` por padrão. `Marca::site()` devolve o site da marca, e o e-mail de código e o de troca de senha levam para o site de quem pediu. Os e-mails só de investidor, que caíam num `https://redentia.com.br` fixo porque a chave não existia, passam a ler `url_frontend`. As imagens dos e-mails da Aportou e a política de privacidade seguem `APORTOU_URL`. CORS e Sanctum aceitam aportou.com.br.
+- B2C (continuação, commit c4ae8a6 na mesma branch): o rodapé dos e-mails mostra o site da marca; `Marca::privacidade()` (a do B2B em `B2B_PRIVACY_URL`); o `whatsapp:broadcast` leva ao site da Aportou por padrão. Os links profundos dos widgets (`WidgetController`, `/para-voce` e `/wallet/hoje`) ficam como estão: quem os lê é o app do iPhone.
 - B2B (sessão do B2B, pela sessão do backend do B2B): os convites e os e-mails do escritório leem `config('app.url_b2b')`, com um padrão próprio, para não depender da ordem de merge com a `feat/aportou-marca`.
 - **O andre2654/redentia-api#26 (a parte 1 do backend do B2B) tem de estar mesclado antes da troca.** Sem ele, o `magic-link/verify` cria uma conta de investidor para quem entra no app do escritório. Os PRs 2 a 5 (equipe, famílias, leituras, relatórios) podem vir depois; antes é melhor.
 - Sobe com os valores de hoje (tudo em www.redentia.com.br), então nada muda no ar até o passo 4.
@@ -87,6 +90,7 @@ Cada passo só começa com o anterior conferido. O dono dá os cliques.
 2. No `.env` da VPS:
    - `APORTOU_URL=https://aportou.com.br`. As imagens dos e-mails da Aportou e a política de privacidade vão junto, a menos que `EMAIL_LOGO_APORTOU_URL`, `EMAIL_LOGO_APORTOU_WHITE_URL`, `EMAIL_ICONE_APORTOU_URL` ou `PRIVACY_URL` estejam definidas: se estiverem, trocar também.
    - `B2B_URL=https://www.redentia.com.br`: é o padrão, não precisa escrever.
+   - `B2B_PRIVACY_URL=https://www.redentia.com.br/privacidade`, com a página de privacidade do B2B no ar. Antes disso, o código de acesso da Redentia aponta para a política de hoje.
    - `BILLING_SUCCESS_URL`, `BILLING_CANCEL_URL` e `BILLING_PORTAL_RETURN_URL` em aportou.com.br.
    - Se `CORS_ALLOWED_ORIGIN_PATTERNS` ou `SANCTUM_STATEFUL_DOMAINS` estiverem definidas, elas vencem a lista do código: incluir aportou.com.br nelas.
    - Depois, `config:cache` (se o deploy usa) e reiniciar o php-fpm.

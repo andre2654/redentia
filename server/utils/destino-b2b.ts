@@ -15,6 +15,8 @@
  *   /whitelabel e /pricing                                   → raiz (301)
  *   /business/convite/<token>                                → o mesmo caminho (302)
  *   /cliente e /cliente/**                                   → o mesmo caminho (302)
+ *   /relatorio/<token>                                       → o mesmo caminho (302)
+ *   /entrar (com ou sem ?convite=<token>)                    → o mesmo caminho (302)
  *   /jantar                                                  → /jantar (302)
  *
  * A query vai junto. 302 onde o destino é um link pessoal que alguém já
@@ -39,7 +41,11 @@ export interface DestinoB2B {
   status: 301 | 302
 }
 
-const PREFIXO_B2B = /^\/(?:business|cliente|jantar|whitelabel|pricing)/i
+// /relatorio e /entrar (13/11/2026, a pedido da sessão do B2B): o relatório que o escritório compartilha com o
+// cliente (30 dias) e o convite da equipe, que o backend do B2B monta com B2B_URL. Se um desses PRs for mesclado
+// antes da virada, o link cai aqui enquanto este front ainda responde em www.redentia.com.br, e a rede de
+// segurança do host antigo o mandaria para a Aportou, onde daria 404. Com fronteira, para não pegar /relatorios.
+const PREFIXO_B2B = /^\/(?:business|cliente|jantar|whitelabel|pricing)|^\/(?:relatorio|entrar)(?:[/?]|$)/i
 
 /** A saída cedo do middleware: só estes prefixos podem ser do B2B. */
 export function pareceB2B(caminho: string): boolean {
@@ -48,12 +54,15 @@ export function pareceB2B(caminho: string): boolean {
 
 /**
  * Link pessoal: o token está no endereço (o convite da chave, o convite e o
- * acesso do cliente final). Nesses, nada de cache, de Referer nem de índice, e
- * nunca o app (o 404 do app carregaria o analytics com o token na URL).
+ * acesso do cliente final, o relatório compartilhado, o convite da equipe em
+ * /entrar?convite=). Nesses, nada de cache, de Referer nem de índice, e nunca
+ * o app (o 404 do app carregaria o analytics com o token na URL).
  */
 export function ehLinkPessoal(caminho: string): boolean {
-  const p = (caminho.split('?')[0] ?? '').replace(/\/+$/, '').toLowerCase()
-  return p === '/cliente' || p.startsWith('/cliente/') || p.startsWith('/business/convite/')
+  const [base = '', query = ''] = caminho.split('?')
+  const p = base.replace(/\/+$/, '').toLowerCase()
+  if (p === '/entrar') return /(?:^|&)convite=/i.test(query)
+  return p === '/cliente' || p.startsWith('/cliente/') || p.startsWith('/business/convite/') || p === '/relatorio' || p.startsWith('/relatorio/')
 }
 
 /** A página do link pessoal quando a trava segura: seca, sem script, sem marca de terceiro. */
@@ -80,6 +89,8 @@ function caminhoNoB2B(caminho: string): { caminho: string, status: 301 | 302 } |
   if (p === '/whitelabel' || p === '/pricing') return { caminho: '/', status: 301 }
   if (p === '/jantar') return { caminho: '/jantar', status: 302 }
   if (p === '/cliente' || p.startsWith('/cliente/')) return { caminho, status: 302 }
+  if (p === '/relatorio' || p.startsWith('/relatorio/')) return { caminho, status: 302 }
+  if (p === '/entrar') return { caminho: '/entrar', status: 302 }
   if (p !== '/business' && !p.startsWith('/business/')) return null
   const resto = p.slice('/business'.length)
   if (resto === '/clientes') return { caminho: '/app/clientes', status: 301 }

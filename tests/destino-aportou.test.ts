@@ -27,7 +27,7 @@ test('outro host não muda: a própria Aportou, o preview, o localhost e os outr
 })
 
 test('os caminhos do B2B ficam com o middleware do B2B, e o que é do próprio app não muda de domínio', () => {
-  for (const p of ['/business', '/business/clientes', '/cliente/convite/abc', '/jantar', '/whitelabel', '/pricing'])
+  for (const p of ['/business', '/business/clientes', '/cliente/convite/abc', '/jantar', '/whitelabel', '/pricing', '/relatorio/tok', '/entrar?convite=tok'])
     assert.equal(destinoNaAportou(p, 'www.redentia.com.br'), null, p)
   for (const p of ['/_nuxt/entry.js', '/api', '/api/backend/theses?x=1', '/_ipx/w_300/img.png', '/__nuxt/x'])
     assert.equal(destinoNaAportou(p, 'www.redentia.com.br'), null, p)

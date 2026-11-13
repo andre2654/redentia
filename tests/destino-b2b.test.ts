@@ -44,6 +44,19 @@ test('link pessoal e campanha vão para o mesmo caminho em redentia.com.br (302)
   assert.deepEqual(ir('/jantar/'), { para: 'https://redentia.com.br/jantar', status: 302 })
 })
 
+test('o relatório compartilhado e o convite da equipe vão para o mesmo endereço em redentia.com.br (302)', () => {
+  // o backend do B2B monta os dois com B2B_URL (sessão do B2B, 13/11/2026)
+  assert.deepEqual(ir('/relatorio/AbC123tok'), { para: 'https://redentia.com.br/relatorio/AbC123tok', status: 302 })
+  assert.deepEqual(ir('/entrar?convite=tok9'), { para: 'https://redentia.com.br/entrar?convite=tok9', status: 302 })
+  assert.deepEqual(ir('/entrar'), { para: 'https://redentia.com.br/entrar', status: 302 })
+  // no host antigo, antes da troca, a trava segura (o app do B2B ainda não está lá)
+  assert.equal(destinoB2B('/relatorio/AbC123tok', 'www.redentia.com.br'), null)
+  assert.equal(destinoB2B('/entrar?convite=tok9', 'www.redentia.com.br'), null)
+  // com fronteira: /relatorios e /entrada não são do B2B
+  for (const p of ['/relatorios', '/relatorios/2026', '/entrada', '/entrarx']) assert.equal(pareceB2B(p), false, p)
+  for (const p of ['/relatorio', '/relatorio/x', '/entrar', '/entrar?convite=x', '/Entrar/']) assert.equal(pareceB2B(p), true, p)
+})
+
 test('a query vai junto, como veio', () => {
   assert.deepEqual(ir('/business?utm_source=x'), { para: 'https://redentia.com.br/?utm_source=x', status: 301 })
   assert.deepEqual(ir('/business/clientes?utm_source=x&utm_medium=email'), { para: 'https://redentia.com.br/app/clientes?utm_source=x&utm_medium=email', status: 301 })
@@ -107,8 +120,8 @@ test('a casca do site não leva ao B2B daqui; a porta "Para escritórios" vai di
 
 test('link pessoal: convite da chave e as páginas do cliente final; o resto não', async () => {
   const { ehLinkPessoal, PAGINA_LINK_INDISPONIVEL } = await import('../server/utils/destino-b2b.ts')
-  for (const c of ['/cliente', '/cliente/', '/cliente/convite/abc', '/Cliente/Acesso/XYZ?x=1', '/business/convite/tok123']) assert.equal(ehLinkPessoal(c), true, c)
-  for (const c of ['/business', '/business/clientes', '/clientes-algo', '/jantar', '/calculadora/preco-teto']) assert.equal(ehLinkPessoal(c), false, c)
+  for (const c of ['/cliente', '/cliente/', '/cliente/convite/abc', '/Cliente/Acesso/XYZ?x=1', '/business/convite/tok123', '/relatorio/tok', '/entrar?convite=tok', '/entrar?x=1&convite=tok']) assert.equal(ehLinkPessoal(c), true, c)
+  for (const c of ['/business', '/business/clientes', '/clientes-algo', '/jantar', '/calculadora/preco-teto', '/entrar', '/entrar?volta=/app']) assert.equal(ehLinkPessoal(c), false, c)
   // a página da trava não carrega nada: sem script, sem link externo
   assert.doesNotMatch(PAGINA_LINK_INDISPONIVEL, /<script|<link|https?:\/\//i)
   assert.match(PAGINA_LINK_INDISPONIVEL, /noindex/)
