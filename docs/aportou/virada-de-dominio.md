@@ -93,7 +93,7 @@ Cada passo só começa com o anterior conferido. O dono dá os cliques.
 
 **5. Depois da troca** (sessão do B2C):
 - Mandar o sitemap de aportou.com.br no Search Console.
-- Conferir, uma por uma e sem rajada, as 500 URLs com clique nos 90 dias: cada uma responde 301 para o mesmo caminho em aportou.com.br, e lá responde 200.
+- Conferir, uma por uma e sem rajada, as 500 URLs do Search Console (90 dias, guardadas em `docs/aportou/virada-urls.json`): cada uma responde 301 para o mesmo caminho em aportou.com.br, e lá responde 200; a raiz responde 200 com a landing do B2B. O roteiro é `node scripts/conferir-virada.mjs` (uns 8 minutos; com `--base <endereço provisório> --sem-destino`, confere o app do B2B antes da troca).
 - Acompanhar 28 dias, não 7 (a régua de ruído do site).
 
 **Voltar atrás:** devolver os dois domínios ao projeto da Aportou na Vercel e o `.env` aos valores de antes. A rede da seção 4 continua mandando o resto para aportou.com.br.
