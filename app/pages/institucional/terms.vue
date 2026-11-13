@@ -3,6 +3,8 @@
 // Frontend/app/pages/institucional/terms.vue). Placeholders resolvidos:
 // brand.name = "Redentia", brand.name.toUpperCase() = "REDENTIA",
 // brand.email = relacionamento@redentia.com.br, brand.url = redentia.com.br.
+// Na virada de domínio (13/11/2026, docs/aportou/virada-de-dominio.md) o Site
+// passou a ser aportou.com.br; o e-mail de contato segue @redentia.com.br.
 // Path e SEO preservados de propósito (mesma URL). Segue o GABARITO das
 // páginas legais Nu (ver institucional/privacy.vue): árvore tipada
 // LegalDocData renderizada por LegalHero + LegalDoc. Nada hardcodado em componente.
@@ -74,7 +76,7 @@ const doc: LegalDocData = {
           { text: [{ text: '"Plano"', bold: true }, { text: ' – significa cada um dos planos de assinatura de serviços pagos oferecidos na Plataforma pela ' }, { text: 'Redentia', bold: true }, { text: '.' }] },
           { text: [{ text: '"Plataforma"', bold: true }, { text: ' – significa o Site, bem como os seus diversos ambientes que o Usuário terá acesso após o Cadastro ou contratação de um Plano.' }] },
           { text: [{ text: '"Política de Privacidade"', bold: true }, { text: ' – significa a política de privacidade da ' }, { text: 'Redentia', bold: true }, { text: ' prevista em seu Site.' }] },
-          { text: [{ text: '"Site"', bold: true }, { text: ' – significa o endereço da rede mundial de computadores denominado ' }, { text: 'redentia.com.br', href: 'https://redentia.com.br', external: true }, { text: '.' }] },
+          { text: [{ text: '"Site"', bold: true }, { text: ' – significa o endereço da rede mundial de computadores denominado ' }, { text: 'aportou.com.br', href: 'https://aportou.com.br', external: true }, { text: '.' }] },
           { text: [{ text: '"Redentia"', bold: true }, { text: ` – significa a ${EMPRESA.razaoSocial}, inscrita no CNPJ sob o nº ${EMPRESA.cnpj}, responsável pela prestação dos serviços.` }] },
           { text: [{ text: '"Termos de Uso"', bold: true }, { text: ' – significa estes Termos e Condições de Uso e Serviços.' }] },
           { text: [{ text: '"Usuário"', bold: true }, { text: ' – significa toda pessoa física ou jurídica que acessa a Plataforma.' }] },

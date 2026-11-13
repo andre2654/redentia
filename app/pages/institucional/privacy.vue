@@ -3,6 +3,8 @@
 // Frontend/app/pages/institucional/privacy.vue). Placeholders resolvidos:
 // brand.name = "Redentia", suporte/privacidade = relacionamento@redentia.com.br,
 // site = redentia.com.br. Path e SEO preservados de propósito (mesma URL).
+// Na virada de domínio (13/11/2026, docs/aportou/virada-de-dominio.md) o Site
+// passou a ser aportou.com.br; o e-mail de contato segue @redentia.com.br.
 //
 // GABARITO das páginas legais Nu: o conteúdo é uma árvore tipada (LegalDocData);
 // LegalHero renderiza a banda creme (eyebrow + H1 + data opcional) e LegalDoc a
@@ -79,7 +81,7 @@ const doc: LegalDocData = {
           { text: [
             { text: 'Site', bold: true },
             { text: ' – endereço da rede mundial de computadores denominado ' },
-            { text: 'redentia.com.br', href: 'https://redentia.com.br', external: true },
+            { text: 'aportou.com.br', href: 'https://aportou.com.br', external: true },
             { text: '.' },
           ] },
           { text: [

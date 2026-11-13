@@ -60,10 +60,12 @@ export default defineNuxtConfig({
       chatDirectUrl: process.env.NUXT_PUBLIC_CHAT_DIRECT_URL || '',
       // Origem CANÔNICA do site. É a fonte única de verdade pra canonical, og:url,
       // sitemap, robots e llms-full (ver useSiteOrigin / server/utils/site-origin).
-      // Precisa do `www`: o apex 301a pra www em produção, e o Search Console
-      // indexa www.redentia.com.br. Sem o www aqui, o canonical apontava pro
-      // destino de um 301 — o Google resolve, mas gasta crawl e enfraquece o sinal.
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://www.redentia.com.br',
+      // Desde a virada de domínio (13/11/2026, docs/aportou/virada-de-dominio.md)
+      // é https://aportou.com.br, sem www (o www manda para lá). Tem de bater com o
+      // host que responde 200: canonical que aponta para o destino de um redirect
+      // o Google resolve, mas gasta crawl e enfraquece o sinal. Este valor só vale
+      // em produção com o aportou.com.br no ar (passo 3 da virada).
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://aportou.com.br',
       // Google OAuth Web client ID (público por design — o browser precisa
       // dele pro Google Identity Services emitir o id_token; o secret vive
       // só no Laravel, que valida via tokeninfo + aud). ENV-ONLY, sem

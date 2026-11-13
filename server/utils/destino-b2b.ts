@@ -106,3 +106,42 @@ export function destinoB2B(caminhoComQuery: string, host: string): DestinoB2B | 
   const resto = alvo.caminho === '/' ? (query ? `/${query}` : '') : alvo.caminho + query
   return { para: semCaractereSolto(`${ORIGEM_B2B}${resto}`), status: alvo.status }
 }
+
+/* ————— o outro sentido: o domínio antigo leva para a Aportou ————— */
+
+/**
+ * A rede de segurança da virada de domínio (13/11/2026; docs/aportou/virada-de-dominio.md, seção 4).
+ *
+ * Enquanto o domínio redentia.com.br ainda estiver no projeto da Vercel da Aportou, este front também
+ * responde por ele. Para o mesmo conteúdo não ficar em dois domínios, pedido com host redentia.com.br
+ * (com ou sem www) vai com 301 para https://aportou.com.br, no mesmo caminho e com a mesma query
+ * (server/middleware/host-antigo.ts). Depois da troca quem faz isso é o app do B2B, que fica com o
+ * domínio ("o resto vai para a Aportou").
+ *
+ * Ficam de fora:
+ *  - os caminhos do B2B (pareceB2B): o middleware b2b-para-redentia cuida deles;
+ *  - os arquivos do build e as chamadas do próprio app (/_nuxt, /api, /_ipx, /__nuxt): uma aba aberta
+ *    antes da troca continua carregando e falando com o servidor até a pessoa navegar.
+ *
+ * Mora neste arquivo, e não num próprio, porque usa o host e o Location limpo daqui: um import entre
+ * os dois exigiria a extensão .ts para o teste rodar no Node, e o vue-tsc reclama dela (TS5097).
+ */
+export const HOST_APORTOU = 'aportou.com.br'
+export const ORIGEM_APORTOU = `https://${HOST_APORTOU}`
+
+/** os hosts que levam para a Aportou (hostDoPedido já tira o "www.") */
+const HOSTS_ANTIGOS = new Set([HOST_B2B])
+/** o que é do próprio app e não muda de domínio no meio de uma aba aberta */
+const DO_PROPRIO_APP = /^\/(?:_nuxt|api|_ipx|__nuxt)(?:\/|$)/i
+
+/**
+ * O endereço na Aportou, ou null (o host não é o antigo, o caminho é do B2B ou do próprio app).
+ * `caminhoComQuery` é o `event.path`; `host`, o que o visitante pediu (X-Forwarded-Host na Vercel).
+ */
+export function destinoNaAportou(caminhoComQuery: string, host: string): string | null {
+  if (!HOSTS_ANTIGOS.has(hostDoPedido(host))) return null
+  const caminho = caminhoComQuery.split('?')[0] || '/'
+  if (pareceB2B(caminho) || DO_PROPRIO_APP.test(caminho)) return null
+  const resto = caminhoComQuery.startsWith('/') ? caminhoComQuery : `/${caminhoComQuery}`
+  return semCaractereSolto(`${ORIGEM_APORTOU}${resto}`)
+}
