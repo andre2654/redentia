@@ -152,7 +152,7 @@ Movimento curto, com propósito, e que respeita `prefers-reduced-motion` (já h�
 - **Input mágico:** o anel gira (7s em repouso, 4s digitando, 3s respondendo); ao focar cresce de 58 para 62px; respondendo vira a pílula carvão com os três pontos (`nu-ponto`).
 - **Esqueleto → conteúdo:** fade de 0,25s, sem pulo de layout (o esqueleto tem a altura do conteúdo).
 - **Foco:** anel cobalto de 3px (global).
-- **Custo:** nada de animação infinita fora do anel do input e do esqueleto. Anime só `transform` e `opacity`.
+- **Custo:** nada de animação infinita fora do anel do input e do esqueleto. Anime só `transform` e `opacity`. A exceção combinada é a esteira de ativos do rodapé (13/11/2026, pedido do dono; `decisoes.md`, "O fecho do rodapé"): só `transform`, parada fora da tela e com movimento reduzido.
 
 ## 6. O que NÃO muda
 

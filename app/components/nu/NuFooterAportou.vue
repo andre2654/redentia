@@ -19,12 +19,27 @@
 // Legora, a Rogo) e o link em 15px/500; sob o ponteiro o link clareia e o
 // sublinhado aparece, sem empurrar nada. O wordmark gigante entra ao chegar
 // (v-revelar). Tudo em token.
+//
+// O FECHO DA MARCA (13/11/2026; o dono: "deixe o footer mais bacana, talvez
+// com uns carrosséis de ativos com a bandeirinha da aportou e a logo maior
+// ocupando toda a largura"). Depois do mapa e da linha do CNPJ, o rodapé fecha
+// de beira a beira da tela, fora da coluna:
+//  - o wordmark gigante na largura inteira da tela (era na coluna, 1.240px),
+//    em degradê que some no carvão. Onde o navegador liga animação à rolagem,
+//    a bandeira do "t" sobe pelo mastro enquanto a pessoa chega ao fim da
+//    página: "aportou";
+//  - uma fila de ativos em cima dele e outra embaixo ("agora coloque 1 linha
+//    em cima outra em baixo da logo da aportou"), cada ativo dentro da
+//    bandeira da marca (NuRodapeEsteira). A perna do "p" passa por trás da
+//    fila de baixo.
 defineProps<{
   colunas: { title: string; links: { label: string; to: string }[] }[]
   assinatura: boolean
 }>()
 const { reabrir } = useConsent()
 const ano = new Date().getFullYear()
+/** o degradê do wordmark precisa de um id que não se repita na página */
+const idDoDegrade = useId()
 </script>
 
 <template>
@@ -69,19 +84,30 @@ const ano = new Date().getFullYear()
         <a href="https://redentia.com.br" class="nfa__b2b">Para escritórios: {{ MARCA.b2b }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15" /><path d="M13.5 6.5 19 12l-5.5 5.5" /></svg></a>
       </div>
 
+    </div>
+
+    <!-- o fecho da marca, de beira a beira: uma fila de ativos, o wordmark na largura da tela e a outra fila -->
+    <NuRodapeEsteira class="nfa__esteira">
       <svg v-revelar="{ y: 24 }" class="nfa__gigante" viewBox="-2 -40 681 142" role="img" aria-label="aportou">
-        <g fill="none" stroke="currentColor" stroke-width="25"><circle cx="50" cy="50" r="37.5" /><circle cx="173" cy="50" r="37.5" /><circle cx="280.5" cy="50" r="37.5" /><circle cx="520.5" cy="50" r="37.5" /><path d="M593.5 2 V54 A35.25 35.25 0 0 0 664 54" /></g>
-        <g fill="currentColor"><rect x="83" y="2" width="25" height="98" /><path d="M121 2 H146 V124 A12 12 0 0 1 134 136 H121 Z" /><path d="M340 100 V26 A26 26 0 0 1 366 0 H399 V23 H372 Q365 23 365 31 V100 Z" /><path d="M408 -25 Q408 -38 421 -38 H433 V62 Q433 77 448 77 H463 V101 H440 Q408 101 408 69 Z" /><rect x="651.5" y="2" width="25" height="98" /></g>
+        <defs>
+          <linearGradient :id="idDoDegrade" gradientUnits="userSpaceOnUse" x1="0" y1="-40" x2="0" y2="138">
+            <stop offset="0" class="nfa__gigante-alto" /><stop offset="0.62" class="nfa__gigante-meio" /><stop offset="1" class="nfa__gigante-pe" />
+          </linearGradient>
+        </defs>
+        <g fill="none" :stroke="`url(#${idDoDegrade})`" stroke-width="25"><circle cx="50" cy="50" r="37.5" /><circle cx="173" cy="50" r="37.5" /><circle cx="280.5" cy="50" r="37.5" /><circle cx="520.5" cy="50" r="37.5" /><path d="M593.5 2 V54 A35.25 35.25 0 0 0 664 54" /></g>
+        <g :fill="`url(#${idDoDegrade})`"><rect x="83" y="2" width="25" height="98" /><path d="M121 2 H146 V124 A12 12 0 0 1 134 136 H121 Z" /><path d="M340 100 V26 A26 26 0 0 1 366 0 H399 V23 H372 Q365 23 365 31 V100 Z" /><path d="M408 -25 Q408 -38 421 -38 H433 V62 Q433 77 448 77 H463 V101 H440 Q408 101 408 69 Z" /><rect x="651.5" y="2" width="25" height="98" /></g>
         <path class="nfa__gigante-corte" d="M408 44 V0 H444 C456 0 466 -2 472 -8 C474 8 466 23 448 23 H433 C419 23 410 31 408 44 Z" />
       </svg>
-    </div>
+    </NuRodapeEsteira>
     <!-- O aviso de cookies senta aqui quando o rodapé está na tela. -->
     <div id="ancora-cookies" />
   </footer>
 </template>
 
 <style scoped>
-.nfa { container: rodape / inline-size; background: var(--nu-ink); color: var(--nu-on-dark); overflow: hidden; }
+/* o recorte é `clip`, não `hidden`: com `hidden` o rodapé vira a caixa de rolagem do que está dentro dele, e a bandeira
+   do wordmark (que sobe com a rolagem da PÁGINA) ficaria parada. Quem não conhece `clip` fica com `hidden` */
+.nfa { container: rodape / inline-size; background: var(--nu-ink); color: var(--nu-on-dark); overflow: hidden; overflow: clip; }
 .nfa__in { padding: clamp(64px, 7vw, 96px) var(--nu-coluna) 0; display: flex; flex-direction: column; gap: clamp(40px, 4.4vw, 56px); }
 
 .nfa__news {
@@ -150,8 +176,27 @@ const ano = new Date().getFullYear()
 .nfa__b2b svg { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .nfa__b2b:hover svg { transform: translateX(3px); }
 
-.nfa__gigante { display: block; width: 100%; color: var(--nu-dark-line); }
+/* o fecho da marca: fora da coluna, de beira a beira. Uma fila de ativos, o wordmark e a outra fila */
+.nfa__esteira { margin-top: clamp(40px, 4.4vw, 56px); }
+/* o wordmark na largura da tela. A caixa vai até a linha de base; a perna do "p" desce além dela (overflow) e passa
+   por trás da fila de baixo. Em cima, o "t" e a bandeira dele já ocupam o respiro: a fila de cima fica mais perto */
+.nfa__gigante {
+  display: block; width: 100%; overflow: visible; margin-top: clamp(10px, 1.4vw, 20px); margin-bottom: clamp(22px, 2.6vw, 36px);
+  view-timeline: --nfa-marca block;
+}
+/* as letras em degradê: mais claras no alto, sumindo no carvão embaixo (a palavra nasce do chão da página) */
+.nfa__gigante-alto { stop-color: var(--nu-dark-chip-line); }
+.nfa__gigante-meio { stop-color: var(--nu-dark-line); }
+.nfa__gigante-pe { stop-color: var(--nu-dark-chip); }
 .nfa__gigante-corte { fill: var(--nu-blue); }
+/* a bandeira sobe pelo mastro do "t" enquanto o wordmark entra na tela: quem chega ao fim da página, aportou. Só onde
+   o navegador liga animação à rolagem (sem isso, e com movimento reduzido, ela já está no lugar) */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .nfa__gigante-corte { animation: nfa-hasteia linear both; animation-timeline: --nfa-marca; animation-range: entry 10% entry 100%; }
+    @keyframes nfa-hasteia { from { transform: translateY(56px); } to { transform: none; } }
+  }
+}
 :is(.nfa__mail, .nfa__rede, .nfa__link, .nfa__b2b):focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 2px; }
 
 @container rodape (max-width: 640px) {

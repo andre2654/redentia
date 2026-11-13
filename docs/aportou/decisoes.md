@@ -59,6 +59,21 @@ O dono: "remova o /business daqui e tudo relacionado (só do front por enquanto)
 
 **Quando pode subir:** só DEPOIS que o app novo estiver no ar em redentia.com.br e a Aportou em aportou.com.br. E o app novo precisa servir `/business/convite/<token>`, `/cliente/convite/<token>`, `/cliente/acesso/<token>` e `/jantar` antes disso, senão os links que clientes e escritórios já receberam quebram. Subir antes deixa esses links em 404 neste front, e a página de 404 carrega o analytics como qualquer outra (a guarda das rotas com token saiu junto com elas).
 
+## O fecho do rodapé (13/11/2026)
+
+O dono: "deixe o footer mais bacana, talvez com uns carrosséis de ativos com a bandeirinha da aportou e a logo maior ocupando toda a largura". Vendo as versões no navegador, ele fechou três coisas: o ativo fica **dentro** da bandeira ("queria que ficasse DENTRO da bandeira"; a primeira versão tinha a bandeirinha espetada em cima do ícone), uma fila fica em cima e a outra embaixo do wordmark ("coloque 1 linha em cima outra em baixo da logo da aportou"), e a faixa de título "O que a Aportou acompanha", com o botão de pausa, sai ("pode remover isso").
+
+**O que ficou** (`NuFooterAportou.vue`, `components/nu/rodape/NuRodapeEsteira.vue`, `content/rodape-ativos.ts`): depois do mapa do site e da linha do CNPJ, de beira a beira da tela e fora da coluna, uma fila de 16 ações, o wordmark gigante na largura inteira da tela (era na coluna, 1.240px) e uma fila de 16 fundos imobiliários, ETFs e BDRs. As filas andam devagar em sentidos opostos. O wordmark tem as letras em degradê e, onde o navegador liga animação à rolagem, a bandeira do "t" sobe pelo mastro enquanto a pessoa chega ao fim da página.
+
+**Decisões que não aparecem na tela:**
+
+- **A esteira é ornamento, não cotação.** Sem preço, sem variação, sem nome de empresa. Só o ticker, que é o que menos envelhece. A lista é escolhida à mão e foi conferida na base em 12/11/2026 (todos listados, todos com ícone); ticker que sair da B3 ou trocar de código sai da lista.
+- **Os ativos não são link.** O rodapé é o maior distribuidor de link interno do site, e a alocação dele é decisão de SEO (03/08 e 23/09/2026, em `NuFooter.vue`): 32 links novos em toda página mudariam essa conta. Se for para virarem link, a decisão é do dono.
+- **A bandeira se pinta sozinha.** O ícone de cada ativo entra como `border-image` com `fill`: o miolo fica junto do mastro e a beirada estica até cobrir o pano, na cor em que o ícone acaba. Não há cor de empresa escrita no código. Se o serviço de ícones cair, a bandeira fica no cobalto da marca com a primeira letra do ticker.
+- **Os ícones vêm de fora** (icons.brapi.dev, o mesmo serviço das listas de ativos do site) e só são pedidos quando o rodapé chega a umas duas telas de distância.
+- **O movimento é a exceção combinada** à regra do custo (`contrato.md`, seção 5). Só anima `transform`, para quando a esteira sai da tela e não existe com movimento reduzido. O botão de pausa saiu da tela, mas segue existindo para quem navega pelo teclado: aparece com o foco (o que se mexe sozinho por mais de 5 segundos precisa de um jeito de parar, WCAG 2.2.2).
+- **O recorte do rodapé virou `overflow: clip`.** Com `hidden` o rodapé vira a caixa de rolagem do que está dentro, e a animação ligada à rolagem da página fica parada.
+
 ## Pendências que são do dono
 
 - Registrar e apontar aportou.com.br (o site segue servindo em redentia.com.br até lá), com os 301 do domínio antigo.
