@@ -52,7 +52,11 @@ Este arquivo é o contrato entre as duas sessões que constroem os sites: a do B
 
 ## 4. A rede de segurança no front da Aportou
 
-Enquanto o domínio redentia.com.br ainda estiver no projeto da Vercel da Aportou (antes e durante a troca), o próprio front da Aportou faz o 301 do "resto": pedido com host `redentia.com.br` ou `www.redentia.com.br` vai para `https://aportou.com.br` no mesmo caminho (`server/middleware/host-antigo.ts`). Os caminhos do B2B seguem com o middleware que já existe. Assim, o B2C pode subir em aportou.com.br alguns minutos antes da troca sem duplicar conteúdo nos dois domínios.
+Enquanto o domínio redentia.com.br ainda estiver no projeto da Vercel da Aportou (antes e durante a troca), o próprio front da Aportou faz o 301 do "resto": pedido com host `redentia.com.br` ou `www.redentia.com.br` vai para `https://aportou.com.br` no mesmo caminho (`server/middleware/host-antigo.ts`, `destinoNaAportou` em `server/utils/destino-b2b.ts`). Os caminhos do B2B seguem com o middleware que já existe. Assim, o B2C pode subir em aportou.com.br alguns minutos antes da troca sem duplicar conteúdo nos dois domínios.
+
+Duas ressalvas:
+- O 301 sai com `private, no-store`. Se a borda da Vercel guardasse o redirect sem separar por domínio, quem chegasse em aportou.com.br receberia um 301 para o próprio endereço, em laço.
+- Uma página que a borda já tem em cache pode ser servida pelo domínio antigo sem passar pelo middleware. Ela sai com o canônico em aportou.com.br (`siteUrl`), e o Google consolida do mesmo jeito. A janela é a dos minutos entre o passo 3 e o passo 4.
 
 ## 5. A ordem da subida
 
@@ -66,8 +70,8 @@ Cada passo só começa com o anterior conferido. O dono dá os cliques.
 5. Pluggy: conferir no painel se há lista de origens permitidas para o widget e incluir aportou.com.br.
 
 **1. Backend que serve os dois (antes de tudo)**
-- B2C (sessão do B2C): CORS e Sanctum aceitam aportou.com.br; os e-mails da Aportou passam a ler o endereço do site de `config('app.url_frontend')` (hoje essa chave não existe, e o código cai num `https://redentia.com.br` fixo); as imagens dos e-mails da Aportou em aportou.com.br.
-- B2B (sessão do B2B): os convites e os e-mails do escritório leem o endereço do B2B de uma chave própria (proposta: `app.url_b2b`, env `B2B_URL`).
+- B2C (sessão do B2C; feito em 13/11/2026 na `feat/aportou-marca` do `be-aportou`, commit 7939ad7, suíte inteira verde): o endereço de cada site no `config/app.php`, `url_frontend` (env `APORTOU_URL`) e `url_b2b` (env `B2B_URL`), os dois com `https://www.redentia.com.br` por padrão. `Marca::site()` devolve o site da marca, e o e-mail de código e o de troca de senha levam para o site de quem pediu. Os e-mails só de investidor, que caíam num `https://redentia.com.br` fixo porque a chave não existia, passam a ler `url_frontend`. As imagens dos e-mails da Aportou e a política de privacidade seguem `APORTOU_URL`. CORS e Sanctum aceitam aportou.com.br.
+- B2B (sessão do B2B): os convites e os e-mails do escritório leem `config('app.url_b2b')` ou `Marca::Redentia->site()`.
 - Sobe com os valores de hoje (tudo em www.redentia.com.br), então nada muda no ar até o passo 4.
 
 **2. O app do B2B no ar num endereço provisório** (sessão do B2B): repositório, projeto na Vercel, o mapa da seção 3, as rotas do cliente final. Testado no endereço provisório, inclusive o "resto vai para a Aportou".
@@ -76,7 +80,12 @@ Cada passo só começa com o anterior conferido. O dono dá os cliques.
 
 **4. A troca** (minutos; o dono):
 1. Na Vercel, mover `www.redentia.com.br` e `redentia.com.br` do projeto da Aportou para o projeto do B2B. O DNS do redentia.com.br já está na Vercel, então é só trocar de projeto.
-2. No `.env` da VPS: `FRONTEND_URL=https://aportou.com.br`, `B2B_URL=https://www.redentia.com.br`, `BILLING_SUCCESS_URL`, `BILLING_CANCEL_URL` e `BILLING_PORTAL_RETURN_URL` em aportou.com.br, e as imagens dos e-mails da Aportou (`EMAIL_LOGO_APORTOU_URL`, `EMAIL_LOGO_APORTOU_WHITE_URL`, `EMAIL_ICONE_APORTOU_URL`) também. Depois, reiniciar o php-fpm.
+2. No `.env` da VPS:
+   - `APORTOU_URL=https://aportou.com.br`. As imagens dos e-mails da Aportou e a política de privacidade vão junto, a menos que `EMAIL_LOGO_APORTOU_URL`, `EMAIL_LOGO_APORTOU_WHITE_URL`, `EMAIL_ICONE_APORTOU_URL` ou `PRIVACY_URL` estejam definidas: se estiverem, trocar também.
+   - `B2B_URL=https://www.redentia.com.br`: é o padrão, não precisa escrever.
+   - `BILLING_SUCCESS_URL`, `BILLING_CANCEL_URL` e `BILLING_PORTAL_RETURN_URL` em aportou.com.br.
+   - Se `CORS_ALLOWED_ORIGIN_PATTERNS` ou `SANCTUM_STATEFUL_DOMAINS` estiverem definidas, elas vencem a lista do código: incluir aportou.com.br nelas.
+   - Depois, `config:cache` (se o deploy usa) e reiniciar o php-fpm.
 
 **5. Depois da troca** (sessão do B2C):
 - Mandar o sitemap de aportou.com.br no Search Console.
