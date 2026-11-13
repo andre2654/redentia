@@ -22,12 +22,16 @@ const tamanhos = computed(() => ({
   '--cha-queda': String(linha.value?.comprimentoQueda ?? 0),
 }))
 const id = useId()
+// O ícone que não carregou (ativo sem ícone no serviço): o herói fica com a
+// letra, como o NuAssetLogo. Guarda o endereço, não um sim/não: a folha troca
+// de ativo com o herói montado (13/11/2026).
+const logoFalhou = ref<string | null>(null)
 </script>
 
 <template>
   <div class="cha" :class="{ 'cha--seguindo': seguindo, 'cha--sobe': sobe }" :style="tamanhos" aria-hidden="true">
     <div class="cha__topo">
-      <img v-if="dados?.logo" :src="dados.logo" alt="" class="cha__logo" width="30" height="30">
+      <img v-if="dados?.logo && dados.logo !== logoFalhou" :src="dados.logo" alt="" class="cha__logo" width="30" height="30" @error="logoFalhou = dados?.logo ?? null">
       <span v-else class="cha__logo cha__logo--letra">{{ (dados?.ticker ?? '').slice(0, 1) }}</span>
       <div class="cha__nome">
         <b>{{ dados?.ticker ?? '' }}</b>

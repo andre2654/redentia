@@ -29,7 +29,11 @@ export interface DadosMaiorAlta {
 }
 
 const BASE = '/api/backend'
-const LOGO_RE = /^[A-Z]{4}\d{1,2}$/
+// A regra estrita é a do endpoint /news/ticker (services/acao.ts), que recusa
+// ticker com dígito no meio: B3SA3 e M1TA34 ficam sem a manchete do dia. O
+// ícone não passa por ela (13/11/2026): vale a forma de ticker da B3 do
+// utils/tickerClass.ts, a mesma decisão do NuAssetLogo.
+const NEWS_STRICT_RE = /^[A-Z]{4}\d{1,2}$/
 const DIA_MS = 86_400_000
 
 // "MAGAZ LUIZA ON NM" (nome da B3 em campo fixo) vira "Magaz Luiza"
@@ -44,7 +48,7 @@ export function useCadastroDados() {
     const [cot, precos, noticias] = await Promise.allSettled([
       marketFetchQuote(ticker),
       acaoFetchPrices(BASE, ticker, '1mo'),
-      LOGO_RE.test(ticker) ? acaoFetchNewsByTicker(BASE, ticker) : Promise.resolve({ data: [] }),
+      NEWS_STRICT_RE.test(ticker) ? acaoFetchNewsByTicker(BASE, ticker) : Promise.resolve({ data: [] }),
     ])
     const q = cot.status === 'fulfilled' ? cot.value?.data : null
     const serie = precos.status === 'fulfilled'
@@ -72,7 +76,7 @@ export function useCadastroDados() {
       .sort((a, b) => peso(a) - peso(b) || quando(b) - quando(a))[0]
     return {
       ticker,
-      logo: LOGO_RE.test(ticker) ? `https://icons.brapi.dev/icons/${ticker}.svg` : null,
+      logo: symbolShape(ticker) === 'b3' ? `https://icons.brapi.dev/icons/${ticker}.svg` : null,
       preco: typeof q?.market_price === 'number' ? q.market_price : (serie[serie.length - 1] ?? null),
       variacao: typeof q?.change_percent === 'number' ? q.change_percent : null,
       serie,

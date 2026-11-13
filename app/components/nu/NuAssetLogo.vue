@@ -22,8 +22,17 @@ const FONT: Record<number, number> = { 40: 15, 48: 17, 52: 19 }
 const fontPx = computed(() => FONT[props.size ?? 40] ?? Math.round((props.size ?? 40) * 0.36))
 const src = computed(() => `https://icons.brapi.dev/icons/${encodeURIComponent(props.ticker.toUpperCase())}.svg`)
 // Tickers não-B3 (Tesouro, CDB, cripto, saldo) não têm ícone na Brapi — vai
-// direto pro tile de letra sem tentar request fadado a 404.
-const eligible = computed(() => /^[A-Z]{4}\d{1,2}$/.test(props.ticker.toUpperCase()))
+// direto pro tile de letra sem tentar request fadado a 404. Quem tenta é quem
+// tem forma de ticker da B3, pela regra única do utils/tickerClass.ts: uma
+// letra, três letras ou dígitos e um ou dois dígitos no fim. Até 13/11/2026 a
+// regra daqui pedia quatro LETRAS antes do número e deixava só com a letra
+// quem tem dígito no meio e tem ícone no serviço: B3SA3 (a própria B3) e BDRs
+// como M1TA34.
+// Ícone que não existe cai no `@error` e volta pro tile, inclusive no <img>
+// que vem pronto do servidor e falha antes da hidratação: como o `src` é
+// dinâmico, o Vue o regrava ao hidratar, o pedido se repete e o erro chega com
+// o ouvinte já ligado (conferido no /rankings em 13/11/2026).
+const eligible = computed(() => symbolShape(props.ticker) === 'b3')
 const showImg = computed(() => eligible.value && !failed.value)
 </script>
 
