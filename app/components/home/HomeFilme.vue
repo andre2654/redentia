@@ -62,11 +62,15 @@
 // (data-chat-barra="fora") e a barra desce e some (ChatBarra); quando a página
 // rola e o filme sobe acima dela, ela volta.
 //
-// A SETA DE ROLAR fica no lugar dela, no canto de baixo à esquerda (o dono: "e
-// mostrar um símbolo no canto inferior que a pessoa pode rolar para baixo").
-// É o canto oposto aos controles, e nenhum texto do filme passa por ele nos
-// dois formatos. Ela desce e volta três vezes e para (nada de animação sem
-// fim); o toque leva ao título, e ela some junto com a barra que volta.
+// A SETA DE ROLAR fica no lugar dela, no centro de baixo (o dono: "e mostrar
+// um símbolo no canto inferior que a pessoa pode rolar para baixo"; e, vendo a
+// primeira, no canto esquerdo: "queria que fosse centralizado esse ícone e mais
+// bonito"). É uma cápsula de vidro, como os controles, com duas divisas; ela
+// desce e volta três vezes e para (nada de animação sem fim). O toque leva ao
+// título; ela some junto com a barra que volta. O centro de baixo é onde o
+// filme às vezes escreve (a letra miúda do 16:9 na cena do número e no cartão
+// final, e as telas do app no 9:16): nesses trechos, medidos quadro a quadro,
+// a seta sai de cena e volta depois (TEXTO_NO_PE).
 //
 // OS ARQUIVOS ficam em public/video: HEVC primeiro (iPhone, Mac e Chrome
 // tocam, e pesa a metade) e H.264 de reserva. Os dois têm um quadro-chave em
@@ -108,6 +112,19 @@ let aVista = true
 let olho: IntersectionObserver | null = null
 /** o aviso de cookies fica em cima do palco: aberto ou fechado, muda onde o palco começa */
 const { aberto: avisoAberto } = useConsent()
+
+/** os trechos do filme (em segundos) em que há texto no centro de baixo, onde a seta fica: medidos quadro a quadro, quatro
+ *  por segundo, na área dela (13/11/2026). Filme novo: medir de novo (docs/aportou/decisoes.md, "O filme no herói") */
+const TEXTO_NO_PE: Record<'deitado' | 'emPe', Array<[number, number]>> = {
+  // o celular com o chat (86%), a letra miúda da cena do número, a notificação do BB, a barra do app, o cartão final
+  deitado: [[11.5, 13.6], [19, 23.4], [26, 27.8], [41.9, 42.6], [48.9, 60]],
+  // no 9:16 as telas do app descem até o pé: a barra de abas, o 86%, o gráfico, o BB, o "Aportou", os R$ 102 mil, o "só lê"
+  emPe: [[5, 9.3], [11.5, 13.6], [19, 23.4], [26, 27.8], [30.5, 31.6], [35.5, 37.3], [40, 41.8]],
+}
+/** o tempo chega a cada quarto de segundo: a seta sai um pouco antes do texto entrar */
+const ANTES_DO_TEXTO = 0.35
+/** o filme está escrevendo onde a seta fica? */
+const textoNoPe = ref(false)
 
 /* ————— a barra do chat sai da frente do filme ————— */
 /** a barra do chat ficaria em cima do filme? Na chegada, sim (o filme enche a dobra); a página confere ao montar */
@@ -277,6 +294,9 @@ function aoAndar() {
   const v = video.value
   if (!v) return
   if (v.duration > 0) andamento.value = Math.min(1, v.currentTime / v.duration)
+  const trechos = TEXTO_NO_PE[v.currentSrc.includes('9x16') ? 'emPe' : 'deitado']
+  const t = v.currentTime
+  textoNoPe.value = trechos.some(([de, ate]) => t >= de - ANTES_DO_TEXTO && t <= ate)
   if (daCapa && !v.paused && v.currentTime >= COMECA_EM - 0.05) { daCapa = false; noAr.value = true; ligarLaterais() }
 }
 function aoMudarDeAba() { aVista = !document.hidden && aVistaNaTela; acertar() }
@@ -355,12 +375,15 @@ onBeforeUnmount(() => {
       </button>
     </div>
 
-    <!-- a seta de rolar: no canto de baixo à esquerda, enquanto o filme enche a dobra -->
+    <!-- a seta de rolar: no centro de baixo, enquanto o filme enche a dobra (e sai de cena quando o filme escreve ali) -->
     <button
-      type="button" class="hfi__botao hfi__descer" :class="{ 'hfi__descer--fora': !cobre }"
+      type="button" class="hfi__descer" :class="{ 'hfi__descer--fora': !cobre, 'hfi__descer--texto': textoNoPe }"
       :tabindex="cobre ? 0 : -1" :aria-hidden="cobre ? undefined : 'true'" aria-label="Descer para o resto da página" @click="emit('descer')"
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14" /><path d="m6 13 6 6 6-6" /></svg>
+      <svg width="20" height="28" viewBox="0 0 20 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path class="hfi__divisa" d="m4 6 6 6 6-6" />
+        <path d="m4 15 6 6 6-6" />
+      </svg>
     </button>
   </div>
 </template>
@@ -417,18 +440,33 @@ html[data-ck='open'] .hfi { --hfi-aviso: 53px; }
 }
 .hfi__botao:hover { background: color-mix(in srgb, var(--nu-ink) 78%, transparent); }
 .hfi__botao:active { transform: scale(.95); }
-.hfi__botao:focus-visible, .hfi__assistir:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 2px; }
+.hfi__botao:focus-visible, .hfi__assistir:focus-visible, .hfi__descer:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 2px; }
 .hfi__botao--som { padding-inline: 13px 16px; }
 
-/* a seta de rolar, no canto de baixo à esquerda (acima do fio do andamento). Some quando a página rola */
+/* a seta de rolar: uma cápsula de vidro no centro de baixo (acima do fio do andamento), com duas divisas, a de cima mais
+   apagada, apontando para baixo. Some quando a página rola (--fora) e enquanto o filme escreve bem ali (--texto) */
 .hfi__descer {
-  position: absolute; left: clamp(12px, 2vw, 28px); bottom: clamp(14px, 1.8vw, 24px); padding: 0;
+  position: absolute; left: 50%; bottom: clamp(14px, 1.8vw, 24px);
+  display: grid; place-items: center; width: 38px; height: 56px; padding: 0;
+  border: 0; border-radius: var(--nu-r-pill); color: var(--nu-white); cursor: pointer;
+  background: color-mix(in srgb, var(--nu-ink) 44%, transparent); box-shadow: inset 0 0 0 1px var(--nu-white-18);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4);
+  transform: translateX(-50%);
   transition: opacity var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida), background-color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.hfi__descer--fora { opacity: 0; transform: translateY(8px); pointer-events: none; }
-/* depois que a página assenta, a seta desce e volta três vezes, e para */
-.hfi__descer svg { animation: hfi-desce calc(var(--nu-dur-entrada) * 2) var(--nu-ease-troca) calc(var(--nu-dur-entrada) * 2) 3 both; }
-@keyframes hfi-desce { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(5px); } }
+/* o alvo de toque passa de 44 px */
+.hfi__descer::before { content: ''; position: absolute; inset: -4px; }
+.hfi__descer:hover { background: color-mix(in srgb, var(--nu-ink) 72%, transparent); }
+.hfi__descer:active { transform: translateX(-50%) scale(.95); }
+.hfi__descer svg { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+.hfi__descer:hover svg { transform: translateY(2px); }
+.hfi__divisa { opacity: .45; }
+.hfi__descer--fora { opacity: 0; transform: translate(-50%, 8px); pointer-events: none; }
+/* o filme escreve onde a seta fica: ela sai de cena (para quem chegou nela pelo teclado, fica) */
+.hfi__descer--texto:not(:focus-visible) { opacity: 0; pointer-events: none; }
+/* depois que a página assenta, as divisas descem e voltam três vezes, e param */
+.hfi__descer svg { animation: hfi-desce calc(var(--nu-dur-entrada) * 2) var(--nu-ease-troca) calc(var(--nu-dur-entrada) * 2) 3 backwards; }
+@keyframes hfi-desce { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(4px); } }
 .hfi__botao--som[aria-pressed='true'] { padding-inline: 13px; }
 
 /* a capa com o botão, para quem o filme não tocou sozinho */
@@ -455,7 +493,7 @@ html[data-ck='open'] .hfi { --hfi-aviso: 53px; }
   .hfi__assistir { margin-top: 60%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hfi__video, .hfi__capa, .hfi__andamento, .hfi__andamento span, .hfi__botao, .hfi__assistir { transition: none; }
+  .hfi__video, .hfi__capa, .hfi__andamento, .hfi__andamento span, .hfi__botao, .hfi__assistir, .hfi__descer, .hfi__descer svg { transition: none; }
   .hfi__descer svg { animation: none; }
 }
 </style>

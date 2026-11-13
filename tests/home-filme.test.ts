@@ -119,12 +119,16 @@ test('a barra do chat sai da frente do filme, e a seta de rolar fica no lugar de
   const barra = ler('app/components/chat/ChatBarra.vue')
   const global = barra.slice(barra.lastIndexOf('<style>'))
   assert.match(global, /html\[data-chat-barra='fora'\] \.cba:not\(:focus-within\) \{ opacity: 0; transform: translate\(-50%, calc\(100% \+ 24px\)\); pointer-events: none; \}/)
-  // a seta: no canto de baixo à esquerda, some quando a barra volta, e leva ao título
-  assert.match(molde, /class="hfi__botao hfi__descer" :class="\{ 'hfi__descer--fora': !cobre \}"/)
+  // a seta: no centro de baixo, some quando a barra volta e enquanto o filme escreve ali, e leva ao título
+  assert.match(molde, /class="hfi__descer" :class="\{ 'hfi__descer--fora': !cobre, 'hfi__descer--texto': textoNoPe \}"/)
   assert.match(molde, /aria-label="Descer para o resto da página" @click="emit\('descer'\)"/)
-  assert.match(estilo, /\.hfi__descer \{\n  position: absolute; left: clamp\(12px, 2vw, 28px\); bottom: clamp\(14px, 1\.8vw, 24px\);/)
+  assert.match(estilo, /\.hfi__descer \{\n  position: absolute; left: 50%; bottom: clamp\(14px, 1\.8vw, 24px\);/)
+  assert.match(estilo, /\.hfi__descer--texto:not\(:focus-visible\) \{ opacity: 0; pointer-events: none; \}/)
+  // os trechos em que o filme escreve no centro de baixo, por formato (a letra miúda do 16:9 entre eles)
+  assert.match(filme, /deitado: \[\[11\.5, 13\.6\], \[19, 23\.4\], \[26, 27\.8\], \[41\.9, 42\.6\], \[48\.9, 60\]\],/)
+  assert.match(filme, /const trechos = TEXTO_NO_PE\[v\.currentSrc\.includes\('9x16'\) \? 'emPe' : 'deitado'\]/)
   // ela desce e volta três vezes e para: nada de animação sem fim
-  assert.match(estilo, /\.hfi__descer svg \{ animation: hfi-desce [^;]* 3 both; \}/)
+  assert.match(estilo, /\.hfi__descer svg \{ animation: hfi-desce [^;]* 3 backwards; \}/)
   assert.doesNotMatch(estilo, /hfi-desce[^;]*infinite/)
   // o herói leva a página ao texto e passa o foco ao título
   const heroi = ler('app/components/home/HomeHeroVisitante.vue')
