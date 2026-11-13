@@ -186,7 +186,7 @@ const linhaCdi = computed(() => (series.value ? semanal(serieDesde(series.value.
 // a conta da legenda é da série diária inteira (o primeiro e o último ponto são os mesmos)
 const twr = computed(() => variacaoDoIndice(linhaDiaria.value))
 const bem = computed(() => (series.value ? contraOCdi(series.value, desde.value, 'em 12 meses') : null))
-/* o convite no fim da linha (14/11/2026; o dono: "deixe um desenho no final para o cara clicar e ir para a
+/* o convite no fim da linha (12/11/2026; o dono: "deixe um desenho no final para o cara clicar e ir para a
    carteira para ver mais"): depois do ponto de hoje, um leque esquemático (sem dado: a home não chama o motor)
    e a seta redonda; o cartão inteiro já leva à /carteira, onde o gráfico abre o futuro de verdade.
    A altura em que a linha parou sai da mesma conta do AtivoGrafico (caminhosDoGrafico). */

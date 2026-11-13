@@ -19,7 +19,7 @@
  *                   não muda a resposta)
  *  - 'bloqueado'  → 402 assinatura_necessaria (o gate do servidor; a página cuida)
  *
- * UM PEDIDO POR PÁGINA (13/11/2026): a /carteira nova mostra o futuro em dois
+ * UM PEDIDO POR PÁGINA (12/11/2026): a /carteira nova mostra o futuro em dois
  * lugares, o gráfico do topo (CarteiraHorizonte) e a seção dos 5 anos
  * (CarteiraFuturo). A página provê o futuro (proverCarteiraFuturo) e os dois
  * leem o mesmo; quem usa `useCarteiraFuturo` fora dela (a tela antiga) segue
