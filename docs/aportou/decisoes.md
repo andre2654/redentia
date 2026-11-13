@@ -93,21 +93,23 @@ O dono, com o filme de lançamento na mão (`aportou-lancamento-v3`, 52 segundos
 - **Para sozinho fora da tela** e com a aba escondida, e volta de onde parou.
 - **É a segunda exceção à regra do custo** ("nada de animação infinita", `contrato.md`, seção 5), depois da esteira do rodapé: um filme que repete. Por isso ele para fora da tela e não toca para quem pediu menos movimento.
 
-**Os arquivos** (`public/video/aportou-lancamento-*`): para cada formato, HEVC primeiro (iPhone, Mac e Chrome tocam; pesa a metade) e H.264 de reserva, com o som em AAC, o índice no começo do arquivo e um quadro-chave em 1,5 s. O filme é caro de comprimir (céu com grão e milhares de linhas finas), e o alívio leve do grão (`hqdn3d`) é o que o faz caber:
+**Os arquivos** (`public/video/aportou-lancamento-*`, 22 MB): para cada formato, HEVC primeiro (iPhone, Mac e Chrome tocam; pesa pouco mais da metade) e H.264 de reserva, com o som em AAC, o índice no começo do arquivo e um quadro-chave em 1,5 s. O filme é caro de comprimir: céu com grão e milhares de linhas finas. O que o faz caber é tirar o grão (`hqdn3d=2:2:8:8`): no tamanho do site ele não faz falta, e as letras miúdas, as linhas e o texto das telas seguem nítidos (conferido lado a lado com o original).
+
+Recomprimido em 13/11/2026 (o dono: "tente comprimir mais"): de 36 para 22 MB. Quem vê no Mac ou no PC baixa 4,8 MB, eram 9,1; no celular, 3,1 MB, eram 5,4. A nota de qualidade (VMAF contra o original, de 0 a 100) caiu de 86,6 para 83,9 no 16:9. A diferença que se nota começa em uns 6 pontos, e quase tudo o que caiu é o grão que saiu. O AV1 foi testado e não compensou: no mesmo tamanho do HEVC, tinha trechos piores (nota mínima de 41 contra 52).
 
 | Arquivo | Tamanho | Receita (ffmpeg) |
 |---|---|---|
-| `…-16x9.hevc.mp4` (1920×1080) | 8,9 MB | `-vf hqdn3d=1:1:4:4 -c:v libx265 -preset medium -crf 30 -tag:v hvc1 -g 60 -force_key_frames 1.5 -x265-params aq-mode=3` |
-| `…-16x9.mp4` (1920×1080) | 13,3 MB | `-vf hqdn3d=1:1:4:4 -c:v libx264 -preset slow -b:v 2000k -maxrate 3200k -bufsize 6400k` em duas passadas, `-profile:v high -level 4.1 -g 60 -force_key_frames 1.5` |
-| `…-9x16.hevc.mp4` (864×1536) | 5,3 MB | como o primeiro, com `scale=864:1536:flags=lanczos` antes do `hqdn3d` |
-| `…-9x16.mp4` (720×1280) | 8,9 MB | como o segundo, com `scale=720:1280:flags=lanczos`, `-b:v 1300k -maxrate 2200k -bufsize 4400k -level 4.0` |
+| `…-16x9.hevc.mp4` (1920×1080) | 4,8 MB | `-vf hqdn3d=2:2:8:8 -c:v libx265 -preset slow -crf 33 -tag:v hvc1 -x265-params aq-mode=3:psy-rd=0.8` |
+| `…-16x9.mp4` (1920×1080) | 8,3 MB | `-vf hqdn3d=2:2:8:8 -c:v libx264 -preset slow -b:v 1200k -maxrate 2000k -bufsize 4000k` em duas passadas, `-profile:v high -level 4.1` |
+| `…-9x16.hevc.mp4` (864×1536) | 3,1 MB | como o primeiro, com `scale=864:1536:flags=lanczos` antes do `hqdn3d` |
+| `…-9x16.mp4` (720×1280) | 5,7 MB | como o segundo, com `scale=720:1280:flags=lanczos`, `-b:v 800k -maxrate 1400k -bufsize 2800k -level 4.0` |
 | `…-16x9.webp`, `…-9x16.webp` | 44 e 32 KB | o quadro 45 (1,5 s) do original, WebP em qualidade 80 |
 
-Todos com `-pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 128k -ac 2`. Os originais (53 e 62 MB) ficam com o dono, fora do repositório. Filme novo: mesma receita, mesmos nomes; se o quadro de abertura mudar, mude `COMECA_EM` no `HomeFilme.vue` e o quadro-chave.
+Todos com `-pix_fmt yuv420p -movflags +faststart -g 60 -force_key_frames 1.5 -c:a aac_at -b:a 96k -ac 2` (o AAC da Apple; fora do Mac, `-c:a aac -b:a 112k`). Os originais (53 e 62 MB) ficam com o dono, fora do repositório. Filme novo: mesma receita, mesmos nomes; se o quadro de abertura mudar, mude `COMECA_EM` no `HomeFilme.vue` e o quadro-chave, e meça de novo os trechos em que o filme escreve no centro de baixo (`TEXTO_NO_PE`).
 
 **Em aberto com o dono:**
 
-- **Os quatro vídeos somam 36 MB dentro do repositório**, num commit só deles (dá para tirar sem mexer no resto). Hospedar fora (um CDN de vídeo) é a alternativa; aí só muda `BASE` no `HomeFilme.vue`.
+- **Os quatro vídeos somam 22 MB dentro do repositório**, num commit só deles (dá para tirar sem mexer no resto). Hospedar fora (um CDN de vídeo) é a alternativa; aí só muda `BASE` no `HomeFilme.vue`.
 - **Não foi testado no Safari** (aqui só há o Chrome). O código já trata o caso conhecido dele (o tempo marcado antes dos metadados), mas falta ver num iPhone e num Mac de verdade.
 - **Legenda.** Se o som do filme tem narração, o vídeo precisa de legenda (`<track>`) para quem não ouve.
 
