@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// O horizonte da carteira (13/11/2026; o dono, com o esboço do app na mão: "nos
+// O horizonte da carteira (12/11/2026; o dono, com o esboço do app na mão: "nos
 // gráficos da carteira tem já conectada a previsão da carteira, daí se eu dar
 // drag vai dando zoom à medida que vou indo para a direita, traga isso para o
 // site também, achei muito foda"). O gráfico do topo da /carteira (a
@@ -19,7 +19,7 @@
 //    mais provável tracejado. Em repouso cabem os 2.000; com o horizonte
 //    aberto, os primeiros da ordem de nascimento (quantosCaminhosCabem), mais
 //    fortes, para o leque pesar o mesmo;
-//  - A ABERTURA (14/11; o dono: "quando abrir a carteira quero ver as linhas
+//  - A ABERTURA (12/11; o dono: "quando abrir a carteira quero ver as linhas
 //    sendo formadas, primeiro 1, depois outra e assim por diante, começando
 //    lento e indo mais rápido até 2k"): toda vez que a carteira abre, os
 //    caminhos nascem um a um em ordem aleatória, de hoje para a beira, com o
@@ -28,13 +28,17 @@
 //    no fim entram centenas por quadro. Só depois do último chegam as faixas, o
 //    mais provável e o convite. O ponteiro que entra no futuro no meio da
 //    abertura a termina na hora;
-//  - a leitura do futuro (14/11; o dono, com o hover do leque grande na mão:
+//  - a leitura do futuro (12/11; o dono, com o hover do leque grande na mão:
 //    "no zoom seria legal ter uma visão tipo essa"): no mês sob o ponteiro
 //    acendem os três caminhos REAIS que ali estão no p90, no p50 e no p10
 //    (caminhosDoMes, a regra do leque da seção dos 5 anos), em verde, branco
 //    e rosa, e o resto do leque apaga um pouco; ao lado da mira, o valor de
 //    cada um ("se for bem", "o mais provável", "se for mal") e, no alto, o
 //    mês. Sem os caminhos, os três valores são os quantis do motor;
+//  - a faixa da leitura (12/11): os 48 px do alto do desenho são do mês e, com
+//    o horizonte aberto pelo botão, de "Voltar para hoje". O leque, os pontos
+//    e as etiquetas ficam dela para baixo (o botão, o mês e a etiqueta de cima
+//    ficavam um em cima do outro, e o ponto de cima sumia atrás do mês);
 //  - em repouso, o convite: o mais provável no fim do horizonte e o botão
 //    "Arraste para o futuro", que também abre e fecha o horizonte no clique e
 //    no teclado (aí as setas andam mês a mês e Esc volta).
@@ -119,6 +123,14 @@ function mirar(novo: number) {
 }
 
 /* ————— a geometria à vista ————— */
+/** o desenho em px (a tela o mede): a faixa da leitura, as etiquetas que se afastam e o lado da mira em que cabem */
+const alturaDoDesenho = ref(0)
+const larguraDoDesenho = ref(0)
+/** a faixa do alto do desenho que é da leitura (px): a etiqueta do mês e, com o horizonte aberto, o botão de voltar.
+ *  O teto do leque fica dela para baixo (o ponto do caminho de cima sumia atrás da etiqueta) e as etiquetas dos três
+ *  caminhos começam depois dela */
+const FAIXA_DA_LEITURA = 48
+const TOPO_DAS_ETIQUETAS = 54
 const aVista = computed(() => futuroAVista(z.value, passado.value, horizonte.value))
 /** onde fica hoje na largura do desenho: 1 sem o futuro (o gráfico de antes), a conta do horizonte com ele */
 const hoje = computed(() => 1 + (ondeFicaHoje(z.value, passado.value, horizonte.value) - 1) * presenca.value)
@@ -128,7 +140,8 @@ const dominioDoPassado = computed(() => {
 })
 const dominio = computed(() => {
   const p = dominioDoPassado.value
-  return temFuturo.value ? dominioDoHorizonte(p, serie.value, hojeIndice.value, base.value, aVista.value, z.value) : p
+  const faixa = alturaDoDesenho.value > 0 ? FAIXA_DA_LEITURA / alturaDoDesenho.value : 0
+  return temFuturo.value ? dominioDoHorizonte(p, serie.value, hojeIndice.value, base.value, aVista.value, z.value, faixa) : p
 })
 const emIndice = (v: number) => (hojeIndice.value * v) / base.value
 /** onde um valor do leque (R$) cai na altura do desenho, de 0 (em cima) a 1 */
@@ -241,6 +254,7 @@ function medirTela() {
   ctx?.setTransform(dpr, 0, 0, dpr, 0, 0)
   alturaDoDesenho.value = altura
   larguraDoDesenho.value = largura
+  medirBotao()
   const estilo = getComputedStyle(el)
   corDosFios = rgbDaCor(estilo.getPropertyValue('--nu-blue-soft')) ?? corDosFios
   corDoMeio = rgbDaCor(estilo.getPropertyValue('--nu-blue-on-dark')) ?? corDoMeio
@@ -260,7 +274,7 @@ function desenhar(tempo?: number) {
   ctx.clearRect(0, 0, largura, altura)
   if (!temFuturo.value) return
   // quem redesenha no meio da abertura (a tela que mediu o tamanho, a janela que mudou) desenha o que já nasceu,
-  // e nada antes do primeiro: o leque inteiro aparecia por um instante antes de recomeçar do zero (14/11, o dono)
+  // e nada antes do primeiro: o leque inteiro aparecia por um instante antes de recomeçar do zero (12/11, o dono)
   const t = tempo ?? (contados.value != null ? (comecouEm ? performance.now() - comecouEm : 0) : undefined)
   const s = serie.value
   const P = passado.value
@@ -377,6 +391,16 @@ const ponteiro = ref<number | null>(null)
 const mesDoTeclado = ref<number | null>(null)
 /** o horizonte aberto pelo botão ou pelo teclado: o zoom fica em 1 até fechar */
 const aberto = ref(false)
+/** o que o botão ocupa da faixa da leitura (px): com o horizonte aberto, "Voltar para hoje" vai para o canto de cima
+ *  do desenho e a etiqueta do mês para antes dele. No celular o convite fica embaixo do eixo: a faixa é toda do mês */
+const botao = ref<HTMLElement | null>(null)
+const reservaDoBotao = ref(0)
+function medirBotao() {
+  const b = botao.value
+  const naFaixa = !!b && aberto.value && getComputedStyle(b.parentElement!).position === 'absolute'
+  reservaDoBotao.value = naFaixa ? b!.offsetWidth + 8 : 0
+}
+watch(aberto, medirBotao, { flush: 'post' })
 const mes = computed<number | null>(() => {
   if (!temFuturo.value) return null
   if (ponteiro.value != null) return mesSobOPonteiro(ponteiro.value, z.value, passado.value, horizonte.value)
@@ -402,9 +426,6 @@ const PAPEIS: { papel: Papel; nome: string; quantil: 'p90' | 'p50' | 'p10' }[] =
   { papel: 'meio', nome: 'o mais provável', quantil: 'p50' },
   { papel: 'pessimista', nome: 'se for mal', quantil: 'p10' },
 ]
-/** o desenho em px (a tela o mede): os três rótulos se afastam em px e ficam do lado da mira em que cabem */
-const alturaDoDesenho = ref(0)
-const larguraDoDesenho = ref(0)
 const leitura = computed(() => {
   const m = mes.value
   const q = m != null ? quantisNoMes(serie.value, m) : null
@@ -416,8 +437,6 @@ const leitura = computed(() => {
     const v = trio ? noCaminho(trio[r.papel], m) : q[r.quantil]
     return { ...r, i: trio ? trio[r.papel] : -1, v, y: alturaDe(v), texto: props.mascarado ? pctAtivo(pctSobreHoje(v)) : brlDoLeque(v), abaixo: v < base.value }
   })
-  const H = alturaDoDesenho.value
-  const tops = H > 0 ? afastarRotulos(tres.map((r) => r.y * H), 30, 46, H - 16) : tres.map((r) => r.y * H)
   // de que lado da mira os rótulos ficam: à esquerda, dentro do futuro, quando cabem ali; senão à direita; sem
   // lugar em nenhum, do lado maior (perto de hoje eles caíam em cima da linha do passado)
   const x = ondeFicaOMes(m, z.value, passado.value, horizonte.value)
@@ -425,21 +444,29 @@ const leitura = computed(() => {
   const cabe = W < 420 ? 96 : 210
   const esquerda = (x - hoje.value) * W
   const direita = (1 - x) * W
+  const naDireita = esquerda < cabe && (direita >= cabe || direita > esquerda)
+  // sem lugar para o rótulo inteiro de nenhum dos lados (o começo do arrasto, com o futuro ainda estreito), fica só o
+  // valor, como no celular: o rótulo inteiro em R$ passava da beira do cartão
+  const curto = esquerda < cabe && direita < cabe
+  // os rótulos se afastam em px, da faixa da leitura para baixo; colados em hoje (o primeiro mês à direita da mira,
+  // ou o rótulo da esquerda que volta até a linha), param acima da palavra "hoje", que fica no pé da linha
+  const H = alturaDoDesenho.value
+  const sobreHoje = naDireita ? esquerda < 26 : esquerda - cabe < 36
+  const tops = H > 0 ? afastarRotulos(tres.map((r) => r.y * H), 30, TOPO_DAS_ETIQUETAS, H - (sobreHoje ? 34 : 16)) : tres.map((r) => r.y * H)
+  // a etiqueta do mês anda na faixa presa à mira pela mesma fração da largura (na ponta esquerda encosta pela
+  // esquerda, na direita pela direita, sem pular e sem sair da caixa); com o botão na faixa, ela para antes dele
+  const livre = Math.max(1, W - reservaDoBotao.value)
   return {
     x: x * 100,
-    naDireita: esquerda < cabe && (direita >= cabe || direita > esquerda),
+    naFaixa: W > 0 ? Math.min(1, Math.max(0, (x * W) / livre)) : x,
+    naDireita,
+    curto,
     tres: tres.map((r, k) => ({ ...r, topo: tops[k]! })),
     quando: `${mesDoLeque(props.futuro!.as_of, Math.max(1, Math.round(m)))} · ${daquiAQuanto(m)}`,
     falada: `${mesDoLeque(props.futuro!.as_of, Math.max(1, Math.round(m)))}, ${daquiAQuanto(m)}: o mais provável é ${props.mascarado ? pctAtivo(p) : `${brlDoLeque(q.p50)} (${pctAtivo(p)})`}; `
       + `8 em cada 10 caminhos ficam entre ${props.mascarado ? pctAtivo(pctSobreHoje(q.p10)) : brlDoLeque(q.p10)} e ${props.mascarado ? pctAtivo(pctSobreHoje(q.p90)) : brlDoLeque(q.p90)}, em dinheiro de hoje.`,
   }
 })
-/** a dica presa à mira sem sair da caixa (a mesma regra do AtivoGrafico) */
-function ancora(x: number): Record<string, string> {
-  if (x < 25) return { left: `${x}%`, '--cho-dica-x': '-8px' }
-  if (x > 75) return { left: `${x}%`, '--cho-dica-x': 'calc(-100% + 8px)' }
-  return { left: `${x}%`, '--cho-dica-x': '-50%' }
-}
 
 // a janela mudou (o zoom, o período, o tamanho) ou a leitura andou: a tela acompanha, com os três caminhos da
 // leitura acesos. Durante a abertura, o próprio passo redesenha.
@@ -470,7 +497,7 @@ const inicioDoEixo = computed(() => {
 const fimDoEixo = computed(() => (props.futuro ? mesDoLeque(props.futuro.as_of, Math.max(1, Math.round(aVista.value))) : ''))
 const noFuturo = computed(() => z.value > 0.02)
 /**
- * Quem hospeda o gráfico acompanha (14/11/2026; o dono: "quando estiver colocando no futuro altere esse
+ * Quem hospeda o gráfico acompanha (12/11/2026; o dono: "quando estiver colocando no futuro altere esse
  * texto Você em 12 meses, e pode tirar esses textos para o gráfico ir ocupando mais espaço").
  */
 const ateOAno = computed(() => (noFuturo.value ? (fimDoEixo.value.split('/')[1] ?? null) : null))
@@ -633,13 +660,15 @@ const vars = computed(() => ({
           <span v-if="fim && fim.x <= 100.5" class="cho__fim" :style="{ left: `${fim.x}%`, top: `${fim.y}%` }" />
           <template v-if="leitura">
             <span class="cho__mira" :style="{ left: `${leitura.x}%` }" />
-            <!-- o mês, no alto da mira -->
-            <span class="cho__dica" :style="ancora(leitura.x)">{{ leitura.quando }}</span>
-            <!-- os três caminhos acesos: o ponto de cada um na mira e o valor ao lado (do lado em que cabe) -->
+            <!-- o mês, na faixa de cima: anda preso à mira e, com o horizonte aberto, para antes do botão de voltar -->
+            <span class="cho__faixa" :style="{ right: `${reservaDoBotao}px`, '--cho-x': leitura.naFaixa.toFixed(4) }"><span class="cho__dica">{{ leitura.quando }}</span></span>
+            <!-- os três caminhos acesos: o ponto de cada um na mira e o valor ao lado (do lado em que cabe). No começo do
+                 arrasto o domínio ainda é o do passado e um caminho pode passar do teto ou do chão: o ponto fica na beira,
+                 dentro da caixa e fora da faixa da leitura -->
             <template v-for="r in leitura.tres" :key="r.papel">
-              <span class="cho__ponto" :class="[`cho__ponto--${r.papel}`, { 'cho__ponto--abaixo': r.abaixo }]" :style="{ left: `${leitura.x}%`, top: `${r.y * 100}%` }" />
+              <span class="cho__ponto" :class="[`cho__ponto--${r.papel}`, { 'cho__ponto--abaixo': r.abaixo }]" :style="{ left: `${leitura.x}%`, top: `clamp(${FAIXA_DA_LEITURA}px, ${(r.y * 100).toFixed(3)}%, calc(100% - 6px))` }" />
               <span
-                class="cho__rotulo" :class="[`cho__rotulo--${r.papel}`, { 'cho__rotulo--abaixo': r.abaixo, 'cho__rotulo--direita': leitura.naDireita }]"
+                class="cho__rotulo" :class="[`cho__rotulo--${r.papel}`, { 'cho__rotulo--abaixo': r.abaixo, 'cho__rotulo--direita': leitura.naDireita, 'cho__rotulo--curto': leitura.curto }]"
                 :style="{ left: `${leitura.x}%`, top: `${r.topo}px` }"
               ><b>{{ r.texto }}</b><span>{{ r.nome }}</span></span>
             </template>
@@ -655,18 +684,19 @@ const vars = computed(() => ({
         <template v-if="contados != null"><span>futuros testados</span><b aria-hidden="true">{{ nfContador.format(contados) }}</b><span class="nu-sr">Testando a carteira em {{ nfContador.format(futuro?.paths ?? 0) }} futuros.</span></template>
         <template v-else><span>mais provável em {{ fim.ano }}</span><b>{{ fim.valor }}</b></template>
       </p>
-      <button type="button" class="cho__botao" :aria-pressed="aberto" @click="alternar">
+      <button ref="botao" type="button" class="cho__botao" :aria-pressed="aberto" @click="alternar">
         <template v-if="aberto">Voltar para hoje</template>
         <template v-else>Arraste para o futuro</template>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </button>
     </div>
 
-    <!-- as pontas do eixo e, entre elas, o que o número do futuro é (o aviso do motor) -->
-    <p v-if="temFuturo" class="cho__eixo" aria-hidden="true">
-      <span>{{ inicioDoEixo }}</span>
+    <!-- as pontas do eixo e, entre elas, o que o número do futuro é (o aviso do motor). As datas são do desenho; o
+         aviso é de todo mundo: o leitor de tela ouve o número do convite e, em seguida, o aviso -->
+    <p v-if="temFuturo" class="cho__eixo">
+      <span aria-hidden="true">{{ inicioDoEixo }}</span>
       <span class="cho__eixo-nota">{{ futuro?.disclaimer }}</span>
-      <span>{{ fimDoEixo }}</span>
+      <span aria-hidden="true">{{ fimDoEixo }}</span>
     </p>
     <span class="nu-sr" aria-live="polite">{{ leitura?.falada ?? '' }}</span>
   </div>
@@ -725,16 +755,20 @@ const vars = computed(() => ({
   position: absolute; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%);
   background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-blue-on-dark), 0 0 0 7px var(--nu-blue-28);
 }
-/* o mês da leitura: uma etiqueta no alto da mira (o cartãozinho da dica do gráfico, pequeno). Fica dentro do desenho:
+/* a faixa da leitura, no alto do desenho (o leque fica dela para baixo: FAIXA_DA_LEITURA). O mês é uma etiqueta
+   (o cartãozinho da dica do gráfico, pequeno) que anda presa à mira pela mesma fração da largura: na ponta esquerda
+   encosta pela esquerda, na direita pela direita, sem pular e sem sair da caixa. Com o horizonte aberto pelo botão,
+   "Voltar para hoje" ocupa o canto de cima e a faixa acaba antes dele (a peça mede o botão). Fica dentro do desenho:
    com o futuro à vista o gráfico sobe para o lugar da legenda, e por cima dele estão o rótulo e os períodos */
+.cho__faixa { position: absolute; top: 3px; left: 0; z-index: 2; display: flex; pointer-events: none; }
+.cho__faixa::before, .cho__faixa::after { content: ''; flex: 1 1 0px; min-width: 0; }
+.cho__faixa::before { flex-grow: var(--cho-x, .5); }
+.cho__faixa::after { flex-grow: calc(1 - var(--cho-x, .5)); }
 .cho__dica {
-  position: absolute; top: 8px; transform: translateX(var(--cho-dica-x, -50%)); z-index: 2;
-  padding: 6px 10px; border-radius: var(--nu-r-chip); white-space: nowrap;
+  flex: none; padding: 6px 10px; border-radius: var(--nu-r-chip); white-space: nowrap;
   background: var(--nu-navy-2); color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto);
   font-variant-numeric: tabular-nums; box-shadow: 0 0 0 1px var(--nu-cream-text-12), var(--nu-shadow-float);
 }
-/* com o horizonte aberto pelo botão, "Voltar para hoje" fica no canto de cima: a etiqueta desce para baixo dele */
-.cho--aberto .cho__dica { top: 46px; }
 /* os três caminhos acesos: o ponto de cada um na mira, na cor dele, e o valor ao lado */
 .cho__ponto {
   position: absolute; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%); z-index: 1;
@@ -752,6 +786,8 @@ const vars = computed(() => ({
 .cho__rotulo--direita { transform: translate(14px, -50%); }
 .cho__rotulo b { color: var(--nu-cream-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-titulo); }
 .cho__rotulo span { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); }
+/* sem lugar para o rótulo inteiro, só o valor (a cor e a ordem dizem qual é qual) */
+.cho__rotulo--curto span { display: none; }
 .cho__rotulo--otimista b { color: var(--nu-green-soft); }
 .cho__rotulo--pessimista b { color: color-mix(in srgb, var(--nu-cream-text) 40%, var(--nu-red-soft)); }
 .cho__rotulo--pessimista.cho__rotulo--abaixo b { color: var(--nu-red-soft); }
@@ -767,6 +803,9 @@ const vars = computed(() => ({
 .cho__convite-t b { color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-titulo); }
 /* lendo o futuro, a dica já diz o número: o cartão do convite sai da frente */
 .cho--lendo .cho__convite-t { opacity: 0; }
+/* com o horizonte aberto pelo botão o cartão sai também do lugar, e "Voltar para hoje" sobe para o canto de cima, na
+   faixa da leitura (com o cartão guardando o lugar, o botão ficava no meio do leque, embaixo do mês e das etiquetas) */
+.cho--aberto .cho__convite-t { display: none; }
 .cho__botao {
   display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: 32px; padding: 0 12px; border: 0; border-radius: var(--nu-r-pill); cursor: pointer; white-space: nowrap;
   background: color-mix(in srgb, var(--nu-navy-2) 82%, transparent); color: var(--nu-blue-on-blue-2); font: inherit; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
@@ -789,8 +828,9 @@ const vars = computed(() => ({
   color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-/* o que o número do futuro é: o aviso do motor, sempre à vista junto do convite (a seção dos 5 anos conta o teste inteiro) */
-.cho__eixo-nota { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* o que o número do futuro é: o aviso do motor, sempre à vista e inteiro junto do convite (a seção dos 5 anos conta o
+   teste inteiro). Num cartão estreito ele quebra em duas linhas; com reticências, o fim da frase sumia */
+.cho__eixo-nota { min-width: 0; white-space: normal; text-align: center; text-wrap: balance; }
 
 /* celular: o futuro em repouso tem uns 90px, e o convite não cabe nele. Ele desce para baixo do eixo, numa linha
    (o número à esquerda, o botão à direita), e o rótulo de hoje do gráfico sai (a legenda de cima já diz o número) */
@@ -802,8 +842,8 @@ const vars = computed(() => ({
   .cho__convite-t { flex: 0 1 auto; min-width: 0; align-items: flex-start; padding: 0; background: none; box-shadow: none; white-space: normal; }
   .cho__botao { min-height: 36px; }
   .cho--lendo .cho__convite-t { opacity: 1; }
+  .cho--aberto .cho__convite-t { display: flex; }
   .cho--zoom:not(.cho--aberto) .cho__botao { opacity: 1; pointer-events: auto; }
-  .cho--aberto .cho__dica { top: 8px; }
   /* no celular os rótulos ficam só com o valor (a cor e a ordem dizem qual é qual) */
   .cho__rotulo { padding: 4px 8px; transform: translate(calc(-100% - 10px), -50%); }
   .cho__rotulo--direita { transform: translate(10px, -50%); }
@@ -811,7 +851,7 @@ const vars = computed(() => ({
   .cho--futuro .cho__passado :deep(.agr__hoje) { display: none; }
   /* o aviso desce para uma linha própria, inteiro, entre as pontas do eixo e o convite */
   .cho__eixo { flex-wrap: wrap; row-gap: 6px; }
-  .cho__eixo-nota { order: 3; flex: 1 0 100%; white-space: normal; overflow: visible; }
+  .cho__eixo-nota { order: 3; flex: 1 0 100%; text-align: left; text-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cho__passado, .cho__passado :deep(.agr__plot), .cho__plot, .cho__eixo,

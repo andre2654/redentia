@@ -1,5 +1,5 @@
 /**
- * O horizonte da carteira (13/11/2026): o gráfico da rentabilidade do topo da
+ * O horizonte da carteira (12/11/2026): o gráfico da rentabilidade do topo da
  * /carteira ligado ao leque do motor, com o zoom que afasta o fim da janela
  * quando o ponteiro (ou o dedo) vai para a direita. Os casos travam a conta
  * (um eixo de tempo só, a mesma escala para o passado e o futuro, o domínio do
@@ -135,6 +135,41 @@ test('o domínio à vista: em repouso é o do passado (com o mais provável cabe
   assert.equal(dominioDoHorizonte(passado, leque.series, 0, base, 5, 0.5), passado)
 })
 
+test('a faixa da leitura: com o leque à vista, o maior p90 do trecho fica dela para baixo; em repouso nada muda', () => {
+  const passado = { lo: 98, hi: 120 }
+  const hoje = 117
+  const base = leque.series[0]!.p50
+  const emIndice = (v: number) => (hoje * v) / base
+  /** onde um valor cai na altura, de 0 (em cima) a 1 */
+  const alturaDe = (d: { lo: number; hi: number }, v: number) => (d.hi - emIndice(v)) / (d.hi - d.lo)
+  for (const z of [LEQUE_CABE_EM, 0.5, 1]) {
+    const f = futuroAVista(z, 12, HORIZONTE)
+    const ex = extremosDoLeque(leque.series, f)!
+    const sem = dominioDoHorizonte(passado, leque.series, hoje, base, f, z)
+    // 48px num desenho de 592 (o computador) e num de 321 (o celular)
+    for (const faixa of [48 / 592, 48 / 321]) {
+      const d = dominioDoHorizonte(passado, leque.series, hoje, base, f, z, faixa)
+      assert.ok(alturaDe(d, ex.p90) >= faixa - 1e-9, `z ${z}, faixa ${faixa}: o p90 fica abaixo da faixa`)
+      assert.equal(d.lo, sem.lo, 'o chão não muda')
+      assert.ok(d.hi >= sem.hi - 1e-9, 'o teto só sobe')
+    }
+    // a faixa que a folga do leque já dá não muda nada
+    assert.deepEqual(dominioDoHorizonte(passado, leque.series, hoje, base, f, z, 0.01), sem)
+    assert.deepEqual(dominioDoHorizonte(passado, leque.series, hoje, base, f, z, 0), sem)
+  }
+  // em repouso o domínio é o do passado, com ou sem a faixa (ela entra junto com o leque)
+  const f0 = futuroAVista(0, 12, HORIZONTE)
+  assert.deepEqual(dominioDoHorizonte(passado, leque.series, hoje, base, f0, 0, 48 / 321), dominioDoHorizonte(passado, leque.series, hoje, base, f0, 0))
+  // um passado mais alto que o leque já deixa o p90 longe do teto: a faixa não mexe
+  const alto = { lo: 98, hi: 1000 }
+  const f1 = futuroAVista(1, 12, HORIZONTE)
+  assert.deepEqual(dominioDoHorizonte(alto, leque.series, hoje, base, f1, 1, 48 / 592), dominioDoHorizonte(alto, leque.series, hoje, base, f1, 1))
+  // um desenho baixo demais não vira só faixa: ela para em 30% da altura
+  const baixo = dominioDoHorizonte(passado, leque.series, hoje, base, f1, 1, 0.9)
+  const ex1 = extremosDoLeque(leque.series, f1)!
+  assert.ok(Math.abs(alturaDe(baixo, ex1.p90) - 0.3) < 1e-9)
+})
+
 test('a caixa de cada desenho dentro do domínio à vista, e o tempo em palavras', () => {
   assert.deepEqual(caixaNoDominio({ lo: 98, hi: 120 }, { lo: 98, hi: 120 }), { topo: 0, altura: 1 })
   // o passado no pé do desenho quando o leque abre: metade da altura, a metade de baixo
@@ -203,18 +238,40 @@ test('as peças: o gráfico de antes por dentro, um pedido só do motor, o olho,
   // a leitura do futuro: os três caminhos REAIS do mês (p90, p50, p10), acesos na tela, com o valor de cada um ao lado da mira
   assert.match(peca, /Array\.from\(\{ length: c\.pontos \}, \(_, t\) => caminhosDoMes\(c, serie\.value, t\)\)/)
   for (const nome of ['se for bem', 'o mais provável', 'se for mal']) assert.ok(peca.includes(`nome: '${nome}'`), nome)
-  assert.match(peca, /afastarRotulos\(tres\.map\(\(r\) => r\.y \* H\), 30, 46, H - 16\)/)
-  assert.match(peca, /naDireita: esquerda < cabe && \(direita >= cabe \|\| direita > esquerda\),/)
-  assert.match(peca, /<span class="cho__dica" :style="ancora\(leitura\.x\)">\{\{ leitura\.quando \}\}<\/span>/)
+  assert.match(peca, /const naDireita = esquerda < cabe && \(direita >= cabe \|\| direita > esquerda\)/)
+  // sem lugar para o rótulo inteiro de nenhum dos lados, fica só o valor (em R$ ele passava da beira do cartão)
+  assert.match(peca, /const curto = esquerda < cabe && direita < cabe\n/)
+  assert.match(peca, /'cho__rotulo--curto': leitura\.curto \}\]"/)
+  assert.match(peca, /\n\.cho__rotulo--curto span \{ display: none; \}/)
+  // a faixa da leitura (12/11/2026): o alto do desenho é do mês e, com o horizonte aberto, do botão de voltar. O leque
+  // fica dela para baixo, as etiquetas começam depois dela e os pontos não entram nela nem saem da caixa
+  assert.match(peca, /const FAIXA_DA_LEITURA = 48\nconst TOPO_DAS_ETIQUETAS = 54\n/)
+  assert.match(peca, /const faixa = alturaDoDesenho\.value > 0 \? FAIXA_DA_LEITURA \/ alturaDoDesenho\.value : 0\n\s+return temFuturo\.value \? dominioDoHorizonte\(p, serie\.value, hojeIndice\.value, base\.value, aVista\.value, z\.value, faixa\) : p/)
+  assert.match(peca, /afastarRotulos\(tres\.map\(\(r\) => r\.y \* H\), 30, TOPO_DAS_ETIQUETAS, H - \(sobreHoje \? 34 : 16\)\)/)
+  assert.match(peca, /top: `clamp\(\$\{FAIXA_DA_LEITURA\}px, \$\{\(r\.y \* 100\)\.toFixed\(3\)\}%, calc\(100% - 6px\)\)`/)
+  // o mês anda preso à mira pela mesma fração da largura (sem pular e sem sair da caixa) e para antes do botão, que a peça mede
+  assert.match(peca, /<span class="cho__faixa" :style="\{ right: `\$\{reservaDoBotao\}px`, '--cho-x': leitura\.naFaixa\.toFixed\(4\) \}"><span class="cho__dica">\{\{ leitura\.quando \}\}<\/span><\/span>/)
+  assert.match(peca, /naFaixa: W > 0 \? Math\.min\(1, Math\.max\(0, \(x \* W\) \/ livre\)\) : x,/)
+  assert.match(peca, /reservaDoBotao\.value = naFaixa \? b!\.offsetWidth \+ 8 : 0/)
+  assert.match(peca, /watch\(aberto, medirBotao, \{ flush: 'post' \}\)/)
+  assert.match(peca, /\.cho__faixa::before \{ flex-grow: var\(--cho-x, \.5\); \}\n\.cho__faixa::after \{ flex-grow: calc\(1 - var\(--cho-x, \.5\)\); \}/)
+  // com o horizonte aberto o cartão do convite sai do lugar (o botão sobe para o canto, na faixa); no celular ele fica embaixo do eixo
+  assert.match(peca, /\n\.cho--aberto \.cho__convite-t \{ display: none; \}/)
+  assert.match(peca, /\n  \.cho--aberto \.cho__convite-t \{ display: flex; \}/)
+  assert.doesNotMatch(peca, /function ancora|--cho-dica-x|\.cho--aberto \.cho__dica/)
   // quem redesenha no meio da abertura desenha só o que já nasceu (o leque inteiro aparecia antes de recomeçar)
   assert.match(peca, /const t = tempo \?\? \(contados\.value != null \? \(comecouEm \? performance\.now\(\) - comecouEm : 0\) : undefined\)/)
   // o botão abre e fecha; com o horizonte aberto as setas andam mês a mês e Esc volta
-  assert.match(peca, /<button type="button" class="cho__botao" :aria-pressed="aberto" @click="alternar">/)
+  assert.match(peca, /<button ref="botao" type="button" class="cho__botao" :aria-pressed="aberto" @click="alternar">/)
   for (const k of ['ArrowRight', 'ArrowLeft', 'Home', 'End', 'Escape']) assert.match(peca, new RegExp(`'${k}'`), k)
   assert.match(peca, /<span class="nu-sr" aria-live="polite">\{\{ leitura\?\.falada \?\? '' \}\}<\/span>/)
   assert.match(peca, /em dinheiro de hoje\./)
   // o aviso do motor fica à vista junto do número do futuro
   assert.match(peca, /<span class="cho__eixo-nota">\{\{ futuro\?\.disclaimer \}\}<\/span>/)
+  // o aviso aparece inteiro (num cartão estreito quebra em duas linhas, sem reticências) e o leitor de tela o ouve: só as datas são do desenho
+  assert.match(peca, /<p v-if="temFuturo" class="cho__eixo">\n\s+<span aria-hidden="true">\{\{ inicioDoEixo \}\}<\/span>/)
+  assert.match(peca, /\n\.cho__eixo-nota \{ min-width: 0; white-space: normal; text-align: center; text-wrap: balance; \}/)
+  assert.doesNotMatch(peca, /text-overflow: ellipsis/)
   // a rolagem vertical é da página; a página que toma o gesto recolhe o horizonte
   assert.match(peca, /touch-action: pan-y/)
   assert.match(peca, /@pointercancel="aoCancelar"/)
@@ -258,6 +315,14 @@ test('as peças: o gráfico de antes por dentro, um pedido só do motor, o olho,
   assert.match(topo, /\.chv2__cartao--futuro \.chv2__legenda \{ opacity: 0; pointer-events: none; \}/)
   assert.match(topo, /\.chv2__cartao--futuro \.chv2__grafico \{ margin-top: calc\(-1 \* var\(--chv-legenda, 0px\)\); min-height: calc\(var\(--chv-grafico-min\) \+ var\(--chv-legenda, 0px\) \+ 14px\); \}/)
   assert.match(topo, /alturaDaLegenda\.value = legendaEl\.value\?\.offsetHeight \?\? 0/)
+  // a altura do gráfico (o dono: "aumentar esse card da carteira, tá muito pequeno"): mais alto, e do tamanho que a
+  // janela dá (o cartão inteiro cabe entre o topo grudado e a barra do chat); numa coluna só, a mesma proporção
+  assert.match(topo, /\.chv2__grade \{\n  --chv-larga: 35vw; --chv-fora: 204px; --chv-moldura: 216px;\n  --chv-grafico-min: clamp\(320px, min\(var\(--chv-larga\), calc\(100vh - var\(--chv-fora\) - var\(--chv-moldura\)\)\), 520px\);\n  --chv-esqueleto: calc\(var\(--chv-grafico-min\) \+ var\(--chv-moldura\)\);/)
+  assert.match(topo, /\n  \.chv2__grade \{ grid-template-columns: minmax\(0, 1fr\); --chv-larga: 60vw; --chv-moldura: 144px; \}/)
+  assert.match(topo, /\n  \.chv2__grade \{ --chv-moldura: 274px; --chv-fora: 172px; \}/)
+  assert.match(topo, /flex: 1 1 auto; min-height: var\(--chv-grafico-min\); margin-top: 14px;/)
+  // o esqueleto do carregamento tem a altura do cartão que vem
+  assert.match(topo, /<NuSkeleton v-else-if="carregando" tone="navy" height="var\(--chv-esqueleto\)" radius="card" class="chv2__palco" \/>/)
   assert.doesNotMatch(topo, /<AtivoGrafico /)
   // um pedido por página: a /carteira nova provê o futuro, e a seção dos 5 anos lê o mesmo
   const dado = ler('app/composables/useCarteiraFuturo.ts')

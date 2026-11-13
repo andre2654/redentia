@@ -1,5 +1,5 @@
 /**
- * O horizonte da carteira (13/11/2026; o dono, com o esboço do app na mão: "nos
+ * O horizonte da carteira (12/11/2026; o dono, com o esboço do app na mão: "nos
  * gráficos da carteira tem já conectada a previsão da carteira, daí se eu dar
  * drag vai dando zoom à medida que vou indo para a direita, traga isso para o
  * site também"). O gráfico da rentabilidade do topo da /carteira ganha, à
@@ -30,6 +30,8 @@ export const MES_EM_MS = 30.4375 * 86_400_000
 export const LEQUE_CABE_EM = 0.22
 /** a folga em cima e embaixo do leque, em fração do que ele ocupa */
 const FOLGA_DO_LEQUE = 0.06
+/** o máximo da altura que a faixa da leitura pode tomar do leque (um desenho baixo demais não vira só faixa) */
+const TETO_DA_FAIXA = 0.3
 
 const entre = (v: number, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v))
 const mistura = (a: number, b: number, t: number) => a + (b - a) * t
@@ -121,9 +123,12 @@ export function extremosDoLeque(serie: FuturoPontoApi[], ate: number): { p10: nu
  * inteiro do trecho à vista (de 8 em cada 10 caminhos), com folga.
  * `hojeIndice` é onde a linha do passado chegou; `base` é de onde o leque parte
  * em reais (o valor do mês 0): o leque entra na proporção valor / base.
+ * `faixa` é a fração do alto do desenho que é da leitura (a etiqueta do mês e o
+ * botão de voltar): com o leque à vista, o maior p90 do trecho fica dela para
+ * baixo, e o ponto do caminho de cima não some atrás da etiqueta.
  */
 export function dominioDoHorizonte(
-  passado: { lo: number; hi: number }, serie: FuturoPontoApi[], hojeIndice: number, base: number, mesesAVista: number, z: number,
+  passado: { lo: number; hi: number }, serie: FuturoPontoApi[], hojeIndice: number, base: number, mesesAVista: number, z: number, faixa = 0,
 ): { lo: number; hi: number } {
   const ex = extremosDoLeque(serie, mesesAVista)
   if (!ex || !(base > 0) || !(hojeIndice > 0)) return passado
@@ -132,9 +137,13 @@ export function dominioDoHorizonte(
   const folga = altura * FOLGA_DO_LEQUE
   const s = suave(z / LEQUE_CABE_EM)
   const hiRepouso = Math.max(passado.hi, emIndice(ex.p50) + (passado.hi - passado.lo) * 0.04)
+  const lo = Math.min(passado.lo, emIndice(ex.p10) - folga)
+  // o teto que deixa o p90 a `faixa` da altura: (hi − p90) / (hi − lo) = faixa
+  const f = entre(faixa, 0, TETO_DA_FAIXA)
+  const comFaixa = (emIndice(ex.p90) - f * lo) / (1 - f)
   return {
-    lo: mistura(passado.lo, Math.min(passado.lo, emIndice(ex.p10) - folga), s),
-    hi: mistura(hiRepouso, Math.max(passado.hi, emIndice(ex.p90) + folga), s),
+    lo: mistura(passado.lo, lo, s),
+    hi: mistura(hiRepouso, Math.max(passado.hi, emIndice(ex.p90) + folga, comFaixa), s),
   }
 }
 
@@ -155,7 +164,7 @@ export function daquiAQuanto(meses: number): string {
   return `em ${[a, r].filter(Boolean).join(' e ')}`
 }
 
-/* ————— A abertura: os caminhos nascendo (14/11/2026) —————
+/* ————— A abertura: os caminhos nascendo (12/11/2026) —————
    O dono: "quando abrir a carteira quero ver as linhas sendo formadas, primeiro
    1, depois outra e assim por diante, começando lento e indo mais rápido até
    2k". O total nascido cresce em progressão geométrica: 1 no começo, o dobro a
@@ -211,7 +220,7 @@ export function alfaDosCaminhos(quantos: number): number {
   return Math.min(0.62, Math.max(0.055, 2.6 / Math.sqrt(Math.max(1, quantos))))
 }
 
-/* ————— O convite da home (14/11/2026) —————
+/* ————— O convite da home (12/11/2026) —————
    O dono, no cartão "Você em 12 meses" da tela inicial: "deixe um desenho no
    final para o cara clicar e ir para a carteira para ver mais". A home não
    chama o motor (são 2.000 caminhos), então o desenho é um leque ESQUEMÁTICO,
