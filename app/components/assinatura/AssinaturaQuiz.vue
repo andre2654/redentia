@@ -46,6 +46,10 @@ const celular = ref('')
 const emailReal = ref('')
 // o "sim" do WhatsApp é um gesto: a caixa começa desmarcada (LGPD)
 const aceiteWhatsapp = ref(false)
+/** no pré-lançamento (aportou.com.br antes da troca) o aceite do WhatsApp não é oferecido: o backend de produção ainda
+ *  carimba a versão antiga do texto (nuxt.config, preLancamento) */
+const preLancamento = useRuntimeConfig().public.preLancamento as unknown
+const semAceiteWhatsapp = preLancamento === true || preLancamento === 'true'
 const erroDados = ref<string | null>(null)
 const { user: usuario } = useAuthState()
 const falta = computed(() => oQueFaltaNoTitular(assinatura.ent.value, usuario.value?.email))
@@ -90,7 +94,7 @@ async function enviarDados() {
     ...(falta.value.cpf ? { cpf: cpf.value.replace(/\D/g, '') } : {}),
     ...(falta.value.email ? { email: emailReal.value.trim().toLowerCase() } : {}),
     ...(cel ? { celular: cel } : {}),
-    whatsapp_opt_in: aceiteWhatsapp.value,
+    whatsapp_opt_in: !semAceiteWhatsapp && aceiteWhatsapp.value,
   })
 }
 onMounted(() => { montado.value = true })
@@ -464,7 +468,7 @@ const ICONES: Record<string, string> = {
                     <label class="aqz__rotulo" :class="{ 'aqz__rotulo--depois': falta.cpf || falta.email }" for="aqz-cel">Celular (WhatsApp)</label>
                     <input id="aqz-cel" :value="celular" class="aqz__campo" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(11) 98765-4321" required @input="celular = formatarCelular(($event.target as HTMLInputElement).value)">
                   </template>
-                  <label class="aqz__aceite">
+                  <label v-if="!semAceiteWhatsapp" class="aqz__aceite">
                     <input v-model="aceiteWhatsapp" type="checkbox" class="aqz__aceite-caixa">
                     <span>{{ TEXTO_ACEITE_WHATSAPP }}</span>
                   </label>

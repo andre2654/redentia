@@ -383,7 +383,8 @@ test('o aceite do WhatsApp é o texto registrado no Backend, numa caixa desmarca
   assert.equal(TEXTO_ACEITE_WHATSAPP, 'Quero receber a Aportou no WhatsApp. Para parar, é só responder SAIR.')
   const quiz = readFileSync(new URL('../app/components/assinatura/AssinaturaQuiz.vue', import.meta.url), 'utf8')
   assert.match(quiz, /const aceiteWhatsapp = ref\(false\)/)
-  assert.match(quiz, /whatsapp_opt_in: aceiteWhatsapp\.value/)
+  // a escolha da pessoa (no pré-lançamento o aceite não é oferecido e vai false: tests/pre-lancamento.test.ts)
+  assert.match(quiz, /whatsapp_opt_in: !semAceiteWhatsapp && aceiteWhatsapp\.value/)
   assert.doesNotMatch(quiz, /whatsapp_opt_in: true/)
 })
 

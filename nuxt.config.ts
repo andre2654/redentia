@@ -93,6 +93,14 @@ export default defineNuxtConfig({
       // inscrição e o envio são do Backend (tópico `newsletter` e
       // newsletter:enviar). NUXT_PUBLIC_NEWSLETTER_LIGADA=false esconde.
       newsletterLigada: true,
+      // Pré-lançamento (13/11/2026; docs/aportou/virada-de-dominio.md, seção 4.1): a Aportou no ar em aportou.com.br
+      // antes da troca, com o redentia.com.br como está. Ligado (NUXT_PUBLIC_PRE_LANCAMENTO=true na Vercel):
+      //  - o site sai do índice (X-Robots-Tag noindex em toda resposta e o robots sem o sitemap): os dois domínios
+      //    não competem no Google com o mesmo conteúdo;
+      //  - o quiz da assinatura não oferece o aceite do WhatsApp: o backend de produção ainda carimba a versão antiga
+      //    do texto, e o "sim" ficaria registrado com o texto errado (assinatura.ts, TEXTO_ACEITE_WHATSAPP).
+      // Na troca (passo 4), desligar.
+      preLancamento: false,
     },
   },
 

@@ -63,6 +63,21 @@ Duas ressalvas:
 - O 301 sai com `private, no-store`. Se a borda da Vercel guardasse o redirect sem separar por domínio, quem chegasse em aportou.com.br receberia um 301 para o próprio endereço, em laço.
 - Uma página que a borda já tem em cache pode ser servida pelo domínio antigo sem passar pelo middleware. Ela sai com o canônico em aportou.com.br (`siteUrl`), e o Google consolida do mesmo jeito. A janela é a dos minutos entre o passo 3 e o passo 4.
 
+## 4.1 O pré-lançamento: a Aportou no ar antes da troca
+
+O dono, 13/11/2026: "o que eu queria fazer é subir esse novo B2C já na Vercel pelo domínio aportou.com.br, entendeu, e deixa o redentia.com.br assim por enquanto". Então a Aportou nova vai para aportou.com.br num projeto próprio da Vercel, e o redentia.com.br segue servindo o site de hoje até a troca.
+
+Com os dois no ar e o mesmo conteúdo, cada um com o próprio canônico, o Google veria dois sites competindo. Por isso a Aportou sobe em **pré-lançamento**: `NUXT_PUBLIC_PRE_LANCAMENTO=true` no projeto dela.
+- Toda resposta sai com `X-Robots-Tag: noindex, nofollow` (`server/middleware/pre-lancamento.ts`), e o `robots.txt` não anuncia o sitemap. O rastreio continua liberado, para o Google ler o noindex.
+- O quiz da assinatura não oferece o aceite do WhatsApp. O texto novo diz "Aportou", mas quem carimba a versão é o backend, e o de produção ainda carimba a antiga: o "sim" ficaria registrado com o texto errado (LGPD). O aceite volta quando o backend da `feat/aportou-marca` subir.
+
+O que ainda depende do backend novo, que sobe depois, com o OK do dono:
+- Os e-mails (código, boas-vindas) saem com a marca e os links de hoje: Redentia, www.redentia.com.br.
+- Depois do pagamento, a Stripe volta para o site de hoje (`BILLING_*` no `.env`).
+- A carteira nova só aparece para quem está na flag `carteira.visao_usuarios`; os outros, e qualquer falha da rota nova, veem a tela de hoje.
+
+Na troca (passo 4), desligar o `NUXT_PUBLIC_PRE_LANCAMENTO`.
+
 ## 5. A ordem da subida
 
 Cada passo só começa com o anterior conferido. O dono dá os cliques.
