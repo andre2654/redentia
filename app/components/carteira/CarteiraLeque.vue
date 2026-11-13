@@ -17,6 +17,11 @@
 //
 // `fins` null = desenho de exemplo (o /assinar e o paywall): só os nomes
 // otimista, meio e pessimista, sem número nenhum.
+//
+// Hidratação (13/11/2026): toda medida do SVG com bind vai com .attr. Ao
+// hidratar, o Vue 3.5 tenta gravar o que é dinâmico como propriedade do
+// elemento, e x1, y2, cx, width, viewBox e companhia só têm leitura (o aviso
+// "Failed setting prop" no console).
 import type { FuturoDadosApi } from '~/types/assinatura'
 import { desenharLeque, marcasDoEixo } from '~/utils/futuro'
 
@@ -129,27 +134,27 @@ onBeforeUnmount(() => { io?.disconnect(); ro?.disconnect() })
     :style="{ height: `${h + (eixo ? 34 : 0)}px` }"
   >
     <div class="clq__traco">
-      <svg :width="largura" :height="h" :viewBox="`0 0 ${largura} ${h}`" class="clq__svg" aria-hidden="true" focusable="false">
+      <svg :width.attr="largura" :height.attr="h" :viewBox.attr="`0 0 ${largura} ${h}`" class="clq__svg" aria-hidden="true" focusable="false">
         <defs>
           <!-- a faixa de 80%: verde no alto, creme no miolo, vermelho embaixo -->
-          <linearGradient :id="`${uid}-faixa`" gradientUnits="userSpaceOnUse" x1="0" x2="0" :y1="desenho.y.topo" :y2="desenho.y.base">
+          <linearGradient :id="`${uid}-faixa`" gradientUnits="userSpaceOnUse" x1="0" x2="0" :y1.attr="desenho.y.topo" :y2.attr="desenho.y.base">
             <stop offset="0" class="clq__stop-alto" stop-opacity="0.34" />
             <stop offset="0.5" class="clq__stop-creme" stop-opacity="0.07" />
             <stop offset="1" class="clq__stop-baixo" stop-opacity="0.34" />
           </linearGradient>
-          <linearGradient :id="`${uid}-sino`" gradientUnits="userSpaceOnUse" x1="0" x2="0" :y1="desenho.y.otimista" :y2="desenho.y.pessimista">
+          <linearGradient :id="`${uid}-sino`" gradientUnits="userSpaceOnUse" x1="0" x2="0" :y1.attr="desenho.y.otimista" :y2.attr="desenho.y.pessimista">
             <stop offset="0" class="clq__stop-alto" stop-opacity="0.5" />
             <stop offset="0.5" class="clq__stop-creme" stop-opacity="0.22" />
             <stop offset="1" class="clq__stop-baixo" stop-opacity="0.5" />
           </linearGradient>
           <!-- o leque nasce fino em "hoje" e ganha cor para a direita -->
-          <linearGradient :id="`${uid}-nasce`" gradientUnits="userSpaceOnUse" :x1="desenho.xHoje" :x2="desenho.xFim" y1="0" y2="0">
+          <linearGradient :id="`${uid}-nasce`" gradientUnits="userSpaceOnUse" :x1.attr="desenho.xHoje" :x2.attr="desenho.xFim" y1="0" y2="0">
             <stop offset="0" class="clq__stop-mascara" stop-opacity="0.25" />
             <stop offset="0.35" class="clq__stop-mascara" stop-opacity="0.85" />
             <stop offset="1" class="clq__stop-mascara" stop-opacity="1" />
           </linearGradient>
-          <mask :id="`${uid}-mascara`" maskUnits="userSpaceOnUse" x="0" y="0" :width="largura" :height="h">
-            <rect x="0" y="0" :width="desenho.xFim + 1" :height="h" :fill="`url(#${uid}-nasce)`" />
+          <mask :id="`${uid}-mascara`" maskUnits="userSpaceOnUse" x="0" y="0" :width.attr="largura" :height.attr="h">
+            <rect x="0" y="0" :width.attr="desenho.xFim + 1" :height.attr="h" :fill="`url(#${uid}-nasce)`" />
           </mask>
           <filter :id="`${uid}-brilho`" x="-10%" y="-40%" width="120%" height="180%">
             <feGaussianBlur stdDeviation="3.2" result="b" />
@@ -160,7 +165,7 @@ onBeforeUnmount(() => { io?.disconnect(); ro?.disconnect() })
         <!-- marcas dos anos -->
         <line
           v-for="m in desenho.xAnos" :key="`a-${m}`"
-          :x1="m" :x2="m" y1="8" :y2="h - 8" class="clq__ano"
+          :x1.attr="m" :x2.attr="m" y1="8" :y2.attr="h - 8" class="clq__ano"
         />
 
         <g :mask="`url(#${uid}-mascara)`">
@@ -176,21 +181,21 @@ onBeforeUnmount(() => { io?.disconnect(); ro?.disconnect() })
         <path :d="desenho.meio" class="clq__meio" :class="{ 'clq__meio--real': desenho.meioReal }" :filter="`url(#${uid}-brilho)`" fill="none" />
 
         <!-- o sino dos finais, na ponta -->
-        <line :x1="desenho.xFim" :x2="desenho.xFim" y1="10" :y2="h - 10" class="clq__ponta" />
+        <line :x1.attr="desenho.xFim" :x2.attr="desenho.xFim" y1="10" :y2.attr="h - 10" class="clq__ponta" />
         <path :d="desenho.sino" :fill="`url(#${uid}-sino)`" class="clq__sino" />
 
         <!-- guias até os rótulos -->
         <line
           v-for="r in rotulos" :key="`g-${r.k}`"
-          :x1="desenho.xFim" :x2="desenho.xFim + larguraSino + 6"
-          :y1="desenho.y[r.k]" :y2="r.y"
+          :x1.attr="desenho.xFim" :x2.attr="desenho.xFim + larguraSino + 6"
+          :y1.attr="desenho.y[r.k]" :y2.attr="r.y"
           class="clq__guia"
         />
-        <circle v-for="r in rotulos" :key="`p-${r.k}`" :cx="desenho.xFim" :cy="desenho.y[r.k]" r="4.5" :class="`clq__fim clq__fim--${r.k}`" />
+        <circle v-for="r in rotulos" :key="`p-${r.k}`" :cx.attr="desenho.xFim" :cy.attr="desenho.y[r.k]" r="4.5" :class="`clq__fim clq__fim--${r.k}`" />
 
         <!-- hoje -->
-        <circle :cx="desenho.xHoje" :cy="desenho.y.hoje" r="11" class="clq__hoje-halo" />
-        <circle :cx="desenho.xHoje" :cy="desenho.y.hoje" r="5.5" class="clq__hoje" />
+        <circle :cx.attr="desenho.xHoje" :cy.attr="desenho.y.hoje" r="11" class="clq__hoje-halo" />
+        <circle :cx.attr="desenho.xHoje" :cy.attr="desenho.y.hoje" r="5.5" class="clq__hoje" />
       </svg>
     </div>
 

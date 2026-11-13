@@ -27,6 +27,10 @@
 // no próprio losango), `compacto` deixa só o logo, sem texto dentro, para
 // quem escreve os números ao lado, e os links apontam para as seções da
 // própria página (linkDia, linkProvento).
+// Hidratação (13/11/2026): toda medida do SVG com bind vai com .attr. Ao
+// hidratar, o Vue 3.5 tenta gravar o que é dinâmico como propriedade do
+// elemento, e x, y, x1, width, viewBox, transform e o href do <a> de SVG só
+// têm leitura: eram 530 avisos "Failed setting prop" na vitrine /dev/losango.
 import { pctComSinal } from '~/utils/diaDaCarteira'
 import { LOGO, PECAS_DO_LOGO, transformDoLogo } from '~/utils/marcaRedentia'
 import { dicaDoDia, escalaDoDia, faladoDoDia, posicaoNaEscala, quemNaFrente } from '~/utils/losangoDoDia'
@@ -157,23 +161,23 @@ function ir(destino: string, e: MouseEvent) {
 <template>
   <figure ref="raiz" class="hlo" :class="{ 'hlo--esmaecido': esmaecido, 'hlo--carregando': carregando, 'hlo--dia': tema === 'dia', 'hlo--compacto': compacto }">
     <figcaption class="hlo__sr">{{ falado }}</figcaption>
-    <svg :viewBox="VIEWBOX" class="hlo__svg" aria-hidden="true" @mouseleave="foco = null">
+    <svg :viewBox.attr="VIEWBOX" class="hlo__svg" aria-hidden="true" @mouseleave="foco = null">
       <defs>
         <!-- um id por instância: a página de dev põe várias juntas -->
         <clipPath :id="`${uid}-voce`"><path :d="PECAS_DO_LOGO.esquerda" /></clipPath>
         <clipPath :id="`${uid}-bolsa`"><path :d="PECAS_DO_LOGO.direita" /></clipPath>
         <!-- o degradê das metades do logo: claro na ponta de fora, escuro no eixo -->
-        <linearGradient :id="`${uid}-voce-luz`" gradientUnits="userSpaceOnUse" x1="0" y1="0" :x2="C" y2="0">
+        <linearGradient :id="`${uid}-voce-luz`" gradientUnits="userSpaceOnUse" x1="0" y1="0" :x2.attr="C" y2="0">
           <stop offset="0" :stop-color="corVoce" />
           <stop offset="1" :stop-color="corVoce" stop-opacity=".55" />
         </linearGradient>
-        <linearGradient :id="`${uid}-bolsa-luz`" gradientUnits="userSpaceOnUse" :x1="LOGO.lado" y1="0" :x2="C" y2="0">
+        <linearGradient :id="`${uid}-bolsa-luz`" gradientUnits="userSpaceOnUse" :x1.attr="LOGO.lado" y1="0" :x2.attr="C" y2="0">
           <stop offset="0" :stop-color="BOLSA" />
           <stop offset="1" :stop-color="BOLSA" stop-opacity=".55" />
         </linearGradient>
         <!-- a aba do provento: o degradê vertical das abas do logo (claro na
              ponta, mais fundo nas garras), em verde -->
-        <linearGradient :id="`${uid}-provento`" gradientUnits="userSpaceOnUse" x1="0" y1="118" x2="0" :y2="LOGO.lado">
+        <linearGradient :id="`${uid}-provento`" gradientUnits="userSpaceOnUse" x1="0" y1="118" x2="0" :y2.attr="LOGO.lado">
           <stop offset="0" :stop-color="VERDE" stop-opacity=".22" />
           <stop offset=".55" :stop-color="VERDE" stop-opacity=".42" />
           <stop offset="1" :stop-color="VERDE" stop-opacity=".95" />
@@ -181,17 +185,17 @@ function ir(destino: string, e: MouseEvent) {
       </defs>
 
       <!-- você e a bolsa: levam à /carteira (na /carteira, às posições) -->
-      <a :href="linkDia" class="hlo__link" @click="ir(linkDia, $event)">
+      <a :href.attr="linkDia" class="hlo__link" @click="ir(linkDia, $event)">
         <g v-for="l in lados" :key="l.chave" class="hlo__grupo" :class="{ 'hlo__grupo--apagado': apagado(l.chave) }" @mouseenter="foco = l.chave">
-          <g :transform="TRANSFORM">
+          <g :transform.attr="TRANSFORM">
             <!-- o trilho: a metade do logo -->
             <path :d="l.peca" :fill="BRANCO" :fill-opacity="carregando ? 0.04 : 0.07" :stroke="BRANCO" :stroke-opacity="carregando ? 0.1 : 0.2" stroke-width="1.2" vector-effect="non-scaling-stroke" />
             <!-- o nível -->
             <g v-if="l.n" :clip-path="`url(#${uid}-${l.chave})`">
               <g class="hlo__nivel" :class="l.n.sobe ? 'hlo__nivel--sobe' : 'hlo__nivel--desce'">
-                <rect :x="l.x0" :y="l.n.sobe ? l.n.y : C" :width="C" :height="l.n.h" :fill="`url(#${uid}-${l.chave}-luz)`" />
+                <rect :x.attr="l.x0" :y.attr="l.n.sobe ? l.n.y : C" :width.attr="C" :height.attr="l.n.h" :fill="`url(#${uid}-${l.chave}-luz)`" />
                 <!-- a superfície: a luz forte do nível -->
-                <rect :x="l.x0" :y="l.n.sobe ? l.n.y : l.n.y - 3" :width="C" height="3" :fill="l.n.cor" />
+                <rect :x.attr="l.x0" :y.attr="l.n.sobe ? l.n.y : l.n.y - 3" :width.attr="C" height="3" :fill="l.n.cor" />
               </g>
             </g>
           </g>
@@ -201,39 +205,39 @@ function ir(destino: string, e: MouseEvent) {
               :d="l.n.sobe ? `M${fx(l.chave === 'voce' ? 84 : 122) - 4} ${fy(22) - 4} l4 -5 l4 5` : `M${fx(l.chave === 'voce' ? 84 : 122) - 4} ${fy(184) + 4} l4 5 l4 -5`"
               fill="none" :stroke="l.n.cor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
             />
-            <text :x="l.n.xRotulo" :y="l.n.yRotulo - 12" :text-anchor="l.chave === 'voce' ? 'end' : 'start'" class="hlo__nome" :fill="l.n.cor">{{ l.chave === 'voce' ? 'você' : 'bolsa' }}</text>
-            <text :x="l.n.xRotulo" :y="l.n.yRotulo + 8" :text-anchor="l.chave === 'voce' ? 'end' : 'start'" class="hlo__num" :fill="l.n.cor">{{ pctComSinal(l.n.v) }}</text>
+            <text :x.attr="l.n.xRotulo" :y.attr="l.n.yRotulo - 12" :text-anchor="l.chave === 'voce' ? 'end' : 'start'" class="hlo__nome" :fill="l.n.cor">{{ l.chave === 'voce' ? 'você' : 'bolsa' }}</text>
+            <text :x.attr="l.n.xRotulo" :y.attr="l.n.yRotulo + 8" :text-anchor="l.chave === 'voce' ? 'end' : 'start'" class="hlo__num" :fill="l.n.cor">{{ pctComSinal(l.n.v) }}</text>
           </g>
         </g>
 
         <!-- a aba de cima, por cima das metades, como no logo -->
-        <g :transform="TRANSFORM">
+        <g :transform.attr="TRANSFORM">
           <path :d="PECAS_DO_LOGO.cima" fill="var(--nu-agora-bg)" />
           <path :d="PECAS_DO_LOGO.cima" :fill="BRANCO" :fill-opacity="carregando ? 0.05 : 0.1" :stroke="BRANCO" :stroke-opacity="carregando ? 0.1 : 0.22" stroke-width="1.2" vector-effect="non-scaling-stroke" />
         </g>
 
         <!-- o miolo: a diferença em p.p. -->
         <g v-if="frente && !carregando && !compacto" class="hlo__dif" :class="{ 'hlo__grupo--apagado': foco === 'provento' }">
-          <text :x="CX" :y="CY + 1" text-anchor="middle" class="hlo__pp">{{ frente.numero }}</text>
-          <text :x="CX" :y="CY + 14" text-anchor="middle" class="hlo__relacao" :fill="frente.lider === 'empate' ? 'var(--nu-agora-sub)' : corVoce">{{ palavra }}</text>
+          <text :x.attr="CX" :y.attr="CY + 1" text-anchor="middle" class="hlo__pp">{{ frente.numero }}</text>
+          <text :x.attr="CX" :y.attr="CY + 14" text-anchor="middle" class="hlo__relacao" :fill="frente.lider === 'empate' ? 'var(--nu-agora-sub)' : corVoce">{{ palavra }}</text>
         </g>
       </a>
 
       <!-- o zero: a linha do meio, fora do miolo; e as pontas da escala -->
       <g class="hlo__zero">
-        <line :x1="CX - R - ALEM" :x2="CX - MIOLO - 3" :y1="CY" :y2="CY" stroke="var(--hlo-zero, #fff)" :stroke-opacity="carregando ? 0.2 : 0.55" stroke-width="1.5" stroke-dasharray="3 4" />
-        <line :x1="CX + MIOLO + 3" :x2="CX + R + ALEM" :y1="CY" :y2="CY" stroke="var(--hlo-zero, #fff)" :stroke-opacity="carregando ? 0.2 : 0.55" stroke-width="1.5" stroke-dasharray="3 4" />
+        <line :x1.attr="CX - R - ALEM" :x2.attr="CX - MIOLO - 3" :y1.attr="CY" :y2.attr="CY" stroke="var(--hlo-zero, #fff)" :stroke-opacity="carregando ? 0.2 : 0.55" stroke-width="1.5" stroke-dasharray="3 4" />
+        <line :x1.attr="CX + MIOLO + 3" :x2.attr="CX + R + ALEM" :y1.attr="CY" :y2.attr="CY" stroke="var(--hlo-zero, #fff)" :stroke-opacity="carregando ? 0.2 : 0.55" stroke-width="1.5" stroke-dasharray="3 4" />
       </g>
       <template v-if="!carregando && !compacto">
-        <text :x="fx(140)" :y="fy(22.8) + 3" class="hlo__marca">+{{ escala }}%</text>
-        <text :x="fx(140)" :y="fy(183.3) + 8" class="hlo__marca">−{{ escala }}%</text>
+        <text :x.attr="fx(140)" :y.attr="fy(22.8) + 3" class="hlo__marca">+{{ escala }}%</text>
+        <text :x.attr="fx(140)" :y.attr="fy(183.3) + 8" class="hlo__marca">−{{ escala }}%</text>
       </template>
 
       <!-- o provento: a aba de baixo do logo e a linha de baixo; levam à renda passiva -->
-      <a :href="linkProvento" class="hlo__link" @click="ir(linkProvento, $event)">
+      <a :href.attr="linkProvento" class="hlo__link" @click="ir(linkProvento, $event)">
         <g class="hlo__grupo" :class="{ 'hlo__grupo--apagado': apagado('provento'), 'hlo__grupo--foco': foco === 'provento' }" @mouseenter="foco = 'provento'">
           <rect x="40" y="184" width="240" height="22" fill="transparent" />
-          <g :transform="TRANSFORM">
+          <g :transform.attr="TRANSFORM">
             <rect x="60" y="116" width="86" height="90" fill="transparent" />
             <path :d="PECAS_DO_LOGO.baixo" fill="var(--nu-agora-bg)" />
             <path
@@ -249,10 +253,10 @@ function ir(destino: string, e: MouseEvent) {
             />
           </g>
           <text
-            v-if="!carregando" :x="CX" :y="fy(188)" text-anchor="middle" dominant-baseline="central"
+            v-if="!carregando" :x.attr="CX" :y.attr="fy(188)" text-anchor="middle" dominant-baseline="central"
             class="hlo__cifrao" :class="{ 'hlo__cifrao--aceso': acendeu }" :fill="acendeu ? 'var(--nu-agora-bg)' : VERDE" :fill-opacity="acendeu ? 1 : 0.7"
           >$</text>
-          <text v-if="!carregando && !compacto" :x="CX" y="201" text-anchor="middle" class="hlo__prov hlo__prov-linha">
+          <text v-if="!carregando && !compacto" :x.attr="CX" y="201" text-anchor="middle" class="hlo__prov hlo__prov-linha">
             <tspan :fill="VERDE" font-weight="800">provento</tspan><tspan v-if="proventoSub" class="hlo__prov-sub" :class="{ 'hlo__prov-sub--aceso': acendeu }" dx="5">· {{ proventoSub }}</tspan>
           </text>
           <rect v-else-if="!compacto" x="110" y="191" width="100" height="12" rx="6" :fill="BRANCO" fill-opacity="0.08" />

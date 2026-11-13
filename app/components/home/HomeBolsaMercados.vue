@@ -17,6 +17,10 @@
 // Robustez (11/11/2026): a dica é uma superfície que flutua (--nu-shadow-float,
 // a sombra de menu e painel) e surge em 160 ms em vez de piscar; os pesos e o
 // tracking dos rótulos vêm dos tokens.
+// Hidratação (13/11/2026): toda medida do SVG com bind vai com .attr. Ao
+// hidratar, o Vue 3.5 tenta gravar o que é dinâmico como propriedade do
+// elemento, e x, y, x1, cx, width, viewBox e companhia só têm leitura: eram 43
+// avisos "Failed setting prop" no console da home, um por medida.
 import type { MercadoDoDia } from '~/utils/bolsaDoDia'
 
 const props = defineProps<{
@@ -124,44 +128,44 @@ const resumo = computed(() => props.mercados.map((m) => `${m.nome} ${pct(m.final
       ref="caixa" class="hbm__caixa" tabindex="0" role="img" :aria-label="`O mercado desde as 10h: ${resumo}`"
       @pointermove="mover" @pointerdown="mover" @pointerleave="cursor = null" @keydown="tecla" @blur="cursor = null"
     >
-      <svg v-if="geo" :width="largura" :height="ALTURA" :viewBox="`0 0 ${largura} ${ALTURA}`" class="hbm__svg" aria-hidden="true">
+      <svg v-if="geo" :width.attr="largura" :height.attr="ALTURA" :viewBox.attr="`0 0 ${largura} ${ALTURA}`" class="hbm__svg" aria-hidden="true">
         <defs>
-          <clipPath id="hbm-lido"><rect x="0" y="0" :width="leitura ? leitura.x : largura" :height="ALTURA" /></clipPath>
+          <clipPath id="hbm-lido"><rect x="0" y="0" :width.attr="leitura ? leitura.x : largura" :height.attr="ALTURA" /></clipPath>
           <linearGradient id="hbm-rastro" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0" class="hbm__rastro" stop-opacity="0" />
             <stop offset="1" class="hbm__rastro" stop-opacity="0.18" />
           </linearGradient>
         </defs>
         <!-- o zero: o nível das 10h -->
-        <line :x1="M.esq" :x2="M.esq + geo.w" :y1="geo.zero" :y2="geo.zero" class="hbm__zero" />
+        <line :x1.attr="M.esq" :x2.attr="M.esq + geo.w" :y1.attr="geo.zero" :y2.attr="geo.zero" class="hbm__zero" />
         <!-- as linhas: na leitura, o que falta ler fica apagado -->
         <g v-for="c in geo.caminhos" :key="c.id">
           <path v-if="leitura" :d="c.d" fill="none" class="hbm__apagada" :stroke-width="c.id === 'ibov' ? 3 : 2" stroke-linejoin="round" stroke-linecap="round" />
           <path :d="c.d" fill="none" :stroke="COR[c.id]" :stroke-width="c.id === 'ibov' ? 3 : 2" stroke-linejoin="round" stroke-linecap="round" :clip-path="leitura ? 'url(#hbm-lido)' : undefined" />
         </g>
         <!-- o rótulo do zero vai por cima das linhas, que começam todas nele -->
-        <text :x="M.esq + 4" :y="geo.zero - 6" class="hbm__zero-txt">nível das 10h</text>
+        <text :x.attr="M.esq + 4" :y.attr="geo.zero - 6" class="hbm__zero-txt">nível das 10h</text>
         <!-- os nomes no fim de cada linha -->
         <template v-if="!leitura">
           <g v-for="r in geo.rotulos" :key="r.id">
-            <circle :cx="r.x" :cy="geo.Y(geo.caminhos.find((c) => c.id === r.id)!.fim[1])" r="4" :fill="COR[r.id]" />
-            <text :x="r.x + 12" :y="r.y - 2" class="hbm__fim-nome">{{ r.nome }}</text>
-            <text :x="r.x + 12" :y="r.y + 14" class="hbm__fim-num">{{ pct(r.final) }}</text>
+            <circle :cx.attr="r.x" :cy.attr="geo.Y(geo.caminhos.find((c) => c.id === r.id)!.fim[1])" r="4" :fill="COR[r.id]" />
+            <text :x.attr="r.x + 12" :y.attr="r.y - 2" class="hbm__fim-nome">{{ r.nome }}</text>
+            <text :x.attr="r.x + 12" :y.attr="r.y + 14" class="hbm__fim-num">{{ pct(r.final) }}</text>
           </g>
         </template>
         <!-- o eixo do tempo -->
-        <line :x1="M.esq" :x2="M.esq + geo.w" :y1="geo.base" :y2="geo.base" class="hbm__eixo" />
-        <text :x="geo.X(0)" :y="ALTURA - 8" class="hbm__marca">10h</text>
-        <text :x="geo.X(210)" :y="ALTURA - 8" text-anchor="middle" class="hbm__marca">13h30</text>
-        <text :x="geo.X((fechaAs - 10) * 60)" :y="ALTURA - 8" text-anchor="end" class="hbm__marca">{{ fechaAs }}h</text>
+        <line :x1.attr="M.esq" :x2.attr="M.esq + geo.w" :y1.attr="geo.base" :y2.attr="geo.base" class="hbm__eixo" />
+        <text :x.attr="geo.X(0)" :y.attr="ALTURA - 8" class="hbm__marca">10h</text>
+        <text :x.attr="geo.X(210)" :y.attr="ALTURA - 8" text-anchor="middle" class="hbm__marca">13h30</text>
+        <text :x.attr="geo.X((fechaAs - 10) * 60)" :y.attr="ALTURA - 8" text-anchor="end" class="hbm__marca">{{ fechaAs }}h</text>
         <!-- a leitura: a faixa que atravessa o dia -->
         <template v-if="leitura">
-          <rect :x="Math.max(M.esq, leitura.x - 120)" :y="M.topo - 8" :width="Math.min(120, leitura.x - M.esq)" :height="geo.h + 8" fill="url(#hbm-rastro)" />
-          <line :x1="leitura.x" :x2="leitura.x" :y1="M.topo - 8" :y2="geo.base" class="hbm__leitor" />
-          <text :x="leitura.x" :y="M.topo - 16" text-anchor="middle" class="hbm__leitor-txt">{{ leitura.rotulo }}</text>
+          <rect :x.attr="Math.max(M.esq, leitura.x - 120)" :y.attr="M.topo - 8" :width.attr="Math.min(120, leitura.x - M.esq)" :height.attr="geo.h + 8" fill="url(#hbm-rastro)" />
+          <line :x1.attr="leitura.x" :x2.attr="leitura.x" :y1.attr="M.topo - 8" :y2.attr="geo.base" class="hbm__leitor" />
+          <text :x.attr="leitura.x" :y.attr="M.topo - 16" text-anchor="middle" class="hbm__leitor-txt">{{ leitura.rotulo }}</text>
         </template>
         <!-- o cursor -->
-        <line v-if="dica" :x1="dica.x" :x2="dica.x" :y1="M.topo" :y2="geo.base" class="hbm__cursor" />
+        <line v-if="dica" :x1.attr="dica.x" :x2.attr="dica.x" :y1.attr="M.topo" :y2.attr="geo.base" class="hbm__cursor" />
       </svg>
       <div v-if="dica" class="hbm__dica" :class="{ 'hbm__dica--esq': dica.esquerda }" :style="{ left: `${dica.x}px` }">
         <span class="hbm__dica-hora">{{ dica.hora }}</span>

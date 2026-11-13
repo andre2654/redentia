@@ -19,6 +19,10 @@
 // dado é o real (content/ibov-mensal.ts). O fecho vem escrito à mão (Caveat,
 // carregada só quando o bilhete vai abrir) e assinado com a foto do André.
 // Sem recomendação: o texto não diz para vender, segurar nem comprar.
+// Hidratação (13/11/2026): toda medida do SVG da serra com bind vai com .attr.
+// Ao hidratar, o Vue 3.5 tenta gravar o que é dinâmico como propriedade do
+// elemento, e x1, y2, cx, viewBox e companhia só têm leitura (o aviso "Failed
+// setting prop" no console).
 import { IBOV_MENSAL, IBOV_MENSAL_INICIO } from '~/content/ibov-mensal'
 import { RECADO, eventoRecado, recadoNoAr } from '~/composables/useRecado'
 
@@ -162,9 +166,9 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
         @click.stop
       >
         <div class="rec__serra" aria-hidden="true">
-          <svg :viewBox="`0 0 ${VW} ${VH}`" preserveAspectRatio="xMidYMax slice" class="rec__svg">
+          <svg :viewBox.attr="`0 0 ${VW} ${VH}`" preserveAspectRatio="xMidYMax slice" class="rec__svg">
             <defs>
-              <linearGradient id="rec-gelo" x1="0" :y1="TOPO" x2="0" :y2="VH" gradientUnits="userSpaceOnUse">
+              <linearGradient id="rec-gelo" x1="0" :y1.attr="TOPO" x2="0" :y2.attr="VH" gradientUnits="userSpaceOnUse">
                 <stop offset="0" class="rec__s-neve" />
                 <stop offset="1" class="rec__s-base" />
               </linearGradient>
@@ -173,10 +177,10 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
             <path :d="corpoFrente" fill="url(#rec-gelo)" />
             <path :d="cristaFrente" class="rec__crista" pathLength="1" />
             <g v-for="v in VALES" :key="v.rotulo" class="rec__vale">
-              <line :x1="v.x" :y1="v.y + 5" :x2="v.x" :y2="v.y + 16" />
-              <text :x="v.x" :y="v.y + 28" text-anchor="middle">{{ v.rotulo }}</text>
+              <line :x1.attr="v.x" :y1.attr="v.y + 5" :x2.attr="v.x" :y2.attr="v.y + 16" />
+              <text :x.attr="v.x" :y.attr="v.y + 28" text-anchor="middle">{{ v.rotulo }}</text>
             </g>
-            <circle :cx="hoje.x" :cy="hoje.y" r="3.5" class="rec__hoje" />
+            <circle :cx.attr="hoje.x" :cy.attr="hoje.y" r="3.5" class="rec__hoje" />
           </svg>
           <span class="rec__legenda">Ibovespa, mês a mês, desde 1995</span>
         </div>

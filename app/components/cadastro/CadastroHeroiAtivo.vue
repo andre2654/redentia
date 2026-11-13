@@ -53,13 +53,13 @@ const logoFalhou = ref<string | null>(null)
         </linearGradient>
       </defs>
       <path class="cha__area" :d="linha.area" :fill="`url(#${id}-area)`" />
-      <line class="cha__area cha__ontem" x1="6" :y1="linha.ontemY" x2="450" :y2="linha.ontemY" stroke-width="1" stroke-dasharray="2 5" />
+      <line class="cha__area cha__ontem" x1="6" :y1.attr="linha.ontemY" x2="450" :y2.attr="linha.ontemY" stroke-width="1" stroke-dasharray="2 5" />
       <path class="cha__linha" :d="linha.corpo" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
       <path class="cha__hoje" :d="linha.queda" fill="none" stroke-width="2.5" stroke-linecap="round" />
-      <line class="cha__guia" :x1="linha.fim[0]" y1="-12" :x2="linha.fim[0]" :y2="linha.fim[1] - 7" stroke-width="1.5" stroke-dasharray="3 4" />
+      <line class="cha__guia" :x1.attr="linha.fim[0]" y1="-12" :x2.attr="linha.fim[0]" :y2.attr="linha.fim[1] - 7" stroke-width="1.5" stroke-dasharray="3 4" />
       <g class="cha__ponto">
-        <circle class="cha__onda" :cx="linha.fim[0]" :cy="linha.fim[1]" r="5" fill="none" stroke-width="1.5" />
-        <circle :cx="linha.fim[0]" :cy="linha.fim[1]" r="5" />
+        <circle class="cha__onda" :cx.attr="linha.fim[0]" :cy.attr="linha.fim[1]" r="5" fill="none" stroke-width="1.5" />
+        <circle :cx.attr="linha.fim[0]" :cy.attr="linha.fim[1]" r="5" />
       </g>
     </svg>
     <!-- carregando: o esqueleto ocupa a altura do gráfico que vem (o cartão não cresce quando o dado chega) -->
