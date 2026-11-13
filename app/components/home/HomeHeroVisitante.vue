@@ -36,13 +36,23 @@
 // Robustez (11/11/2026, docs/aportou/robustez.md): a chamada é a única coisa
 // cheia do herói. Pesos, tracking, espaços (8 px) e a entrada vêm dos tokens
 // (--nu-dur-entrada, --nu-ease-saida, cascata de 60 ms).
+//
+// A seta de rolar do filme traz a página até o texto e passa o foco ao título
+// (quem chegou pelo teclado continua dali).
+const textoEl = ref<HTMLElement | null>(null)
+const tituloEl = ref<HTMLElement | null>(null)
+function descer() {
+  const calmo = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  textoEl.value?.scrollIntoView({ behavior: calmo ? 'auto' : 'smooth', block: 'start' })
+  tituloEl.value?.focus({ preventScroll: true })
+}
 </script>
 
 <template>
   <section class="hhv" aria-labelledby="hhv-titulo">
-    <HomeFilme class="hhv__filme" />
-    <div class="hhv__texto">
-      <h1 id="hhv-titulo" class="hhv__titulo">Simulamos a sua carteira em 2.000 cenários para ver se ela é boa.</h1>
+    <HomeFilme class="hhv__filme" @descer="descer" />
+    <div ref="textoEl" class="hhv__texto">
+      <h1 id="hhv-titulo" ref="tituloEl" class="hhv__titulo" tabindex="-1">Simulamos a sua carteira em 2.000 cenários para ver se ela é boa.</h1>
       <p class="hhv__dek">Você conecta o banco uma vez. A IA testa a carteira nos próximos cinco anos, vigia todo dia e só chama quando algo pede você.</p>
       <HomeChamada tom="escuro" porte="calmo" sem-apps class="hhv__chamada" />
     </div>
@@ -64,12 +74,15 @@
 }
 /* o filme vai de beira a beira: o respiro lateral é só do texto */
 .hhv__filme { align-self: stretch; }
-/* o respiro de cima é o lugar da barra do chat: no alto da página o filme acaba logo acima dela, e o título começa
-   depois da dobra (com menos respiro, a barra ficava em cima da primeira linha do título) */
+/* o texto começa depois da dobra (o filme a enche). A seta de rolar o traz para baixo da navegação e da régua, que
+   grudam no alto */
 .hhv__texto {
   display: flex; flex-direction: column; align-items: center; max-width: 1120px;
-  padding: 104px var(--g) calc(var(--chao) + clamp(40px, 4.6vw, 64px));
+  padding: clamp(40px, 4.6vw, 64px) var(--g) calc(var(--chao) + clamp(40px, 4.6vw, 64px));
+  scroll-margin-top: calc(var(--nuh-h, 72px) + var(--nut-h, 44px));
 }
+/* o título recebe o foco da seta de rolar só para o teclado continuar dali: não é um controle */
+.hhv__titulo:focus { outline: 0; }
 .hhv__titulo {
   margin: 0; max-width: 22ch;
   font-size: clamp(36px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1;
@@ -123,7 +136,7 @@
 }
 /* celular: o título menor e a chamada na largura toda */
 @media (max-width: 560px) {
-  .hhv__texto { padding-top: 96px; }
+  .hhv__texto { padding-top: 32px; }
   .hhv__titulo { font-size: clamp(31px, 8.6vw, 37px); line-height: 1.05; }
   .hhv__texto, .hhv__chamada { align-self: stretch; }
   .hhv__chamada { margin-top: 24px; }

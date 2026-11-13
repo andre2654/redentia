@@ -84,7 +84,7 @@ test('os apps: só o que está na App Store vira link; o resto diz "em breve" (0
   const tela = heroi.slice(heroi.indexOf('<template>'), heroi.lastIndexOf('</template>'))
   assert.doesNotMatch(tela, /iPhone|Apple|App Store|\bMac\b|Watch|fraseDosApps|seloDoApp/)
   assert.match(tela, /<HomeChamada[^>]*sem-apps/)
-  assert.match(tela, /<HomeFilme class="hhv__filme" \/>/)
+  assert.match(tela, /<HomeFilme class="hhv__filme" @descer="descer" \/>/)
   assert.doesNotMatch(tela, /<HomeLeque\b/)
   assert.equal((tela.match(/<HomeChamada\b/g) ?? []).length, 1)
   // o filme vem antes do título: ele abre a página, e o H1 segue logo depois dele no HTML

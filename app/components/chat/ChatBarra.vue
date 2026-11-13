@@ -17,6 +17,11 @@
 // O fim da página nunca fica embaixo dela: o layout soma a altura da barra ao
 // pé do rodapé (html.nu-chat-barra, estilo global abaixo).
 //
+// Um herói que precisa da dobra inteira (o filme da home do visitante,
+// HomeFilme; dono, 13/11/2026) marca o <html> com data-chat-barra="fora"
+// enquanto a barra ficaria em cima dele: ela desce e some, e volta quando a
+// página rola. Com o foco dentro (alguém chegou nela pelo teclado), ela fica.
+//
 // Robustez (11/11/2026): nada passa do ponto. A cápsula do celular abre na
 // curva do que muda de lugar (--nu-ease-troca), sem a mola que quicava; as
 // trocas da marca pelos botões e das sugestões usam os tempos dos tokens; os
@@ -239,7 +244,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
   position: fixed; z-index: 45; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom));
   width: min(560px, calc(100% - 32px)); transform: translateX(-50%);
   /* do centro para baixo do cartão do ativo (e de volta): a curva do que muda de lugar */
-  transition: left var(--nu-dur-lenta) var(--nu-ease-troca), width var(--nu-dur-lenta) var(--nu-ease-troca), transform var(--nu-dur-lenta) var(--nu-ease-troca);
+  transition: left var(--nu-dur-lenta) var(--nu-ease-troca), width var(--nu-dur-lenta) var(--nu-ease-troca), transform var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
 @media (prefers-reduced-motion: reduce) {
   .cba { transition: none; }
@@ -340,7 +345,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
 @media (max-width: 760px) {
   .cba {
     bottom: calc(12px + env(safe-area-inset-bottom)); width: calc(100% - 24px);
-    transition: width var(--nu-dur-lenta) var(--nu-ease-troca);
+    transition: width var(--nu-dur-lenta) var(--nu-ease-troca), transform var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-media) var(--nu-ease-cor);
   }
   .cba__linha { height: 52px; padding-left: 16px; gap: 10px; }
   .cba--foco .cba__linha { height: 56px; }
@@ -366,4 +371,8 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
    nunca fica escondido atrás da barra. */
 html.nu-chat-barra .nu-shell > footer { padding-bottom: calc(98px + env(safe-area-inset-bottom)); }
 html.nu-chat-barra .nu-shell:not(:has(> footer)) { padding-bottom: calc(98px + env(safe-area-inset-bottom)); }
+/* Fora da frente de um herói que precisa da dobra inteira (o filme da home do visitante): a barra desce e some, e
+   volta quando a página rola. Com o foco dentro ela fica (o teclado chega nela de qualquer jeito). Fica neste bloco
+   sem escopo de propósito: o `:global(html[...]) .cba` do Vue descartaria o resto do seletor */
+html[data-chat-barra='fora'] .cba:not(:focus-within) { opacity: 0; transform: translate(-50%, calc(100% + 24px)); pointer-events: none; }
 </style>

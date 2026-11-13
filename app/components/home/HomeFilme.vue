@@ -42,20 +42,31 @@
 // parede. Como o filme é mais escuro nas beiras do que no meio, as faixas
 // ficavam mais claras que a borda dele e o filme parecia uma caixa.)
 //
-// O TETO da dobra desconta o que há em cima do palco e a barra do chat, que
-// flutua no pé da janela: o filme acaba logo acima dela, e a barra fica
-// encaixada embaixo do filme. Sem isso ela cobria as letras miúdas do 16:9
-// ("Simulação com carteira de exemplo. Não é promessa de retorno."), que ficam
-// na beira de baixo, bem na cena do número. Em cima: antes de a página montar,
-// é a navegação, a régua e, se o aviso de cookies estiver aberto, uma
-// estimativa dele; depois de montar, a peça mede onde o palco começa de fato.
-// Numa janela baixa demais o filme não encolhe além de 35% da largura da tela.
+// O TETO é a primeira dobra inteira: a altura da janela menos o que há em cima
+// do palco. Antes de a página montar, é a navegação, a régua e, se o aviso de
+// cookies estiver aberto, uma estimativa dele; depois de montar, a peça mede
+// onde o palco começa de fato. Numa janela baixa demais o filme não encolhe
+// além de 35% da largura da tela.
 // A medida vale para a página no alto: com a página rolada o header está
 // encolhido e o palco fica uns 12px mais acima, e essa diferença é devolvida
 // (--nuh-h-normal menos --nuh-h, como no EspiarAtivo). E ela acompanha o aviso
 // de cookies: quando a pessoa escolhe, o aviso recolhe, o palco sobe e o filme
 // cresce junto, quadro a quadro, até encostar de novo na barra do chat (sem
 // isso ficava um vão preto de 58px entre os dois; 82px no celular).
+//
+// A BARRA DO CHAT SAI DA FRENTE (dono, 13/11/2026). Flutuando no pé da janela,
+// ela cobria as letras miúdas do 16:9 ("Simulação com carteira de exemplo. Não
+// é promessa de retorno."); encaixada embaixo do filme, roubava a dobra (o
+// filme ficava com 1.070 de 1.512 px de largura num Mac de 14"). Enquanto a
+// barra ficaria em cima do filme, a peça marca o <html>
+// (data-chat-barra="fora") e a barra desce e some (ChatBarra); quando a página
+// rola e o filme sobe acima dela, ela volta.
+//
+// A SETA DE ROLAR fica no lugar dela, no canto de baixo à esquerda (o dono: "e
+// mostrar um símbolo no canto inferior que a pessoa pode rolar para baixo").
+// É o canto oposto aos controles, e nenhum texto do filme passa por ele nos
+// dois formatos. Ela desce e volta três vezes e para (nada de animação sem
+// fim); o toque leva ao título, e ela some junto com a barra que volta.
 //
 // OS ARQUIVOS ficam em public/video: HEVC primeiro (iPhone, Mac e Chrome
 // tocam, e pesa a metade) e H.264 de reserva. Os dois têm um quadro-chave em
@@ -66,6 +77,8 @@ const COMECA_EM = 1.5
 const BASE = '/video/aportou-lancamento'
 /** o celular em pé recebe o 9:16 */
 const EM_PE = '(max-width: 640px) and (orientation: portrait)'
+
+const emit = defineEmits<{ /** a seta de rolar: o herói leva a página ao título */ descer: [] }>()
 
 const palco = ref<HTMLElement | null>(null)
 const video = ref<HTMLVideoElement | null>(null)
@@ -95,6 +108,22 @@ let aVista = true
 let olho: IntersectionObserver | null = null
 /** o aviso de cookies fica em cima do palco: aberto ou fechado, muda onde o palco começa */
 const { aberto: avisoAberto } = useConsent()
+
+/* ————— a barra do chat sai da frente do filme ————— */
+/** a barra do chat ficaria em cima do filme? Na chegada, sim (o filme enche a dobra); a página confere ao montar */
+const cobre = ref(true)
+/** onde a barra começa, contando do pé da janela, com 5 px de folga: 20 + 63 no computador, 12 + 53 no celular (ChatBarra) */
+const BARRA_NO_PE = { computador: 88, celular: 74 }
+function verSeCobre() {
+  const el = palco.value
+  if (!el) return
+  const r = el.getBoundingClientRect()
+  const barra = window.innerHeight - (window.matchMedia('(max-width: 760px)').matches ? BARRA_NO_PE.celular : BARRA_NO_PE.computador)
+  cobre.value = r.bottom > barra && r.top < barra
+}
+useNuScrollFrame(verSeCobre)
+// a barra lê a marca no <html> (já no HTML do servidor: ela nem aparece na chegada)
+useHead(() => ({ htmlAttrs: { 'data-chat-barra': cobre.value ? 'fora' : undefined } }))
 
 function podeSozinho(): boolean {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
@@ -214,9 +243,11 @@ function medir() {
   const caixa = img.getBoundingClientRect()
   const proporcao = (img.naturalWidth || 16) / (img.naturalHeight || 9)
   faixa.value = Math.max(0, Math.round((caixa.width - caixa.height * proporcao) / 2))
-  temFaixa = faixa.value > 3
+  // qualquer faixa, até a de 3 px do 9:16 no celular (sem pintar, ela fica um fio escuro ao lado das cenas azuis)
+  temFaixa = faixa.value > 0
   if (temFaixa) { pintarLaterais(noAr.value ? video.value : img); if (tocando.value) ligarLaterais() }
   else desligarLaterais()
+  verSeCobre()
 }
 
 /** o que há em cima do palco está mudando de altura (o aviso de cookies recolhe ao fechar): mede a cada quadro até assentar */
@@ -323,22 +354,29 @@ onBeforeUnmount(() => {
         <span v-if="!comSom" class="hfi__som-rotulo" aria-hidden="true">Ativar som</span>
       </button>
     </div>
+
+    <!-- a seta de rolar: no canto de baixo à esquerda, enquanto o filme enche a dobra -->
+    <button
+      type="button" class="hfi__botao hfi__descer" :class="{ 'hfi__descer--fora': !cobre }"
+      :tabindex="cobre ? 0 : -1" :aria-hidden="cobre ? undefined : 'true'" aria-label="Descer para o resto da página" @click="emit('descer')"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14" /><path d="m6 13 6 6 6-6" /></svg>
+    </button>
   </div>
 </template>
 
 <style scoped>
-/* o palco: a largura inteira da tela. O filme cabe inteiro (contain) e não passa da primeira dobra: o teto é a altura
-   da janela menos o que há em cima do palco e menos a barra do chat, que flutua no pé (o filme acaba acima dela).
+/* o palco: a largura inteira da tela. O filme cabe inteiro (contain) e enche a primeira dobra: o teto é a altura da
+   janela menos o que há em cima do palco (a barra do chat sai da frente: ChatBarra, html[data-chat-barra]).
    Em cima: depois de montar, a peça mede (--hfi-topo); antes, vale a navegação e a régua (que publicam a altura delas
    no <html>) e, com o aviso de cookies aberto, uma estimativa dele. O piso de 35vw é para a janela baixa demais */
 .hfi {
   --hfi-em-cima: var(--hfi-topo, calc(var(--nuh-h-normal, 72px) + var(--nut-h, 44px) + var(--hfi-aviso, 0px)));
-  --hfi-chat: 88px;
-  --hfi-teto: max(calc(100vh - var(--hfi-em-cima) - var(--hfi-chat)), 35vw);
+  --hfi-teto: max(calc(100vh - var(--hfi-em-cima)), 35vw);
   position: relative; isolation: isolate; display: grid; place-items: center; width: 100%; overflow: clip; background: var(--nu-agora-bg);
 }
 @supports (height: 100svh) {
-  .hfi { --hfi-teto: max(calc(100svh - var(--hfi-em-cima) - var(--hfi-chat)), 35vw); }
+  .hfi { --hfi-teto: max(calc(100svh - var(--hfi-em-cima)), 35vw); }
 }
 html[data-ck='open'] .hfi { --hfi-aviso: 53px; }
 .hfi picture { display: contents; }
@@ -366,7 +404,7 @@ html[data-ck='open'] .hfi { --hfi-aviso: 53px; }
 .hfi--no-ar .hfi__andamento { opacity: 1; }
 .hfi__andamento span { display: block; height: 100%; background: var(--nu-white-78); transform-origin: left center; transition: transform var(--nu-dur-media) linear; }
 
-/* os controles, no canto de cima à direita: embaixo ficam as letras miúdas do filme e a barra do chat, que flutua.
+/* os controles, no canto de cima à direita: embaixo ficam as letras miúdas do filme e a seta de rolar.
    Nenhum texto do filme passa por esse canto */
 .hfi__controles { position: absolute; right: clamp(12px, 2vw, 28px); top: clamp(12px, 1.6vw, 22px); display: flex; flex-direction: row-reverse; gap: 8px; }
 .hfi__botao {
@@ -381,6 +419,16 @@ html[data-ck='open'] .hfi { --hfi-aviso: 53px; }
 .hfi__botao:active { transform: scale(.95); }
 .hfi__botao:focus-visible, .hfi__assistir:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 2px; }
 .hfi__botao--som { padding-inline: 13px 16px; }
+
+/* a seta de rolar, no canto de baixo à esquerda (acima do fio do andamento). Some quando a página rola */
+.hfi__descer {
+  position: absolute; left: clamp(12px, 2vw, 28px); bottom: clamp(14px, 1.8vw, 24px); padding: 0;
+  transition: opacity var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida), background-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.hfi__descer--fora { opacity: 0; transform: translateY(8px); pointer-events: none; }
+/* depois que a página assenta, a seta desce e volta três vezes, e para */
+.hfi__descer svg { animation: hfi-desce calc(var(--nu-dur-entrada) * 2) var(--nu-ease-troca) calc(var(--nu-dur-entrada) * 2) 3 both; }
+@keyframes hfi-desce { 0%, 60%, 100% { transform: none; } 30% { transform: translateY(5px); } }
 .hfi__botao--som[aria-pressed='true'] { padding-inline: 13px; }
 
 /* a capa com o botão, para quem o filme não tocou sozinho */
@@ -398,7 +446,6 @@ html[data-ck='open'] .hfi { --hfi-aviso: 53px; }
 /* o celular em pé recebe o filme 9:16 (e o aviso de cookies ocupa mais linhas). O botão do som fica só com o ícone:
    com o rótulo ele alcançaria o texto do filme, que no 9:16 é centrado */
 @media (max-width: 640px) {
-  .hfi { --hfi-chat: 74px; }
   html[data-ck='open'] .hfi { --hfi-aviso: 73px; }
   .hfi__som-rotulo { display: none; }
   .hfi__botao--som { padding-inline: 13px; }
@@ -409,5 +456,6 @@ html[data-ck='open'] .hfi { --hfi-aviso: 53px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hfi__video, .hfi__capa, .hfi__andamento, .hfi__andamento span, .hfi__botao, .hfi__assistir { transition: none; }
+  .hfi__descer svg { animation: none; }
 }
 </style>

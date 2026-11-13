@@ -87,16 +87,17 @@ test('o som é escolha de quem vê, e o filme sempre pode ser parado', () => {
   assert.match(filme, /if \(querTocar && aVista && !terminou\.value\) \{ if \(v\.paused\) void tocar\(\) \}\n  else if \(!v\.paused\) v\.pause\(\)/)
 })
 
-test('o filme cabe inteiro e na primeira dobra, acima da barra do chat', () => {
+test('o filme cabe inteiro e enche a primeira dobra', () => {
   // inteiro (contain), na largura toda, até o teto da dobra
   assert.match(estilo, /grid-area: 1 \/ 1; display: block; width: 100%; height: auto; aspect-ratio: 16 \/ 9; max-height: var\(--hfi-teto\); object-fit: contain;/)
   assert.match(estilo, /@media \(max-width: 640px\) and \(orientation: portrait\) \{\n  \.hfi__capa, \.hfi__video \{ aspect-ratio: 9 \/ 16; \}/)
   // o teto desconta o que há em cima: medido ao montar; antes disso, a navegação, a régua e o aviso de cookies
   assert.match(estilo, /--hfi-em-cima: var\(--hfi-topo, calc\(var\(--nuh-h-normal, 72px\) \+ var\(--nut-h, 44px\) \+ var\(--hfi-aviso, 0px\)\)\);/)
   assert.match(estilo, /html\[data-ck='open'\] \.hfi \{ --hfi-aviso: 53px; \}/)
-  // e desconta a barra do chat, que flutua no pé: o filme acaba acima dela (ela cobria as letras miúdas do 16:9)
-  assert.match(estilo, /--hfi-chat: 88px;\n  --hfi-teto: max\(calc\(100vh - var\(--hfi-em-cima\) - var\(--hfi-chat\)\), 35vw\);/)
-  assert.match(estilo, /\.hfi \{ --hfi-teto: max\(calc\(100svh - var\(--hfi-em-cima\) - var\(--hfi-chat\)\), 35vw\); \}/)
+  // a dobra inteira: a barra do chat sai da frente, então não há reserva para ela
+  assert.match(estilo, /--hfi-teto: max\(calc\(100vh - var\(--hfi-em-cima\)\), 35vw\);/)
+  assert.match(estilo, /\.hfi \{ --hfi-teto: max\(calc\(100svh - var\(--hfi-em-cima\)\), 35vw\); \}/)
+  assert.doesNotMatch(estilo, /--hfi-chat/)
   // a medida vale para a página no alto: rolada, o header está encolhido, e a diferença volta para a conta (sem isso
   // um redimensionar com a página rolada deixava o filme 12px mais alto, por baixo da barra do chat)
   assert.match(filme, /topo\.value = Math\.round\(el\.getBoundingClientRect\(\)\.top \+ window\.scrollY \+ Math\.max\(0, normal - atual\)\)/)
@@ -106,6 +107,30 @@ test('o filme cabe inteiro e na primeira dobra, acima da barra do chat', () => {
   assert.match(filme, /watch\(avisoAberto, \(\) => \{ if \(import\.meta\.client\) seguirOTopo\(\) \}\)/)
   assert.match(filme, /const passo = \(\) => \{ medir\(\); seguindo = performance\.now\(\) < ate \? requestAnimationFrame\(passo\) : 0 \}/)
   assert.match(filme, /cancelAnimationFrame\(seguindo\)\n  window\.removeEventListener\('resize', medir\)/)
+})
+
+test('a barra do chat sai da frente do filme, e a seta de rolar fica no lugar dela', () => {
+  // enquanto a barra ficaria em cima do filme, a peça marca o <html>; já no HTML do servidor (a barra nem aparece)
+  assert.match(filme, /const cobre = ref\(true\)/)
+  assert.match(filme, /cobre\.value = r\.bottom > barra && r\.top < barra/)
+  assert.match(filme, /useNuScrollFrame\(verSeCobre\)/)
+  assert.match(filme, /useHead\(\(\) => \(\{ htmlAttrs: \{ 'data-chat-barra': cobre\.value \? 'fora' : undefined \} \}\)\)/)
+  // a barra lê a marca: desce e some, menos com o foco dentro (o teclado chega nela de qualquer jeito)
+  const barra = ler('app/components/chat/ChatBarra.vue')
+  const global = barra.slice(barra.lastIndexOf('<style>'))
+  assert.match(global, /html\[data-chat-barra='fora'\] \.cba:not\(:focus-within\) \{ opacity: 0; transform: translate\(-50%, calc\(100% \+ 24px\)\); pointer-events: none; \}/)
+  // a seta: no canto de baixo à esquerda, some quando a barra volta, e leva ao título
+  assert.match(molde, /class="hfi__botao hfi__descer" :class="\{ 'hfi__descer--fora': !cobre \}"/)
+  assert.match(molde, /aria-label="Descer para o resto da página" @click="emit\('descer'\)"/)
+  assert.match(estilo, /\.hfi__descer \{\n  position: absolute; left: clamp\(12px, 2vw, 28px\); bottom: clamp\(14px, 1\.8vw, 24px\);/)
+  // ela desce e volta três vezes e para: nada de animação sem fim
+  assert.match(estilo, /\.hfi__descer svg \{ animation: hfi-desce [^;]* 3 both; \}/)
+  assert.doesNotMatch(estilo, /hfi-desce[^;]*infinite/)
+  // o herói leva a página ao texto e passa o foco ao título
+  const heroi = ler('app/components/home/HomeHeroVisitante.vue')
+  assert.match(heroi, /<HomeFilme class="hhv__filme" @descer="descer" \/>/)
+  assert.match(heroi, /<h1 id="hhv-titulo" ref="tituloEl" class="hhv__titulo" tabindex="-1">/)
+  assert.match(heroi, /tituloEl\.value\?\.focus\(\{ preventScroll: true \}\)/)
 })
 
 test('as laterais continuam a beira do filme até a beira da janela', () => {
