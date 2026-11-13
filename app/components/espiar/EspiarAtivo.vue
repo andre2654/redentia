@@ -409,7 +409,7 @@ onBeforeUnmount(() => {
 
           <figure v-if="vm.linha" class="esp__linha">
             <div class="esp__linha-palco">
-              <svg :viewBox="`0 0 ${LINHA_LARGURA} ${LINHA_ALTURA}`" preserveAspectRatio="none" class="esp__linha-svg" aria-hidden="true">
+              <svg :viewBox.attr="`0 0 ${LINHA_LARGURA} ${LINHA_ALTURA}`" preserveAspectRatio="none" class="esp__linha-svg" aria-hidden="true">
                 <path :d="vm.linha.d" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" />
               </svg>
               <span class="esp__hoje" :style="pontoHoje" aria-hidden="true" />

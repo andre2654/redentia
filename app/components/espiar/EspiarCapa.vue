@@ -208,7 +208,7 @@ const ACOES = [[36], [62, 46], [70], [58]]
               </template>
               <div ref="plot" class="esc__plot">
                 <template v-if="desenho">
-                  <svg class="esc__svg" :viewBox="`0 0 ${caixa.w} ${caixa.h}`" preserveAspectRatio="none">
+                  <svg class="esc__svg" :viewBox.attr="`0 0 ${caixa.w} ${caixa.h}`" preserveAspectRatio="none">
                     <defs>
                       <linearGradient :id="`${uid}-luz`" x1="0" y1="0" x2="1" y2="0">
                         <stop offset="0" class="esc__luz-a" />
@@ -221,7 +221,7 @@ const ACOES = [[36], [62, 46], [70], [58]]
                   </svg>
                   <!-- o brilho que corre pela linha enquanto a página não chega -->
                   <div class="esc__brilho">
-                    <svg class="esc__svg" :viewBox="`0 0 ${caixa.w} ${caixa.h}`" preserveAspectRatio="none">
+                    <svg class="esc__svg" :viewBox.attr="`0 0 ${caixa.w} ${caixa.h}`" preserveAspectRatio="none">
                       <path :d="desenho.d" class="esc__brilho-halo" />
                       <path :d="desenho.d" class="esc__brilho-linha" />
                     </svg>

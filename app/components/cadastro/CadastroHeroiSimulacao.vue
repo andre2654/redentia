@@ -79,9 +79,9 @@ const id = useId()
       </defs>
       <path :d="curva.area" :fill="`url(#${id}-area)`" />
       <path class="chs__reta" :d="curva.aporte" fill="none" stroke-width="1.5" stroke-dasharray="4 6" />
-      <text :x="curva.fimAporte[0]" :y="curva.fimAporte[1] + 18" text-anchor="end" class="chs__aporte">{{ aportadoTexto }}</text>
+      <text :x.attr="curva.fimAporte[0]" :y.attr="curva.fimAporte[1] + 18" text-anchor="end" class="chs__aporte">{{ aportadoTexto }}</text>
       <path class="chs__curva" :d="curva.d" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-      <circle v-if="bola" class="chs__bola" :cx="bola.x" :cy="bola.y" :r="bola.r" :fill="`url(#${id}-bola)`" />
+      <circle v-if="bola" class="chs__bola" :cx.attr="bola.x" :cy.attr="bola.y" :r.attr="bola.r" :fill="`url(#${id}-bola)`" />
     </svg>
   </div>
 </template>

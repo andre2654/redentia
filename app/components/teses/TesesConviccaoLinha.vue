@@ -34,7 +34,7 @@ const desenho = computed(() => {
 
 <template>
   <span v-if="desenho" class="tcl" :style="{ height: `${altura}px` }" aria-hidden="true">
-    <svg class="tcl__svg" :viewBox="`0 0 ${largura} ${altura}`" preserveAspectRatio="none">
+    <svg class="tcl__svg" :viewBox.attr="`0 0 ${largura} ${altura}`" preserveAspectRatio="none">
       <path :d="desenho.d" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
     </svg>
     <!-- o ponto fora do SVG: com o traço esticado, um círculo viraria elipse -->

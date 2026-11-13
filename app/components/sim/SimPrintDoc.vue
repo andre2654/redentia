@@ -76,7 +76,7 @@ const bandPath = computed(() => {
     <p v-if="driftWarning" class="spd__stale">{{ driftWarning }}</p>
     <p v-if="fxNote" class="spd__fxnote">{{ fxNote }}</p>
 
-    <svg class="spd__chart" :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none">
+    <svg class="spd__chart" :viewBox.attr="`0 0 ${W} ${H}`" preserveAspectRatio="none">
       <path :d="bandPath" fill="var(--nu-blue-soft)" opacity="0.3" />
       <path :d="line(result.series.p50)" fill="none" stroke="var(--nu-blue)" stroke-width="2.2" />
     </svg>

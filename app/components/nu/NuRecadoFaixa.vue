@@ -54,7 +54,7 @@ const serra = logs
 
 <template>
   <div v-if="visivel" class="rfx" role="region" aria-label="Recado do André">
-    <svg class="rfx__serra" :viewBox="`0 0 ${VW} ${VH}`" preserveAspectRatio="none" aria-hidden="true">
+    <svg class="rfx__serra" :viewBox.attr="`0 0 ${VW} ${VH}`" preserveAspectRatio="none" aria-hidden="true">
       <path :d="serra" />
     </svg>
     <div class="rfx__in">

@@ -536,7 +536,7 @@ const olhouLinha = computed(() => {
     <!-- a abertura em onda (só durante ela): a luz, os anéis e a logo -->
     <template v-if="abrindoLogo">
     <span class="cto__clarao" :style="{ left: `${abrindoLogo.x}px`, top: `${abrindoLogo.y}px` }" aria-hidden="true" />
-    <svg ref="ondaRef" class="cto__onda" :viewBox="`0 0 ${abrindoLogo.w} ${abrindoLogo.h}`" :width="abrindoLogo.w" :height="abrindoLogo.h" aria-hidden="true">
+    <svg ref="ondaRef" class="cto__onda" :viewBox.attr="`0 0 ${abrindoLogo.w} ${abrindoLogo.h}`" :width.attr="abrindoLogo.w" :height.attr="abrindoLogo.h" aria-hidden="true">
       <defs>
         <linearGradient id="cto-onda-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color: var(--nu-blue-on-dark)" /><stop offset=".5" style="stop-color: var(--nu-blue-soft)" /><stop offset="1" style="stop-color: var(--nu-blue)" /></linearGradient>
       </defs>

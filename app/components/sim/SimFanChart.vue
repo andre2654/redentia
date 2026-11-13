@@ -125,18 +125,18 @@ const fmt = fmtBRL
 
 <template>
   <div v-contexto-chat="{ id: 'sim:leque', tipo: 'grafico', rotulo: 'Cenários da simulação' }" class="sfc" @mousemove="onMove" @mouseleave="onLeave">
-    <svg class="sfc__svg" :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none" aria-hidden="true">
-      <line v-for="g in grid" :key="g.y" x1="0" :y1="g.y" x2="1000" :y2="g.y" stroke="var(--nu-dark-line)" stroke-width="1" vector-effect="non-scaling-stroke" />
+    <svg class="sfc__svg" :viewBox.attr="`0 0 ${W} ${H}`" preserveAspectRatio="none" aria-hidden="true">
+      <line v-for="g in grid" :key="g.y" x1="0" :y1.attr="g.y" x2="1000" :y2.attr="g.y" stroke="var(--nu-dark-line)" stroke-width="1" vector-effect="non-scaling-stroke" />
       <path :d="bandPath" fill="var(--nu-blue-on-dark)" opacity="0.18" class="sfc__band" :class="{ 'sfc__band--in': !drawing }" />
       <!-- trajetórias macro (atrás da mediana, finas) -->
       <g v-for="m in macroLines" :key="'mac' + m.key" class="sfc__macro">
         <path :d="m.d" fill="none" :stroke="m.color" stroke-width="1.7" opacity="0.75" vector-effect="non-scaling-stroke" />
-        <circle v-for="(a, i) in m.anchors" :key="i" :cx="a.x" :cy="a.y" r="4.2" :fill="m.color" stroke="var(--nu-ink)" stroke-width="1.8" />
+        <circle v-for="(a, i) in m.anchors" :key="i" :cx.attr="a.x" :cy.attr="a.y" r="4.2" :fill="m.color" stroke="var(--nu-ink)" stroke-width="1.8" />
       </g>
       <!-- marcos de evento -->
       <line
         v-for="ev in events" :key="ev.label + ev.at"
-        :x1="X(ev.at)" y1="10" :x2="X(ev.at)" :y2="H - 26"
+        :x1.attr="X(ev.at)" y1="10" :x2.attr="X(ev.at)" :y2.attr="H - 26"
         :stroke="ev.kind === 'choque' ? 'var(--nu-amber)' : 'var(--nu-on-dark-2)'"
         stroke-width="1.4" :stroke-dasharray="ev.kind === 'choque' ? 'none' : '2 5'"
         vector-effect="non-scaling-stroke" opacity="0.85"
@@ -147,7 +147,7 @@ const fmt = fmtBRL
       <!-- mediana da carteira PROPOSTA (what-if) -->
       <path v-if="comparePath" :d="comparePath" fill="none" stroke="var(--nu-amber)" stroke-width="2.2" vector-effect="non-scaling-stroke" class="sfc__cmp" />
       <!-- cursor -->
-      <line v-if="cursorInfo" :x1="(cursorInfo.x / 100) * W" y1="10" :x2="(cursorInfo.x / 100) * W" :y2="H - 26" stroke="var(--nu-on-dark-2)" stroke-width="1.2" vector-effect="non-scaling-stroke" />
+      <line v-if="cursorInfo" :x1.attr="(cursorInfo.x / 100) * W" y1="10" :x2.attr="(cursorInfo.x / 100) * W" :y2.attr="H - 26" stroke="var(--nu-on-dark-2)" stroke-width="1.2" vector-effect="non-scaling-stroke" />
     </svg>
 
     <!-- rótulo ancorado pra DENTRO perto das bordas + escalonado em 2 linhas
