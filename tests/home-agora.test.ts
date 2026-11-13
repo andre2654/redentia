@@ -85,6 +85,10 @@ test('os apps: só o que está na App Store vira link; o resto diz "em breve" (0
   assert.match(tela, /<HomeChamada[^>]*sem-apps/)
   assert.match(tela, /<HomeLeque\b/)
   assert.equal((tela.match(/<HomeChamada\b/g) ?? []).length, 1)
+  // a linha de luz acende com a rolagem da PÁGINA: o herói recorta com `clip` (com `hidden` ele virava a caixa de
+  // rolagem do horizonte, e a linha ficava travada a meia-luz)
+  assert.match(heroi, /\.hhv__horizonte \{ animation: hhv-acende linear both; animation-timeline: view\(\);/)
+  assert.match(heroi, /position: relative; isolation: isolate; overflow: hidden; overflow: clip;/)
 })
 
 test('a home tem um H1 por variante e as três seções que o dono tirou não voltam', () => {

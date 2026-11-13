@@ -62,7 +62,10 @@
   --g: clamp(22px, 5.5vw, 80px);
   /* o respiro do fim, ainda no escuro */
   --fim: clamp(48px, 5.5vw, 88px);
-  position: relative; isolation: isolate; overflow: hidden;
+  /* o recorte é `clip`, não `hidden` (13/11/2026): com `hidden` o herói virava a caixa de rolagem do horizonte, e a
+     linha de luz, que acende com a rolagem da PÁGINA, ficava travada a meia-luz (47% de opacidade, 70% da largura).
+     Quem não conhece `clip` fica com `hidden` */
+  position: relative; isolation: isolate; overflow: hidden; overflow: clip;
   display: flex; flex-direction: column; align-items: center; text-align: center;
   padding: clamp(40px, 4.4vw, 60px) var(--g) var(--fim);
   background: var(--nu-agora-bg);
