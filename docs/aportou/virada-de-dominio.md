@@ -1,6 +1,6 @@
 # A virada de domínio: Aportou em aportou.com.br, Redentia (B2B) em redentia.com.br
 
-Escrito em 13/11/2026, a pedido do dono: "ele ficar com o B2B e você ficar com o B2C, criarmos aqui tudo para não prejudicar tanto o SEO, então passar parte das antigas rotas do redentia.com.br para aportou.com.br e tudo mais que precisar para subir os dois e tudo continuar funcionando".
+Escrito em 13/11/2026 (com os acréscimos da sessão do B2B no mesmo dia), a pedido do dono: "ele ficar com o B2B e você ficar com o B2C, criarmos aqui tudo para não prejudicar tanto o SEO, então passar parte das antigas rotas do redentia.com.br para aportou.com.br e tudo mais que precisar para subir os dois e tudo continuar funcionando".
 
 Este arquivo é o contrato entre as duas sessões que constroem os sites: a do B2C (worktree `Frontend-wt-chat-painel`) e a do B2B (`RedentiaBusiness/` e o backend do B2B). Quem mudar uma regra daqui escreve a mudança aqui, com data, antes de construir em cima dela.
 
@@ -37,16 +37,19 @@ Este arquivo é o contrato entre as duas sessões que constroem os sites: a do B
 
 | Caminho | Por quê |
 |---|---|
-| `/` | A landing do B2B |
+| `/` | A landing do B2B. Quem chega sem sessão vai para `/?entrar=1&volta=/app/...` (o modal de entrar da landing) |
+| `/entrar` | Atalho do B2B: 302 para `/?entrar=1`. O `/login` continua indo para a Aportou (quem tem esse favorito é investidor) |
 | `/app/**`, `/imprimir/**` | O app do escritório e o PDF |
-| `/api/**`, `/_nuxt/**` e os arquivos do próprio build | O app novo |
-| `/cliente/**`, `/business/convite/**` | Links pessoais que já foram mandados (convite da chave, convite e acesso do cliente final). O app novo serve os mesmos caminhos |
-| `/business/**` (o resto), `/jantar`, `/whitelabel`, `/pricing` | Os endereços antigos do B2B, com a mesma tabela de `server/utils/destino-b2b.ts` do front da Aportou (`/business` → `/`, `/business/clientes` → `/app/clientes`, `/business/chaves` e `/business/comecar` → `/app/escritorio`, `/business/skills` → `/app`, 301; links pessoais e `/jantar`, 302) |
+| `/api/**` (o BFF), `/_nuxt/**`, `/__nuxt_error`, `/favicon.*` | O app novo |
+| `/video/**`, `/media/**` | Os arquivos públicos do app novo (o herói da landing é um vídeo em `/video/`). A Aportou também tem `/video/` (o filme), mas só em aportou.com.br: o filme estreia lá e nunca esteve em redentia.com.br, então não há link antigo a preservar |
+| `/jantar` e `/img/jantar/**` | O app novo porta a página da campanha. Se o dono disser que ela acabou, vira 301 para `/` |
+| `/cliente/**`, `/business/convite/**` | Links pessoais que já foram mandados (convite da chave, convite e acesso do cliente final). O app novo serve os mesmos caminhos (`/cliente/convite/[token]`, `/cliente/acesso/[token]`, `/business/convite/[token]`) contra as rotas públicas do Laravel que já estão em produção (`business/client-invites/{token}` com `consent` e `connection`, `business/client-access/{token}` com `revoke`, `business/invites/{token}` com `redeem`), com `no-store`, `noindex` e `Referrer-Policy: no-referrer`. O widget da Pluggy do cliente final continua na origem redentia.com.br |
+| `/business/**` (o resto), `/whitelabel`, `/pricing` | Os endereços antigos do B2B, com a mesma tabela de `server/utils/destino-b2b.ts` do front da Aportou (`/business` → `/`, `/business/clientes` → `/app/clientes`, `/business/chaves` e `/business/comecar` → `/app/escritorio`, `/business/skills` → `/app`, 301; links pessoais, 302) |
 | Privacidade e Termos do B2B | Em caminhos novos (proposta: `/privacidade` e `/termos`), para não disputar o `/institucional/*` da Aportou |
 | `/robots.txt`, `/sitemap.xml`, `/llms.txt`, favicon | Os do B2B |
-| `/email-logo.png`, `/email-logo-white.png`, `/email/**` | **Os mesmos arquivos**, copiados do `public/` da Aportou. E-mails que já saíram apontam para essas imagens em www.redentia.com.br; servindo o arquivo, nenhum e-mail antigo fica sem logo (proxy de imagem nem sempre segue redirect) |
+| `/email-logo.png`, `/email-logo-white.png`, `/email/**` | **Os mesmos arquivos**, copiados do `public/` da Aportou (em 13/11/2026: `email-logo.png`, `email-logo-white.png`, `email/aportou-logo.png`, `email/aportou-logo-branca.png`, `email/aportou-icone.png`, `email/brilho.jpg`). E-mails que já saíram apontam para essas imagens em www.redentia.com.br; servindo o arquivo, nenhum e-mail antigo fica sem logo (proxy de imagem nem sempre segue redirect). Quem mudar um desses arquivos na Aportou avisa a sessão do B2B |
 
-**Todo o resto em redentia.com.br vai para a Aportou com 301, no mesmo caminho e com a mesma query:** `https://aportou.com.br{caminho}{?query}`. Isso cobre as calculadoras, os rankings, os ativos, as teses, os guias, `/login`, `/carteira`, `/assinar`, `/mcp`, `/institucional/*`, os sitemaps antigos e o que vier de link velho. Sem lista fechada: o que não é do B2B é da Aportou.
+**Todo o resto em redentia.com.br vai para a Aportou com 301, no mesmo caminho e com a mesma query** (no app novo, um middleware do Nitro com a lista fechada do que é do B2B; ele liga por configuração, para não atrapalhar o localhost, e **tem de estar ligado em produção antes da troca**): `https://aportou.com.br{caminho}{?query}`. Isso cobre as calculadoras, os rankings, os ativos, as teses, os guias, `/login`, `/carteira`, `/assinar`, `/mcp`, `/institucional/*`, os sitemaps antigos e o que vier de link velho. Sem lista fechada: o que não é do B2B é da Aportou.
 
 **Na Aportou (aportou.com.br):** os caminhos de hoje, sem mudança. Os endereços do B2B (`/business`, `/cliente`, `/jantar`, `/whitelabel`, `/pricing`) já levam para redentia.com.br (`server/middleware/b2b-para-redentia.ts`).
 
@@ -71,10 +74,11 @@ Cada passo só começa com o anterior conferido. O dono dá os cliques.
 
 **1. Backend que serve os dois (antes de tudo)**
 - B2C (sessão do B2C; feito em 13/11/2026 na `feat/aportou-marca` do `be-aportou`, commit 7939ad7, suíte inteira verde): o endereço de cada site no `config/app.php`, `url_frontend` (env `APORTOU_URL`) e `url_b2b` (env `B2B_URL`), os dois com `https://www.redentia.com.br` por padrão. `Marca::site()` devolve o site da marca, e o e-mail de código e o de troca de senha levam para o site de quem pediu. Os e-mails só de investidor, que caíam num `https://redentia.com.br` fixo porque a chave não existia, passam a ler `url_frontend`. As imagens dos e-mails da Aportou e a política de privacidade seguem `APORTOU_URL`. CORS e Sanctum aceitam aportou.com.br.
-- B2B (sessão do B2B): os convites e os e-mails do escritório leem `config('app.url_b2b')` ou `Marca::Redentia->site()`.
+- B2B (sessão do B2B, pela sessão do backend do B2B): os convites e os e-mails do escritório leem `config('app.url_b2b')`, com um padrão próprio, para não depender da ordem de merge com a `feat/aportou-marca`.
+- **O andre2654/redentia-api#26 (a parte 1 do backend do B2B) tem de estar mesclado antes da troca.** Sem ele, o `magic-link/verify` cria uma conta de investidor para quem entra no app do escritório. Os PRs 2 a 5 (equipe, famílias, leituras, relatórios) podem vir depois; antes é melhor.
 - Sobe com os valores de hoje (tudo em www.redentia.com.br), então nada muda no ar até o passo 4.
 
-**2. O app do B2B no ar num endereço provisório** (sessão do B2B): repositório, projeto na Vercel, o mapa da seção 3, as rotas do cliente final. Testado no endereço provisório, inclusive o "resto vai para a Aportou".
+**2. O app do B2B no ar num endereço provisório** (sessão do B2B, com o dono): o dono cria o repositório (proposta: `andre2654/redentia-business`, privado) e o projeto na Vercel com `NUXT_BACKEND_BASE`, `NUXT_CHAT_BASE`, `NUXT_BACKEND_FRONT_KEY` (segredo dele) e `NUXT_LEADS_ENSAIO`. A sessão do B2B deixa pronto o `.gitignore`, a configuração e a lista do que colar. Depois: o mapa da seção 3, as rotas do cliente final, Privacidade e Termos (o texto passa pelo dono). Testado no endereço `*.vercel.app`, inclusive o "resto vai para a Aportou".
 
 **3. A Aportou no ar em aportou.com.br** (o dono, com a lista da sessão do B2C): domínio `aportou.com.br` (e www) no projeto da Vercel de hoje; `NUXT_PUBLIC_SITE_URL=https://aportou.com.br` no ambiente de produção; merge da `feat/chat-painel` com o que vai junto (a lista de "subir tudo"). A partir daqui a Aportou responde em aportou.com.br, e o redentia.com.br manda o "resto" para lá pela rede da seção 4.
 
