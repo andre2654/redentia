@@ -1581,8 +1581,9 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   if (renamedTo) throw renamedError(ticker, renamedTo)
   const profile = res.data
 
-  // Regex estrita do endpoint /news/ticker (tickers como B3SA3 ficam de fora).
-  const newsStrict = /^[A-Z]{4}\d{1,2}$/.test(ticker)
+  // O /news/ticker aceita a forma de ticker da B3, inclusive com dígito no meio (B3SA3, M1TA34), desde o
+  // redentia-api#28 (no ar em 14/11/2026). O resto (BDR de outra forma, cripto) vai pela busca filtrada.
+  const newsStrict = symbolShape(ticker) === 'b3'
   // Pares do setor, só pra ação: o perfil já traz o setor ('Energy'), então a
   // chamada entra no mesmo bloco paralelo. Setor fora do registry → sem bloco.
   const setorConhecido = SETORES_BY_API[apiSlugDoSetor(profile.sector) ?? ''] ?? null

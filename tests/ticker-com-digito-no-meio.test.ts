@@ -22,10 +22,7 @@ const QUATRO_LETRAS = /\[A-Z\]\{4\}\)?(?:\\d|\[0-9\])\{1,2\}/
 
 // Onde a regra de quatro letras fica de propósito. Arquivo novo aqui só com o motivo.
 const CONHECIDOS: Record<string, string> = {
-  // o GET /news/ticker/{symbol} do backend valida assim e recusa ticker com dígito no meio
-  'app/composables/useAcao.ts': 'endpoint de notícias',
-  'app/composables/useCadastroDados.ts': 'endpoint de notícias',
-  'app/services/acao.ts': 'comentário que documenta o endpoint de notícias',
+  // (o contorno das notícias saiu em 14/11/2026: o /news/ticker aceita B3SA3 desde o redentia-api#28)
   // texto de manchete: a forma larga casaria "COP30" como se fosse outro papel
   'app/utils/cadastro.ts': 'código de papel dentro de manchete',
   // a raiz da empresa são as quatro letras (PETR de PETR4); a B3SA3 volta inteira e é classe única

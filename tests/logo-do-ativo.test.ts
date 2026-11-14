@@ -48,8 +48,8 @@ test('o componente decide pela regra única e volta para a letra quando o ícone
 
 test('o herói do cadastro segue a mesma decisão; a regra estrita fica só na manchete', () => {
   assert.match(dadosDoCadastro, /logo: symbolShape\(ticker\) === 'b3' \? `https:\/\/icons\.brapi\.dev\/icons\/\$\{ticker\}\.svg` : null,/)
-  // o /news/ticker recusa ticker com dígito no meio: ali a regra de quatro letras é a do endpoint
-  assert.match(dadosDoCadastro, /NEWS_STRICT_RE\.test\(ticker\) \? acaoFetchNewsByTicker\(BASE, ticker\) : Promise\.resolve\(\{ data: \[\] \}\)/)
+  // a manchete também: o /news/ticker aceita B3SA3 desde o redentia-api#28 (14/11/2026)
+  assert.match(dadosDoCadastro, /symbolShape\(ticker\) === 'b3' \? acaoFetchNewsByTicker\(BASE, ticker\) : Promise\.resolve\(\{ data: \[\] \}\)/)
   // ícone que não existe: o herói fica com a letra em vez de um quadro vazio
   assert.match(heroiDoCadastro, /<img v-if="dados\?\.logo && dados\.logo !== logoFalhou" :src="dados\.logo" [^>]*@error="logoFalhou = dados\?\.logo \?\? null">\n\s*<span v-else class="cha__logo cha__logo--letra">/)
 })

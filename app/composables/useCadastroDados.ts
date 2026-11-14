@@ -29,11 +29,8 @@ export interface DadosMaiorAlta {
 }
 
 const BASE = '/api/backend'
-// A regra estrita é a do endpoint /news/ticker (services/acao.ts), que recusa
-// ticker com dígito no meio: B3SA3 e M1TA34 ficam sem a manchete do dia. O
-// ícone não passa por ela (13/11/2026): vale a forma de ticker da B3 do
-// utils/tickerClass.ts, a mesma decisão do NuAssetLogo.
-const NEWS_STRICT_RE = /^[A-Z]{4}\d{1,2}$/
+// A manchete e o ícone seguem a forma de ticker da B3 do utils/tickerClass.ts (a mesma decisão do
+// NuAssetLogo). O /news/ticker aceita B3SA3 e M1TA34 desde o redentia-api#28 (no ar em 14/11/2026).
 const DIA_MS = 86_400_000
 
 // "MAGAZ LUIZA ON NM" (nome da B3 em campo fixo) vira "Magaz Luiza"
@@ -48,7 +45,7 @@ export function useCadastroDados() {
     const [cot, precos, noticias] = await Promise.allSettled([
       marketFetchQuote(ticker),
       acaoFetchPrices(BASE, ticker, '1mo'),
-      NEWS_STRICT_RE.test(ticker) ? acaoFetchNewsByTicker(BASE, ticker) : Promise.resolve({ data: [] }),
+      symbolShape(ticker) === 'b3' ? acaoFetchNewsByTicker(BASE, ticker) : Promise.resolve({ data: [] }),
     ])
     const q = cot.status === 'fulfilled' ? cot.value?.data : null
     const serie = precos.status === 'fulfilled'
