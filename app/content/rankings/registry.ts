@@ -447,9 +447,9 @@ export const RANKINGS: Record<string, RankingMeta> = {
     metaDescription:
       'Títulos do Tesouro Direto ordenados pelas melhores taxas de hoje: Tesouro IPCA+, Prefixado e Selic. Taxa, vencimento e preço atualizados diariamente.',
     h1: 'Ranking do Tesouro Direto: Melhores Taxas de Hoje',
-    // Proveniência honesta: taxas/preços vivos vêm de scrape do StatusInvest
-    // (fundamentals-scraper → tesouro_direto_si), não de feed oficial direto —
-    // por isso 'dados do Tesouro Direto', sem claim de 'oficiais'.
+    // O processo que grava tesouro_direto_si não teve o provedor confirmado.
+    // O texto diz "dados do Tesouro Direto" e não nomeia agregador, nem
+    // afirma feed oficial direto.
     lead:
       'Os títulos públicos do Tesouro Direto ordenados pela taxa de compra do dia: Tesouro IPCA+, Tesouro Prefixado e Tesouro Selic, com vencimento e preço unitário. Atualizado diariamente com os dados do Tesouro Direto.',
     chips: ['Atualizado diariamente', 'Tesouro Direto', 'IPCA+ · Prefixado · Selic', 'Taxa de compra'],

@@ -20,24 +20,18 @@
 // /busca?q=, que já abre com a consulta preenchida. O Google aposentou a
 // caixa de busca nos sitelinks em 11/2024, então o SearchAction não muda o
 // resultado do Google; fica por ser schema válido e verdadeiro.
+import { websiteInicio } from '~/utils/json-ld'
+
 const siteOrigin = useSiteOrigin()
+// O @id da Organization nasce de public.siteUrl (app.vue). Em produção
+// useSiteOrigin() devolve o mesmo valor; o publisher aponta pra esse @id.
+const entidade = String(useRuntimeConfig().public.siteUrl)
 usePageSeo({
   title: 'Sua carteira testada em 2.000 cenários, com IA',
   // só a marca mudou (11/11/2026): o nome vem de MARCA, e o titleTemplate põe " · Aportou" no título
   description: `A ${MARCA.ia} junta a sua carteira de qualquer banco, testa em 2.000 cenários de cinco anos e vigia todo dia. Mercado de hoje, calculadoras e guias grátis.`,
   path: '/',
-  structuredData: [{
-    '@type': 'WebSite',
-    '@id': `${siteOrigin}/#website`,
-    name: MARCA.nome,
-    url: `${siteOrigin}/`,
-    inLanguage: 'pt-BR',
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: { '@type': 'EntryPoint', urlTemplate: `${siteOrigin}/busca?q={search_term_string}` },
-      'query-input': 'required name=search_term_string',
-    },
-  }],
+  structuredData: [websiteInicio(siteOrigin, entidade)],
   breadcrumbs: [{ name: 'Início', path: '/' }],
   // SEM dateModified de propósito (23/09/2026): o painel do dia (altas,
   // baixas, briefing) é carregado no cliente e o HTML do servidor sai com o

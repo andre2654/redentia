@@ -126,7 +126,9 @@ test('a home fala Aportou: nenhum texto visível diz Redentia e nenhuma peça es
   assert.match(ler('app/utils/bolsaDoDia.ts'), /`IA da Aportou · /)
   // o head da página não escreve a marca à mão: o nome vem de MARCA
   const pagina = ler('app/pages/index.vue')
-  assert.match(pagina, /name: MARCA\.nome/)
+  // o WebSite da home sai do helper do JSON-LD (#145), que escreve o nome por MARCA
+  assert.match(pagina, /websiteInicio\(siteOrigin, entidade\)/)
+  assert.match(ler('app/utils/json-ld.ts'), /name: MARCA\.nome/)
   assert.doesNotMatch(pagina.slice(pagina.indexOf('usePageSeo(')), /Redentia|'Aportou'/)
   // o cartão "Seus dados" só afirma o que o site sustenta: a exclusão de conta ficou de fora
   const naoE = ler('app/components/home/HomeOQueNaoE.vue')

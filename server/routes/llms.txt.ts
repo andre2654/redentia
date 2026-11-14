@@ -192,6 +192,14 @@ A ${MARCA.nome} expõe um servidor MCP (Model Context Protocol) remoto oficial. 
 
 - [${MARCA.b2b}](${ORIGEM_B2B}): o produto da mesma empresa para assessorias, family offices, gestoras e consultorias, em site próprio. Não faz parte deste site.
 
+### Estudo
+
+- [WEALTH 2030](${o}/estudo/wealth-2030): estudo independente da Redentia sobre o futuro das assessorias, family offices e da gestão de patrimônio no Brasil. Descreve o setor a partir de dados públicos e de entrevistas. Não é recomendação de investimento. PDF: ${o}/estudo/wealth-2030.pdf
+
+### Gráficos
+
+- [Gráficos para citar](${o}/graficos): CDI líquido da tabela regressiva (Banco Central do Brasil, SGS), proventos com pagamento na semana (avisos de proventos da B3) e FIIs ordenados por DY de 12 meses (avisos de proventos da B3 e Brapi). Uso livre com crédito. Não é recomendação. PNGs: ${o}/graficos/cdi.png, ${o}/graficos/proventos.png e ${o}/graficos/fiis.png
+
 ## Transparência editorial (E-E-A-T)
 
 - [Metodologia e fontes de dados](${o}/metodologia): como cada calculadora e ranking funciona, fórmulas usadas, fontes oficiais, limitações conhecidas e disclaimer educacional

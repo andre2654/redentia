@@ -28,7 +28,6 @@ export interface QuantoRendeTickerPayload {
   dyMatchesSum: boolean
   fontePreco: string
   fonteProventos: string
-  fonteDy: string | null
   hoje: string
   dataDate: string | null
   seo: { title: string; description: string }
@@ -115,22 +114,20 @@ async function loadQuantoRende(base: string, ticker: string): Promise<QuantoRend
   const unidade = isFii ? 'cota' : isBdr ? 'BDR' : 'ação'
   const unidadePlural = isFii ? 'cotas' : isBdr ? 'BDRs' : 'ações'
   const priceDate = isoDia(profile.price_date)
-  const ovDatas = overview as { key_statistics?: { updated_at?: unknown }; financial_data?: { updated_at?: unknown } } | null
-  const dyAsOf = isoDia(ovDatas?.key_statistics?.updated_at) ?? isoDia(ovDatas?.financial_data?.updated_at)
   const fontePreco = `Fonte: Brapi (B3)${priceDate ? `, pregão de ${diaCurto(priceDate)}` : ''}.`
   const fonteProventos = `Fonte: avisos de proventos da B3, pela data com até ${diaCurto(today)}.`
-  const fonteDy = site.value != null && site.value > 0
-    ? `Fonte: StatusInvest${dyAsOf ? `, em ${diaCurto(dyAsOf)}` : ''}.`
-    : null
+  // O DY do overview não cita provedor: a origem não está verificada.
+  // Esta página não existe sem renda em 12 meses, então o zero calculado
+  // dos avisos da B3 não aparece aqui.
   const kind = isFii ? 'rendimentos' : 'proventos'
   const ev = isFii ? (w.events12 === 1 ? 'rendimento' : 'rendimentos') : w.events12 === 1 ? 'provento' : 'proventos'
   const dyOficial = site.basis === 'oficial' && site.value != null && site.value > 0 ? site.value : null
 
   const exemplo = `${dinheiroFmt(VALOR_PADRAO)} em ${ticker} compram ${qtdFmt(conta.quantidade)} ${unidadePlural} a ${dinheiroFmt(price)}. No último ano, essa quantidade teria recebido ${dinheiroFmt(conta.proventos)} em ${kind}, ${rendimentoFmt(conta.rendimentoPct)} do valor. ${fontePreco} ${fonteProventos}`
   const dyResposta = dyOficial != null && site.sumMatches
-    ? `Sim, neste papel os dois fecham: ${rendimentoFmt(dyOficial)}. ${fonteDy}`
+    ? `Sim, neste papel os dois fecham: ${rendimentoFmt(dyOficial)}.`
     : dyOficial != null
-      ? `O dividend yield oficial de 12 meses é ${rendimentoFmt(dyOficial)}. ${fonteDy} A conta desta página usa a soma dos pagamentos como foram pagos, ${rendimentoFmt(conta.rendimentoPct)} sobre a cotação, e os dois números não fecham. A causa varia: desdobramento na janela, cotação que andou, ou fonte diferente. A página não escolhe uma causa.`
+      ? `O dividend yield oficial de 12 meses é ${rendimentoFmt(dyOficial)}. A conta desta página usa a soma dos pagamentos como foram pagos, ${rendimentoFmt(conta.rendimentoPct)} sobre a cotação, e os dois números não fecham. A causa varia: desdobramento na janela, cotação que andou, ou fonte diferente. A página não escolhe uma causa.`
       : `O dividend yield oficial de 12 meses está indisponível. O percentual desta página é a soma dos pagamentos dividida pela cotação: ${rendimentoFmt(conta.rendimentoPct)}. ${fonteProventos} ${fontePreco}`
 
   const faq: NuFaqItem[] = [
@@ -163,7 +160,6 @@ async function loadQuantoRende(base: string, ticker: string): Promise<QuantoRend
     dyMatchesSum: site.sumMatches,
     fontePreco,
     fonteProventos,
-    fonteDy,
     hoje: today,
     dataDate: priceDate,
     seo: seoQuantoRendeTicker({

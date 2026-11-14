@@ -48,6 +48,8 @@ import { spISODate } from '../../app/utils/format'
 import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 import { PRECO_TETO_ELEGIVEIS } from '../data/preco-teto-elegiveis'
+import { WEALTH_2030_PAGINA } from '../../app/content/estudo/wealth-2030'
+import { GRAFICOS_PAGINA } from '../../app/utils/graficos'
 
 export interface SitePage {
   path: string
@@ -114,6 +116,14 @@ const CORE_PAGES: SitePage[] = [
   { path: '/metodologia', title: 'Metodologia', description: 'Como cada calculadora e ranking funciona, fórmulas, fontes oficiais e limitações.' },
   // As páginas do produto de escritório (a landing e a de campanha) saíram com
   // o B2B em 12/11/2026: moram em redentia.com.br, no sitemap de lá.
+  // Estudo WEALTH 2030 (edição 01, agosto de 2026). lastmod = levantamento
+  // encerrado em 13/08/2026, data do colofão. O hub /estudo segue 404.
+  WEALTH_2030_PAGINA,
+  // /graficos muda todo dia, mas a data de cada série só existe depois do
+  // fetch (BCB, agenda de proventos, pregão do ranking). Sem uma data única
+  // verificável aqui, a página entra sem lastmod: o dateModified vive no
+  // JSON-LD de cada gráfico, com a data da fonte.
+  GRAFICOS_PAGINA,
 ]
 
 const INSTITUCIONAL_PAGES: SitePage[] = [
