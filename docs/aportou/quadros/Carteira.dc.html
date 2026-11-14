@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Aportou · Tela da carteira</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#1E3A8A}
+@keyframes aportouAnel{to{background-position:200% 0}}
+.fut-cap-m{display:none}
+@container futuro (max-width: 720px){.fut-cap-d{display:none}.fut-cap-m{display:block}.fut-ano-meio{display:none}}
+</style>
+</helmet>
+<div style="background: #F9F3EC; color: #111827; font-family: Figtree, system-ui, sans-serif; font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums;">
+
+  <!-- NAVEGAÇÃO -->
+  <header>
+    <div style="max-width: 1240px; margin: 0 auto; padding: 16px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 44px;">
+      <a href="#" aria-label="Aportou, página inicial" style="display: flex; align-items: center; min-height: 44px;">
+        <svg viewBox="-2 -40 681 178" width="138" height="36" aria-hidden="true"><g fill="none" stroke="#111827" stroke-width="25"><circle cx="50" cy="50" r="37.5"/><circle cx="173" cy="50" r="37.5"/><circle cx="280.5" cy="50" r="37.5"/><circle cx="520.5" cy="50" r="37.5"/><path d="M593.5 2 V54 A35.25 35.25 0 0 0 664 54"/></g><g fill="#111827"><rect x="83" y="2" width="25" height="98"/><path d="M121 2 H146 V124 A12 12 0 0 1 134 136 H121 Z"/><path d="M340 100 V26 A26 26 0 0 1 366 0 H399 V23 H372 Q365 23 365 31 V100 Z"/><path d="M408 -25 Q408 -38 421 -38 H433 V62 Q433 77 448 77 H463 V101 H440 Q408 101 408 69 Z"/><rect x="651.5" y="2" width="25" height="98"/></g><path d="M408 44 V0 H444 C456 0 466 -2 472 -8 C474 8 466 23 448 23 H433 C419 23 410 31 408 44 Z" fill="#2563EB"/></svg>
+      </a>
+      <nav aria-label="Principal" style="display: flex; flex-wrap: wrap; gap: 0 28px; flex: 1 1 320px; font-size: 16px; font-weight: 600;">
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #111827; text-decoration: none;">Início</a>
+        <a href="#" aria-current="page" style="min-height: 44px; display: flex; align-items: center; color: #1D4ED8; text-decoration: none;">Carteira</a>
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #111827; text-decoration: none;">Ações</a>
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #111827; text-decoration: none;">Teses</a>
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #111827; text-decoration: none;">Ferramentas</a>
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; color: #111827; text-decoration: none;">Aprender</a>
+      </nav>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button type="button" aria-label="Buscar ativo ou tese" style="width: 44px; height: 44px; border: 0; border-radius: 50%; background: #F1E8DB; display: flex; align-items: center; justify-content: center; cursor: pointer;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111827" stroke-width="1.800" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.500"/><path d="M16 16l4.500 4.500"/></svg></button>
+        <span aria-label="Conta de A." style="width: 44px; height: 44px; border-radius: 50%; background: #111827; color: #FFFFFF; font-weight: 700; display: flex; align-items: center; justify-content: center;">A</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- SEÇÕES DA CARTEIRA -->
+  <div style="max-width: 1240px; margin: 0 auto; padding: 0 32px;">
+    <nav aria-label="Seções da carteira" style="border-radius: 14px; background: #111827; padding: 4px 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 4px; font-size: 14.500px; font-weight: 600;">
+      <a href="#resumo" style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; border-radius: 10px; background: #F6F2E9; color: #111827; text-decoration: none; font-weight: 700;">Resumo</a>
+      <a href="#onde" style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; color: #E5E7EB; text-decoration: none;">Onde está</a>
+      <a href="#proventos" style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; color: #E5E7EB; text-decoration: none;">Proventos</a>
+      <a href="#futuro" style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; color: #E5E7EB; text-decoration: none;">Daqui a 5 anos</a>
+      <a href="#imposto" style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; color: #E5E7EB; text-decoration: none;">Imposto</a>
+      <a href="#relatorio" style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; color: #E5E7EB; text-decoration: none;">Relatório</a>
+      <span style="margin-left: auto; padding: 0 12px; color: #B6BCC8; font-weight: 500;">Atualizado em 08/11</span>
+    </nav>
+  </div>
+
+  <!-- RESUMO -->
+  <section id="resumo" style="overflow: hidden;">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 48px 32px 30px; display: flex; flex-direction: column; gap: 22px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;">
+        <span style="display: flex; align-items: center; gap: 10px; font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>SUA CARTEIRA</span>
+        <span style="padding: 4px 11px; border-radius: 8px; background: #111827; color: #FFFFFF; font-size: 14px; font-weight: 700;">22 ativos</span>
+        <span style="display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px; border-radius: 8px; background: #F7E8C6; color: #6B4200; font-size: 14px; font-weight: 700;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #C77F12;"></span>1 pede atenção</span>
+        <button type="button" style="margin-left: auto; min-height: 44px; padding: 0 16px; display: flex; align-items: center; gap: 8px; border: 1.500px solid #111827; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#111827" stroke-width="1.800" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12s3.500-6.500 9-6.500S21 12 21 12s-3.500 6.500-9 6.500S3 12 3 12Z"/><circle cx="12" cy="12" r="2.800"/><path d="M4 4l16 16"/></svg>Mostrar valores</button>
+      </div>
+      <h1 style="margin: 0; max-width: 1040px; font-size: clamp(44px, 6.400vw, 92px); font-weight: 800; line-height: 0.98; letter-spacing: -0.035em;">Em 12 meses, sua carteira rendeu <span style="color: #2563EB;">117% do CDI.</span></h1>
+      <p style="margin: 0; max-width: 760px; font-size: 20px; color: #1F2937;">Foram 16,59%, contra 14,22% do CDI. Ficou acima do CDI em 6 de 11 meses. O mesmo mix de classes rendeu 11,83%.</p>
+    </div>
+
+    <div style="max-width: 1240px; margin: 0 auto; padding: 0 32px 40px; display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch;">
+
+      <div style="flex: 1.700 1 560px; min-width: 0; margin-top: 26px; border-radius: 28px; background: #111827; color: #FFFFFF; box-shadow: 0 30px 60px rgba(17,24,39,0.2);">
+        <div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 0 16px;">
+          <div style="position: relative; flex: none; height: 60px; padding: 0 26px 0 28px; display: flex; align-items: center; background: #2563EB; border-radius: 28px 0 0 0;">
+            <h2 style="margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0.16em;">VOCÊ EM 12 MESES</h2>
+            <svg viewBox="0 -9 30 32" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: calc(100% - 1px); top: -23.500px; width: 78.300px; height: 83.500px;"><path d="M0 0 C12 0 22 -2 28 -8 C30 8 22 23 4 23 H0 Z" fill="#2563EB"/></svg>
+            <svg viewBox="0 0 25 21" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; top: calc(100% - 1px); width: 65px; height: 55px;"><path d="M0 0 H25 C11 0 2 8 0 21 Z" fill="#2563EB"/></svg>
+          </div>
+          <div role="group" aria-label="Período do gráfico" style="margin-left: auto; padding: 8px 18px 0 0; display: flex; gap: 2px;">
+            <button type="button" style="min-width: 50px; height: 44px; border: 0; border-radius: 999px; background: transparent; color: #B6BCC8; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">1M</button>
+            <button type="button" style="min-width: 50px; height: 44px; border: 0; border-radius: 999px; background: transparent; color: #B6BCC8; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">6M</button>
+            <button type="button" aria-pressed="true" style="min-width: 54px; height: 44px; border: 0; border-radius: 999px; background: #F6F2E9; color: #111827; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">12M</button>
+            <button type="button" style="min-width: 58px; height: 44px; border: 0; border-radius: 999px; background: transparent; color: #B6BCC8; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">Tudo</button>
+          </div>
+        </div>
+
+        <div style="padding: 30px 30px 26px; display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 30px;">
+            <span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: clamp(40px, 4.400vw, 60px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: #86EFAC;">+16,59%</span><span style="font-size: 15px; font-weight: 600; color: #B6BCC8;">Você</span></span>
+            <span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em;">+14,22%</span><span style="display: inline-flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 600; color: #B6BCC8;"><svg viewBox="0 0 22 4" width="22" height="4" aria-hidden="true"><path d="M1 2H21" stroke="#B6BCC8" stroke-width="2" stroke-dasharray="3 4" stroke-linecap="round"/></svg>CDI</span></span>
+            <span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em;">+11,83%</span><span style="font-size: 15px; font-weight: 600; color: #B6BCC8;">Mesmo mix de classes</span></span>
+          </div>
+
+          <svg viewBox="0 0 640 290" width="100%" role="img" aria-label="Gráfico da rentabilidade da carteira em 12 meses: sobe até perto de 27%, recua e termina em 16,59%, acima da linha do CDI, que termina em 14,22%" style="display: block;">
+            <defs><linearGradient id="fillCarteira" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2563EB" stop-opacity="0.5"/><stop offset="1" stop-color="#2563EB" stop-opacity="0"/></linearGradient></defs>
+            <g stroke="#263042" stroke-width="1"><path d="M0 90H592"/><path d="M0 170H592"/><path d="M0 250H592"/></g>
+            <g fill="#B6BCC8" font-family="Figtree, sans-serif" font-size="12.500" font-weight="600"><text x="602" y="94">+20%</text><text x="602" y="174">+10%</text><text x="602" y="254">0%</text></g>
+            <g fill="#B6BCC8" font-family="Figtree, sans-serif" font-size="12.500" font-weight="600"><text x="0" y="280">nov/25</text><text x="140" y="280">fev/26</text><text x="287" y="280">mai/26</text><text x="434" y="280">ago/26</text><text x="552" y="280">nov/26</text></g>
+            <path d="M0 250 L12 260 L22 258 L36 228 L40 242 L53 230 L59 242 L71 230 L91 222 L112 220 L114 218 L119 182 L130 178 L147 174 L160 158 L174 138 L181 142 L186 162 L202 158 L216 150 L229 142 L243 122 L252 118 L264 126 L276 142 L298 154 L319 154 L343 166 L348 150 L371 150 L395 134 L416 134 L437 134 L447 150 L457 146 L478 122 L492 106 L509 102 L526 106 L537 42 L544 34 L557 42 L567 34 L572 106 L581 114 L590 117 V250 H0 Z" fill="url(#fillCarteira)"/>
+            <path d="M0 250 L590 136" fill="none" stroke="#B6BCC8" stroke-width="1.500" stroke-dasharray="3 5" stroke-linecap="round"/>
+            <path d="M0 250 L12 260 L22 258 L36 228 L40 242 L53 230 L59 242 L71 230 L91 222 L112 220 L114 218 L119 182 L130 178 L147 174 L160 158 L174 138 L181 142 L186 162 L202 158 L216 150 L229 142 L243 122 L252 118 L264 126 L276 142 L298 154 L319 154 L343 166 L348 150 L371 150 L395 134 L416 134 L437 134 L447 150 L457 146 L478 122 L492 106 L509 102 L526 106 L537 42 L544 34 L557 42 L567 34 L572 106 L581 114 L590 117" fill="none" stroke="#5B8CFF" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle cx="590" cy="117" r="7" fill="#F6F2E9" stroke="#2563EB" stroke-width="4"/>
+            <g><rect x="440" y="150" width="132" height="46" rx="12" fill="#F6F2E9"/><text x="454" y="169" fill="#4B5563" font-family="Figtree, sans-serif" font-size="11" font-weight="700" letter-spacing="1.500">VOCÊ NO PERÍODO</text><text x="454" y="187" fill="#111827" font-family="Figtree, sans-serif" font-size="17" font-weight="800">+16,59%</text></g>
+          </svg>
+        </div>
+      </div>
+
+      <div style="flex: 1 1 320px; min-width: 0; margin-top: 26px; display: flex; flex-direction: column; gap: 14px;">
+        <div style="flex: 1; border-radius: 24px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 22px 24px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 600; color: #4B5563;">Quanto eu tenho?</span>
+          <span style="font-size: 40px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;">R$ <span aria-label="valor oculto" style="letter-spacing: 0.06em;">••••••</span></span>
+          <span style="font-size: 15px;"><span style="font-weight: 700; color: #18703A;">+0,11%</span> na sexta</span>
+        </div>
+        <div style="flex: 1; border-radius: 24px; background: #F7E8C6; padding: 22px 24px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 600; color: #6B4200;">Tem algo para eu olhar?</span>
+          <span style="font-size: 30px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em;">1 pede atenção</span>
+          <span style="font-size: 15px; color: #1F2937;">O Nubank não atualiza desde 08/11. Mais 2 a caminho.</span>
+          <a href="#" style="margin-top: 6px; align-self: flex-start; min-height: 44px; padding: 0 18px; display: flex; align-items: center; border-radius: 999px; background: #111827; color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 700;">Reconectar o Nubank</a>
+        </div>
+        <div style="flex: 1; border-radius: 24px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 22px 24px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 600; color: #4B5563;">Quanto vai cair?</span>
+          <span style="font-size: 40px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;">R$ <span aria-label="valor oculto" style="letter-spacing: 0.06em;">••••</span></span>
+          <span style="font-size: 15px; color: #1F2937;">Marcados para novembro. O próximo é em 12/11, de KLBN4.</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="max-width: 1240px; margin: 0 auto; padding: 0 32px 72px;">
+      <div style="border-radius: 18px; background: #FFFFFF; box-shadow: 0 0 0 1px #EADDCA; padding: 14px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 15px;">
+        <span style="display: inline-flex; align-items: center; gap: 9px; font-weight: 700;"><span style="width: 9px; height: 9px; border-radius: 50%; background: #C77F12;"></span>Nubank parado desde 08/11</span>
+        <span style="flex: 1 1 320px; color: #4B5563;">O que está abaixo é de 08/11. Os números de imposto e risco esperam a reconexão.</span>
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; font-weight: 700;">Reconectar</a>
+        <a href="#" style="min-height: 44px; display: flex; align-items: center; gap: 6px; font-weight: 700; color: #111827; text-decoration: none;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#111827" stroke-width="2.200" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>Adicionar conta</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ONDE ESTÁ O MEU DINHEIRO -->
+  <section id="onde" style="position: relative; overflow: hidden; background: #9AAE9B;">
+    <svg aria-hidden="true" viewBox="0 -9 66 54" style="position: absolute; right: -90px; top: -70px; width: 640px; height: 524px;"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#93A894"/></svg>
+    <div style="position: relative; max-width: 1240px; margin: 0 auto; padding: 84px 32px 80px; display: flex; flex-direction: column; gap: 34px;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 48px;">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#111827"/></svg>ONDE ESTÁ O MEU DINHEIRO?</span>
+          <h2 style="margin: 0; max-width: 860px; font-size: clamp(38px, 4.800vw, 62px); font-weight: 800; line-height: 1.02; letter-spacing: -0.03em;">22 ativos: 54% em renda fixa, 29% em ações e 16% em FIIs.</h2>
+        </div>
+        <div role="group" aria-label="Como ver a carteira" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 999px; background: #86998A;">
+          <button type="button" aria-pressed="true" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #111827; color: #FFFFFF; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">Ativos</button>
+          <button type="button" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">No mundo</button>
+          <button type="button" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">Na cadeia</button>
+          <button type="button" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">Riscos</button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div role="img" aria-label="Barra de alocação: 54% renda fixa, 29% ações, 16% FIIs, 1% outros" style="display: flex; gap: 4px; height: 30px;">
+          <span style="flex: 54; border-radius: 15px 6px 6px 15px; background: #111827;"></span>
+          <span style="flex: 29; border-radius: 6px; background: #2563EB;"></span>
+          <span style="flex: 16; border-radius: 6px; background: #C9DAFF;"></span>
+          <span style="flex: 1; border-radius: 6px 15px 15px 6px; background: #F6F2E9;"></span>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 14.500px; font-weight: 600;">
+          <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #111827;"></span>Renda fixa 54%</span>
+          <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #2563EB;"></span>Ações 29%</span>
+          <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #C9DAFF;"></span>FIIs 16%</span>
+          <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #F6F2E9;"></span>Outros 1%</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 18px; align-items: start;">
+
+        <div style="border-radius: 28px; background: #F9F3EC; padding: 26px 28px 10px; box-shadow: 0 24px 48px rgba(17,24,39,0.1); display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: baseline; gap: 12px; padding-bottom: 14px;">
+            <span style="align-self: center; width: 12px; height: 12px; border-radius: 50%; background: #111827;"></span>
+            <h3 style="margin: 0; flex: 1; font-size: 24px; font-weight: 800; letter-spacing: -0.015em;">Renda fixa</h3>
+            <span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em;">54%</span>
+          </div>
+          <span style="padding-bottom: 12px; font-size: 15px; color: #4B5563;">R$ 340.826 em 4 ativos</span>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 13px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="font-weight: 700;">AUPO11</span><span style="font-size: 13.500px; color: #4B5563; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Aupo Renda Fixa Pós-Fixada DI</span></div>
+            <span aria-hidden="true" style="flex: none; width: 56px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 100%; height: 100%; border-radius: 3px; background: #111827;"></span></span>
+            <span style="flex: none; width: 46px; text-align: right; font-weight: 800;">32%</span>
+            <span style="flex: none; width: 88px; text-align: right; font-size: 14.500px; color: #4B5563;">R$ 204.165</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 13px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="font-weight: 700;">Tesouro IPCA+ 2050</span><span style="font-size: 13.500px; color: #4B5563;">IPCA + 6,97%</span></div>
+            <span aria-hidden="true" style="flex: none; width: 56px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 25%; height: 100%; border-radius: 3px; background: #111827;"></span></span>
+            <span style="flex: none; width: 46px; text-align: right; font-weight: 800;">8,1%</span>
+            <span style="flex: none; width: 88px; text-align: right; font-size: 14.500px; color: #4B5563;">R$ 51.498</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 13px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="font-weight: 700;">Tesouro IPCA+ 2040</span><span style="font-size: 13.500px; color: #4B5563;">IPCA + 7,03%</span></div>
+            <span aria-hidden="true" style="flex: none; width: 56px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 22%; height: 100%; border-radius: 3px; background: #111827;"></span></span>
+            <span style="flex: none; width: 46px; text-align: right; font-weight: 800;">7%</span>
+            <span style="flex: none; width: 88px; text-align: right; font-size: 14.500px; color: #4B5563;">R$ 44.351</span>
+          </div>
+          <a href="#" style="min-height: 48px; display: flex; align-items: center; border-top: 1px solid rgba(17,24,39,0.1); font-weight: 700;">Mais 1 ativo</a>
+        </div>
+
+        <div style="border-radius: 28px; background: #F9F3EC; padding: 26px 28px 10px; box-shadow: 0 24px 48px rgba(17,24,39,0.1); display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: baseline; gap: 12px; padding-bottom: 14px;">
+            <span style="align-self: center; width: 12px; height: 12px; border-radius: 50%; background: #2563EB;"></span>
+            <h3 style="margin: 0; flex: 1; font-size: 24px; font-weight: 800; letter-spacing: -0.015em;">Ações</h3>
+            <span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em;">29%</span>
+          </div>
+          <span style="padding-bottom: 12px; font-size: 15px; color: #4B5563;">R$ 183.863 em 10 ações</span>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 13px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="font-weight: 700;">ITSA4</span><span style="font-size: 13.500px; color: #4B5563;">Itaúsa</span></div>
+            <span aria-hidden="true" style="flex: none; width: 56px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 100%; height: 100%; border-radius: 3px; background: #2563EB;"></span></span>
+            <span style="flex: none; width: 46px; text-align: right; font-weight: 800;">4,6%</span>
+            <span style="flex: none; width: 88px; text-align: right; font-size: 14.500px; color: #4B5563;">R$ 29.138</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 13px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="font-weight: 700;">CPLE3</span><span style="font-size: 13.500px; color: #4B5563;">Copel</span></div>
+            <span aria-hidden="true" style="flex: none; width: 56px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 78%; height: 100%; border-radius: 3px; background: #2563EB;"></span></span>
+            <span style="flex: none; width: 46px; text-align: right; font-weight: 800;">3,6%</span>
+            <span style="flex: none; width: 88px; text-align: right; font-size: 14.500px; color: #4B5563;">R$ 22.987</span>
+          </div>
+          <a href="#" style="min-height: 48px; display: flex; align-items: center; border-top: 1px solid rgba(17,24,39,0.1); font-weight: 700;">Mais 8 ações</a>
+        </div>
+
+        <div style="border-radius: 28px; background: #F9F3EC; padding: 26px 28px 22px; box-shadow: 0 24px 48px rgba(17,24,39,0.1); display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: baseline; gap: 12px; padding-bottom: 14px;">
+            <span style="align-self: center; width: 12px; height: 12px; border-radius: 50%; background: #C9DAFF; box-shadow: 0 0 0 1px #9DB7F5;"></span>
+            <h3 style="margin: 0; flex: 1; font-size: 24px; font-weight: 800; letter-spacing: -0.015em;">FIIs</h3>
+            <span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em;">16%</span>
+          </div>
+          <span style="padding-bottom: 14px; font-size: 15px; color: #4B5563;">Fundos que pagaram rendimento em outubro</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 0 14px; border-top: 1px solid rgba(17,24,39,0.1);">
+            <span style="padding: 6px 12px; border-radius: 10px; background: #EFE4D5; font-size: 14.500px; font-weight: 700;">BTLG11</span>
+            <span style="padding: 6px 12px; border-radius: 10px; background: #EFE4D5; font-size: 14.500px; font-weight: 700;">XPML11</span>
+            <span style="padding: 6px 12px; border-radius: 10px; background: #EFE4D5; font-size: 14.500px; font-weight: 700;">CPTS11</span>
+            <span style="padding: 6px 12px; border-radius: 10px; background: #EFE4D5; font-size: 14.500px; font-weight: 700;">MCCI11</span>
+            <span style="padding: 6px 12px; border-radius: 10px; background: #EFE4D5; font-size: 14.500px; font-weight: 700;">HGLG11</span>
+            <span style="padding: 6px 12px; border-radius: 10px; background: #EFE4D5; font-size: 14.500px; font-weight: 700;">HSML11</span>
+            <span style="padding: 6px 12px; border-radius: 10px; background: #EFE4D5; font-size: 14.500px; font-weight: 700;">GARE11</span>
+          </div>
+          <a href="#" style="min-height: 44px; display: flex; align-items: center; border-top: 1px solid rgba(17,24,39,0.1); font-weight: 700;">Ver todos os fundos</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROVENTOS -->
+  <section id="proventos">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 84px 32px; display: flex; flex-direction: column; gap: 32px;">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <span style="display: flex; align-items: center; gap: 10px; font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>QUANTO OS INVESTIMENTOS PAGARAM?</span>
+        <h2 style="margin: 0; max-width: 900px; font-size: clamp(38px, 4.800vw, 62px); font-weight: 800; line-height: 1.02; letter-spacing: -0.03em;">Em outubro, seus investimentos pagaram <span style="color: #2563EB;">R$ 1.060.</span></h2>
+        <p style="margin: 0; font-size: 19px; color: #1F2937;">Mais uns R$ 4.053 renderam na renda fixa, sem cair na conta.</p>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch;">
+        <div style="flex: 1.500 1 480px; min-width: 0; border-radius: 28px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 26px 28px 24px; display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 20px;">
+            <h3 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.01em;">Mês a mês</h3>
+            <div style="display: flex; gap: 18px; font-size: 14px; font-weight: 600;">
+              <span style="display: flex; align-items: center; gap: 7px;"><span style="width: 10px; height: 10px; border-radius: 3px; background: #A9C4FF;"></span>FIIs</span>
+              <span style="display: flex; align-items: center; gap: 7px;"><span style="width: 10px; height: 10px; border-radius: 3px; background: #2563EB;"></span>Ações</span>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; align-items: end;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><span style="font-size: 14px; font-weight: 700;">R$ 1.701</span><div style="width: 100%; max-width: 64px; height: 170px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;"><span style="height: 19px; border-radius: 8px 8px 2px 2px; background: #2563EB;"></span><span style="height: 55px; border-radius: 2px 2px 8px 8px; background: #A9C4FF;"></span></div><span style="font-size: 14px; color: #4B5563;">jun</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><span style="font-size: 14px; font-weight: 700;">R$ 1.200</span><div style="width: 100%; max-width: 64px; height: 170px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;"><span style="height: 4px; border-radius: 8px 8px 2px 2px; background: #2563EB;"></span><span style="height: 48px; border-radius: 2px 2px 8px 8px; background: #A9C4FF;"></span></div><span style="font-size: 14px; color: #4B5563;">jul</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><span style="font-size: 14px; font-weight: 700;">R$ 2.085</span><div style="width: 100%; max-width: 64px; height: 170px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;"><span style="height: 41px; border-radius: 8px 8px 2px 2px; background: #2563EB;"></span><span style="height: 50px; border-radius: 2px 2px 8px 8px; background: #A9C4FF;"></span></div><span style="font-size: 14px; color: #4B5563;">ago</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><span style="font-size: 14px; font-weight: 700;">R$ 3.891</span><div style="width: 100%; max-width: 64px; height: 170px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;"><span style="height: 122px; border-radius: 8px 8px 2px 2px; background: #2563EB;"></span><span style="height: 48px; border-radius: 2px 2px 8px 8px; background: #A9C4FF;"></span></div><span style="font-size: 14px; color: #4B5563;">set</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><span style="font-size: 14px; font-weight: 800;">R$ 1.060</span><div style="width: 100%; max-width: 64px; height: 170px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;"><span style="height: 4px; border-radius: 8px 8px 2px 2px; background: #2563EB;"></span><span style="height: 42px; border-radius: 2px 2px 8px 8px; background: #A9C4FF;"></span></div><span style="font-size: 14px; font-weight: 700;">out</span></div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><span style="font-size: 14px; font-weight: 700; color: #1D4ED8;">R$ 1.142</span><div style="width: 100%; max-width: 64px; height: 170px; display: flex; flex-direction: column; justify-content: flex-end;"><span style="height: 50px; border-radius: 8px; background: repeating-linear-gradient(135deg, #A9C4FF 0 6px, #E3ECFF 6px 12px);"></span></div><span style="font-size: 14px; color: #1D4ED8; font-weight: 600;">nov · a cair</span></div>
+          </div>
+        </div>
+
+        <div style="flex: 1 1 340px; min-width: 0; border-radius: 28px; color: #FFFFFF; background: linear-gradient(120deg, #1039BD 0%, #3A63D8 46%, #2450CF 72%, #1640C2 100%); padding: 28px 30px; display: flex; flex-direction: column; gap: 16px;">
+          <span style="font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;">EM NOVEMBRO, JÁ MARCADOS</span>
+          <div style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: clamp(48px, 5vw, 68px); font-weight: 800; line-height: 1; letter-spacing: -0.035em;">R$ 1.142</span><span style="font-size: 16px; font-weight: 600;">a cair</span></div>
+          <div style="margin-top: auto; display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; background: rgba(255,255,255,0.14);">
+            <span style="flex: none; width: 52px; height: 52px; border-radius: 12px; background: #F6F2E9; color: #111827; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;"><span style="font-size: 20px; font-weight: 800;">12</span><span style="font-size: 10.500px; font-weight: 700; letter-spacing: 0.08em;">NOV</span></span>
+            <span style="flex: 1; display: flex; flex-direction: column;"><span style="font-size: 13.500px;">Próximo</span><span style="font-size: 18px; font-weight: 800;">KLBN4</span></span>
+            <span style="font-size: 20px; font-weight: 800;">R$ 113</span>
+          </div>
+          <a href="#" style="align-self: flex-start; min-height: 48px; padding: 0 8px 0 22px; display: flex; align-items: center; gap: 12px; border-radius: 999px; background: #F6F2E9; color: #111827; text-decoration: none; font-weight: 700;">Ver os 5 marcados<span style="width: 32px; height: 32px; border-radius: 50%; background: #2563EB; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13.500 6.500 19 12l-5.500 5.500"/></svg></span></a>
+        </div>
+      </div>
+
+      <p style="margin: 0; display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: #4B5563;"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#4B5563" stroke-width="1.800" stroke-linecap="round" style="flex: none; margin-top: 2px;" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Os gastos do Nubank entram na próxima atualização. Aí eu mostro quanto da sua vida os investimentos já pagam.</p>
+    </div>
+  </section>
+
+  <!-- DAQUI A 5 ANOS -->
+  <section id="futuro">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 0 32px 20px; container: futuro / inline-size;">
+      <div style="position: relative; overflow: hidden; border-radius: 40px; color: #FFFFFF; background: linear-gradient(120deg, #1039BD 0%, #3A63D8 46%, #2450CF 72%, #1640C2 100%); padding: clamp(32px, 5vw, 64px); display: flex; flex-direction: column; gap: clamp(22px, 2.600vw, 34px);">
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#FFFFFF"/></svg>E DAQUI A 5 ANOS?</span>
+          <h2 style="margin: 0; font-size: clamp(38px, 4.300vw, 58px); font-weight: 800; line-height: 1.02; letter-spacing: -0.035em;"><span style="display: block;">Testamos 2.000 futuros.</span><span style="display: block;">O mais provável é <span style="white-space: nowrap;">R$ 960,3 mil.</span></span></h2>
+        </div>
+
+        <p class="fut-cap-m" style="margin: 0; font-size: 17px; line-height: 1.45; color: #EEF3FF;"><span style="display: inline-block; vertical-align: middle; width: 22px; height: 3px; margin-right: 9px; border-radius: 2px; background: #F6F2E9;"></span>Cada linha é um dos 2.000 futuros simulados para a sua carteira. Onde elas se juntam, é mais provável.</p>
+
+        <div>
+          <div role="img" aria-label="2.000 linhas partem de R$ 639,6 mil em 2026 e se abrem até 2031: a linha central chega a R$ 960,3 mil e 8 em cada 10 terminam entre R$ 715,4 mil e R$ 1,3 milhão" style="display: grid; grid-template-columns: minmax(0, 1fr) clamp(118px, 19cqi, 216px); height: clamp(300px, 39cqi, 460px);">
+            <div style="position: relative; min-width: 0;">
+              <p class="fut-cap-d" style="position: absolute; left: 0; top: 0; width: min(310px, 44%); margin: 0; font-size: 17px; line-height: 1.45; color: #EEF3FF;"><span style="display: inline-block; vertical-align: middle; width: 22px; height: 3px; margin-right: 9px; border-radius: 2px; background: #F6F2E9;"></span>Cada linha é um dos 2.000 futuros simulados para a sua carteira. Onde elas se juntam, é mais provável.</p>
+              <img src="/_blob/6f7c2630138e8f78a4be1fa543eb44d3" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; display: block;">
+              <span style="position: absolute; left: 0; top: 82.95%; width: 14px; height: 14px; margin: -7px 0 0 -7px; box-sizing: border-box; border-radius: 50%; background: #F6F2E9; border: 3px solid #111827;"></span>
+              <span style="position: absolute; left: 0; top: calc(82.95% + 16px); display: inline-flex; align-items: baseline; gap: 7px; padding: 6px 13px; border-radius: 999px; background: #111827; line-height: 1.2; white-space: nowrap;"><span style="font-size: 12px; font-weight: 800; letter-spacing: 0.1em;">HOJE</span><span style="font-size: 14.500px; font-weight: 800;">R$ 639,6 mil</span></span>
+              <span style="position: absolute; right: 0; top: 63.4%; width: 14px; height: 14px; margin: -7px -7px 0 0; box-sizing: border-box; border-radius: 50%; background: #FFFFFF; border: 3px solid #2563EB;"></span>
+            </div>
+            <div style="position: relative; min-width: 0;">
+              <span style="position: absolute; left: clamp(8px, 1.200cqi, 14px); top: 42.68%; bottom: 21.67%; width: 8px; box-sizing: border-box; border: 2px solid #F6F2E9; border-left: 0; border-radius: 0 8px 8px 0;"></span>
+              <span style="position: absolute; left: clamp(22px, 3cqi, 36px); top: 42.68%; transform: translateY(-50%); font-size: clamp(13px, 1.500cqi, 17px); font-weight: 700; white-space: nowrap;">R$ 1,3 milhão</span>
+              <span style="position: absolute; left: clamp(22px, 3cqi, 36px); top: 63.4%; transform: translateY(-50%); display: flex; flex-direction: column; line-height: 1.15; white-space: nowrap;"><span style="font-size: clamp(11.500px, 1.200cqi, 13.500px); font-weight: 700; color: #DCE6FF;">o mais provável</span><span style="font-size: clamp(15px, 2.100cqi, 25px); font-weight: 800; letter-spacing: -0.02em;">R$ 960,3 mil</span></span>
+              <span style="position: absolute; left: clamp(22px, 3cqi, 36px); top: 78.33%; transform: translateY(-50%); font-size: clamp(13px, 1.500cqi, 17px); font-weight: 700; white-space: nowrap;">R$ 715,4 mil</span>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) clamp(118px, 19cqi, 216px); margin-top: 10px;">
+            <div style="position: relative; height: 30px; border-top: 2px solid rgba(255,255,255,0.45); font-size: 12.500px; font-weight: 600; color: #DCE6FF;"><span style="position: absolute; left: 0%; top: 0; transform: translateX(0); display: flex; flex-direction: column; align-items: flex-start; gap: 4px;"><span style="width: 2px; height: 6px; background: rgba(255,255,255,0.6);"></span><span>2026</span></span><span style="position: absolute; left: 20%; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px;"><span style="width: 2px; height: 6px; background: rgba(255,255,255,0.6);"></span><span class="fut-ano-meio">2027</span></span><span style="position: absolute; left: 40%; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px;"><span style="width: 2px; height: 6px; background: rgba(255,255,255,0.6);"></span><span class="fut-ano-meio">2028</span></span><span style="position: absolute; left: 60%; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px;"><span style="width: 2px; height: 6px; background: rgba(255,255,255,0.6);"></span><span class="fut-ano-meio">2029</span></span><span style="position: absolute; left: 80%; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px;"><span style="width: 2px; height: 6px; background: rgba(255,255,255,0.6);"></span><span class="fut-ano-meio">2030</span></span><span style="position: absolute; left: 100%; top: 0; transform: translateX(-100%); display: flex; flex-direction: column; align-items: flex-end; gap: 4px;"><span style="width: 2px; height: 6px; background: rgba(255,255,255,0.6);"></span><span>2031</span></span></div>
+          </div>
+        </div>
+
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 36px; font-size: 15px; line-height: 1.4;">
+          <li style="display: flex; align-items: flex-start; gap: 10px;"><span style="flex: none; width: 22px; height: 4px; margin-top: 9px; border-radius: 2px; background: #F6F2E9;"></span><span><strong>8 em cada 10</strong> terminam entre R$ 715,4 mil e R$ 1,3 milhão</span></li>
+          <li style="display: flex; align-items: flex-start; gap: 10px;"><span style="flex: none; width: 22px; height: 4px; margin-top: 9px; border-radius: 2px; background: #A9C4FF;"></span><span><strong>1 em 10</strong> fica abaixo de R$ 715,4 mil</span></li>
+          <li style="display: flex; align-items: flex-start; gap: 10px;"><span style="flex: none; width: 22px; height: 4px; margin-top: 9px; border-radius: 2px; background: #C8D9C8;"></span><span><strong>1 em 10</strong> passa de R$ 1,3 milhão</span></li>
+        </ul>
+
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 32px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.3);">
+          <p style="margin: 0; font-size: 13.500px; color: #DCE6FF;">Valores em dinheiro de hoje. Simulação não garante resultado.</p>
+          <a href="#" style="min-height: 44px; display: flex; align-items: center; gap: 8px; color: #FFFFFF; font-weight: 700;">Como o teste foi feito<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13.500 6.500 19 12l-5.500 5.500"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPOSTO -->
+  <section id="imposto">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 84px 32px; display: flex; flex-wrap: wrap; gap: 36px 56px; align-items: flex-start;">
+      <div style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+        <span style="display: flex; align-items: center; gap: 10px; font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>DEVO IMPOSTO?</span>
+        <h2 style="margin: 0; font-size: clamp(34px, 4vw, 52px); font-weight: 800; line-height: 1.03; letter-spacing: -0.03em;">O imposto de novembro espera a conexão voltar.</h2>
+        <p style="margin: 0; font-size: 18px; color: #1F2937;">Os dados são de 08/11: as vendas depois disso ainda não chegaram.</p>
+        <a href="#" style="align-self: flex-start; min-height: 52px; padding: 0 8px 0 24px; display: flex; align-items: center; gap: 14px; border-radius: 999px; background: #2563EB; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 700;">Reconectar o Nubank<span style="width: 36px; height: 36px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563EB" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13.500 6.500 19 12l-5.500 5.500"/></svg></span></a>
+      </div>
+
+      <div style="flex: 1.700 1 520px; min-width: 0; border-radius: 28px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 26px 28px 24px; display: flex; flex-direction: column; gap: 20px;">
+        <h3 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.01em;">Vendas na bolsa, mês a mês</h3>
+        <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; align-items: end;">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 9px; border-radius: 5px; background: #2F8F55;"></span></div><span style="font-size: 13px; color: #4B5563;">dez</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 24px; border-radius: 6px; background: repeating-linear-gradient(135deg, #D9973A 0 5px, #F4DDB4 5px 10px);"></span></div><span style="font-size: 13px; color: #4B5563;">jan</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 150px; border-radius: 8px; background: repeating-linear-gradient(135deg, #D9973A 0 5px, #F4DDB4 5px 10px);"></span></div><span style="font-size: 13px; font-weight: 700;">fev</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 30px; border-radius: 6px; background: repeating-linear-gradient(135deg, #D9973A 0 5px, #F4DDB4 5px 10px);"></span></div><span style="font-size: 13px; color: #4B5563;">mar</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 24px; border-radius: 6px; background: #D9973A;"></span></div><span style="font-size: 13px; color: #4B5563;">abr</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 8px; border-radius: 4px; background: #2F8F55;"></span></div><span style="font-size: 13px; color: #4B5563;">mai</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 10px; border-radius: 5px; background: #2F8F55;"></span></div><span style="font-size: 13px; color: #4B5563;">jun</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 12px; border-radius: 5px; background: #2F8F55;"></span></div><span style="font-size: 13px; color: #4B5563;">jul</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 9px; border-radius: 5px; background: repeating-linear-gradient(135deg, #D9973A 0 5px, #F4DDB4 5px 10px);"></span></div><span style="font-size: 13px; color: #4B5563;">ago</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 18px; border-radius: 6px; background: repeating-linear-gradient(135deg, #D9973A 0 5px, #F4DDB4 5px 10px);"></span></div><span style="font-size: 13px; color: #4B5563;">set</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 9px; border-radius: 5px; background: #2F8F55;"></span></div><span style="font-size: 13px; color: #4B5563;">out</span></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><div style="width: 100%; max-width: 40px; height: 150px; display: flex; align-items: flex-end;"><span style="width: 100%; height: 3px; box-sizing: border-box; border-radius: 2px; border-top: 2px dashed #9CA3AF;"></span></div><span style="font-size: 13px; color: #4B5563;">nov</span></div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px 24px; padding-top: 16px; border-top: 1px solid rgba(17,24,39,0.1); font-size: 14.500px; font-weight: 600;">
+          <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 12px; height: 12px; border-radius: 4px; background: #2F8F55;"></span>Isento</span>
+          <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 12px; height: 12px; border-radius: 4px; background: #D9973A;"></span>Imposto a conferir</span>
+          <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 12px; height: 12px; border-radius: 4px; background: repeating-linear-gradient(135deg, #D9973A 0 3px, #F4DDB4 3px 6px);"></span>Custo desconhecido</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELATÓRIO -->
+  <section id="relatorio" style="background: #F1E8DB;">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 84px 32px; display: flex; flex-direction: column; gap: 30px;">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <span style="display: flex; align-items: center; gap: 10px; font-size: 13.500px; font-weight: 700; letter-spacing: 0.2em;"><svg viewBox="0 -9 66 54" width="22" height="18" aria-hidden="true"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>RELATÓRIO DA CARTEIRA</span>
+        <h2 style="margin: 0; font-size: clamp(38px, 4.800vw, 62px); font-weight: 800; line-height: 1.02; letter-spacing: -0.03em;">A sua carteira tira 57 de 100.</h2>
+        <p style="margin: 0; max-width: 720px; font-size: 18px; color: #1F2937;">A nota é a mediana de 4 pilares, para um número extremo não puxar o resto. De 14/05/2025 a 06/11/2026, 541 dias.</p>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch;">
+        <div style="flex: 1 1 400px; min-width: 0; margin-top: 26px; border-radius: 28px; background: #111827; color: #FFFFFF; display: flex; flex-direction: column;">
+          <div style="display: flex;">
+            <div style="position: relative; flex: none; height: 60px; padding: 0 26px 0 28px; display: flex; align-items: center; background: #2563EB; border-radius: 28px 0 0 0;">
+              <h3 style="margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0.16em;">NOTA DA CARTEIRA</h3>
+              <svg viewBox="0 -9 30 32" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: calc(100% - 1px); top: -23.500px; width: 78.300px; height: 83.500px;"><path d="M0 0 C12 0 22 -2 28 -8 C30 8 22 23 4 23 H0 Z" fill="#2563EB"/></svg>
+              <svg viewBox="0 0 25 21" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; top: calc(100% - 1px); width: 65px; height: 55px;"><path d="M0 0 H25 C11 0 2 8 0 21 Z" fill="#2563EB"/></svg>
+            </div>
+          </div>
+          <div style="flex: 1; padding: 30px 30px 28px; display: flex; flex-direction: column; gap: 24px;">
+            <div style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: clamp(88px, 10vw, 132px); font-weight: 800; line-height: 0.85; letter-spacing: -0.05em;">57</span><span style="font-size: 26px; font-weight: 700; color: #B6BCC8;">de 100</span></div>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 26px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;"><div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-size: 14.500px; font-weight: 600; color: #D1D5DB;">Retorno</span><span style="font-size: 24px; font-weight: 800;">40</span></div><span style="height: 8px; border-radius: 4px; background: #2B3445;"><span style="display: block; width: 40%; height: 100%; border-radius: 4px; background: #5B8CFF;"></span></span></div>
+              <div style="display: flex; flex-direction: column; gap: 6px;"><div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-size: 14.500px; font-weight: 600; color: #D1D5DB;">Risco</span><span style="font-size: 24px; font-weight: 800;">73</span></div><span style="height: 8px; border-radius: 4px; background: #2B3445;"><span style="display: block; width: 73%; height: 100%; border-radius: 4px; background: #5B8CFF;"></span></span></div>
+              <div style="display: flex; flex-direction: column; gap: 6px;"><div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-size: 14.500px; font-weight: 600; color: #D1D5DB;">Eficiência</span><span style="font-size: 24px; font-weight: 800;">37</span></div><span style="height: 8px; border-radius: 4px; background: #2B3445;"><span style="display: block; width: 37%; height: 100%; border-radius: 4px; background: #5B8CFF;"></span></span></div>
+              <div style="display: flex; flex-direction: column; gap: 6px;"><div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-size: 14.500px; font-weight: 600; color: #D1D5DB;">Diversificação</span><span style="font-size: 24px; font-weight: 800;">94</span></div><span style="height: 8px; border-radius: 4px; background: #2B3445;"><span style="display: block; width: 94%; height: 100%; border-radius: 4px; background: #86EFAC;"></span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex: 1.300 1 480px; min-width: 0; margin-top: 26px; border-radius: 28px; background: #F9F3EC; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 28px 30px; display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <h3 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1;">Sua carteira desde 14/05/25.</h3>
+            <span style="font-size: 15px; color: #4B5563;">A rentabilidade sem o efeito dos aportes (TWR), contra o benchmark das classes da sua carteira.</span>
+          </div>
+          <div style="margin-top: auto; display: flex; flex-direction: column; gap: 14px;">
+            <div style="display: flex; flex-direction: column; gap: 5px;"><div style="display: flex; justify-content: space-between; font-size: 15px;"><span style="font-weight: 700;">Você</span><span style="font-weight: 800; color: #1D4ED8;">+20,48%</span></div><span style="height: 14px; border-radius: 7px; background: #EADDCA;"><span style="display: block; width: 86.900%; height: 100%; border-radius: 7px; background: #2563EB;"></span></span></div>
+            <div style="display: flex; flex-direction: column; gap: 5px;"><div style="display: flex; justify-content: space-between; font-size: 15px;"><span style="font-weight: 600;">Benchmark das suas classes</span><span style="font-weight: 800;">+23,58%</span></div><span style="height: 14px; border-radius: 7px; background: #EADDCA;"><span style="display: block; width: 100%; height: 100%; border-radius: 7px; background: #111827;"></span></span></div>
+            <div style="display: flex; flex-direction: column; gap: 5px;"><div style="display: flex; justify-content: space-between; font-size: 15px;"><span style="font-weight: 600;">CDI</span><span style="font-weight: 800;">+22,55%</span></div><span style="height: 14px; border-radius: 7px; background: #EADDCA;"><span style="display: block; width: 95.600%; height: 100%; border-radius: 7px; background: #6B7280;"></span></span></div>
+            <div style="display: flex; flex-direction: column; gap: 5px;"><div style="display: flex; justify-content: space-between; font-size: 15px;"><span style="font-weight: 600;">Ibovespa</span><span style="font-weight: 800;">+21,73%</span></div><span style="height: 14px; border-radius: 7px; background: #EADDCA;"><span style="display: block; width: 92.200%; height: 100%; border-radius: 7px; background: #9AAE9B;"></span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr)); gap: 18px; align-items: start;">
+        <div style="border-radius: 24px; background: #F9F3EC; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 24px 26px 8px; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 14px;"><h3 style="margin: 0; flex: 1; font-size: 23px; font-weight: 800; letter-spacing: -0.015em;">Retorno</h3><span style="padding: 4px 12px; border-radius: 999px; background: #111827; color: #FFFFFF; font-size: 14px; font-weight: 800;">nota 40</span></div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 14px 0; border-top: 1px solid rgba(17,24,39,0.1);"><span style="flex: 1 1 200px; font-weight: 700;">Rentabilidade (TWR)</span><span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: 20px; font-weight: 800;">20,5%</span><span style="font-size: 13.500px; color: #4B5563;">bench. 23,6%</span></span><span style="display: flex; align-items: center; gap: 10px;"><span aria-hidden="true" style="width: 72px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 35%; height: 100%; border-radius: 3px; background: #2563EB;"></span></span><span style="width: 56px; font-size: 14px; font-weight: 700;">nota 35</span></span></div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 14px 0; border-top: 1px solid rgba(17,24,39,0.1);"><span style="flex: 1 1 200px; font-weight: 700;">Rentabilidade do seu dinheiro (MWR)</span><span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: 20px; font-weight: 800;">13,8%</span><span style="font-size: 13.500px; color: #4B5563;">bench. 15,3%</span></span><span style="display: flex; align-items: center; gap: 10px;"><span aria-hidden="true" style="width: 72px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 41%; height: 100%; border-radius: 3px; background: #2563EB;"></span></span><span style="width: 56px; font-size: 14px; font-weight: 700;">nota 41</span></span></div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 14px 0; border-top: 1px solid rgba(17,24,39,0.1);"><span style="flex: 1 1 200px; font-weight: 700;">Rentabilidade ao ano (CAGR)</span><span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: 20px; font-weight: 800;">13,3%</span><span style="font-size: 13.500px; color: #4B5563;">bench. 15,3%</span></span><span style="display: flex; align-items: center; gap: 10px;"><span aria-hidden="true" style="width: 72px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 38%; height: 100%; border-radius: 3px; background: #2563EB;"></span></span><span style="width: 56px; font-size: 14px; font-weight: 700;">nota 38</span></span></div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 14px 0; border-top: 1px solid rgba(17,24,39,0.1);"><span style="flex: 1 1 200px; font-weight: 700;">Rentabilidade acima da inflação</span><span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: 20px; font-weight: 800;">8,5%</span><span style="font-size: 13.500px; color: #4B5563;">bench. 10,4%</span></span><span style="display: flex; align-items: center; gap: 10px;"><span aria-hidden="true" style="width: 72px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 83%; height: 100%; border-radius: 3px; background: #2563EB;"></span></span><span style="width: 56px; font-size: 14px; font-weight: 700;">nota 83</span></span></div>
+        </div>
+
+        <div style="border-radius: 24px; background: #F9F3EC; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 24px 26px 8px; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 14px;"><h3 style="margin: 0; flex: 1; font-size: 23px; font-weight: 800; letter-spacing: -0.015em;">Risco</h3><span style="padding: 4px 12px; border-radius: 999px; background: #111827; color: #FFFFFF; font-size: 14px; font-weight: 800;">nota 73</span></div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 14px 0; border-top: 1px solid rgba(17,24,39,0.1);"><span style="flex: 1 1 200px; font-weight: 700;">Volatilidade</span><span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: 20px; font-weight: 800;">10,6%</span><span style="font-size: 13.500px; color: #4B5563;">bench. 8,8%</span></span><span style="display: flex; align-items: center; gap: 10px;"><span aria-hidden="true" style="width: 72px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 78%; height: 100%; border-radius: 3px; background: #2563EB;"></span></span><span style="width: 56px; font-size: 14px; font-weight: 700;">nota 78</span></span></div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 14px 0; border-top: 1px solid rgba(17,24,39,0.1);"><span style="flex: 1 1 200px; font-weight: 700;">Volatilidade das quedas</span><span style="display: flex; align-items: baseline; gap: 10px;"><span style="font-size: 20px; font-weight: 800;">8,2%</span><span style="font-size: 13.500px; color: #4B5563;">bench. 6,7%</span></span><span style="display: flex; align-items: center; gap: 10px;"><span aria-hidden="true" style="width: 72px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 72%; height: 100%; border-radius: 3px; background: #2563EB;"></span></span><span style="width: 56px; font-size: 14px; font-weight: 700;">nota 72</span></span></div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 14px 0; border-top: 1px solid rgba(17,24,39,0.1);"><span style="flex: 1 1 200px; font-weight: 700;">Maior queda</span><span style="display: flex; align-items: center; gap: 10px;"><span aria-hidden="true" style="width: 72px; height: 6px; border-radius: 3px; background: #E6D9C6;"><span style="display: block; width: 84%; height: 100%; border-radius: 3px; background: #2563EB;"></span></span><span style="width: 56px; font-size: 14px; font-weight: 700;">nota 84</span></span></div>
+          <a href="#" style="min-height: 48px; display: flex; align-items: center; border-top: 1px solid rgba(17,24,39,0.1); font-weight: 700;">Ver Eficiência (37) e Diversificação (94)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOVIMENTAÇÕES -->
+  <section id="movimentacoes">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 84px 32px 120px; display: flex; flex-direction: column; gap: 28px;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 48px;">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <h2 style="margin: 0; font-size: clamp(40px, 5vw, 64px); font-weight: 800; line-height: 1; letter-spacing: -0.03em;">Movimentações.</h2>
+          <span style="font-size: 18px; color: #1F2937;">Outubro 2026 · saldo do mês <span style="font-weight: 800; color: #18703A;">+R$ 1.393,52</span> · 9 operações</span>
+        </div>
+        <div role="group" aria-label="Filtrar movimentações" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 999px; background: #EFE4D5;">
+          <button type="button" aria-pressed="true" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #111827; color: #FFFFFF; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">Tudo</button>
+          <button type="button" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">Compras</button>
+          <button type="button" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">Vendas</button>
+          <button type="button" style="height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: transparent; color: #111827; font-family: inherit; font-size: 14.500px; font-weight: 700; cursor: pointer;">Proventos</button>
+        </div>
+      </div>
+
+      <div style="border-radius: 28px; background: #F4ECE1; box-shadow: 0 0 0 1px rgba(120,90,50,0.05), 0 2px 8px rgba(120,90,50,0.06); padding: 6px 28px 6px;">
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0;">
+          <span style="flex: none; width: 52px; height: 52px; border-radius: 13px; background: #111827; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;"><span style="font-size: 19px; font-weight: 800;">26</span><span style="font-size: 10.500px; font-weight: 700; letter-spacing: 0.08em;">OUT</span></span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;"><span style="font-size: 19px; font-weight: 800;">AUPO11</span><span style="padding: 2px 9px; border-radius: 7px; background: #F7E8C6; color: #6B4200; font-size: 12.500px; font-weight: 700;">Venda</span><span style="padding: 2px 9px; border-radius: 7px; background: #DDF2E3; color: #18703A; font-size: 12.500px; font-weight: 700;">Isento</span></span><span style="font-size: 14.500px; color: #4B5563;">3 cotas × R$ 111,13</span></div>
+          <span style="flex: none; font-size: 19px; font-weight: 800; color: #18703A;">+R$ 333,39</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+          <span style="flex: none; width: 52px; height: 52px; border-radius: 13px; background: #EADDCA; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;"><span style="font-size: 19px; font-weight: 800;">23</span><span style="font-size: 10.500px; font-weight: 700; letter-spacing: 0.08em;">OUT</span></span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;"><span style="font-size: 19px; font-weight: 800;">BTLG11</span><span style="padding: 2px 9px; border-radius: 7px; background: #DDF2E3; color: #18703A; font-size: 12.500px; font-weight: 700;">Provento</span></span><span style="font-size: 14.500px; color: #4B5563;">Rendimento</span></div>
+          <span style="flex: none; font-size: 19px; font-weight: 800; color: #18703A;">+R$ 97,20</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+          <span style="flex: none; width: 52px; height: 52px; border-radius: 13px; background: #EADDCA; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;"><span style="font-size: 19px; font-weight: 800;">23</span><span style="font-size: 10.500px; font-weight: 700; letter-spacing: 0.08em;">OUT</span></span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;"><span style="font-size: 19px; font-weight: 800;">XPML11</span><span style="padding: 2px 9px; border-radius: 7px; background: #DDF2E3; color: #18703A; font-size: 12.500px; font-weight: 700;">Provento</span></span><span style="font-size: 14.500px; color: #4B5563;">Rendimento</span></div>
+          <span style="flex: none; font-size: 19px; font-weight: 800; color: #18703A;">+R$ 82,80</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+          <span style="flex: none; width: 52px; height: 52px; border-radius: 13px; background: #EADDCA; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;"><span style="font-size: 19px; font-weight: 800;">22</span><span style="font-size: 10.500px; font-weight: 700; letter-spacing: 0.08em;">OUT</span></span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;"><span style="font-size: 19px; font-weight: 800;">CPTS11</span><span style="padding: 2px 9px; border-radius: 7px; background: #DDF2E3; color: #18703A; font-size: 12.500px; font-weight: 700;">Provento</span></span><span style="font-size: 14.500px; color: #4B5563;">Rendimento</span></div>
+          <span style="flex: none; font-size: 19px; font-weight: 800; color: #18703A;">+R$ 197,73</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+          <span style="flex: none; width: 52px; height: 52px; border-radius: 13px; background: #EADDCA; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;"><span style="font-size: 19px; font-weight: 800;">20</span><span style="font-size: 10.500px; font-weight: 700; letter-spacing: 0.08em;">OUT</span></span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;"><span style="font-size: 19px; font-weight: 800;">MCCI11</span><span style="padding: 2px 9px; border-radius: 7px; background: #DDF2E3; color: #18703A; font-size: 12.500px; font-weight: 700;">Provento</span></span><span style="font-size: 14.500px; color: #4B5563;">Rendimento</span></div>
+          <span style="flex: none; font-size: 19px; font-weight: 800; color: #18703A;">+R$ 225,00</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+          <span style="flex: none; width: 52px; height: 52px; border-radius: 13px; background: #EADDCA; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;"><span style="font-size: 19px; font-weight: 800;">15</span><span style="font-size: 10.500px; font-weight: 700; letter-spacing: 0.08em;">OUT</span></span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;"><span style="font-size: 19px; font-weight: 800;">HGLG11</span><span style="padding: 2px 9px; border-radius: 7px; background: #DDF2E3; color: #18703A; font-size: 12.500px; font-weight: 700;">Provento</span></span><span style="font-size: 14.500px; color: #4B5563;">Rendimento</span></div>
+          <span style="flex: none; font-size: 19px; font-weight: 800; color: #18703A;">+R$ 111,15</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid rgba(17,24,39,0.1);">
+          <span style="flex: none; width: 52px; height: 52px; border-radius: 13px; background: #EADDCA; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;"><span style="font-size: 19px; font-weight: 800;">07</span><span style="font-size: 10.500px; font-weight: 700; letter-spacing: 0.08em;">OUT</span></span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;"><span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;"><span style="font-size: 19px; font-weight: 800;">HSML11</span><span style="padding: 2px 9px; border-radius: 7px; background: #DDF2E3; color: #18703A; font-size: 12.500px; font-weight: 700;">Provento</span></span><span style="font-size: 14.500px; color: #4B5563;">Rendimento</span></div>
+          <span style="flex: none; font-size: 19px; font-weight: 800; color: #18703A;">+R$ 93,75</span>
+        </div>
+        <a href="#" style="min-height: 56px; display: flex; align-items: center; gap: 8px; border-top: 1px solid rgba(17,24,39,0.1); font-weight: 700;">Ver as outras 2 operações de outubro<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="M13.500 6.500 19 12l-5.500 5.500"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- INPUT MÁGICO: fixo no rodapé da tela, abre o chat no canto inferior direito -->
+  <div style="position: sticky; bottom: 22px; z-index: 30; height: 0; display: flex; justify-content: center; align-items: flex-end;">
+    <div style="position: relative; width: min(460px, calc(100% - 36px));">
+      <div aria-hidden="true" style="position: absolute; left: -8px; right: -8px; top: -6px; bottom: -6px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; filter: blur(18px); opacity: 0.6; animation: aportouAnel 7s linear infinite;"></div>
+      <div style="position: relative; padding: 2.500px; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); background-size: 200% 100%; animation: aportouAnel 7s linear infinite; box-shadow: 0 12px 30px rgba(17,24,39,0.18);">
+        <button type="button" aria-label="Perguntar à IA da Aportou: como foi a minha carteira este mês?" style="display: flex; align-items: center; gap: 12px; width: 100%; height: 58px; box-sizing: border-box; padding: 0 9px 0 20px; border: 0; border-radius: 999px; background: #FFFFFF; color: #111827; font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer;">
+          <svg viewBox="0 -9 66 54" width="26" height="21" aria-hidden="true" style="flex: none;"><path d="M0 44 V0 H36 C48 0 58 -2 64 -8 C66 8 58 23 40 23 H25 C11 23 2 31 0 44 Z" fill="#2563EB"/></svg>
+          <span style="flex: 1; min-width: 0; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Como foi a minha carteira este mês?</span>
+          <span aria-hidden="true" style="flex: none; padding: 2px 7px; border: 1px solid #E0D6C6; border-radius: 7px; font-size: 12.500px; font-weight: 700; color: #4B5563;">⌘K</span>
+          <span aria-hidden="true" style="flex: none; width: 40px; height: 40px; border-radius: 50%; background: #2563EB; display: flex; align-items: center; justify-content: center;"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#FFFFFF" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RODAPÉ -->
+  <footer style="background: #111827; color: #D1D5DB; overflow: hidden;">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 64px 32px 0; display: flex; flex-direction: column; gap: 44px;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 48px;">
+        <span style="font-size: clamp(34px, 4.400vw, 56px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: #F6F2E9;">Investir fica mais claro.</span>
+        <span style="max-width: 480px; font-size: 13.500px; line-height: 1.5;">Uma empresa Redentia. As projeções são simulações e não garantem resultado. As informações desta página têm caráter educativo e não são recomendação de compra ou venda.</span>
+      </div>
+      <svg viewBox="-2 -40 681 142" width="100%" role="img" aria-label="aportou" style="display: block;"><g fill="none" stroke="#243047" stroke-width="25"><circle cx="50" cy="50" r="37.5"/><circle cx="173" cy="50" r="37.5"/><circle cx="280.5" cy="50" r="37.5"/><circle cx="520.5" cy="50" r="37.5"/><path d="M593.5 2 V54 A35.25 35.25 0 0 0 664 54"/></g><g fill="#243047"><rect x="83" y="2" width="25" height="98"/><path d="M121 2 H146 V124 A12 12 0 0 1 134 136 H121 Z"/><path d="M340 100 V26 A26 26 0 0 1 366 0 H399 V23 H372 Q365 23 365 31 V100 Z"/><path d="M408 -25 Q408 -38 421 -38 H433 V62 Q433 77 448 77 H463 V101 H440 Q408 101 408 69 Z"/><rect x="651.5" y="2" width="25" height="98"/></g><path d="M408 44 V0 H444 C456 0 466 -2 472 -8 C474 8 466 23 448 23 H433 C419 23 410 31 408 44 Z" fill="#2563EB"/></svg>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":7127}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

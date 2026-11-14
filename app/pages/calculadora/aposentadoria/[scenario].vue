@@ -292,7 +292,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: `${scenario.title} - Redentia`,
+      name: `${scenario.title} - ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       applicationSubCategory: 'Planejamento de aposentadoria',
       operatingSystem: 'Web',
@@ -322,7 +322,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
           Calculadora de Aposentadoria
         </NuxtLink>
       </div>
-      <p class="aps__eyebrow">Cenário · Aposentadoria</p>
+      <p class="aps__eyebrow nu-eyebrow"><MarcaCorte /><span>Cenário · Aposentadoria</span></p>
       <h1 class="aps__h1">{{ scenario.h1 }}</h1>
       <p class="aps__lead">{{ scenario.answerFirst }}</p>
       <ul class="aps__chips">
@@ -339,7 +339,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
     </CalcRetirementSection>
 
     <!-- ============ Outros cenários populares (cross-link, grid de cards-link) ============ -->
-    <CalcBand tone="cream" title="Outros cenários populares">
+    <CalcBand v-revelar tone="cream" title="Outros cenários populares">
       <template #dek>
         <p>Compare planos de aposentadoria diferentes, basta clicar e a calculadora carrega já preenchida.</p>
       </template>
@@ -357,7 +357,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
     </CalcBand>
 
     <!-- ============ Conteúdo educacional do cenário (verbatim, bandas split alternando) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>{{ scenario.eduH2 }}</template>
       <template v-if="firstEduBlock">
         <h3 class="aps__sub">{{ firstEduBlock.h3 }}</h3>
@@ -367,7 +367,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
       </template>
     </CalcSplit>
 
-    <CalcSplit
+    <CalcSplit v-revelar
       v-for="(block, i) in restEduBlocks"
       :key="block.h3"
       :tone="i % 2 === 0 ? 'white' : 'cream'"
@@ -381,22 +381,18 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
     </CalcSplit>
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas frequentes sobre este cenário</template>
       <template #left>
-        <NuxtLink to="/busca" class="aps__pill">Perguntar à Redentia AI</NuxtLink>
+        <CalcPerguntarIa />
       </template>
       <NuFaqAccordion :key="slug" :items="scenario.faq" surface="white" />
     </CalcSplit>
 
-    <!-- ============ CTA (texto verbatim) ============ -->
-    <CalcBand tone="white">
-    </CalcBand>
-
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta
       titulo="Acompanhe seu plano de aposentadoria"
-      texto="Cadastre-se na Redentia e monitore o progresso rumo à independência financeira em tempo real."
+      texto="Cadastre-se na Aportou e monitore o progresso rumo à independência financeira em tempo real."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Voltar para a calculadora', to: '/calculadora/aposentadoria' }"
     />
@@ -405,52 +401,54 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
 
 <style scoped>
 /* ——— hero ——— */
+/* Aportou (11/11/2026): creme da página, eyebrow com o corte, selos de raio 8 */
 .aps__hero {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-page);
+  padding: clamp(48px, 6.5vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 5vw, 64px);
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both;
 }
 .aps__status {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-bottom: 22px;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); margin-bottom: 22px;
 }
-.aps__live { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: 700; }
+.aps__live { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .aps__live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); flex-shrink: 0; }
 .aps__back {
   display: inline-flex; align-items: center; gap: 9px;
-  background: var(--nu-white); color: var(--nu-ink);
-  border-radius: var(--nu-r-pill); padding: 11px 20px;
-  font-size: var(--nu-fs-sm); font-weight: 700;
-  transition: transform .18s, box-shadow .2s;
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: inset 0 0 0 1px var(--nu-line);
+  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 20px;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
+  transition: box-shadow var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
-.aps__back:hover { transform: translateY(-1px); box-shadow: var(--nu-shadow-card); color: var(--nu-ink); }
-.aps__eyebrow { margin: 0; color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
+.aps__back:hover { box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink); }
+.aps__back:active { transform: scale(.98); }
+.aps__eyebrow { margin: 0; }
 .aps__h1 {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
+  margin: 18px 0 0; color: var(--nu-ink);
+  font-size: clamp(34px, 4.6vw, 64px); font-weight: var(--nu-w-display);
+  letter-spacing: -0.035em; line-height: 1.02; max-width: 1080px;
 }
 .aps__lead {
-  color: var(--nu-gray-2); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500;
-  line-height: 1.6; margin: 20px 0 0; max-width: 840px;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto);
+  line-height: 1.45; margin: 20px 0 0; max-width: 840px;
 }
 .aps__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
 .aps__chips li {
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
+  background: var(--nu-cream-2); border-radius: var(--nu-r-tag);
+  padding: 6px 11px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
 }
 .aps__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .aps__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 .aps__prose p:last-child { margin-bottom: 0; }
 
 /* ——— sub-heading dentro da coluna direita do split ——— */
-.aps__sub { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.aps__sub { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
 
 /* ——— cenários relacionados (grid de cards-link) ——— */
 .aps__grid-cards {
@@ -459,19 +457,14 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .aps__rel-card {
-  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .aps__rel-card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.aps__rel-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; line-height: 1.3; }
-.aps__rel-sub { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.aps__rel-card:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.aps__rel-card:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+.aps__rel-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; line-height: 1.3; }
+.aps__rel-sub { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
 
-/* ——— pills / CTA ——— */
-.aps__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s, color .2s;
-}
-.aps__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 </style>

@@ -225,7 +225,7 @@ async function enviar() {
 .ptc__titulo {
   color: var(--nu-navy);
   font-size: var(--nu-fs-lg);
-  font-weight: 800;
+  font-weight: var(--nu-w-forte);
   letter-spacing: -0.02em;
   line-height: 1.3;
 }
@@ -236,7 +236,7 @@ async function enviar() {
   font-weight: 500;
   line-height: 1.5;
 }
-.ptc__status { color: var(--nu-navy); font-weight: 700; }
+.ptc__status { color: var(--nu-navy); font-weight: var(--nu-w-medio); }
 .ptc__texto--cheio { flex: 1 1 100%; }
 .ptc__btn {
   align-self: stretch;
@@ -250,7 +250,7 @@ async function enviar() {
   color: var(--nu-white);
   font-family: inherit;
   font-size: var(--nu-fs-sm);
-  font-weight: 800;
+  font-weight: var(--nu-w-forte);
   line-height: 1.2;
   cursor: pointer;
 }
@@ -287,7 +287,7 @@ async function enviar() {
 }
 .ptc__legal a {
   color: var(--nu-blue-text);
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -295,7 +295,7 @@ async function enviar() {
 .ptc__erro {
   color: var(--nu-navy);
   font-size: var(--nu-fs-sm);
-  font-weight: 700;
+  font-weight: var(--nu-w-medio);
   line-height: 1.45;
 }
 @media (min-width: 760px) {

@@ -33,11 +33,11 @@ export type CadastroContexto =
   | { gesto: 'carteira' }
   | { gesto: 'pergunta'; pergunta: string }
 
-/** Como a conta saiu: o canal do código e se ela é nova. */
+/** Como a conta saiu: o canal do código (ou a conta Google/Apple) e se ela é nova. */
 export interface CadastroFeito {
-  canal: 'email' | 'whatsapp'
+  canal: 'email' | 'whatsapp' | 'google' | 'apple'
   novaConta: boolean
-  /** o e-mail ou celular confirmado */
+  /** o e-mail ou celular confirmado (no Google e na Apple, o e-mail da conta) */
   contato: string
 }
 

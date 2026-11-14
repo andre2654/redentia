@@ -195,7 +195,7 @@ export const RANKING_COLUMNS: Record<RankingColumnKey, RankingColumnDef> = {
   },
   // redentia_score 0-10 → percentil /100 (×10; mesma régua do /asset — PR2).
   score: {
-    label: 'Redentia Score',
+    label: 'Aportou Score',
     raw: (r) => (num(r.redentia_score) == null ? null : Math.min(100, Math.round(num(r.redentia_score)! * 10))),
     format(r) {
       const v = this.raw(r)

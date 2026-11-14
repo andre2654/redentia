@@ -6,12 +6,19 @@
 import type { AcaoDividendBar } from '~/types/acao'
 
 defineProps<{ bars: AcaoDividendBar[]; footnote: string }>()
+// o cartão como contexto do chat: o rótulo leva o sujeito da página
+// (proverSobreDoContexto), "P/L PETR4"
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
   <div>
     <div class="ndb__bars">
-      <div v-for="b in bars" :key="b.year" class="ndb__col">
+      <div
+        v-for="b in bars" :key="b.year"
+        v-contexto-chat="{ id: `provento-ano:${sobre}:${b.year}`, tipo: 'proventos', rotulo: rotuloComSobre(`Proventos ${b.year}`, sobre), texto: `Proventos${sobre ? ` de ${sobre}` : ''} em ${b.year}: ${b.valFmt}${b.current ? ' (ano corrente)' : ''}. ${footnote}` }"
+        class="ndb__col"
+      >
         <span class="ndb__val" :class="{ 'ndb__val--current': b.current }">{{ b.valFmt }}</span>
         <div class="ndb__bar" :class="{ 'ndb__bar--current': b.current }" :style="{ height: `${b.hPct}%` }" />
       </div>
@@ -33,18 +40,21 @@ defineProps<{ bars: AcaoDividendBar[]; footnote: string }>()
   justify-content: flex-end; height: 100%; min-width: 0;
 }
 .ndb__val {
-  color: var(--nu-ink); font-size: clamp(10px, 2.4vw, 15px); font-weight: 800;
+  color: var(--nu-ink); font-size: clamp(10px, 2.4vw, 15px); font-weight: var(--nu-w-forte);
   width: 100%; text-align: center; line-height: 1.15; overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums; margin-bottom: 10px;
 }
 .ndb__val--current { color: var(--nu-blue-text); }
 .ndb__bar {
   width: 100%; max-width: 86px; min-height: 22px; border-radius: var(--nu-r-tile);
-  background: var(--nu-bar-inactive); transition: transform .18s;
+  background: var(--nu-bar-inactive); transform-origin: bottom;
+  animation: ndb-cresce .6s var(--nu-ease-saida) both;
 }
+/* a barra cresce do chão na entrada (só transform) */
+@keyframes ndb-cresce { from { transform: scaleY(0); } to { transform: none; } }
 .ndb__bar--current { background: var(--nu-blue); }
 .ndb__years { display: flex; gap: clamp(10px, 1.6vw, 22px); margin-top: 12px; }
-.ndb__year { flex: 1; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.ndb__year--current { color: var(--nu-ink); font-weight: 800; }
+.ndb__year { flex: 1; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
+.ndb__year--current { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .ndb__footnote { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 </style>

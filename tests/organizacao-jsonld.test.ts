@@ -1,11 +1,14 @@
 /**
- * Entidade Redentia no JSON-LD da home: um script Organization, JSON válido,
- * e WebSite apontando para o @id em vez de repetir o objeto.
+ * Entidade Aportou no JSON-LD da home: um script Organization, JSON válido,
+ * e WebSite apontando para o @id em vez de repetir o objeto. Veio da
+ * redentia-v2 (#145) com a Redentia; no site novo a entidade é a Aportou, com a
+ * Redentia como empresa-mãe (a virada de domínio, 14/11/2026).
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { EMPRESA } from '../shared/utils/empresa.ts'
+import { MARCA } from '../shared/utils/marca.ts'
 import {
   EMAIL_SUPORTE,
   faqJsonLd,
@@ -14,7 +17,7 @@ import {
   scriptsLdInicio,
 } from '../app/utils/json-ld.ts'
 
-const SITE = 'https://www.redentia.com.br'
+const SITE = 'https://aportou.com.br'
 const ler = (caminho: string) => readFileSync(new URL(`../${caminho}`, import.meta.url), 'utf8')
 
 function faqsDaHome(): { q: string, a: string }[] {
@@ -26,7 +29,7 @@ function faqsDaHome(): { q: string, a: string }[] {
   const qs = [...bloco.matchAll(/q: '([^']*)'/g)].map((m) => m[1]!)
   const as = [...bloco.matchAll(/a: '([^']*)'/g)].map((m) => m[1]!)
   assert.equal(qs.length, as.length)
-  assert.equal(qs.length, 5)
+  assert.ok(qs.length >= 5)
   return qs.map((q, i) => ({ q, a: as[i]! }))
 }
 
@@ -56,25 +59,30 @@ test('a home emite JSON válido com uma única Organization', () => {
     assert.equal(JSON.stringify(JSON.parse(script)), script)
   }
 
+  // um script de Organization só (a Aportou); a outra Organization é a Redentia, empresa-mãe, dentro dela
   const lista = tipos(nos)
   assert.deepEqual(
     lista.filter((t) => t === 'Organization'),
-    ['Organization'],
+    ['Organization', 'Organization'],
   )
-  assert.equal(scripts.join('\n').split('"@type":"Organization"').length - 1, 1)
+  assert.equal(scripts.join('\n').split('"@type":"Organization"').length - 1, 2)
+  assert.equal(nos.filter((n) => n['@type'] === 'Organization').length, 1)
+  assert.deepEqual((nos[0] as { parentOrganization?: unknown }).parentOrganization, { '@type': 'Organization', name: 'Redentia', url: 'https://www.redentia.com.br' })
   assert.deepEqual(nos.map((n) => n['@type']), ['Organization', 'WebSite', 'BreadcrumbList', 'FAQPage'])
 
   const org = nos[0]!
   assert.deepEqual(org, {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    '@id': 'https://www.redentia.com.br/#organization',
-    name: 'Redentia',
+    '@id': 'https://aportou.com.br/#organization',
+    name: MARCA.nome,
+    slogan: MARCA.frase,
+    parentOrganization: { '@type': 'Organization', name: 'Redentia', url: 'https://www.redentia.com.br' },
     legalName: EMPRESA.razaoSocial,
     taxID: EMPRESA.cnpj,
-    url: 'https://www.redentia.com.br',
-    logo: 'https://www.redentia.com.br/logo-azul.svg',
-    description: 'Plataforma brasileira de análise de investimentos com IA: ações, FIIs, notícias, teses e carteira.',
+    url: 'https://aportou.com.br',
+    logo: 'https://aportou.com.br/icone-aportou.svg',
+    description: MARCA.descricao,
     sameAs: [
       'https://www.instagram.com/redentia.wealth/',
       'https://www.linkedin.com/company/redentia',
@@ -82,7 +90,7 @@ test('a home emite JSON válido com uma única Organization', () => {
     ],
     founder: {
       '@type': 'Person',
-      '@id': 'https://www.redentia.com.br/#andre-saraiva',
+      '@id': 'https://aportou.com.br/#andre-saraiva',
       name: 'André Saraiva',
       sameAs: [
         'https://x.com/andrevisaraiva',
@@ -93,13 +101,15 @@ test('a home emite JSON válido com uma única Organization', () => {
       '@type': 'ContactPoint',
       contactType: 'customer support',
       email: 'relacionamento@redentia.com.br',
-      url: 'https://www.redentia.com.br/institucional/contact',
+      url: 'https://aportou.com.br/institucional/contact',
     },
   })
+  assert.equal(MARCA.nome, 'Aportou')
 
   const website = nos[1]!
-  assert.deepEqual(website.publisher, { '@id': 'https://www.redentia.com.br/#organization' })
-  assert.equal(website['@id'], 'https://www.redentia.com.br/#website')
+  assert.deepEqual(website.publisher, { '@id': 'https://aportou.com.br/#organization' })
+  assert.equal(website['@id'], 'https://aportou.com.br/#website')
+  assert.equal(website.name, 'Aportou')
   assert.equal(faqJsonLd(faqsDaHome())['@type'], 'FAQPage')
   assert.equal(JSON.stringify(nos).includes('redentia.app'), false)
   assert.equal(JSON.stringify(nos).includes('wa.me'), false)
@@ -108,7 +118,7 @@ test('a home emite JSON válido com uma única Organization', () => {
 
 test('X e Threads ficam no fundador; a barra final da origem não duplica o @id', () => {
   const org = organizacaoJsonLd(`${SITE}/`)
-  assert.equal(org['@id'], 'https://www.redentia.com.br/#organization')
+  assert.equal(org['@id'], 'https://aportou.com.br/#organization')
   assert.equal(idOrganizacao(`${SITE}/`), org['@id'])
   assert.deepEqual(org.founder.sameAs, [
     'https://x.com/andrevisaraiva',
@@ -125,17 +135,17 @@ test('o schema usa o e-mail publicado e não o WhatsApp do jantar', () => {
   const org = organizacaoJsonLd(SITE)
   assert.equal(org.contactPoint.email, EMAIL_SUPORTE)
   assert.equal(EMAIL_SUPORTE, 'relacionamento@redentia.com.br')
-  assert.match(ler('app/components/nu/NuFooter.vue'), new RegExp(`mailto:${EMAIL_SUPORTE}`))
+  assert.match(ler('app/components/nu/NuFooterAportou.vue'), new RegExp(`mailto:${EMAIL_SUPORTE}`))
   assert.match(ler('app/pages/institucional/contact.vue'), new RegExp(EMAIL_SUPORTE))
-  assert.match(ler('app/pages/jantar.vue'), /wa\.me\/5511951495841/)
+  // o jantar saiu com o B2B (redentia.com.br); o WhatsApp dele segue fora do schema
   assert.equal(JSON.stringify(org).includes('5511951495841'), false)
   assert.equal(JSON.stringify(org).includes('hoursAvailable'), false)
 })
 
 test('o logo do schema é o arquivo que o site já serve', () => {
   const org = organizacaoJsonLd(SITE)
-  assert.equal(org.logo, `${SITE}/logo-azul.svg`)
-  const svg = ler('public/logo-azul.svg')
+  assert.equal(org.logo, `${SITE}/icone-aportou.svg`)
+  const svg = ler('public/icone-aportou.svg')
   assert.match(svg, /<svg\b/)
 })
 
@@ -162,19 +172,17 @@ test('a home, o app e o MCP usam o helper, e o rodapé usa o Instagram oficial',
   assert.match(faq, /JSON\.stringify\(faqJsonLd\(items\)\)/)
   assert.doesNotMatch(faq, /Organization/)
 
-  const mercado = ler('app/components/mercado/MercadoContent.vue')
-  assert.match(mercado, /<NuFaqAccordion :items="MERCADO_FAQS" \/>/)
+  const home = ler('app/components/home/HomeContent.vue')
+  assert.match(home, /<NuFaqAccordion :items="MERCADO_FAQS"/)
 
   const mcp = ler('app/pages/mcp.vue')
   assert.match(mcp, /'provider': referenciaOrganizacao\(entidade\)/)
 
-  const rodape = ler('app/components/nu/NuFooter.vue')
-  const rodapeBiz = ler('app/components/business/RbFooter.vue')
-  for (const src of [rodape, rodapeBiz]) {
-    assert.match(src, /https:\/\/www\.instagram\.com\/redentia\.wealth\//)
-    assert.doesNotMatch(src, /instagram\.com\/redentia\.app/)
-  }
+  // o rodapé da Aportou (o do B2B saiu com ele para redentia.com.br)
+  const rodape = ler('app/components/nu/NuFooterAportou.vue')
+  assert.match(rodape, /https:\/\/www\.instagram\.com\/redentia\.wealth\//)
+  assert.doesNotMatch(rodape, /instagram\.com\/redentia\.app/)
 
-  assert.match(ler('nuxt.config.ts'), /siteUrl: process\.env\.NUXT_PUBLIC_SITE_URL \|\| 'https:\/\/www\.redentia\.com\.br'/)
+  assert.match(ler('nuxt.config.ts'), /siteUrl: process\.env\.NUXT_PUBLIC_SITE_URL \|\| 'https:\/\/aportou\.com\.br'/)
   assert.match(ler('app/composables/useSiteOrigin.ts'), /return useRuntimeConfig\(\)\.public\.siteUrl/)
 })

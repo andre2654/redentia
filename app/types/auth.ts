@@ -28,10 +28,11 @@ export interface TokenGrant {
 }
 
 /**
- * POST /auth/google — { id_token }. `is_new_user` só entra quando o backend
- * manda (redentia-api#16). Ausente não é conta nova.
+ * POST /auth/google e /auth/apple. O token vem como no magic-link; `user` e
+ * `is_new_user` chegaram depois (podem faltar num backend antigo).
  */
-export interface GoogleAuthResponse extends TokenGrant {
+export interface SocialLoginResponse extends TokenGrant {
+  user?: { id: number; name: string | null; email: string | null }
   is_new_user?: boolean
 }
 

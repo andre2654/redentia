@@ -179,12 +179,6 @@ export interface NuThesis {
   rank?: string | null
 }
 
-/** GET /api/theses-trajetoria → data[slug]: a convicção dia a dia e o desempenho desde o lançamento. */
-export interface TeseTrajetoria {
-  conviccao: { atual: number; inicio: number; desde: string | null; serie: number[] } | null
-  desempenho: { serie: number[]; deltaPct: number | null; desde: string | null } | null
-}
-
 export interface NuMoverRow {
   rank: number
   ticker: string

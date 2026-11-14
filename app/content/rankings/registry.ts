@@ -24,14 +24,14 @@ export const RANKINGS: Record<string, RankingMeta> = {
   // ============================================================
   'redentia-score': {
     slug: 'redentia-score',
-    title: 'Redentia Score',
+    title: 'Aportou Score',
     endpoint: 'redentia-score',
     // metaTitle/lead ADAPTADOS da antiga SÓ na escala (0-10 → 0-100,
     // decisão PR2); resto verbatim, sem trocas lexicais.
-    metaTitle: 'Redentia Score 2026: Score 0-100 para Ações da B3',
+    metaTitle: 'Aportou Score 2026: Score 0-100 para Ações da B3',
     metaDescription:
       'Score proprietário 0 a 100 que mede a qualidade fundamentalista de ações da B3 cruzando 15 rankings: dividend yield, ROE, Graham, Bazin, crescimento, e mais.',
-    h1: 'Redentia Score',
+    h1: 'Aportou Score',
     lead:
       'O score 0 a 100 que mede a qualidade fundamentalista de cada ação da B3 cruzando 15 rankings simultaneamente. Quem aparece bem em vários rankings tem score alto. Quem só aparece em um, tem score baixo.',
     chips: ['15 rankings combinados', 'Atualizado diariamente', 'Algoritmo proprietário', 'Top 50 ativos'],

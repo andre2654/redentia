@@ -65,8 +65,8 @@ const moodStyle = computed(() => {
     transform: rotate(270deg);
     box-shadow:
       0 var(--u) calc(var(--u) * 2) 0 var(--nu-white) inset,
-      0 calc(var(--u) * 2) var(--u) 0 var(--nu-green-soft) inset,
-      0 calc(var(--u) * 4) calc(var(--u) * 6) 0 var(--nu-navy-2) inset;
+      0 calc(var(--u) * 2) var(--u) 0 var(--nu-sage-soft) inset,
+      0 calc(var(--u) * 4) calc(var(--u) * 6) 0 var(--nu-blue-deep) inset;
   }
   100% {
     transform: rotate(450deg);
@@ -78,7 +78,7 @@ const moodStyle = computed(() => {
 }
 .orb__mood {
   position: absolute; inset: 0; border-radius: 50%;
-  transition: opacity 0.6s ease, background 0.6s ease;
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida), background var(--nu-dur-lenta) var(--nu-ease-cor);
   pointer-events: none;
 }
 .orb__grain {

@@ -3,10 +3,16 @@
 // backend — deriva de GET /tesouro ordenado por rate_numeric): título,
 // indexador, taxa, vencimento e preço. Linha inteira navega pro detalhe
 // /tesouro/{slug} (as páginas do Tesouro existem desde a frente E do
-// PLANO-REFINO-POS-ATLAS). Mesma pele da RankTable.
+// PLANO-REFINO-POS-ATLAS). Mesma pele da RankTable. 2ª rodada da Aportou
+// (11/11/2026): a taxa vem logo depois do título, em destaque, e no celular o
+// título fica preso à esquerda.
+// Robustez (11/11/2026): a pele das tabelas de mercado (tabela-mercado.css),
+// com o indexador no NuSelo e a seta que aparece quando a linha acende.
 import type { TesouroRankingRow } from '~/types/rankings'
 
 defineProps<{ rows: TesouroRankingRow[] }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 
 const nfBrl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -22,64 +28,43 @@ function fmtMaturity(iso: string | null): string {
     <table class="rkt__table">
       <thead>
         <tr>
-          <th class="rkt__th rkt__th--pos">#</th>
-          <th class="rkt__th rkt__th--asset">Título</th>
-          <th class="rkt__th rkt__th--num">Indexador</th>
-          <th class="rkt__th rkt__th--num">Taxa</th>
-          <th class="rkt__th rkt__th--num">Vencimento</th>
-          <th class="rkt__th rkt__th--num">Preço</th>
+          <th class="rkt__th rkt__th--pos" scope="col">#</th>
+          <th class="rkt__th rkt__th--asset" scope="col">Título</th>
+          <th class="rkt__th rkt__th--num rkt__th--main" scope="col">Taxa</th>
+          <th class="rkt__th rkt__th--num" scope="col">Indexador</th>
+          <th class="rkt__th rkt__th--num" scope="col">Vencimento</th>
+          <th class="rkt__th rkt__th--num" scope="col">Preço</th>
+          <td class="rkt__th rkt__th--ir" aria-hidden="true" />
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="(row, i) in rows" :key="row.slug" class="rkt__row"
+          v-for="(row, i) in rows" :key="row.slug"
+          v-contexto-chat="{ id: `ranking-tesouro:${sobre}:${row.slug}`, tipo: 'ranking', rotulo: rotuloCurto(`${i + 1}º ${row.name}`) }"
+          class="rkt__row"
           @click="navigateTo(`/tesouro/${row.slug}`)"
         >
           <td class="rkt__cell rkt__cell--pos">{{ i + 1 }}</td>
-          <td class="rkt__cell rkt__cell--asset">
-            <NuxtLink :to="`/tesouro/${row.slug}`" class="rkt__link" @click.stop>{{ row.name }}</NuxtLink>
+          <td class="rkt__cell rkt__cell--asset rkt__cell--titulo">
+            <NuxtLink :to="`/tesouro/${row.slug}`" class="rkt__nome" @click.stop>{{ row.name }}</NuxtLink>
           </td>
-          <td class="rkt__cell rkt__cell--num"><span class="rkt__badge">{{ row.indexer }}</span></td>
-          <td class="rkt__cell rkt__cell--num rkt__cell--rate">{{ row.rate }}</td>
+          <td class="rkt__cell rkt__cell--num rkt__cell--main">{{ row.rate }}</td>
+          <td class="rkt__cell rkt__cell--num"><NuSelo>{{ row.indexer }}</NuSelo></td>
           <td class="rkt__cell rkt__cell--num">{{ fmtMaturity(row.maturity) }}</td>
           <td class="rkt__cell rkt__cell--num">{{ row.priceBuy == null ? '—' : nfBrl.format(row.priceBuy) }}</td>
+          <td class="rkt__cell rkt__cell--ir" aria-hidden="true">
+            <svg class="rkt__ir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
 
+<style scoped src="./tabela-mercado.css"></style>
 <style scoped>
-.rkt { background: var(--nu-white); border-radius: var(--nu-r-card-lg); overflow-x: auto; }
-.rkt__table { width: 100%; min-width: 680px; border-collapse: collapse; }
-.rkt__th {
-  padding: 18px 16px 14px; text-align: right; white-space: nowrap;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: .08em;
-  border-bottom: 1px solid var(--nu-cream-2);
-}
-.rkt__th--pos { width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px); }
-.rkt__th--asset { text-align: left; }
-.rkt__th--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
-.rkt__row { cursor: pointer; transition: background .15s; }
-.rkt__row:hover { background: var(--nu-cream-hover); }
-.rkt__row + .rkt__row .rkt__cell { border-top: 1px solid var(--nu-cream-2); }
-.rkt__cell {
-  padding: 14px 16px; text-align: right; white-space: nowrap;
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.rkt__cell--pos {
-  width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px);
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700;
-}
-.rkt__cell--asset { text-align: left; font-weight: 800; letter-spacing: -.1px; }
-.rkt__link { color: var(--nu-ink); }
-.rkt__link:hover { color: var(--nu-blue-text); }
-.rkt__cell--rate { color: var(--nu-blue-text); font-weight: 800; }
-.rkt__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
-.rkt__badge {
-  display: inline-flex; background: var(--nu-sand-2); color: var(--nu-gray-tag);
-  border-radius: var(--nu-r-chip); padding: 4px 10px; font-size: var(--nu-fs-xs); font-weight: 700;
+/* o nome do título no celular quebra em até três linhas, preso à esquerda */
+@media (max-width: 760px) {
+  .rkt__cell--titulo { white-space: normal; min-width: 148px; max-width: 168px; }
 }
 </style>

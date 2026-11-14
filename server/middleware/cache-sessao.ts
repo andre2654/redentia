@@ -48,13 +48,6 @@ const EXATAS: Record<string, string> = {
   '/calculadoras': HORA,
   // /mcp: docs públicas (o CTA troca de destino client-side pós-mount).
   '/mcp': HORA,
-  // /business: landing sem variante logada, indexável desde 20/10/2026. Cadastro,
-  // chaves, skills e convite seguem private/no-store no nuxt.config.ts.
-  '/business': HORA,
-  // /jantar: landing estática do jantar. Sem variante logada.
-  '/jantar': HORA,
-  // Estudo estático. O hub /estudo não existe (404) e não entra aqui.
-  '/estudo/wealth-2030': DIA,
   // /graficos: HTML público por um dia. Sem stale longo: o número é do dia.
   // Logado continua private/no-store, como o resto deste mapa. O PNG tem o
   // próprio cache na rota, também de 24 h, e não passa por este mapa.

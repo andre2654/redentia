@@ -4,9 +4,20 @@
 // entra com nu-fade .3s — comportamento e valores exatos do design. Emite o
 // JSON-LD FAQPage (useFaqSchema), pra qualquer tela que use o componente;
 // `:schema="false"` desliga, para quem divide um FAQ em vários accordions e
-// emite um bloco só (o RbFaq, um accordion por aba).
+// emite um bloco só, ou para quem não quer um FAQPage a mais (a /assinar).
 // variant="compact" (PR4): escala do FAQ do guia (Redentia Guia
 // Open Finance.dc.html) — cards 22x24, pergunta 17px, ícone 19, gap 12.
+//
+// APORTOU (11/11/2026): no site de investidor o FAQ é o do quadro Home: sem
+// cartão, perguntas em 600 separadas por fios de 1px (--nu-line), o "+" num
+// círculo carvão de 36px que gira 45° ao abrir, e a resposta abre com a altura
+// animada (grid-rows 0fr → 1fr) e fade. As respostas continuam TODAS no HTML do
+// servidor (a fechada fica com altura 0 e `inert`, não some do DOM).
+// ROBUSTEZ (11/11/2026): cada pergunta é um NuAcordeao (a peça da base), com o
+// "+" do NuMais; a API, o single-open e o JSON-LD são os de antes.
+// `surface="white"` (os cartões brancos de antes) não muda nada no creme da
+// Aportou, que não tem cartão; fica a classe para quem já passa a prop. O
+// visual antigo das telas de escritório saiu com o B2B (12/11/2026).
 import type { NuFaqItem } from '~/types/market'
 
 const props = withDefaults(
@@ -32,47 +43,27 @@ if (props.schema) useFaqSchema(props.items)
 
 <template>
   <div class="nfa" :class="{ 'nfa--compact': variant === 'compact', 'nfa--white': surface === 'white' }">
-    <div v-for="(f, i) in items" :key="f.q" class="nfa__item">
-      <button type="button" class="nfa__q" :aria-expanded="open === i" @click="toggle(i)">
-        <span class="nfa__q-text">{{ f.q }}</span>
-        <!-- tamanho via CSS (.nfa__icon), não :width/:height — binding dinâmico
-             de width em <svg> vira DOM prop na hidratação e SVGSVGElement.width
-             é getter-only (warn em toda página que usa o accordion) -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="#0A0A0C" stroke-width="2.3" stroke-linecap="round" class="nfa__icon" :class="{ 'nfa__icon--open': open === i }"><path d="M12 5v14M5 12h14" /></svg>
-      </button>
-      <!-- v-show, NÃO v-if: TODAS as respostas precisam existir no HTML SSR
-           (paridade SEO com as páginas antigas, que serviam tudo via <details>;
-           regra nº1 do PR10). A animação vive na classe --open pra replayar
-           a cada abertura mesmo com o nó persistente. -->
-      <div v-show="open === i" class="nfa__a" :class="{ 'nfa__a--open': open === i }">{{ f.a }}</div>
-    </div>
+    <!-- A resposta NUNCA sai do DOM: TODAS precisam existir no HTML SSR
+         (paridade SEO com as páginas antigas, que serviam tudo via <details>;
+         regra nº1 do PR10). Fechada, fica com altura 0 e inert (NuAcordeao). -->
+    <NuAcordeao
+      v-for="(f, i) in items" :key="f.q" class="nfa__item" :class="{ 'nfa__item--open': open === i }"
+      :aberto="open === i" fio :tamanho-mais="36" @update:aberto="toggle(i)"
+    >
+      <template #titulo><span class="nfa__q-text">{{ f.q }}</span></template>
+      <div class="nfa__a" :class="{ 'nfa__a--open': open === i }">{{ f.a }}</div>
+    </NuAcordeao>
   </div>
 </template>
 
 <style scoped>
-.nfa { display: flex; flex-direction: column; gap: 14px; }
-.nfa__item { background: var(--nu-cream); border-radius: 18px; padding: 26px 28px; }
-.nfa__q {
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 20px;
-  width: 100%; background: transparent; border: none; padding: 0; cursor: pointer; text-align: left;
-}
-.nfa__q-text { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; line-height: 1.35; }
-.nfa__icon { width: 21px; height: 21px; transform: rotate(0deg); transition: transform .25s; flex-shrink: 0; margin-top: 3px; }
-.nfa__icon--open { transform: rotate(45deg); }
-.nfa__a {
-  color: var(--nu-ink-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
-  margin-top: 16px;
-}
-.nfa__a--open { animation: nu-fade .3s ease both; }
+.nfa { display: flex; flex-direction: column; border-top: 1px solid var(--nu-line); }
+.nfa__q-text { display: block; font-size: clamp(19px, 1.7vw, 22px); font-weight: var(--nu-w-medio); letter-spacing: -0.01em; line-height: 1.25; }
+.nfa__a { padding-right: 52px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6; }
 
-/* variante white: cards brancos sobre banda creme (design das calculadoras) */
-.nfa--white .nfa__item { background: var(--nu-white); }
-
-/* variante compact (valores exatos do FAQ do Guia Open Finance) */
-.nfa--compact { gap: 12px; }
-.nfa--compact .nfa__item { padding: 22px 24px; }
-.nfa--compact .nfa__q { gap: 18px; }
+/* variante compact (o FAQ do guia): pergunta um passo menor */
+.nfa--compact :deep(.nac__cab) { padding: 16px 0; }
 .nfa--compact .nfa__q-text { font-size: var(--nu-fs-lg); }
-.nfa--compact .nfa__icon { width: 19px; height: 19px; margin-top: 2px; }
-.nfa--compact .nfa__a { font-size: var(--nu-fs-md); margin-top: 14px; }
+.nfa--compact :deep(.nac__corpo) { padding-bottom: 20px; }
+@media (max-width: 560px) { .nfa__a { padding-right: 0; } }
 </style>

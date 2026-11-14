@@ -57,7 +57,7 @@ function sementeDe(tipo: string): CopiaSitemap | null {
     xml: item.xml,
     storedAt: Number(item.storedAt) || 0,
     completo: true,
-    origin: item.origin || 'https://www.redentia.com.br',
+    origin: item.origin || 'https://aportou.com.br',
   }
 }
 

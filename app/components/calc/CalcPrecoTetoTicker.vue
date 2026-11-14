@@ -152,28 +152,33 @@ const metodos = computed(() => {
 
 <style scoped>
 .ptt__hero, .ptt__nums, .ptt__table-sec, .ptt__passos, .ptt__texto, .ptt__faq {
-  padding: clamp(48px, 6vw, 88px) clamp(22px, 5.5vw, 80px);
+  padding: clamp(48px, 6vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
 }
-.ptt__hero, .ptt__table-sec, .ptt__texto { background: var(--nu-cream); }
-.ptt__nums, .ptt__passos, .ptt__faq { background: var(--nu-white); }
+/* Aportou (11/11/2026), só cor: sem faixa branca de ponta a ponta. O topo e os
+   números ficam no creme da página; as faixas alternam com o creme de faixa. */
+.ptt__hero, .ptt__nums, .ptt__passos, .ptt__faq { background: var(--nu-page); }
+.ptt__table-sec, .ptt__texto { background: var(--nu-band); }
+.ptt__hero { padding-bottom: 0; }
+/* o cartão do convite (var(--nu-cream)) lê melhor no creme de faixa sobre a página */
+.ptt__nums { --nu-cream: var(--nu-band); }
 
-.ptt__back { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; }
+.ptt__back { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .ptt__h1 {
   margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(34px, 4.6vw, 58px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.04; max-width: 18ch;
+  font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1.04; max-width: 18ch;
 }
 .ptt__lead, .ptt__p, .ptt__dek {
   margin: 22px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-lg);
   font-weight: 500; line-height: 1.6; max-width: 68ch;
 }
 .ptt__dek { margin-top: 14px; font-size: var(--nu-fs-md); }
-.ptt__updated { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.ptt__updated { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .ptt__updated--end { margin-top: 28px; }
 
 .ptt__hero-num { display: inline-block; margin-right: clamp(28px, 4vw, 56px); vertical-align: top; }
-.ptt__kicker { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.ptt__kicker { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); letter-spacing: 0.08em; text-transform: uppercase; }
 .ptt__big {
-  margin-top: 6px; color: var(--nu-ink); font-size: clamp(40px, 5vw, 64px); font-weight: 800;
+  margin-top: 6px; color: var(--nu-ink); font-size: clamp(40px, 5vw, 64px); font-weight: var(--nu-w-display);
   letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .ptt__nome { margin: 10px 0 0; max-width: 36ch; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
@@ -186,37 +191,37 @@ const metodos = computed(() => {
   display: flex; flex-direction: column; gap: 6px; padding: 18px 18px 16px;
   background: var(--nu-cream); border-radius: 16px;
 }
-.ptt__method-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.ptt__method-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .ptt__method-formula { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.ptt__method-value { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
+.ptt__method-value { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .ptt__aviso {
   margin: 22px 0 0; max-width: 68ch; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5;
 }
 
 .ptt__h2 {
   margin: 0; color: var(--nu-ink); font-size: clamp(26px, 3vw, 36px);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; max-width: 22ch;
+  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.12; max-width: 22ch;
 }
 .ptt__scroll { margin-top: 22px; overflow-x: auto; }
 .ptt__table { width: 100%; max-width: 520px; border-collapse: collapse; background: var(--nu-white); border-radius: 16px; }
 .ptt__caption { caption-side: bottom; padding-top: 10px; text-align: left; color: var(--nu-gray); font-size: var(--nu-fs-sm); }
 .ptt__table th, .ptt__table td {
   padding: 12px 16px; text-align: left; font-variant-numeric: tabular-nums;
-  border-bottom: 1px solid var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-md);
+  border-bottom: 1px solid var(--nu-line-2); color: var(--nu-ink); font-size: var(--nu-fs-md);
 }
-.ptt__table thead th { font-weight: 800; font-size: var(--nu-fs-sm); color: var(--nu-gray); }
-.ptt__table tbody th { font-weight: 700; }
-.ptt__row--bazin { background: var(--nu-blue-tint, #eaf1ff); }
+.ptt__table thead th { font-weight: var(--nu-w-forte); font-size: var(--nu-fs-sm); color: var(--nu-gray); }
+.ptt__table tbody th { font-weight: var(--nu-w-medio); }
+.ptt__row--bazin { background: var(--nu-blue-bg); }
 .ptt__tag {
-  margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: var(--nu-blue); color: white;
-  font-size: 12px; font-weight: 800; vertical-align: 1px;
+  margin-left: 8px; padding: 2px 8px; border-radius: var(--nu-r-tag); background: var(--nu-blue); color: var(--nu-white);
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-forte); vertical-align: 1px;
 }
 
 .ptt__steps { margin: 26px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 22px; max-width: 68ch; }
-.ptt__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
+.ptt__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); }
 .ptt__steps p { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 .ptt__faq .ptt__h2 { margin-bottom: 24px; }
 
 .ptt__links { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 22px; }
-.ptt__links a { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; }
+.ptt__links a { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 </style>

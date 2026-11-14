@@ -23,6 +23,7 @@
  * (localStorage, gravado pelo AcaoHero) e, na falta, os populares. Cada toque
  * segue ou desfaz. 3/3 → "Pronto: você recebe o resumo …" e o card some.
  */
+import { ANOS_COM_CALENDARIO, SEM_PREGAO_B3 } from '~/utils/pregao'
 
 const META = 3
 const MAX_CHIPS = 6
@@ -78,26 +79,8 @@ function contaRecente(createdAt: unknown, now = Date.now()): boolean {
   return idade > -60 * 60 * 1000 && idade <= SETE_DIAS_MS
 }
 
-/**
- * Dias úteis SEM pregão na B3 em 2026 — Quadro A do Ofício Circular
- * 003/2026-VNC, de 08/01/2026 (errata que revogou o 054/2025-VNC), o
- * calendário OFICIAL:
- * https://www.b3.com.br/data/files/FC/55/3B/12/7FE9B9109B5E99B9AC094EA8/OC%20003-2026-VNC%20ERRATA_CALENDARIO%20DE%20FERIADOS%20EM%202026%20E%20FUNCIONAMENTO%20DA%20B3%20EM%2018022026%20QUARTAFEIRA%20DE%20CINZAS_PT.pdf
- * (o mesmo quadro está em https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/para-participantes-e-traders/calendario-de-negociacao/feriados/).
- * Entram 24/12 e 31/12, que são "sem sessão de negociação". Ficam de fora os
- * feriados só de São Paulo (Quadro B: a B3 funciona normalmente) e a
- * Quarta-feira de Cinzas, que tem pregão à tarde.
- *
- * 2027: a B3 ainda NÃO publicou o calendário (conferido em 29/09/2026; o de
- * 2026 saiu em 04/12/2025). Quando sair, some o ano em ANOS_COM_CALENDARIO e
- * as datas aqui. Até lá, qualquer conta que atravesse um ano sem calendário
- * responde "no próximo pregão, às 19h" em vez de chutar o dia.
- */
-const SEM_PREGAO_B3 = new Set([
-  '2026-01-01', '2026-02-16', '2026-02-17', '2026-04-03', '2026-04-21', '2026-05-01', '2026-06-04',
-  '2026-09-07', '2026-10-12', '2026-11-02', '2026-11-20', '2026-12-24', '2026-12-25', '2026-12-31',
-])
-const ANOS_COM_CALENDARIO = new Set([2026])
+// O calendário da B3 (SEM_PREGAO_B3, ANOS_COM_CALENDARIO) mora em utils/pregao.ts,
+// junto do relógio do pregão que a /carteira usa (31/10/2026).
 const DIA_DA_SEMANA = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'] as const
 const DIA_MS = 86_400_000
 

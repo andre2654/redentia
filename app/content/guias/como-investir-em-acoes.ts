@@ -18,11 +18,11 @@ export const COMO_INVESTIR_EM_ACOES_GUIDE: GuideDoc = {
   title: 'Como investir em ações',
   dek: 'Da abertura de conta à primeira compra, com passo a passo, critérios de escolha sem chute e os erros que travam quem está começando.',
   description:
-    'Como investir em ações do zero: abrir conta, escolher a ação por fundamento e enviar a primeira ordem. Guia da Redentia.',
+    'Como investir em ações do zero: abrir conta, escolher a ação por fundamento e enviar a primeira ordem. Guia da Aportou.',
   summary:
     'Investir em ações não é sorte nem palpite. Veja o caminho completo, da conta à primeira ordem, como escolher uma ação por fundamento e os erros que quebram iniciantes.',
   minutes: 8,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-13',
   dateModified: '2026-07-13',
   updatedLine: 'Atualizado em 13 jul 2026 · 8 min de leitura',
@@ -68,7 +68,7 @@ export const COMO_INVESTIR_EM_ACOES_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Cada empresa tem uma página com histórico, indicadores e a leitura da IA da Redentia. Antes de comprar, abra o ativo e leia: a de <a href="/asset/PETR4">PETR4</a> serve de modelo do nível de informação que você deveria querer sobre qualquer papel.',
+          html: 'Cada empresa tem uma página com histórico, indicadores e a leitura da IA da Aportou. Antes de comprar, abra o ativo e leia: a de <a href="/asset/PETR4">PETR4</a> serve de modelo do nível de informação que você deveria querer sobre qualquer papel.',
         },
       ],
     },
@@ -85,7 +85,7 @@ export const COMO_INVESTIR_EM_ACOES_GUIDE: GuideDoc = {
           items: [
             '<strong>Abra conta em uma corretora.</strong> Basta CPF e alguns dados. Prefira instituições reguladas pelo Banco Central e pela CVM; a maioria não cobra taxa de manutenção e a abertura é 100% digital.',
             '<strong>Transfira o dinheiro.</strong> Um Pix ou TED da sua conta para a corretora deixa o saldo disponível para investir. Só mova o que você não vai precisar no curto prazo.',
-            '<strong>Escolha a ação por fundamento.</strong> Este é o passo que separa investir de apostar. Use os <a href="/rankings">rankings da Redentia</a> para comparar empresas por lucro, dívida e valuation, e abra a página de cada ativo antes de decidir.',
+            '<strong>Escolha a ação por fundamento.</strong> Este é o passo que separa investir de apostar. Use os <a href="/rankings">rankings da Aportou</a> para comparar empresas por lucro, dívida e valuation, e abra a página de cada ativo antes de decidir.',
             '<strong>Envie a ordem de compra.</strong> No home broker, digite o código da ação (o ticker), a quantidade e o preço. Ordem a mercado executa no preço atual; ordem limitada só executa no preço que você definir.',
             '<strong>Acompanhe, sem vigiar a tela.</strong> Registrada a compra, a ação aparece na sua carteira. Reveja a tese de tempos em tempos, não o preço a cada minuto.',
           ],
@@ -130,7 +130,7 @@ export const COMO_INVESTIR_EM_ACOES_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para transformar objetivo em número (quanto aportar por mês, quanto isso vira em alguns anos), use as <a href="/calculadoras">calculadoras da Redentia</a>. Um plano de aportes regulares vence, no longo prazo, a tentativa de acertar o momento exato de comprar.',
+          html: 'Para transformar objetivo em número (quanto aportar por mês, quanto isso vira em alguns anos), use as <a href="/calculadoras">calculadoras da Aportou</a>. Um plano de aportes regulares vence, no longo prazo, a tentativa de acertar o momento exato de comprar.',
         },
       ],
     },

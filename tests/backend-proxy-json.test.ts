@@ -27,7 +27,7 @@ test('o marcador de build é um header de resposta, não um header pro Laravel',
 test('só o prefixo /api/backend leva o marcador', () => {
   assert.equal(caminhoDoProxyBackend('/api/backend/auth/magic-link/request'), true)
   assert.equal(caminhoDoProxyBackend('/api/backend/me/notification-preferences'), true)
-  assert.equal(caminhoDoProxyBackend('/api/backend/business/leads?x=1'), true)
+  assert.equal(caminhoDoProxyBackend('/api/backend/me/mcp?x=1'), true)
   assert.equal(caminhoDoProxyBackend('/api/backend'), true)
   assert.equal(caminhoDoProxyBackend('/api/chat/stream'), false)
   assert.equal(caminhoDoProxyBackend('/api/backend-outro'), false)

@@ -154,8 +154,11 @@ const tickerDaConta = ref<string | null>(null)
 // seed→real→degrade; paridade com a pré-seleção via API da página antiga).
 // Preço da rota canônica /tickers/{t}; dividendo = soma dos proventos pagos
 // nos últimos 365d (fallback DY×preço); LPA e payout derivados do overview.
+// Só ticker da B3, pela regra única do utils/tickerClass.ts. Até 13/11/2026
+// valia aqui uma cópia que pedia quatro letras antes do número, e o
+// ?ticker=B3SA3 abria a conta com os números de exemplo, sem o nome dela.
 async function seedFromBackend(t: string) {
-  if (!/^[A-Z]{4}\d{1,2}$/.test(t)) return
+  if (symbolShape(t) !== 'b3') return
   try {
     const [quote, dividends, overview] = await Promise.all([
       $fetch<any>(`/api/backend/tickers/${t}`),
@@ -727,7 +730,7 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
         ref="salvar" variant="save" calculator="dividend-yield" :caminho="CAMINHO"
         :params="simParams" :label="simLabel" :result="simResult" :folha="folhaConta"
       >
-        <CalcCompartilhar :link="link" titulo="A minha conta de dividendos, na Redentia" />
+        <CalcCompartilhar :link="link" titulo="A minha conta de dividendos, na Aportou" />
       </CalcSimSaves>
     </template>
 
@@ -791,41 +794,47 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 
 <style scoped>
 .dys__modos { margin-bottom: 18px; }
-.dys__ticker { color: var(--nu-ink); font-weight: 800; }
+.dys__ticker { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* a régua do DY: o nome da faixa em cima, as quatro faixas e a marca do número */
-.dys__regua-titulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.dys__regua-faixa { margin: 2px 0 0; font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; }
+.dys__regua-titulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.dys__regua-faixa { margin: 2px 0 0; font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.03em; }
 .dys__regua-faixa--baixo { color: var(--nu-gray-2); }
 .dys__regua-faixa--bom, .dys__regua-faixa--otimo { color: var(--nu-blue-text); }
-.dys__regua-faixa--alto { color: var(--nu-serie-2); }
+.dys__regua-faixa--alto { color: var(--nu-amber-text); }
 .dys__trilho { position: relative; margin-top: 14px; padding: 54px 0 4px; }
 .dys__marcas { position: absolute; inset: 0; pointer-events: none; }
 .dys__marca {
   position: absolute; top: 0; height: 54px; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-  transition: left .35s cubic-bezier(.22, 1, .36, 1);
+  transition: left var(--nu-dur-lenta) var(--nu-ease-troca);
 }
 .dys__marca::after { content: ''; width: 2px; height: 14px; margin-top: 4px; border-radius: 2px; background: var(--nu-blue); }
 .dys__marca-txt {
-  padding: 4px 10px; border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white);
-  font-size: var(--nu-fs-sm); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums;
+  padding: 4px 9px; border-radius: var(--nu-r-tag); background: var(--nu-blue); color: var(--nu-white);
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); white-space: nowrap; font-variant-numeric: tabular-nums;
 }
-.dys__marca-txt small { margin-left: 4px; font-size: var(--nu-fs-xs); font-weight: 700; opacity: .85; }
+.dys__marca-txt small { margin-left: 4px; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); opacity: .85; }
 /* a do preço de hoje (on cost): embaixo da régua, em cinza; os nomes das faixas descem */
 .dys__marca--hoje { top: 68px; height: auto; justify-content: flex-start; }
 .dys__marca--hoje::after { display: none; }
 .dys__marca--hoje::before { content: ''; width: 2px; height: 14px; margin-bottom: 4px; border-radius: 2px; background: var(--nu-gray); }
-.dys__marca--hoje .dys__marca-txt { background: var(--nu-cream); color: var(--nu-gray-2); }
+.dys__marca--hoje .dys__marca-txt { background: var(--nu-cream-2); color: var(--nu-gray-3); }
 .dys__regua--dupla .dys__nomes { margin-top: 56px; }
-.dys__faixas { display: flex; gap: 4px; height: 14px; }
-.dys__faixa { border-radius: 7px; background: var(--nu-cream-2); transition: background .25s ease; }
+.dys__faixas { display: flex; gap: 4px; height: 14px; transform-origin: left center; animation: dys-cresce var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+/* a régua cresce da esquerda na entrada (microtransição da Aportou) */
+@keyframes dys-cresce { from { transform: scaleX(0); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .dys__faixas { animation: none; } }
+/* barras empilhadas dos quadros: pontas redondas só nos extremos */
+.dys__faixa { border-radius: 3px; background: var(--nu-cream-2); transition: background-color var(--nu-dur-media) var(--nu-ease-cor); }
+.dys__faixa:first-child { border-radius: 7px 3px 3px 7px; }
+.dys__faixa:last-child { border-radius: 3px 7px 7px 3px; }
 .dys__faixa--on.dys__faixa--baixo { background: var(--nu-gray); }
 .dys__faixa--on.dys__faixa--bom { background: var(--nu-blue-soft); }
 .dys__faixa--on.dys__faixa--otimo { background: var(--nu-blue); }
-.dys__faixa--on.dys__faixa--alto { background: var(--nu-serie-2); }
+.dys__faixa--on.dys__faixa--alto { background: var(--nu-amber); }
 .dys__nomes { display: flex; gap: 4px; margin-top: 10px; }
-.dys__nomes > span { flex-basis: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
-.dys__nomes small { display: block; font-size: var(--nu-fs-xs); font-weight: 500; }
+.dys__nomes > span { flex-basis: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
+.dys__nomes small { display: block; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
 .dys__nome--on { color: var(--nu-ink) !important; }
 </style>

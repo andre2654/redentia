@@ -19,11 +19,11 @@ export const RESERVA_DE_EMERGENCIA_GUIDE: GuideDoc = {
   title: 'Reserva de emergência: quanto guardar e onde investir',
   dek: 'O colchão que sustenta todo o resto da carteira: quanto ele precisa ter, onde ele deve morar e por que rendimento é o critério menos importante aqui.',
   description:
-    'Reserva de emergência: quanto guardar, onde investir com liquidez diária e segurança, quais aplicações servem (e quais não servem), como montar aos poucos e quando é certo usar. Guia claro e honesto da Redentia.',
+    'Reserva de emergência: quanto guardar, onde investir com liquidez diária e segurança, quais aplicações servem (e quais não servem), como montar aos poucos e quando é certo usar. Guia claro e honesto da Aportou.',
   summary:
     'Antes de qualquer investimento, vem o colchão. Veja como calcular o tamanho da sua reserva, onde deixar o dinheiro sem abrir mão de resgate rápido e por que buscar rendimento aqui costuma sair caro.',
   minutes: 8,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-22',
   dateModified: '2026-07-22',
   updatedLine: 'Atualizado em 22 jul 2026 · 8 min de leitura',
@@ -74,7 +74,7 @@ export const RESERVA_DE_EMERGENCIA_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para transformar essa meta em um aporte mensal realista, as <a href="/calculadoras">calculadoras da Redentia</a> ajudam a chegar no valor que cabe no seu orçamento e no prazo para fechar a conta.',
+          html: 'Para transformar essa meta em um aporte mensal realista, as <a href="/calculadoras">calculadoras da Aportou</a> ajudam a chegar no valor que cabe no seu orçamento e no prazo para fechar a conta.',
         },
       ],
     },
@@ -178,14 +178,14 @@ export const RESERVA_DE_EMERGENCIA_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para acompanhar onde cada parte do seu dinheiro está e se a reserva continua do tamanho certo, a <a href="/carteira">carteira da Redentia</a> reúne as suas posições em uma visão só.',
+          html: 'Para acompanhar onde cada parte do seu dinheiro está e se a reserva continua do tamanho certo, a <a href="/carteira">carteira da Aportou</a> reúne as suas posições em uma visão só.',
         },
       ],
     },
   ],
   cta: {
     title: 'Veja quanto guardar por mês para fechar a sua reserva',
-    subtitle: 'Calculadoras gratuitas da Redentia · sem cadastro para simular',
+    subtitle: 'Calculadoras gratuitas da Aportou · sem cadastro para simular',
     to: '/calculadoras',
   },
   faqTitle: 'Perguntas frequentes',

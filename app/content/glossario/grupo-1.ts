@@ -284,7 +284,7 @@ export const GRUPO_1: GlossaryTerm[] = [
     ],
     related: ['alocacao-carteira', 'risco', 'volatilidade', 'rebalanceamento', 'buy-and-hold'],
     backlink: {
-      label: 'Descobrir ativos de qualidade por setor no Redentia Score',
+      label: 'Descobrir ativos de qualidade por setor no Aportou Score',
       to: '/ranking/redentia-score',
     },
     faq: [

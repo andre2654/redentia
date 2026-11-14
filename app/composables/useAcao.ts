@@ -35,6 +35,7 @@ import type {
   AcaoPerfilRow,
   SupplyChainApi,
   SupplyLinkApi,
+  SupplyRestApi,
   AcaoRange,
   AcaoScoreVM,
   AcaoSeriesPair,
@@ -522,7 +523,7 @@ function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): Ac
     v: `+${nf2.format(n.contribution)}%`,
   }))
   const feeNote = x.fees.unmapped_fund_weight > 0.001
-    ? `${nf1.format(x.fees.unmapped_fund_weight * 100)}% da carteira está em fundos sem taxa mapeada — o custo efetivo é um piso, não o total.`
+    ? `${nf1.format(x.fees.unmapped_fund_weight * 100)}% da carteira está em fundos sem taxa mapeada: o custo efetivo é um piso, não o total.`
     : null
 
   // Correlação: 4 linhas de 12m na página; tudo (12m/90d + matriz) no modal.
@@ -575,7 +576,7 @@ function mapTreeNode(n: EtfXrayTreeNodeApi): EtfXrayTreeNodeVM {
   let note: string | null = null
   if (n.cycle) note = 'já aparece acima na árvore'
   else if (n.unopened) note = 'carteira ainda não ingerida'
-  else if ((n.type === 'fundo_cota' || n.type === 'fundo_exterior') && !children.length) note = 'fundo fora da bolsa — não abre'
+  else if ((n.type === 'fundo_cota' || n.type === 'fundo_exterior') && !children.length) note = 'fundo fora da bolsa, não abre'
   return {
     key: n.key,
     ticker: n.ticker,
@@ -1440,22 +1441,10 @@ function cadeiaDetalhe(l: SupplyLinkApi, eu: string, vende: boolean): AcaoCadeia
   }
 }
 
-/**
- * Fatia do total do lado (receita para quem compra da empresa, custo para quem
- * vende a ela) — só valor anual, em real, do mesmo ano da DFP; o resto fica
- * com o traço fino (contrato pela vigência e dólar não são comparáveis).
- */
-function cadeiaPeso(l: SupplyLinkApi, totais: SupplyChainApi['totais'], vende: boolean): number | null {
-  const base = vende ? totais?.receita : totais?.custo
-  if (!base || !l.anual || l.anual.moeda !== 'BRL' || l.anual.ano !== totais?.ano) return null
-  return Math.min(1, l.anual.valor / base)
-}
-
-function cadeiaItem(l: SupplyLinkApi, eu: string, vende: boolean, totais: SupplyChainApi['totais']): AcaoCadeiaItemVM {
+function cadeiaItem(l: SupplyLinkApi, eu: string, vende: boolean): AcaoCadeiaItemVM {
   return {
     ticker: l.ticker,
     resto: false,
-    peso: cadeiaPeso(l, totais, vende),
     nome: nomeDoLink(l),
     oQue: l.o_que,
     valor: cadeiaValor(l)?.[0] ?? null,
@@ -1481,7 +1470,6 @@ function cadeiaResto(api: SupplyChainApi, eu: string, lado: 'clientes' | 'custo'
   return {
     ticker: clientes ? 'resto-clientes' : 'resto-custo',
     resto: true,
-    peso: Math.min(1, r.valor / base),
     nome: clientes ? 'Outros clientes' : 'Restante do custo',
     oQue: clientes ? `fora da bolsa · ${pct}% da receita` : `fora da bolsa e custos próprios · ${pct}% do custo`,
     valor: fmtCompactMoney(r.valor, 'BRL'),
@@ -1491,7 +1479,7 @@ function cadeiaResto(api: SupplyChainApi, eu: string, lado: 'clientes' | 'custo'
       de: clientes ? eu : 'Restante do custo',
       para: clientes ? 'Outros clientes' : eu,
       oQue: clientes
-        ? 'Empresas e pessoas fora da bolsa, no Brasil e no exterior. A Redentia não tem o nome de cada uma: é o que sobra da receita depois das vendas a empresas listadas.'
+        ? 'Empresas e pessoas fora da bolsa, no Brasil e no exterior. A Aportou não tem o nome de cada uma: é o que sobra da receita depois das vendas a empresas listadas.'
         : 'Compras de fornecedores fora da bolsa e os custos próprios que entram no custo dos produtos vendidos (pessoal, energia, depreciação). É o que sobra do custo depois das compras de empresas listadas.',
       valores: [],
       conta: [
@@ -1510,6 +1498,27 @@ function cadeiaResto(api: SupplyChainApi, eu: string, lado: 'clientes' | 'custo'
 
 const nfPct = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
 
+/** "menos de 0,1%" no lugar de um 0,06% que parece preciso e não é o ponto */
+function pctCobertura(p: number): string {
+  if (p <= 0) return '0%'
+  if (p < 0.1) return 'menos de 0,1%'
+  return `${nfPct.format(p)}%`
+}
+
+function cadeiaCobertura(api: SupplyChainApi): AcaoCadeiaVM['cobertura'] {
+  const t = api.totais
+  if (!t || !api.restante) return null
+  const lado = (total: number, r: SupplyRestApi | null, tem: boolean) => {
+    if (!tem || !r || !total) return null
+    const p = (r.listadas / total) * 100
+    return { total: fmtCompactMoney(total, 'BRL'), conhecido: fmtCompactMoney(r.listadas, 'BRL'), pct: pctCobertura(p), pctN: Math.min(100, p), semValor: r.fora_da_conta }
+  }
+  const receita = lado(t.receita, api.restante.clientes, api.vende_para.length > 0)
+  const custo = t.custo != null ? lado(t.custo, api.restante.custo, api.compra_de.length > 0) : null
+  if (!receita && !custo) return null
+  return { ano: t.ano, fonte: t.fonte, url: t.url, receita, custo }
+}
+
 function buildCadeia(api: SupplyChainApi | null | undefined, eu: string): AcaoCadeiaVM | null {
   if (!api || (!api.compra_de?.length && !api.vende_para?.length)) return null
   const all = [...api.compra_de, ...api.vende_para]
@@ -1519,9 +1528,10 @@ function buildCadeia(api: SupplyChainApi | null | undefined, eu: string): AcaoCa
   const restoCusto = cadeiaResto(api, eu, 'custo')
   const restoClientes = cadeiaResto(api, eu, 'clientes')
   return {
-    compraDe: [...api.compra_de.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, false, api.totais)), ...(restoCusto ? [restoCusto] : [])],
-    vendePara: [...api.vende_para.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, true, api.totais)), ...(restoClientes ? [restoClientes] : [])],
+    compraDe: [...api.compra_de.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, false)), ...(restoCusto ? [restoCusto] : [])],
+    vendePara: [...api.vende_para.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, true)), ...(restoClientes ? [restoClientes] : [])],
     fontes,
+    cobertura: cadeiaCobertura(api),
   }
 }
 
@@ -1550,7 +1560,10 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     // Backend fora do ar: PETR4 (a página de referência do design) degrada pro
     // seed completo; qualquer outro ticker responde 503 (temporário, não 404 —
     // um 404 transitório envenenaria o índice do Google).
-    if (ticker === 'PETR4') return petr4Seed()
+    // O seed do design só no dev: em produção ele saía com status 200 e cache
+    // público na borda, com preço inventado ("R$ 38,25 … atualizado às 12:47")
+    // sob o nome da B3 (auditoria de produção, 12/11/2026). Lá, 503 como os outros.
+    if (ticker === 'PETR4' && import.meta.dev) return petr4Seed()
     throw createError({ statusCode: 503, statusMessage: 'Dados temporariamente indisponíveis' })
   }
 
@@ -1568,8 +1581,9 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   if (renamedTo) throw renamedError(ticker, renamedTo)
   const profile = res.data
 
-  // Regex estrita do endpoint /news/ticker (tickers como B3SA3 ficam de fora).
-  const newsStrict = /^[A-Z]{4}\d{1,2}$/.test(ticker)
+  // O /news/ticker aceita a forma de ticker da B3, inclusive com dígito no meio (B3SA3, M1TA34), desde o
+  // redentia-api#28 (no ar em 14/11/2026). O resto (BDR de outra forma, cripto) vai pela busca filtrada.
+  const newsStrict = symbolShape(ticker) === 'b3'
   // Pares do setor, só pra ação: o perfil já traz o setor ('Energy'), então a
   // chamada entra no mesmo bloco paralelo. Setor fora do registry → sem bloco.
   const setorConhecido = SETORES_BY_API[apiSlugDoSetor(profile.sector) ?? ''] ?? null
@@ -1801,9 +1815,10 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
 
 /**
  * Mapa AcaoRange → range REAL da API de cripto (verificado 2026-07-13):
- * `30d` e `6m` funcionam; '12m' cai no default do endpoint, que É 12 meses.
+ * `30d` e `6m` funcionam; '12m' cai no default do endpoint, que É 12 meses;
+ * `5y` é aceito pelo endpoint (ver CryptoPricePointApi).
  */
-const CRYPTO_RANGE: Record<AcaoRange, string> = { '1mo': '30d', '6mo': '6m', '12mo': '12m' }
+const CRYPTO_RANGE: Record<AcaoRange, string> = { '1mo': '30d', '6mo': '6m', '12mo': '12m', '5y': '5y' }
 
 const nfc = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 })
 
@@ -1988,6 +2003,26 @@ export async function useAcao(ticker: string) {
   // (Ameriprise ganha do token AMP numa plataforma de investimentos).
   const shape = symbolShape(ticker)
 
+  /* posição do usuário (auth-only, client-only): pill do hero + pill de renda
+     na seção de dividendos. Anônimo nunca vê (V1 pública); erro esconde.
+     ANTES do await do useAsyncData: depois dele o composable não tem mais
+     instância ativa e o Vue descartava este onMounted (até 04/11/2026 a pill
+     de posição nunca aparecia). */
+  const position = ref<AcaoPosition | null>(null)
+  onMounted(async () => {
+    if (!isAuthenticated.value) return
+    try {
+      // redirectOnAuthError:false — página PÚBLICA que só enriquece com sessão:
+      // token vencido limpa a sessão em silêncio em vez de expulsar o visitante
+      // pro /login (P0 do DESIGN-SYSTEM §14). Quem leva pro login é a ação que
+      // a pessoa pediu, não um enriquecimento em segundo plano.
+      const res = await authFetch<{ positions?: Record<string, unknown>[] }>('/portfolio', {}, { redirectOnAuthError: false })
+      const pos = (res?.positions ?? []).find((p) => String(p.ticker ?? '').toUpperCase() === ticker)
+      const qty = Number(pos?.quantity ?? pos?.qty ?? pos?.shares ?? NaN)
+      if (Number.isFinite(qty) && qty > 0) position.value = { qty }
+    } catch { /* pill some */ }
+  })
+
   const { data, error } = await useAsyncData<AcaoPayload>(
     `acao:${ticker}`,
     async () => {
@@ -2002,7 +2037,7 @@ export async function useAcao(ticker: string) {
   // hidratação o callback não roda de novo, o payload SSR é a verdade.
   const isCrypto = data.value?.kind === 'crypto'
 
-  /* tabs 1M/6M/12M: 12M vem do payload SSR; 1M/6M são buscados sob demanda
+  /* tabs 1M/6M/12M/5A: 12M vem do payload SSR; 1M/6M/5A são buscados sob demanda
      no client e cacheados; erro de fetch mantém o range anterior (degrade). */
   const activeRange = ref<AcaoRange>('12mo')
   const rangeSeries = ref<Partial<Record<AcaoRange, AcaoSeriesPair>>>(
@@ -2044,23 +2079,6 @@ export async function useAcao(ticker: string) {
   const currentSeries = computed<AcaoSeriesPair | null>(
     () => rangeSeries.value[activeRange.value] ?? data.value?.series12 ?? null,
   )
-
-  /* posição do usuário (auth-only, client-only): pill do hero + pill de renda
-     na seção de dividendos. Anônimo nunca vê (V1 pública); erro esconde. */
-  const position = ref<AcaoPosition | null>(null)
-  onMounted(async () => {
-    if (!isAuthenticated.value) return
-    try {
-      // redirectOnAuthError:false — página PÚBLICA que só enriquece com sessão:
-      // token vencido limpa a sessão em silêncio em vez de expulsar o visitante
-      // pro /login (P0 do DESIGN-SYSTEM §14). Quem leva pro login é a ação que
-      // a pessoa pediu, não um enriquecimento em segundo plano.
-      const res = await authFetch<{ positions?: Record<string, unknown>[] }>('/portfolio', {}, { redirectOnAuthError: false })
-      const pos = (res?.positions ?? []).find((p) => String(p.ticker ?? '').toUpperCase() === ticker)
-      const qty = Number(pos?.quantity ?? pos?.qty ?? pos?.shares ?? NaN)
-      if (Number.isFinite(qty) && qty > 0) position.value = { qty }
-    } catch { /* pill some */ }
-  })
 
   return { data, error, activeRange, setRange, rangeLoading, currentSeries, position }
 }

@@ -1,0 +1,2506 @@
+{
+ "origem": "Search Console, dimensão page, 90 dias até 10/11/2026 (scripts/gsc.mjs no checkout Frontend)",
+ "gerado_em": "13/11/2026",
+ "urls": [
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto",
+   "cliques": 3759,
+   "impressoes": 27113
+  },
+  {
+   "url": "https://www.redentia.com.br/",
+   "cliques": 343,
+   "impressoes": 1834
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/acoes",
+   "cliques": 148,
+   "impressoes": 12717
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/mais-baratas-graham",
+   "cliques": 119,
+   "impressoes": 1732
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/buy-and-hold",
+   "cliques": 66,
+   "impressoes": 831
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/imposto-renda",
+   "cliques": 60,
+   "impressoes": 2495
+  },
+  {
+   "url": "https://www.redentia.com.br/mcp",
+   "cliques": 49,
+   "impressoes": 999
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadoras",
+   "cliques": 46,
+   "impressoes": 1242
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/quanto-investir",
+   "cliques": 38,
+   "impressoes": 18024
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-selic-2031",
+   "cliques": 37,
+   "impressoes": 6124
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/maiores-lucros",
+   "cliques": 30,
+   "impressoes": 2758
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/maiores-baixas-mes",
+   "cliques": 27,
+   "impressoes": 2090
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/dividend-yield",
+   "cliques": 26,
+   "impressoes": 3487
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/BBAS3",
+   "cliques": 24,
+   "impressoes": 674
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-renda-aposentadoria-extra-2065",
+   "cliques": 23,
+   "impressoes": 3185
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/mais-baratas-bazin",
+   "cliques": 22,
+   "impressoes": 343
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/juros-compostos",
+   "cliques": 19,
+   "impressoes": 14088
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/VALE3",
+   "cliques": 17,
+   "impressoes": 300
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/BBSE3",
+   "cliques": 16,
+   "impressoes": 921
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/UNIP6",
+   "cliques": 14,
+   "impressoes": 1870
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/PETR4",
+   "cliques": 12,
+   "impressoes": 490
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/SAPR4",
+   "cliques": 12,
+   "impressoes": 455
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/BBDC4",
+   "cliques": 12,
+   "impressoes": 394
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BBDC4",
+   "cliques": 11,
+   "impressoes": 1552
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/POMO4",
+   "cliques": 11,
+   "impressoes": 1406
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ITSA4",
+   "cliques": 11,
+   "impressoes": 903
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/AXIA3?de=AXIA5",
+   "cliques": 11,
+   "impressoes": 731
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/CMIG4",
+   "cliques": 9,
+   "impressoes": 1711
+  },
+  {
+   "url": "https://www.redentia.com.br/rankings",
+   "cliques": 9,
+   "impressoes": 848
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/CPFE3",
+   "cliques": 9,
+   "impressoes": 259
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-prefixado-2027",
+   "cliques": 8,
+   "impressoes": 1122
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ITUB4",
+   "cliques": 8,
+   "impressoes": 705
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-ipca-2050",
+   "cliques": 7,
+   "impressoes": 1986
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-reserva-2036",
+   "cliques": 7,
+   "impressoes": 1016
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/VULC3",
+   "cliques": 7,
+   "impressoes": 951
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/TAEE11",
+   "cliques": 7,
+   "impressoes": 325
+  },
+  {
+   "url": "https://www.redentia.com.br/guias/calculadora-de-dividendos",
+   "cliques": 6,
+   "impressoes": 1634
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/GRND3",
+   "cliques": 6,
+   "impressoes": 1416
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/maiores-altas-12-meses",
+   "cliques": 6,
+   "impressoes": 1008
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/aposentadoria",
+   "cliques": 6,
+   "impressoes": 824
+  },
+  {
+   "url": "https://www.redentia.com.br/institucional/about",
+   "cliques": 6,
+   "impressoes": 473
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/CMIG4",
+   "cliques": 6,
+   "impressoes": 410
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/slce3",
+   "cliques": 6,
+   "impressoes": 408
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/BPAC11",
+   "cliques": 6,
+   "impressoes": 131
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/TAEE11",
+   "cliques": 5,
+   "impressoes": 1672
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/VALE3",
+   "cliques": 5,
+   "impressoes": 1375
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/BBDC3",
+   "cliques": 5,
+   "impressoes": 318
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/AXIA3",
+   "cliques": 5,
+   "impressoes": 171
+  },
+  {
+   "url": "https://www.redentia.com.br/setor/consumo-ciclico",
+   "cliques": 5,
+   "impressoes": 136
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/POMO4",
+   "cliques": 5,
+   "impressoes": 103
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/WEGE3",
+   "cliques": 5,
+   "impressoes": 101
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-prefixado-com-juros-semestrais-2037",
+   "cliques": 4,
+   "impressoes": 1478
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/juros-compostos/500-reais-por-mes",
+   "cliques": 4,
+   "impressoes": 1465
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/AXIA3",
+   "cliques": 4,
+   "impressoes": 853
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/ABEV3",
+   "cliques": 4,
+   "impressoes": 575
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/bazin",
+   "cliques": 4,
+   "impressoes": 394
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/maiores-margem-liquida",
+   "cliques": 4,
+   "impressoes": 223
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ALOS3",
+   "cliques": 4,
+   "impressoes": 79
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/BRBI11",
+   "cliques": 4,
+   "impressoes": 79
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/BBAS3",
+   "cliques": 3,
+   "impressoes": 4390
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/maiores-dividend-yield",
+   "cliques": 3,
+   "impressoes": 2543
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/PETR4",
+   "cliques": 3,
+   "impressoes": 1709
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/RIAA3",
+   "cliques": 3,
+   "impressoes": 1220
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/ITSA4",
+   "cliques": 3,
+   "impressoes": 770
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/ITUB4",
+   "cliques": 3,
+   "impressoes": 696
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/LAVV3",
+   "cliques": 3,
+   "impressoes": 596
+  },
+  {
+   "url": "https://www.redentia.com.br/teses",
+   "cliques": 3,
+   "impressoes": 474
+  },
+  {
+   "url": "https://www.redentia.com.br/institucional/how-works",
+   "cliques": 3,
+   "impressoes": 263
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/CXSE3",
+   "cliques": 3,
+   "impressoes": 258
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/DIRR3",
+   "cliques": 3,
+   "impressoes": 144
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/aposentadoria/regra-dos-4-por-cento",
+   "cliques": 3,
+   "impressoes": 115
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/plpl3",
+   "cliques": 3,
+   "impressoes": 85
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/TAEE3",
+   "cliques": 3,
+   "impressoes": 79
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/JHSF3",
+   "cliques": 3,
+   "impressoes": 62
+  },
+  {
+   "url": "https://www.redentia.com.br/institucional/terms",
+   "cliques": 3,
+   "impressoes": 55
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro",
+   "cliques": 2,
+   "impressoes": 2793
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/ITUB4",
+   "cliques": 2,
+   "impressoes": 2048
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/SUZB3",
+   "cliques": 2,
+   "impressoes": 2022
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/SAPR4",
+   "cliques": 2,
+   "impressoes": 1919
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/SYNE3",
+   "cliques": 2,
+   "impressoes": 623
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/quanto-investir/juntar-100-mil",
+   "cliques": 2,
+   "impressoes": 533
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/POMO3",
+   "cliques": 2,
+   "impressoes": 431
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-renda-aposentadoria-extra-2040",
+   "cliques": 2,
+   "impressoes": 273
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/TAEE4",
+   "cliques": 2,
+   "impressoes": 259
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-ipca-com-juros-semestrais-2030",
+   "cliques": 2,
+   "impressoes": 222
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/CEBR3",
+   "cliques": 2,
+   "impressoes": 205
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/EVEN3",
+   "cliques": 2,
+   "impressoes": 164
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BSLI4",
+   "cliques": 2,
+   "impressoes": 125
+  },
+  {
+   "url": "https://www.redentia.com.br/guias/imposto-sobre-dividendos",
+   "cliques": 2,
+   "impressoes": 103
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/PSSA3",
+   "cliques": 2,
+   "impressoes": 97
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/EKTR4",
+   "cliques": 2,
+   "impressoes": 78
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BBDC3",
+   "cliques": 2,
+   "impressoes": 74
+  },
+  {
+   "url": "https://www.redentia.com.br/crypto/zec",
+   "cliques": 2,
+   "impressoes": 69
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/EQTL3",
+   "cliques": 2,
+   "impressoes": 67
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/CPLE3",
+   "cliques": 2,
+   "impressoes": 64
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/SCAR3",
+   "cliques": 2,
+   "impressoes": 57
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/maiores-receitas",
+   "cliques": 2,
+   "impressoes": 54
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/B3SA3",
+   "cliques": 2,
+   "impressoes": 42
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ITSA3",
+   "cliques": 2,
+   "impressoes": 41
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ABCB4",
+   "cliques": 2,
+   "impressoes": 35
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/GRND3",
+   "cliques": 2,
+   "impressoes": 30
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/CURY3",
+   "cliques": 2,
+   "impressoes": 26
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BRAP3",
+   "cliques": 2,
+   "impressoes": 26
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/BBDC4",
+   "cliques": 2,
+   "impressoes": 11
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/itub3",
+   "cliques": 2,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/download",
+   "cliques": 2,
+   "impressoes": 4
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/PRSN11",
+   "cliques": 2,
+   "impressoes": 2
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BBAS3",
+   "cliques": 1,
+   "impressoes": 1929
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/POMO4",
+   "cliques": 1,
+   "impressoes": 1372
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/TAEE11",
+   "cliques": 1,
+   "impressoes": 1326
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/AXIA7",
+   "cliques": 1,
+   "impressoes": 944
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/STOC34",
+   "cliques": 1,
+   "impressoes": 942
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/SOJA3",
+   "cliques": 1,
+   "impressoes": 930
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/juros-compostos/1000-reais-por-mes",
+   "cliques": 1,
+   "impressoes": 718
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BBSE3",
+   "cliques": 1,
+   "impressoes": 702
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/bbse3",
+   "cliques": 1,
+   "impressoes": 678
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/VAMO3",
+   "cliques": 1,
+   "impressoes": 598
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/aposentadoria/aposentar-com-5000-mes",
+   "cliques": 1,
+   "impressoes": 597
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/MELK3",
+   "cliques": 1,
+   "impressoes": 584
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/juros-compostos/dobrar-dinheiro-regra-72",
+   "cliques": 1,
+   "impressoes": 483
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/ITSA4",
+   "cliques": 1,
+   "impressoes": 452
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-prefixado-2032",
+   "cliques": 1,
+   "impressoes": 448
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/VIVA3",
+   "cliques": 1,
+   "impressoes": 431
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/LOGG3",
+   "cliques": 1,
+   "impressoes": 377
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/MELI34",
+   "cliques": 1,
+   "impressoes": 369
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BRSR6",
+   "cliques": 1,
+   "impressoes": 352
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/RZAT11",
+   "cliques": 1,
+   "impressoes": 328
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/VULC3",
+   "cliques": 1,
+   "impressoes": 289
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/KLBN4",
+   "cliques": 1,
+   "impressoes": 274
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-selic-2029",
+   "cliques": 1,
+   "impressoes": 258
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/maiores-roe",
+   "cliques": 1,
+   "impressoes": 253
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-ipca-com-juros-semestrais-2040",
+   "cliques": 1,
+   "impressoes": 231
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-ipca-com-juros-semestrais-2045",
+   "cliques": 1,
+   "impressoes": 198
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/KNCR11",
+   "cliques": 1,
+   "impressoes": 187
+  },
+  {
+   "url": "https://www.redentia.com.br/guias/melhores-fiis-2026",
+   "cliques": 1,
+   "impressoes": 186
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-renda-aposentadoria-extra-2060",
+   "cliques": 1,
+   "impressoes": 181
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ISAE4",
+   "cliques": 1,
+   "impressoes": 170
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BRFS3",
+   "cliques": 1,
+   "impressoes": 158
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ITUB3",
+   "cliques": 1,
+   "impressoes": 151
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/planejamento",
+   "cliques": 1,
+   "impressoes": 147
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-selic-2028",
+   "cliques": 1,
+   "impressoes": 146
+  },
+  {
+   "url": "https://www.redentia.com.br/crypto/nucoin",
+   "cliques": 1,
+   "impressoes": 140
+  },
+  {
+   "url": "https://www.redentia.com.br/guias/como-calcular-preco-teto",
+   "cliques": 1,
+   "impressoes": 139
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/USIM3",
+   "cliques": 1,
+   "impressoes": 128
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-ipca-com-juros-semestrais-2050",
+   "cliques": 1,
+   "impressoes": 127
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/CEBR6",
+   "cliques": 1,
+   "impressoes": 119
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/SPTW11",
+   "cliques": 1,
+   "impressoes": 117
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/ITSA4",
+   "cliques": 1,
+   "impressoes": 113
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/EQPA6",
+   "cliques": 1,
+   "impressoes": 109
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/KLBN4",
+   "cliques": 1,
+   "impressoes": 101
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/VISA34",
+   "cliques": 1,
+   "impressoes": 100
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/pine4",
+   "cliques": 1,
+   "impressoes": 100
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/PRIO3",
+   "cliques": 1,
+   "impressoes": 94
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/SYNE3",
+   "cliques": 1,
+   "impressoes": 89
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/SAPR4",
+   "cliques": 1,
+   "impressoes": 86
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/CGRA4",
+   "cliques": 1,
+   "impressoes": 85
+  },
+  {
+   "url": "https://www.redentia.com.br/crypto/reau",
+   "cliques": 1,
+   "impressoes": 82
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/MDNE3",
+   "cliques": 1,
+   "impressoes": 81
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/RURA11",
+   "cliques": 1,
+   "impressoes": 81
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/PCIP11",
+   "cliques": 1,
+   "impressoes": 80
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/TIMS3",
+   "cliques": 1,
+   "impressoes": 79
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/EGIE3",
+   "cliques": 1,
+   "impressoes": 76
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/PLPL3",
+   "cliques": 1,
+   "impressoes": 75
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/MCDC34",
+   "cliques": 1,
+   "impressoes": 74
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/MXRF11",
+   "cliques": 1,
+   "impressoes": 70
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/CPRE3",
+   "cliques": 1,
+   "impressoes": 69
+  },
+  {
+   "url": "https://www.redentia.com.br/guias/open-finance",
+   "cliques": 1,
+   "impressoes": 69
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-educa-2029",
+   "cliques": 1,
+   "impressoes": 65
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/orcl34",
+   "cliques": 1,
+   "impressoes": 60
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/SAPR3",
+   "cliques": 1,
+   "impressoes": 60
+  },
+  {
+   "url": "https://www.redentia.com.br/guias/conectar-carteira-ao-chatgpt",
+   "cliques": 1,
+   "impressoes": 60
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BPAC11",
+   "cliques": 1,
+   "impressoes": 59
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/SAPR11",
+   "cliques": 1,
+   "impressoes": 57
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/MARG11",
+   "cliques": 1,
+   "impressoes": 54
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BINC11",
+   "cliques": 1,
+   "impressoes": 53
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/tesouro/tesouro-ipca-2050",
+   "cliques": 1,
+   "impressoes": 52
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/CSMG3",
+   "cliques": 1,
+   "impressoes": 48
+  },
+  {
+   "url": "https://www.redentia.com.br/guias/bitcoin-na-carteira",
+   "cliques": 1,
+   "impressoes": 48
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/RZAG11",
+   "cliques": 1,
+   "impressoes": 47
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/FESA4",
+   "cliques": 1,
+   "impressoes": 47
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/S1TX34",
+   "cliques": 1,
+   "impressoes": 45
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/BRAP4",
+   "cliques": 1,
+   "impressoes": 41
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ABEV3",
+   "cliques": 1,
+   "impressoes": 40
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/VAMO3",
+   "cliques": 1,
+   "impressoes": 36
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/KLBN3",
+   "cliques": 1,
+   "impressoes": 36
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/XPIE11",
+   "cliques": 1,
+   "impressoes": 36
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/CACR11",
+   "cliques": 1,
+   "impressoes": 34
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/cpts11",
+   "cliques": 1,
+   "impressoes": 32
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/PORD11",
+   "cliques": 1,
+   "impressoes": 32
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/PETR3",
+   "cliques": 1,
+   "impressoes": 31
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/ALUP11",
+   "cliques": 1,
+   "impressoes": 30
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/BBML3",
+   "cliques": 1,
+   "impressoes": 29
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/ITUB3",
+   "cliques": 1,
+   "impressoes": 29
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/VAMO3",
+   "cliques": 1,
+   "impressoes": 29
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/TASA4",
+   "cliques": 1,
+   "impressoes": 28
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/UNIP6",
+   "cliques": 1,
+   "impressoes": 28
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/RADL3",
+   "cliques": 1,
+   "impressoes": 27
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/BTLG11",
+   "cliques": 1,
+   "impressoes": 25
+  },
+  {
+   "url": "https://www.redentia.com.br/ranking/maiores-caixa",
+   "cliques": 1,
+   "impressoes": 25
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/RIAA3",
+   "cliques": 1,
+   "impressoes": 24
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/LVBI11",
+   "cliques": 1,
+   "impressoes": 24
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/tesouro/tesouro-ipca-com-juros-semestrais-2037",
+   "cliques": 1,
+   "impressoes": 23
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/WIZC3",
+   "cliques": 1,
+   "impressoes": 22
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-ipca-com-juros-semestrais-2055",
+   "cliques": 1,
+   "impressoes": 21
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/SHUL4",
+   "cliques": 1,
+   "impressoes": 20
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/BEES3",
+   "cliques": 1,
+   "impressoes": 19
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ISAE3",
+   "cliques": 1,
+   "impressoes": 19
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/AZZA3",
+   "cliques": 1,
+   "impressoes": 19
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/GCRA11",
+   "cliques": 1,
+   "impressoes": 19
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/FIQE3",
+   "cliques": 1,
+   "impressoes": 18
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/PMLL11",
+   "cliques": 1,
+   "impressoes": 18
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bbdc4",
+   "cliques": 1,
+   "impressoes": 17
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/CNSY3",
+   "cliques": 1,
+   "impressoes": 17
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/A1IV34",
+   "cliques": 1,
+   "impressoes": 17
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/CBAV3",
+   "cliques": 1,
+   "impressoes": 17
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/BRSR6",
+   "cliques": 1,
+   "impressoes": 16
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/GOAU4",
+   "cliques": 1,
+   "impressoes": 16
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/LREN3",
+   "cliques": 1,
+   "impressoes": 16
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/AUPO11",
+   "cliques": 1,
+   "impressoes": 15
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/BEEF3",
+   "cliques": 1,
+   "impressoes": 15
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BIDB11",
+   "cliques": 1,
+   "impressoes": 15
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/TASA4",
+   "cliques": 1,
+   "impressoes": 14
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/USIM5",
+   "cliques": 1,
+   "impressoes": 14
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/cnsy3",
+   "cliques": 1,
+   "impressoes": 13
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/RBRY11",
+   "cliques": 1,
+   "impressoes": 13
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/tesouro/tesouro-ipca-2045",
+   "cliques": 1,
+   "impressoes": 13
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/CEEB3",
+   "cliques": 1,
+   "impressoes": 12
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/MTRE3",
+   "cliques": 1,
+   "impressoes": 12
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/RECV3",
+   "cliques": 1,
+   "impressoes": 12
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/VULC3",
+   "cliques": 1,
+   "impressoes": 12
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/EMBJ3",
+   "cliques": 1,
+   "impressoes": 11
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ORVR3",
+   "cliques": 1,
+   "impressoes": 11
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/GOAU3",
+   "cliques": 1,
+   "impressoes": 11
+  },
+  {
+   "url": "https://www.redentia.com.br/setor/saude",
+   "cliques": 1,
+   "impressoes": 11
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/JALL3",
+   "cliques": 1,
+   "impressoes": 10
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/AZZA3",
+   "cliques": 1,
+   "impressoes": 9
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/CPTS11",
+   "cliques": 1,
+   "impressoes": 8
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/HYPE3",
+   "cliques": 1,
+   "impressoes": 8
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/HGRE11",
+   "cliques": 1,
+   "impressoes": 8
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/SBSP3",
+   "cliques": 1,
+   "impressoes": 8
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/P2CF34",
+   "cliques": 1,
+   "impressoes": 7
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/VSLH11",
+   "cliques": 1,
+   "impressoes": 7
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-educa-2035",
+   "cliques": 1,
+   "impressoes": 7
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/MDIA3",
+   "cliques": 1,
+   "impressoes": 6
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/ALUP4",
+   "cliques": 1,
+   "impressoes": 6
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/INTB3",
+   "cliques": 1,
+   "impressoes": 6
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/MDNE3",
+   "cliques": 1,
+   "impressoes": 6
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/POSI3",
+   "cliques": 1,
+   "impressoes": 6
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/VRTA11",
+   "cliques": 1,
+   "impressoes": 6
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/KNCA11",
+   "cliques": 1,
+   "impressoes": 5
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/PSEC11",
+   "cliques": 1,
+   "impressoes": 5
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/SMFT3",
+   "cliques": 1,
+   "impressoes": 5
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/URPR11",
+   "cliques": 1,
+   "impressoes": 5
+  },
+  {
+   "url": "https://www.redentia.com.br/tesouro/tesouro-renda-aposentadoria-extra-2068",
+   "cliques": 1,
+   "impressoes": 5
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/TOTS3",
+   "cliques": 1,
+   "impressoes": 4
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BIYT39",
+   "cliques": 1,
+   "impressoes": 4
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/SOND6",
+   "cliques": 1,
+   "impressoes": 4
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/ZEC",
+   "cliques": 1,
+   "impressoes": 3
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/DASA3",
+   "cliques": 1,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/rytt34",
+   "cliques": 1,
+   "impressoes": 2
+  },
+  {
+   "url": "https://www.redentia.com.br/calculadora/preco-teto/MBRF3",
+   "cliques": 1,
+   "impressoes": 2
+  },
+  {
+   "url": "https://www.redentia.com.br/crypto/xrp",
+   "cliques": 1,
+   "impressoes": 2
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/BMOB3",
+   "cliques": 1,
+   "impressoes": 2
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/CSCO34",
+   "cliques": 1,
+   "impressoes": 2
+  },
+  {
+   "url": "https://www.redentia.com.br/preco-teto",
+   "cliques": 1,
+   "impressoes": 2
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/FLRP11",
+   "cliques": 1,
+   "impressoes": 2
+  },
+  {
+   "url": "https://www.redentia.com.br/asset/brge12",
+   "cliques": 1,
+   "impressoes": 1
+  },
+  {
+   "url": "https://www.redentia.com.br/crypto/sol",
+   "cliques": 1,
+   "impressoes": 1
+  },
+  {
+   "url": "https://www.redentia.com.br/dividendos/VTRU3",
+   "cliques": 1,
+   "impressoes": 1
+  },
+  {
+   "url": "https://www.redentia.com.br/quanto-rende/H1OG34",
+   "cliques": 1,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/COCA34",
+   "cliques": 0,
+   "impressoes": 40
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/GGBR4",
+   "cliques": 0,
+   "impressoes": 40
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/vulc3",
+   "cliques": 0,
+   "impressoes": 23
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/TOTS3",
+   "cliques": 0,
+   "impressoes": 14
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/",
+   "cliques": 0,
+   "impressoes": 13
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/intb3",
+   "cliques": 0,
+   "impressoes": 13
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/pord11",
+   "cliques": 0,
+   "impressoes": 12
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/wege3",
+   "cliques": 0,
+   "impressoes": 12
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/AXPB34",
+   "cliques": 0,
+   "impressoes": 11
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/brsr6",
+   "cliques": 0,
+   "impressoes": 9
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/fesa4",
+   "cliques": 0,
+   "impressoes": 9
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/petr4",
+   "cliques": 0,
+   "impressoes": 9
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/pomo4",
+   "cliques": 0,
+   "impressoes": 9
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/azza3",
+   "cliques": 0,
+   "impressoes": 8
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/boas3",
+   "cliques": 0,
+   "impressoes": 8
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/guar3",
+   "cliques": 0,
+   "impressoes": 8
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/raiz4",
+   "cliques": 0,
+   "impressoes": 8
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/sapr4",
+   "cliques": 0,
+   "impressoes": 8
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/CPTS11",
+   "cliques": 0,
+   "impressoes": 7
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/alos3",
+   "cliques": 0,
+   "impressoes": 7
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cmig4",
+   "cliques": 0,
+   "impressoes": 7
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/engi11",
+   "cliques": 0,
+   "impressoes": 7
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/klbn3",
+   "cliques": 0,
+   "impressoes": 7
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/onco3",
+   "cliques": 0,
+   "impressoes": 7
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/orvr3",
+   "cliques": 0,
+   "impressoes": 7
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/aure3",
+   "cliques": 0,
+   "impressoes": 6
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/grnd3",
+   "cliques": 0,
+   "impressoes": 6
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/m1rn34",
+   "cliques": 0,
+   "impressoes": 6
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/mglu3",
+   "cliques": 0,
+   "impressoes": 6
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/sjau11",
+   "cliques": 0,
+   "impressoes": 6
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/auvp11",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/axia3",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/b2yn34",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bbse3",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/brbi11",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/elet3",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/hglg11",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/lren3",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/mxrf11",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/pags34",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/rani3",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/rent3",
+   "cliques": 0,
+   "impressoes": 5
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/aapl34",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/alpa3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/baiq39",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bbas3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/brav3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cebr3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cgra4",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cmig3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/dirr3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/eqpa3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/goau4",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/kepl3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/knsc11",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/leve3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/pssa3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ptnt4",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/toky3",
+   "cliques": 0,
+   "impressoes": 4
+  },
+  {
+   "url": "http://redentia.com.br/",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/adhm3",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/apxm11",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bbug39",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/brml3",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/c2ac34",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cacr11",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/heta4",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/logg3",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/lwsa3",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/mdia3",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/movi3",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/p2an34",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/recr11",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/rzak11",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/tasa4",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/unip3",
+   "cliques": 0,
+   "impressoes": 3
+  },
+  {
+   "url": "https://redentia.com.br/tesouro/tesouro-reserva-2036",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/aesb3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/afhf11",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/alzr11",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/arge11",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/aupo11",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/berk34",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bmeb4",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/brap4",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/brsr3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ceeb3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cogn3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/coph34",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cple3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cple6",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cury3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/d1el34",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/dpro11",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/engi4",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/f2ic34",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/fivn11",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/klbn4",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/l1rc34",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/lcam3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/meta11",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/mils3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/motv3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/odpv3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/orcl34",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/plpl3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ptbl3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/slce3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/snci11",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/spxi11",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/t1al34",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/tend3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/tris3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/unip6",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/vste3",
+   "cliques": 0,
+   "impressoes": 2
+  },
+  {
+   "url": "https://redentia.com.br/calculadora/juros-compostos",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://redentia.com.br/calculadora/juros-compostos/dobrar-dinheiro-regra-72",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://redentia.com.br/calculadora/quanto-investir",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://redentia.com.br/dividendos/BBAS3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://redentia.com.br/guias/calculadora-de-dividendos",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/C2OI34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/DGCO34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/JFLL11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/WHGR11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/a1mt34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/a2mb34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/abcb4",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/abev3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/abud34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/aigb34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/almi11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/amar3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/arml3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/arri11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/arxd11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/asai3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/azev4",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/b1sx34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/b1ti34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bbdc3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bbig11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bboi11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bbov11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/beef3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/blak34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bmeb3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bobr4",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bpac5",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bpml11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/brsr5",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/bsli3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/btci11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/c1oo34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/c1pr34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cali3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cebr6",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ceeb5",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/coce5",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/coty34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ctgp34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/cyre3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/enev3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/eter3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/even3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/fatn11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/fcfl11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/fcxo34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/fiib11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/fiqe3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/fisc11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/fixx11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/game11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/gcdl11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/gcri11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/gepa4",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ggbr3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ggrc11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/gmat3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/gprk34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/h1og34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/h1sb34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/hgcr11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/hsml11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/i1vz34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/igta3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/igti11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/inep4",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/khcb34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/knip11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/knuq11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/lavv3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ligt3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ljqq3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/m1db34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/m2st34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/mcci11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/mdlz34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/melk3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/mlas3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/mndl3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/n1ow34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/nafg3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/nord3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ofsa3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/peab3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/pgmn3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/pine4",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/pmll11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/pqdp11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/prnr3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/qcom34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/r2bl34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/rede3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/renv11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/rigg34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/s1mf34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/saud3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/scar3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/taee3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/tepp11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/trxf11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/tsmc34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/tten3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/tupy3",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/ubsg34",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/vcri11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/vgir11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/vivt4",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/vrta11",
+   "cliques": 0,
+   "impressoes": 1
+  },
+  {
+   "url": "https://whitelabel.redentia.com.br/asset/vsho11",
+   "cliques": 0,
+   "impressoes": 1
+  }
+ ]
+}

@@ -18,11 +18,11 @@ export const MELHORES_FIIS_2026_GUIDE: GuideDoc = {
   title: 'Melhores FIIs 2026',
   dek: 'O melhor FII não é o que mais rende no mês, é o que você entende. Veja os três tipos de fundo, os indicadores que importam e como escolher sem cair na armadilha do dividend yield alto.',
   description:
-    'Melhores FIIs de 2026: como escolher fundos imobiliários por segmento (tijolo, papel, fundos de fundos), indicadores que importam (DY, P/VP, vacância, liquidez) e os erros que derrubam iniciantes. Guia claro da Redentia, sem indicar ticker.',
+    'Melhores FIIs de 2026: como escolher fundos imobiliários por segmento (tijolo, papel, fundos de fundos), indicadores que importam (DY, P/VP, vacância, liquidez) e os erros que derrubam iniciantes. Guia claro da Aportou, sem indicar ticker.',
   summary:
     'Não existe lista mágica dos melhores FIIs: existe o fundo certo para o seu objetivo. Entenda os três segmentos, os indicadores que separam um bom fundo de uma armadilha e como montar renda mensal sem chutar.',
   minutes: 10,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-13',
   dateModified: '2026-07-13',
   updatedLine: 'Atualizado em 13 jul 2026 · 10 min de leitura',
@@ -109,7 +109,7 @@ export const MELHORES_FIIS_2026_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Cada um desses indicadores vira uma coluna comparável nos <a href="/rankings">rankings da Redentia</a>, para você olhar um fundo ao lado dos pares do mesmo segmento, que é a única comparação que faz sentido.',
+          html: 'Cada um desses indicadores vira uma coluna comparável nos <a href="/rankings">rankings da Aportou</a>, para você olhar um fundo ao lado dos pares do mesmo segmento, que é a única comparação que faz sentido.',
         },
       ],
     },

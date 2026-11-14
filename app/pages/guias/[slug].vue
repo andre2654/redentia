@@ -9,6 +9,11 @@
 // Conteúdo 100% do doc tipado (app/content/guias) — títulos, parágrafos,
 // stats, passos, checklist, CTA e FAQ; nada hardcodado em componente.
 //
+// ROBUSTEZ (11/11/2026): um documento. A coluna de 720px em 18px/1,65, os
+// títulos com ritmo (64px antes, 18px depois), o sumário lateral que acompanha
+// (o traço que desliza, NuTocSidebar) e cada seção abaixo da dobra entra ao
+// chegar (v-revelar). Texto, âncoras e ordem iguais.
+//
 // SEO: SSR com o artigo inteiro no HTML, canonical /guias/{slug}, JSON-LD
 // Article + BreadcrumbList (FAQPage vem do NuFaqAccordion). Slug inexistente
 // → 404. routeRules '/guias/**' cacheia 3600s no nuxt.config.
@@ -39,7 +44,7 @@ usePageSeo({
       description: doc.description,
       datePublished: doc.datePublished,
       dateModified: doc.dateModified,
-      author: { '@type': 'Organization', name: 'Redentia' },
+      author: { '@type': 'Organization', name: MARCA.nome },
       articleSection: doc.tag,
       inLanguage: 'pt-BR',
     },
@@ -64,6 +69,10 @@ usePageSeo({
     { name: doc.title, path: `/guias/${doc.slug}` },
   ],
 })
+
+// "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
+// mora no painel desde 02/11, e a /busca não é mais onde se conversa.
+const painel = useChatPainel()
 </script>
 
 <template>
@@ -82,14 +91,17 @@ usePageSeo({
       <div class="gdp__cols">
         <NuTocSidebar :items="tocItems">
           <NuAiPromptCard
-            kicker="Redentia AI"
+            kicker="IA da Aportou"
             text="Dúvida no meio do guia? Pergunte à IA."
-            to="/busca"
+            @click="painel.abrir()"
           />
         </NuTocSidebar>
 
         <article class="gdp__article">
-          <section v-for="(sec, si) in doc.sections" :key="sec.id">
+          <!-- o índice lateral some abaixo de 1080px: no celular e no tablet o
+               mesmo sumário (mesmas âncoras) abre aqui, fechado -->
+          <LegalIndice :items="tocItems" rotulo="Neste guia" />
+          <section v-for="(sec, si) in doc.sections" :key="sec.id" v-revelar>
             <h2 :id="sec.id" class="gdp__h2" :class="{ 'gdp__h2--first': si === 0 }">{{ sec.title }}</h2>
             <template v-for="(b, bi) in sec.blocks" :key="`${sec.id}-${bi}`">
               <!-- eslint-disable-next-line vue/no-v-html -->
@@ -104,10 +116,12 @@ usePageSeo({
             </template>
           </section>
 
-          <NuCtaBanner :title="doc.cta.title" :subtitle="doc.cta.subtitle" :to="doc.cta.to" class="gdp__cta" />
+          <NuCtaBanner v-revelar :title="doc.cta.title" :subtitle="doc.cta.subtitle" :to="doc.cta.to" class="gdp__cta" />
 
-          <h2 :id="faqId" class="gdp__h2">{{ doc.faqTitle }}</h2>
-          <NuFaqAccordion :items="doc.faq" :default-open="-1" variant="compact" class="gdp__faq" />
+          <div v-revelar>
+            <h2 :id="faqId" class="gdp__h2">{{ doc.faqTitle }}</h2>
+            <NuFaqAccordion :items="doc.faq" :default-open="-1" variant="compact" class="gdp__faq" />
+          </div>
         </article>
       </div>
     </div>
@@ -117,35 +131,42 @@ usePageSeo({
 </template>
 
 <style scoped>
+/* o miolo sobre o creme da página (não existe faixa branca de ponta a ponta).
+   Um fio de 1,5px na coluna separa o topo do artigo da leitura. */
 .gdp {
-  background: var(--nu-white);
-  padding: clamp(48px, 6vw, 80px) clamp(22px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  background: var(--nu-page);
+  padding: 0 var(--nu-coluna) clamp(72px, 8vw, 128px);
 }
-.gdp__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
-.gdp__article { flex: 1; min-width: 0; max-width: 760px; }
+.gdp__cols {
+  display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start;
+  border-top: 1px solid var(--nu-line-2); padding-top: clamp(32px, 4.4vw, 56px);
+}
+/* a coluna de leitura: ~720px, 18px com entrelinha 1,65 */
+.gdp__article { flex: 1; min-width: 0; max-width: 720px; animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) var(--nu-passo-cascata) both; }
 
 .gdp__h2 {
   margin: clamp(44px, 5vw, 64px) 0 0; color: var(--nu-ink);
-  font-size: clamp(26px, 3vw, 38px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.1;
-  /* 40px do design + a faixa "Mercado agora" sticky (~48px) do layout */
-  scroll-margin-top: 88px;
+  font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display);
+  letter-spacing: var(--nu-ls-titulo); line-height: 1.08; text-wrap: balance;
+  /* o topo e a régua do mercado grudam (~100px): a âncora para abaixo deles */
+  scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
 }
 .gdp__h2--first { margin-top: 0; }
 
 .gdp__p {
   margin: 18px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg);
-  font-weight: 500; line-height: 1.75;
+  font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.65; text-wrap: pretty;
 }
 .gdp__p + .gdp__p { margin-top: 16px; }
-.gdp__p :deep(strong) { font-weight: 800; }
+.gdp__p :deep(strong) { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 /* cross-links inline (v-html, href interno) — cor de marca + sublinhado sutil */
 .gdp__article :deep(a) {
-  color: var(--nu-blue-text); font-weight: 700;
-  text-decoration: underline; text-underline-offset: 2px;
-  text-decoration-thickness: 1px; text-decoration-color: var(--nu-blue-soft);
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio);
+  text-decoration: underline; text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
+  transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.gdp__article :deep(a:hover) { text-decoration-color: var(--nu-blue); }
+.gdp__article :deep(a:hover) { color: var(--nu-blue-hover); text-decoration-color: currentColor; }
 
 .gdp__stats {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -155,4 +176,6 @@ usePageSeo({
 .gdp__checks { margin-top: 22px; }
 .gdp__cta { margin-top: clamp(40px, 5vw, 56px); }
 .gdp__faq { margin-top: 24px; }
+
+@media (prefers-reduced-motion: reduce) { .gdp__article { animation: none; } }
 </style>

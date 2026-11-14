@@ -10,17 +10,10 @@
  *
  * Lê de runtimeConfig.public.clarityProjectId. NUXT_PUBLIC_CLARITY_PROJECT_ID=
  * vazio desliga num env.
- *
- * NÃO grava rota com token no path (/cliente/convite, /cliente/acesso,
- * /business/convite): a sessão gravada levaria URL e tela com o segredo. Ver
- * utils/analytics-privacy.ts.
  */
-import { isSecretTokenPath } from '~/utils/analytics-privacy'
 import { agendarComConsentimento, lerConsentimento } from '~/utils/consent'
 
 export default defineNuxtPlugin(() => {
-  if (isSecretTokenPath(window.location.pathname)) return
-
   const config = useRuntimeConfig()
   const projectId
     = ((config.public as Record<string, unknown>).clarityProjectId as string | undefined)
@@ -44,7 +37,6 @@ export default defineNuxtPlugin(() => {
 
   const installClarity = () => {
     if (lerConsentimento() !== 'granted') return
-    if (isSecretTokenPath(window.location.pathname)) return
     if ((window as { clarity?: unknown }).clarity) return
 
     ;(function (c: Window & { clarity?: unknown }, l: Document, a: string, r: string, i: string) {

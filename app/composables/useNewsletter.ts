@@ -293,16 +293,16 @@ export function useNewsletter(origem: OrigemNewsletter = 'bloco', formato?: stri
 
   const confirmacao = computed(() => {
     const e = emailPendente.value
-    if (fim.value === 'nova') return `Pronto. Sua conta na Redentia está criada, e O mercado da semana chega em ${e} toda sexta.`
+    if (fim.value === 'nova') return `Pronto. Sua conta na Aportou está criada, e O mercado da semana chega em ${e} toda sexta.`
     if (fim.value === 'entrou') return `Pronto. Você entrou na sua conta, e O mercado da semana chega em ${e} toda sexta.`
     return `Pronto. O mercado da semana chega em ${e} toda sexta.`
   })
 
   /** O aviso de consentimento. Quem não tem conta fica sabendo, antes do código, que ele cria uma. */
   const legal = computed(() => {
-    if (!isAuthenticated.value) return 'Mandamos um código para confirmar o e-mail. Ao confirmar, você cria sua conta grátis na Redentia e aceita receber o e-mail semanal.'
-    if (emailDaConta.value) return 'Ao assinar, você aceita receber o e-mail semanal da Redentia.'
-    return 'Mandamos um código para confirmar o e-mail, que fica na sua conta. Ao confirmar, você aceita receber o e-mail semanal da Redentia.'
+    if (!isAuthenticated.value) return 'Mandamos um código para confirmar o e-mail. Ao confirmar, você cria sua conta grátis na Aportou e aceita receber o e-mail semanal.'
+    if (emailDaConta.value) return 'Ao assinar, você aceita receber o e-mail semanal da Aportou.'
+    return 'Mandamos um código para confirmar o e-mail, que fica na sua conta. Ao confirmar, você aceita receber o e-mail semanal da Aportou.'
   })
 
   onMounted(() => {

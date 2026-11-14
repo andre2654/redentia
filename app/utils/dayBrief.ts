@@ -72,6 +72,12 @@ function sectionHtml(p: string | null | undefined): string | null {
  */
 export function buildDayTopics(core: DayBriefCore): NuDayTopic[] {
   const s = core.sections
+  // Briefing de verdade sem um campo: o campo fica vazio, nunca o texto de
+  // exemplo (31/10/2026: um fechamento sem `sections` mostrava "Bancos &
+  // duration.", o texto de julho, como se fosse de hoje). O exemplo só segura
+  // a forma quando não veio briefing nenhum.
+  const exemplo = !s && !core.body.length && !core.takeawayHtml && !core.headline?.trim()
+  const ou = <T,>(v: T) => (exemplo ? v : null)
   const placarHtml = sectionHtml(s?.placar?.paragraph)
   const puxouHtml = sectionHtml(s?.puxou?.paragraph)
   const ficouHtml = sectionHtml(s?.ficou?.paragraph)
@@ -81,10 +87,10 @@ export function buildDayTopics(core: DayBriefCore): NuDayTopic[] {
       label: 'O placar',
       labelColor: 'var(--nu-gray)',
       icon: 'trend',
-      stat: txt(s?.placar?.stat) ?? core.ibovDelta ?? MOCK_CARD.placar.stat,
+      stat: txt(s?.placar?.stat) ?? core.ibovDelta ?? ou(MOCK_CARD.placar.stat),
       cardTitle: null,
-      cardBlurb: txt(s?.placar?.blurb) ?? (core.headline?.trim() || MOCK_CARD.placar.blurb),
-      modalHtml: placarHtml ?? core.body[0] ?? MOCK_MODAL.placar,
+      cardBlurb: txt(s?.placar?.blurb) ?? (core.headline?.trim() || ou(MOCK_CARD.placar.blurb) || ''),
+      modalHtml: placarHtml ?? core.body[0] ?? ou(MOCK_MODAL.placar) ?? '',
       real: placarHtml != null || core.body[0] != null,
     },
     {
@@ -92,9 +98,9 @@ export function buildDayTopics(core: DayBriefCore): NuDayTopic[] {
       labelColor: 'var(--nu-day-puxou)',
       icon: 'bars',
       stat: null,
-      cardTitle: txt(s?.puxou?.title) ?? MOCK_CARD.puxou.title,
-      cardBlurb: txt(s?.puxou?.blurb) ?? MOCK_CARD.puxou.blurb,
-      modalHtml: puxouHtml ?? core.body[1] ?? MOCK_MODAL.puxou,
+      cardTitle: txt(s?.puxou?.title) ?? ou(MOCK_CARD.puxou.title),
+      cardBlurb: txt(s?.puxou?.blurb) ?? ou(MOCK_CARD.puxou.blurb) ?? '',
+      modalHtml: puxouHtml ?? core.body[1] ?? ou(MOCK_MODAL.puxou) ?? '',
       real: puxouHtml != null || core.body[1] != null,
     },
     {
@@ -102,9 +108,9 @@ export function buildDayTopics(core: DayBriefCore): NuDayTopic[] {
       labelColor: 'var(--nu-day-ficou)',
       icon: 'flame',
       stat: null,
-      cardTitle: txt(s?.ficou?.title) ?? MOCK_CARD.ficou.title,
-      cardBlurb: txt(s?.ficou?.blurb) ?? MOCK_CARD.ficou.blurb,
-      modalHtml: ficouHtml ?? core.body[2] ?? MOCK_MODAL.ficou,
+      cardTitle: txt(s?.ficou?.title) ?? ou(MOCK_CARD.ficou.title),
+      cardBlurb: txt(s?.ficou?.blurb) ?? ou(MOCK_CARD.ficou.blurb) ?? '',
+      modalHtml: ficouHtml ?? core.body[2] ?? ou(MOCK_MODAL.ficou) ?? '',
       real: ficouHtml != null || core.body[2] != null,
     },
     {
@@ -112,9 +118,9 @@ export function buildDayTopics(core: DayBriefCore): NuDayTopic[] {
       labelColor: 'var(--nu-blue-text)',
       icon: 'compass',
       stat: null,
-      cardTitle: txt(s?.leitura?.title) ?? MOCK_CARD.leitura.title,
-      cardBlurb: txt(s?.leitura?.blurb) ?? MOCK_CARD.leitura.blurb,
-      modalHtml: leituraHtml ?? core.takeawayHtml ?? MOCK_MODAL.leitura,
+      cardTitle: txt(s?.leitura?.title) ?? ou(MOCK_CARD.leitura.title),
+      cardBlurb: txt(s?.leitura?.blurb) ?? ou(MOCK_CARD.leitura.blurb) ?? '',
+      modalHtml: leituraHtml ?? core.takeawayHtml ?? ou(MOCK_MODAL.leitura) ?? '',
       real: leituraHtml != null || core.takeawayHtml != null,
     },
   ]

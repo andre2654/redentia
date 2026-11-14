@@ -3,6 +3,7 @@
 // jurídica em tokens Nu. Recursivo: 'subsection' emite h3 + <LegalBlocks> dos
 // próprios blocos; listas aninham 1 nível (children do item). `lede` engorda os
 // parágrafos de abertura. Componente de apresentação puro — sem estado.
+// Robustez (11/11/2026): peso e tracking por token; o texto segue em 17px/1,65.
 import type { LegalBlock } from '~/types/legal'
 
 withDefaults(defineProps<{
@@ -44,10 +45,10 @@ withDefaults(defineProps<{
 <style scoped>
 .lgb__p {
   margin: 16px 0 0; color: var(--nu-gray-3);
-  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
+  font-size: 17px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.65; text-wrap: pretty;
 }
 .lgb__p--lede {
-  color: var(--nu-gray-2); font-size: clamp(17px, 1.5vw, 18px); line-height: 1.65;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); line-height: 1.5;
 }
 
 .lgb__list {
@@ -59,16 +60,16 @@ withDefaults(defineProps<{
   margin: 12px 0 4px; list-style: lower-alpha; gap: 8px;
 }
 .lgb__li {
-  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
+  color: var(--nu-gray-3); font-size: 17px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.65;
   padding-left: 4px;
 }
-.lgb__li::marker { color: var(--nu-gray); font-weight: 700; }
+.lgb__li::marker { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); }
 
 .lgb__sub { margin-top: 4px; }
 .lgb__h3 {
   margin: clamp(24px, 2.6vw, 32px) 0 0; color: var(--nu-ink);
-  font-size: clamp(18px, 1.7vw, 21px); font-weight: 800;
-  letter-spacing: -0.02em; line-height: 1.25;
-  scroll-margin-top: 88px;
+  font-size: clamp(19px, 1.7vw, 22px); font-weight: var(--nu-w-forte);
+  letter-spacing: var(--nu-ls-titulo); line-height: 1.25; text-wrap: balance;
+  scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
 }
 </style>

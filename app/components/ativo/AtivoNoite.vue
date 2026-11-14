@@ -1,0 +1,380 @@
+<script setup lang="ts">
+// /asset: "A noite" (03/11/2026), a direção que o dono escolheu entre três
+// ("a 2"), com o refino que ele pediu no mesmo dia. O topo é o escuro do herói
+// da home e do /benchmark-ia (o navy do rodapé descendo ao preto) no idioma do
+// app Ações, "A bolsa no bolso" (TopoBolsa, a escolha do dono entre três topos
+// em 03/11): o papel e as ações em botões redondos, o preço grande e fino que
+// acompanha a mira, a linha de luz de borda a borda e o período embaixo. É o
+// único momento brilhante da tela; o resto é calmo.
+// Logo abaixo, os números do gráfico em fila e o resumo factual. Depois, uma
+// barra que gruda com as seções, NA ORDEM em que a página desce: o ativo,
+// indicadores, por dentro (ETF), proventos, análise, sobre, teses, notícias,
+// cadeia, setor e perguntas. A barra encosta embaixo do header e da régua do
+// mercado pela altura que os dois publicam (--nuh-h do useTopo, --nut-h do
+// NuMarketTicker), sem px chutado.
+// Tudo sai do servidor: o texto, os links, o FAQ (<details>). Ao rolar, o
+// papel, o preço e a variação entram na barra que gruda, sem empurrar nada.
+// Aportou (11/11/2026): a página trocou de roupa, não de conteúdo. O topo é
+// creme, com o cartão carvão do gráfico (TopoBolsa); as bandas alternam o creme
+// da página e a faixa quente (--nu-band) no lugar do branco e do creme; cada
+// seção abre com o eyebrow da marca e o título em 800, alinhados à esquerda.
+// A ordem das seções, os títulos, os textos e os links são os mesmos.
+// Robustez (11/11/2026, docs/aportou/robustez.md): os títulos de seção (e os
+// da prosa "Sobre") no peso de exibição; o respiro no ritmo de 8px; a entrada
+// ao rolar é o v-revelar (no cabeçalho de cada seção e, nos componentes, nas
+// grades em cascata), no lugar do observador próprio com nu-fade; e na barra
+// que gruda, a seção atual é UMA pílula carvão que desliza até a próxima
+// (520ms, --nu-ease-troca), como o indicador do NuTrilho.
+import type { AtivoDirecaoVM } from '~/composables/useAtivoDirecao'
+import AcaoEtfXray from '~/components/acao/AcaoEtfXray.vue'
+import AcaoFundInfo from '~/components/acao/AcaoFundInfo.vue'
+import CadeiaRazao from '~/components/ativo/cadeia/CadeiaRazao.vue'
+import TopoBolsa from '~/components/ativo/topo/TopoBolsa.vue'
+
+const props = defineProps<{ vm: AtivoDirecaoVM }>()
+const { v, a, t, contexto, contextoGrafico, tituloGrafico, legenda, linhas, cartoes, perguntas, perguntar, abrirCom, secoes, links, ir } = useAtivoDirecao(() => props.vm)
+const atual = useSecaoAtual(() => secoes.value.map((s) => s.id), 220)
+const tesesTitulo = computed(() => (a.value.theses.length === 1 ? `${t.value} faz parte de 1 tese.` : `${t.value} faz parte de ${a.value.theses.length} teses.`))
+const rotulo = (id: string) => secoes.value.find((s) => s.id === id)?.rotulo ?? ''
+
+// a alternância branco/creme das bandas, pela ordem do que a página tem (duas
+// bandas da mesma cor seguidas viram uma só, com o dobro do respiro no meio).
+// O resumo, logo depois do herói, é branco; o Raio-X de ETF traz duas bandas.
+// As perguntas fecham SEMPRE em creme (o FAQ da /teses: cartões brancos na
+// faixa creme). Quando a conta as pintaria de branco, elas ficam creme e se
+// juntam à banda creme de antes (o mesmo caso das duas bandas seguidas); o
+// topo, logo depois do resumo, não muda.
+const tons = computed(() => {
+  const ids: Array<[string, number]> = []
+  if (cartoes.value.length) ids.push(['indicadores', 1])
+  if (a.value.etfXray) ids.push(['carteira', a.value.etfXray.feeCards.length || a.value.etfXray.pageCorr.length ? 2 : 1])
+  else if (a.value.fundInfo) ids.push(['carteira', 1])
+  if (a.value.dividends) ids.push(['dividendos', 1])
+  if (a.value.ai) ids.push(['analise', 1])
+  if (a.value.editorial?.sections.length) ids.push(['sobre', 1])
+  if (a.value.theses.length) ids.push(['teses', 1])
+  if (a.value.news) ids.push(['noticias', 1])
+  if (a.value.cadeia) ids.push(['cadeia', 1])
+  if (a.value.pares) ids.push(['setor', 1])
+  ids.push(['perguntas', 1])
+  const out: Record<string, 'branco' | 'creme'> = {}
+  let creme = !!a.value.resumo
+  for (const [id, n] of ids) {
+    out[id] = creme ? 'creme' : 'branco'
+    if (n % 2 === 1) creme = !creme
+  }
+  out.perguntas = 'creme'
+  return out
+})
+const tom = (id: string) => (tons.value[id] === 'creme' ? 'an__sec--creme' : '')
+
+// no celular a fileira rola de lado: a pílula da seção atual vem para a vista
+const fileira = ref<HTMLElement | null>(null)
+watch(atual, (id) => {
+  const ul = fileira.value
+  const chip = id ? ul?.querySelector<HTMLElement>(`a[href="#${id}"]`) : null
+  if (!ul || !chip || ul.scrollWidth <= ul.clientWidth) return
+  const alvo = chip.offsetLeft - (ul.clientWidth - chip.offsetWidth) / 2
+  const calmo = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ul.scrollTo({ left: Math.max(0, alvo), behavior: calmo ? 'auto' : 'smooth' })
+})
+
+// A pílula da seção atual: um indicador só, que desliza da seção de antes até a
+// nova (o mesmo gesto do NuTrilho). Ele mora no ::before da fileira (rola junto
+// com ela) e lê a posição do chip pelas variáveis --px/--py/--pw/--ph. No HTML do
+// servidor, e até o JS medir, quem pinta a seção atual é o fundo do próprio chip,
+// no mesmo lugar: nada pula. Mudou o tamanho (a fonte chegou, a barra compactou,
+// a tela girou): o indicador vai para o lugar novo sem animar.
+const pilula = ref<{ x: number; y: number; w: number; h: number } | null>(null)
+const pilulaQuieta = ref(true)
+let medindo = 0
+async function medirPilula(animar: boolean) {
+  const vez = ++medindo
+  await nextTick()
+  const ul = fileira.value
+  const id = atual.value
+  const chip = id ? ul?.querySelector<HTMLElement>(`a[href="#${id}"]`) : null
+  if (!ul || !chip || !chip.offsetWidth) { pilula.value = null; return }
+  const nova = { x: chip.offsetLeft, y: chip.offsetTop, w: chip.offsetWidth, h: chip.offsetHeight }
+  const parada = !animar || !pilula.value
+  if (parada) pilulaQuieta.value = true
+  pilula.value = nova
+  if (!parada) return
+  await nextTick()
+  void ul.offsetWidth // o navegador fixa o lugar novo com a transição desligada
+  requestAnimationFrame(() => { if (vez === medindo) pilulaQuieta.value = false })
+}
+const estiloFileira = computed(() => (pilula.value
+  ? { '--px': `${pilula.value.x}px`, '--py': `${pilula.value.y}px`, '--pw': `${pilula.value.w}px`, '--ph': `${pilula.value.h}px` }
+  : undefined))
+watch(atual, () => { void medirPilula(true) })
+let obsFileira: ResizeObserver | null = null
+onMounted(() => {
+  const ul = fileira.value
+  if (!ul) return
+  obsFileira = new ResizeObserver(() => { void medirPilula(false) })
+  obsFileira.observe(ul)
+  document.fonts?.ready.then(() => { void medirPilula(false) }).catch(() => {})
+})
+onBeforeUnmount(() => obsFileira?.disconnect())
+
+const heroi = ref<HTMLElement | null>(null)
+const compacta = ref(false)
+let obsHeroi: IntersectionObserver | null = null
+onMounted(() => {
+  if (!heroi.value) return
+  // o preço saiu de baixo do header e da régua: a barra mostra o papel (só embeleza)
+  obsHeroi = new IntersectionObserver(([e]) => { compacta.value = !!e && !e.isIntersecting && e.boundingClientRect.top < 0 }, { rootMargin: '-140px 0px 0px 0px', threshold: 0 })
+  obsHeroi.observe(heroi.value)
+})
+onBeforeUnmount(() => obsHeroi?.disconnect())
+// a barra compactou ou abriu: os chips andaram de lugar, o indicador vai junto (sem deslizar)
+watch(compacta, () => { void medirPilula(false) })
+// a variação do dia sem o "R$": "-1,28%" (o que cabe na barra compacta)
+const varDoDia = computed(() => {
+  const pct = a.value.hero.changeLine?.match(/\(([^)]+)\)/)?.[1] ?? ''
+  return pct ? `${a.value.hero.dir === 'down' ? '-' : '+'}${pct}` : ''
+})
+</script>
+
+<template>
+  <div class="an">
+    <div id="cotacao" class="an__ativo">
+      <!-- ============ o topo: o papel, o preço e a linha de luz ============ -->
+      <div ref="heroi">
+        <TopoBolsa
+          :a="a" :t="t" :series="v.series" :range="v.range" :range-loading="v.rangeLoading" :position="v.position"
+          :renamed-from="v.renamedFrom" :seguivel="v.seguivel" :titulo-grafico="tituloGrafico" :legenda="legenda" :linhas="linhas"
+          :perguntas="perguntas" :contexto="contexto" :contexto-grafico="contextoGrafico"
+          @periodo="v.setRange" @perguntar="perguntar" @abrir="abrirCom()"
+        />
+      </div>
+
+      <!-- o resumo factual: o que o gráfico e os números dizem, em palavras -->
+      <section v-if="a.resumo" v-contexto-chat="{ id: `resumo:${t}`, tipo: 'secao', rotulo: rotuloComSobre('Resumo', t), texto: a.resumo.paragrafos.join('\n') }" class="an__sec an__sec--resumo" aria-label="Resumo do ativo">
+        <!-- o resumo recolhido (o dono, 03/11): uma faixa de ponta a ponta, colada no céu;
+             o texto dela alinha com o conteúdo do céu por dentro (AtivoResumo) -->
+        <AtivoResumo :ticker="t" :resumo="a.resumo" />
+      </section>
+    </div>
+
+    <!-- ============ a barra que gruda: as seções, na ordem da página ============ -->
+    <nav v-if="secoes.length > 1" class="an__barra" :class="{ 'an__barra--compacta': compacta }" aria-label="Seções da página">
+      <!-- a barra compacta do app: quando o topo sai da tela, o papel e o preço
+           entram aqui, como o título grande do iOS que vira pequeno. Só no
+           cliente e dentro da altura que a barra já tem: não empurra nada. -->
+      <div v-if="compacta" class="an__ident">
+        <NuSelo tom="carvao" como="b" class="an__ident-t">{{ t }}</NuSelo>
+        <span class="an__ident-p">{{ a.hero.priceFmt }}</span>
+        <NuSelo v-if="varDoDia" :tom="a.hero.dir === 'down' ? 'vermelho' : 'verde'" tamanho="p" class="an__ident-v">{{ varDoDia }}</NuSelo>
+      </div>
+      <ul ref="fileira" class="an__chips" :class="{ 'an__chips--pilula': pilula, 'an__chips--quieta': pilulaQuieta }" :style="estiloFileira">
+        <li v-for="s in secoes" :key="s.id">
+          <a
+            :href="`#${s.id}`" class="an__chip" :class="{ 'an__chip--on': atual === s.id, 'an__chip--ativo': s.id === 'cotacao' }"
+            :aria-current="atual === s.id ? 'true' : undefined" @click.prevent="ir(s.id)"
+          >{{ s.id === 'cotacao' ? t : s.rotulo }}</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section v-if="cartoes.length" id="indicadores" v-contexto-chat="{ id: `fundamentos:${t}`, tipo: 'grafico', rotulo: rotuloComSobre('Fundamentos', t) }" class="an__sec" :class="tom('indicadores')">
+      <header v-revelar class="an__cab">
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('indicadores') }}</NuEyebrow>
+        <h2 class="an__h2">{{ a.fundHeading[0] }} {{ a.fundHeading[1] }}</h2>
+        <p class="an__q">{{ a.fundSub }}</p>
+      </header>
+      <div class="an__largo"><AtivoIndicadores :perfil="a.perfil" :cartoes="cartoes" forma="grade" class="an__ind" /></div>
+    </section>
+
+    <section v-if="a.etfXray || a.fundInfo" id="carteira" class="an__embutida" :class="{ 'an__embutida--inverte': tons.carteira === 'creme' }">
+      <AcaoEtfXray v-if="a.etfXray" :ticker="t" :xray="a.etfXray" :eyebrow="rotulo('carteira')" />
+      <AcaoFundInfo v-else-if="a.fundInfo" :info="a.fundInfo" :eyebrow="rotulo('carteira')" />
+    </section>
+
+    <section v-if="a.dividends" id="dividendos" class="an__sec" :class="tom('dividendos')">
+      <header v-revelar class="an__cab">
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('dividendos') }}</NuEyebrow>
+        <h2 class="an__h2">{{ a.dividends.heading[0] }} {{ a.dividends.heading[1] }}</h2>
+      </header>
+      <div class="an__largo">
+        <AtivoProventos
+          :ticker="t" :dividends="a.dividends" :position="v.position" :simulador-href="a.simuladorHref"
+          :quanto-rende-href="v.quantoRendeHref" :dividendos-href="v.dividendosHref"
+        />
+      </div>
+    </section>
+
+    <section v-if="a.ai" id="analise" v-contexto-chat="{ id: `analise:${t}`, tipo: 'grafico', rotulo: `O que a Aportou vê · ${t}` }" class="an__sec" :class="tom('analise')">
+      <header v-revelar class="an__cab">
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('analise') }}</NuEyebrow>
+        <h2 class="an__h2">O que a Aportou vê.</h2>
+      </header>
+      <div class="an__largo"><AtivoLeitura :ticker="t" :ai="a.ai" @conversar="abrirCom()" /></div>
+    </section>
+
+    <section v-if="a.editorial?.sections.length" id="sobre" class="an__sec" :class="tom('sobre')">
+      <header v-revelar class="an__cab an__cab--estreito">
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('sobre') }}</NuEyebrow>
+      </header>
+      <div class="an__estreito"><AtivoProsa :ticker="t" :secoes="a.editorial.sections" /></div>
+    </section>
+
+    <section v-if="a.theses.length" id="teses" v-contexto-chat="{ id: `teses:${t}`, tipo: 'tese', rotulo: `Teses com ${t}`, texto: `${tesesTitulo}\n${a.theses.map((x) => `${x.title}: ${x.roleStrong}${x.roleRest}`).join('\n')}` }" class="an__sec" :class="tom('teses')">
+      <header v-revelar class="an__cab an__cab--estreito">
+        <NuEyebrow como="p" class="an__tipo">Teses da Aportou</NuEyebrow>
+        <h2 class="an__h2">{{ tesesTitulo }}</h2>
+      </header>
+      <div class="an__estreito"><AtivoTeses :theses="a.theses" /></div>
+    </section>
+
+    <section v-if="a.news" id="noticias" v-contexto-chat="{ id: `noticias:${t}`, tipo: 'noticia', rotulo: `Notícias de ${t}` }" class="an__sec" :class="tom('noticias')">
+      <header v-revelar class="an__cab an__cab--estreito">
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('noticias') }}</NuEyebrow>
+        <h2 class="an__h2">{{ t }} no noticiário.</h2>
+        <p class="an__q">O que saiu sobre {{ t }}, com a variação do papel no dia de cada notícia.</p>
+      </header>
+      <div class="an__estreito"><AtivoNoticias :news="a.news" /></div>
+    </section>
+
+    <!-- a cadeia, "O razão" (a escolha do dono entre três, 03/11): uma linha por empresa -->
+    <section v-if="a.cadeia" id="cadeia" class="an__embutida">
+      <CadeiaRazao :cadeia="a.cadeia" :nome="a.name" :ticker="t" :tom="tons.cadeia" />
+    </section>
+
+    <section v-if="a.pares" id="setor" class="an__sec" :class="tom('setor')">
+      <header v-revelar class="an__cab">
+        <NuEyebrow como="p" class="an__tipo">{{ rotulo('setor') }}</NuEyebrow>
+        <h2 class="an__h2">Outras empresas do setor {{ a.pares.setor.nome.toLowerCase() }}.</h2>
+      </header>
+      <div class="an__largo"><AtivoPares :pares="a.pares" /></div>
+    </section>
+
+    <!-- as perguntas no idioma do FAQ da /teses: o H2 grande à esquerda, os cartões à direita -->
+    <section id="perguntas" class="an__sec an__sec--fim an__sec--faq" :class="tom('perguntas')">
+      <div class="an__faq">
+        <AtivoPerguntas :ticker="t" :editorial="a.editorial" :resumo="a.resumo" @perguntar="abrirCom()" />
+        <div v-revelar class="an__faq-pe">
+          <SeguirGancho v-if="v.seguivel" :atual="t" :surface="tons.perguntas === 'creme' ? 'cream' : 'white'" class="an__gancho" />
+          <AtivoVejaTambem :links="links" class="an__veja" />
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<style scoped>
+.an {
+  --g: clamp(20px, 5.5vw, 80px);
+  /* a barra encosta embaixo do header (--nuh-h, useTopo) e da régua do
+     mercado (--nut-h, NuMarketTicker): os dois publicam a altura no <html> */
+  --cola: calc(var(--nuh-h, 72px) + var(--nut-h, 0px));
+  --barra-h: 61px;
+  --mola: var(--nu-ease-saida);
+  /* a prosa "Sobre" (AtivoProsa): título no peso de exibição, como os das seções */
+  --a-h2: var(--nu-fs-h3); --a-h2-peso: var(--nu-w-display);
+  /* a margem da coluna de 1240px (a do topo): a barra e as seções alinham nela */
+  --lado: max(var(--g), calc((100% - 1240px) / 2));
+  background: var(--nu-page);
+}
+
+/* ——— a barra que gruda: encosta na régua, creme da página quase opaco ——— */
+.an__barra {
+  position: sticky; top: var(--cola); z-index: 30;
+  background: color-mix(in srgb, var(--nu-page) 94%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px);
+  border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2);
+  /* o mesmo passo da régua e do header quando o header encolhe (NuMarketTicker: .32s) */
+  transition: top var(--nu-dur-topo) var(--nu-ease-saida);
+  /* compacta: o papel à esquerda, as seções à direita */
+  display: flex; align-items: center;
+}
+.an__barra .an__chips { flex: 1; min-width: 0; }
+.an__ident { display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-left: var(--lado); animation: an-ident var(--nu-dur-media) var(--nu-ease-saida) both; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@keyframes an-ident { from { opacity: 0; transform: translateY(4px); } }
+/* o papel na barra: o selo carvão da marca (NuSelo), o preço tabular e a variação num selo pequeno */
+.an__ident-p { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto); }
+.an__barra--compacta .an__chip--ativo { display: none; }
+/* compacta, a fileira que rola some num degradê junto do papel (não corta seco) */
+.an__barra--compacta .an__chips { padding-left: 16px; -webkit-mask-image: linear-gradient(90deg, transparent 6px, var(--nu-ink) 22px); mask-image: linear-gradient(90deg, transparent 6px, var(--nu-ink) 22px); }
+.an__chips {
+  position: relative; isolation: isolate; list-style: none; margin: 0; padding: 8px var(--lado);
+  display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none;
+}
+.an__chips::-webkit-scrollbar { display: none; }
+/* o indicador da seção atual: uma pílula só, que desliza de um chip ao outro */
+.an__chips::before {
+  content: ''; position: absolute; z-index: 0; top: 0; left: 0;
+  width: var(--pw, 0px); height: var(--ph, 0px); transform: translate(var(--px, 0px), var(--py, 0px));
+  border-radius: var(--nu-r-pill); background: var(--nu-ink); opacity: 0; pointer-events: none;
+  transition: transform var(--nu-dur-lenta) var(--nu-ease-troca), width var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-media) var(--nu-ease-cor);
+}
+.an__chips--pilula::before { opacity: 1; }
+.an__chips--quieta::before { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.an__chip {
+  position: relative; z-index: 1; display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: var(--nu-r-pill); white-space: nowrap;
+  background: transparent; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
+}
+.an__chip:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
+.an__chip:active { transform: scale(.97); }
+/* antes do JS medir (o HTML do servidor): o chip atual pinta o próprio fundo, no lugar exato do indicador */
+.an__chip--on, .an__chip--on:hover { background: var(--nu-ink); color: var(--nu-white); }
+/* medido: o fundo é o do indicador que desliza. A letra acompanha o passo dele: a
+   de quem perde a pílula escurece logo; a de quem ganha clareia quando ela já chegou */
+.an__chips--pilula .an__chip { transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida); }
+.an__chips--pilula .an__chip--on { transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor) var(--nu-dur-rapida), transform var(--nu-dur-rapida) var(--nu-ease-saida); }
+.an__chips--pilula .an__chip--on, .an__chips--pilula .an__chip--on:hover { background: transparent; }
+.an__chip:focus-visible { outline-offset: -3px; }
+
+/* ——— cada seção: o eyebrow e o título à esquerda, o conteúdo embaixo ——— */
+.an__sec { scroll-margin-top: calc(var(--cola) + var(--barra-h)); padding: clamp(72px, 8vw, 128px) var(--g); }
+#cotacao { scroll-margin-top: var(--cola); }
+/* a segunda cor da alternância: a faixa quente (era o creme sobre o branco) */
+.an__sec--creme { background: var(--nu-band); }
+/* o resumo mora logo abaixo do topo, na mesma coluna dele */
+.an__sec--resumo { padding: 0 clamp(20px, 4vw, 56px) clamp(40px, 4.4vw, 56px); }
+.an__sec--fim { padding-bottom: clamp(40px, 5vw, 64px); }
+.an__cab { display: flex; flex-direction: column; align-items: flex-start; max-width: 1240px; margin: 0 auto; }
+.an__cab--estreito { max-width: 760px; }
+.an__h2 { margin: 16px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.04; text-wrap: balance; }
+.an__q { margin: 16px 0 0; max-width: 60ch; color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; }
+.an__estreito { max-width: 760px; margin: clamp(32px, 3.4vw, 48px) auto 0; }
+.an__largo { max-width: 1240px; margin: clamp(32px, 3.4vw, 48px) auto 0; }
+/* sem título, só o eyebrow (a prosa "Sobre" traz os próprios H2): menos respiro */
+.an__cab:not(:has(.an__h2)) + .an__estreito { margin-top: 24px; }
+.an__sec--creme :deep(.avt__lista a) { background: var(--nu-white); }
+
+/* AcaoEtfXray e AcaoFundInfo vêm prontos (as bandas deles); aqui o título no
+   peso da página e a cor na alternância. A cadeia (CadeiaRazao) já recebe o
+   tom da alternância. Os cartões de custo do ETF não são clicáveis: não sobem. */
+.an__embutida { scroll-margin-top: calc(var(--cola) + var(--barra-h) - 20px); }
+.an__embutida :deep(.axb__title), .an__embutida :deep(.afi__title) { font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); }
+.an__embutida--inverte :deep(.axb--white), .an__embutida--inverte :deep(.afi) { background: var(--nu-band); }
+.an__embutida--inverte :deep(.axb--cream) { background: var(--nu-page); }
+
+/* a faixa do FAQ: a largura do /teses (sem o miolo de 760px), o gancho e o
+   "veja também" embaixo das duas colunas */
+.an__sec--faq { padding-top: clamp(72px, 8.5vw, 112px); }
+.an__faq { max-width: 1240px; margin: 0 auto; }
+.an__faq-pe { margin-top: clamp(56px, 6vw, 80px); }
+/* colada numa banda da mesma cor (a conta pintaria as perguntas da cor da
+   página): um fio no lugar do segundo respiro */
+.an__sec--creme + .an__sec--faq, .an__embutida:has(.crz--creme) + .an__sec--faq { padding-top: 0; }
+.an__sec--creme + .an__sec--faq .an__faq, .an__embutida:has(.crz--creme) + .an__sec--faq .an__faq { padding-top: clamp(56px, 7vw, 96px); border-top: 1px solid var(--nu-line); }
+.an__veja { margin-top: 40px; }
+
+@media (max-width: 680px) {
+  .an { --barra-h: 57px; }
+  .an__chips { padding: 6px var(--lado); }
+  /* no celular o papel encolhe, mas o preço fica: ticker, preço e variação */
+  .an__ident { gap: 6px; }
+  .an__ident-p { font-size: var(--nu-fs-sm); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .an__ident { animation: none; }
+  .an__chip, .an__barra, .an__chips::before, .an__chips--pilula .an__chip { transition: none; }
+  .an__chip:active { transform: none; }
+}
+</style>

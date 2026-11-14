@@ -25,20 +25,7 @@ test('a folga do rodapé é a altura do banner, e zero quando ele não está nes
   assert.equal(folgaDoBannerNoRodape(false, 96), 0)
 })
 
-test('o modal de onboarding fecha com Esc, clique fora e botão com aria-label Fechar', () => {
-  const src = readFileSync(new URL('../app/components/nu/NuOnboardingModal.vue', import.meta.url), 'utf8')
-  assert.match(src, /aria-label="Fechar"/)
-  assert.match(src, /e\.key === 'Escape'/)
-  assert.match(src, /@click\.self="dispensar"/)
-  assert.match(src, /NEWSLETTER_SEGURA_ONBOARDING/)
-})
-
-test('o convite é bloco no fluxo e some para quem já assina', () => {
-  const src = readFileSync(new URL('../app/components/nu/NuNewsletterConvite.vue', import.meta.url), 'utf8')
-  assert.match(src, /@ja-assinante="ocultarAssinante"/)
-  assert.doesNotMatch(src, /position:\s*fixed/)
-  assert.doesNotMatch(src, /exibirConviteFlutuante/)
-  assert.doesNotMatch(src, /useRodapeNaTela/)
+test('o banner de cookies acompanha o rodapé', () => {
   const banner = readFileSync(new URL('../app/components/consent/ConsentBanner.vue', import.meta.url), 'utf8')
   assert.match(banner, /useRodapeNaTela/)
   assert.match(banner, /folgaDoBannerNoRodape/)
@@ -51,4 +38,12 @@ test('o banner reserva no rodapé a própria altura quando ele está visível', 
   assert.match(src, /Aceitar/)
   assert.match(src, /Recusar/)
   assert.match(src, /Análise e anúncios só com a sua escolha\./)
+})
+
+// Morava num teste do B2B, que saiu em 12/11/2026: é do layout padrão.
+test('no layout padrão o aviso de cookies fica abaixo do header, e não no rodapé', () => {
+  const layout = readFileSync(new URL('../app/layouts/default.vue', import.meta.url), 'utf8')
+  const padrao = layout.slice(layout.indexOf('<template>'), layout.lastIndexOf('</template>'))
+  assert.match(padrao, /<NuHeader\s*\/>[\s\S]*?<ConsentBanner\s*\/>[\s\S]*?<main>/)
+  assert.doesNotMatch(padrao.slice(padrao.lastIndexOf('<NuFooter')), /ConsentBanner/)
 })

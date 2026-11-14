@@ -20,11 +20,11 @@ export const ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE: GuideDoc = {
   title: 'Dividendos todo mês',
   dek: 'Como montar uma escada de proventos que pinga renda o ano inteiro, combinando FIIs e ações que pagam em meses diferentes.',
   description:
-    'Dividendos todo mês: como montar uma escada de proventos com FIIs e ações que pagam em meses diferentes, o que é dividend yield, isenção de IR dos FIIs e quanto investir para uma meta de renda passiva. Guia da Redentia.',
+    'Dividendos todo mês: como montar uma escada de proventos com FIIs e ações que pagam em meses diferentes, o que é dividend yield, isenção de IR dos FIIs e quanto investir para uma meta de renda passiva. Guia da Aportou.',
   summary:
     'Receber dividendos todo mês não é sorte, é montagem. Veja como combinar FIIs e ações que pagam em meses diferentes numa escada de proventos, o que olhar no dividend yield e como transformar meta de renda em plano.',
   minutes: 11,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-13',
   dateModified: '2026-07-13',
   updatedLine: 'Atualizado em 13 jul 2026 · 11 min de leitura',
@@ -70,7 +70,7 @@ export const ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Cada empresa e cada fundo tem uma página com o histórico de proventos e a leitura da Redentia. Antes de incluir um ativo na escada, abra a análise de dividendos dele, a de <a href="/dividendos/PETR4">PETR4</a> mostra o nível de informação que você deveria querer sobre qualquer pagador.',
+          html: 'Cada empresa e cada fundo tem uma página com o histórico de proventos e a leitura da Aportou. Antes de incluir um ativo na escada, abra a análise de dividendos dele, a de <a href="/dividendos/PETR4">PETR4</a> mostra o nível de informação que você deveria querer sobre qualquer pagador.',
         },
       ],
     },
@@ -94,7 +94,7 @@ export const ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para achar candidatos, o <a href="/ranking/maiores-dividend-yield">ranking de maiores dividend yield da Redentia</a> lista pagadores comparáveis lado a lado, e a página de cada ativo mostra o histórico completo antes de você decidir.',
+          html: 'Para achar candidatos, o <a href="/ranking/maiores-dividend-yield">ranking de maiores dividend yield da Aportou</a> lista pagadores comparáveis lado a lado, e a página de cada ativo mostra o histórico completo antes de você decidir.',
         },
       ],
     },
@@ -121,7 +121,7 @@ export const ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para simular quanto uma carteira renderia por mês a partir do yield e do valor aplicado, use a <a href="/calculadora/dividend-yield">calculadora de dividend yield da Redentia</a>. Ela transforma o indicador abstrato em reais na sua conta.',
+          html: 'Para simular quanto uma carteira renderia por mês a partir do yield e do valor aplicado, use a <a href="/calculadora/dividend-yield">calculadora de dividend yield da Aportou</a>. Ela transforma o indicador abstrato em reais na sua conta.',
         },
       ],
     },
@@ -157,7 +157,7 @@ export const ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'O caminho honesto é o oposto de um atalho: aportes regulares, reinvestimento dos proventos e paciência para o juro composto agir. Rode a sua meta na <a href="/calculadora/dividend-yield">calculadora de dividend yield</a> e nas <a href="/calculadoras">calculadoras da Redentia</a> para ver quanto aportar por mês e em quanto tempo a escada sustenta a renda que você quer.',
+          html: 'O caminho honesto é o oposto de um atalho: aportes regulares, reinvestimento dos proventos e paciência para o juro composto agir. Rode a sua meta na <a href="/calculadora/dividend-yield">calculadora de dividend yield</a> e nas <a href="/calculadoras">calculadoras da Aportou</a> para ver quanto aportar por mês e em quanto tempo a escada sustenta a renda que você quer.',
         },
       ],
     },
@@ -207,7 +207,7 @@ export const ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE: GuideDoc = {
     },
     {
       q: 'Quanto preciso investir para viver de dividendos?',
-      a: 'Depende da sua meta de renda mensal e do dividend yield sustentável da carteira: quanto maior o yield, menos patrimônio a meta exige, mas com mais risco. Não há número mágico. Rode a sua meta na calculadora de dividend yield da Redentia para ver quanto aportar por mês e em quanto tempo a escada sustenta a renda.',
+      a: 'Depende da sua meta de renda mensal e do dividend yield sustentável da carteira: quanto maior o yield, menos patrimônio a meta exige, mas com mais risco. Não há número mágico. Rode a sua meta na calculadora de dividend yield da Aportou para ver quanto aportar por mês e em quanto tempo a escada sustenta a renda.',
     },
     {
       q: 'Vale mais a pena dividendos de ações ou de FIIs?',

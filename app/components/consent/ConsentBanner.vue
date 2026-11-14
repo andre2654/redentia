@@ -5,6 +5,9 @@
 // propósito: nenhum é o "certo".
 // Se um dia o aviso voltar a sentar na âncora do rodapé, a folga
 // (padding-bottom) continua sendo a altura do cartão.
+// Robustez (11/11/2026): escolher não faz a página pular. A faixa some com
+// fade e a altura recolhe (--nu-dur-media, curva de troca); reaberta pelo
+// rodapé, ela volta com fade. Na primeira pintura (SSR) ela já está lá, parada.
 import { bannerCookiesEmFluxo, folgaDoBannerNoRodape } from '~/utils/rodape-flutuantes'
 
 const { aberto, aceitar, recusar } = useConsent()
@@ -30,7 +33,7 @@ function ambiente() {
 }
 
 function rodape() {
-  return document.querySelector<HTMLElement>('footer.nuf, footer.rbf')
+  return document.querySelector<HTMLElement>('footer.nuf')
 }
 
 function medir() {
@@ -95,9 +98,16 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', aoRedimensionar)
   rodape()?.style.removeProperty('padding-bottom')
 })
+
+// a saída recolhe a altura: ela parte da altura de agora (a classe de saída leva a 0)
+function antesDeSair(e: Element) {
+  const alvo = e as HTMLElement
+  alvo.style.height = `${alvo.offsetHeight}px`
+}
 </script>
 
 <template>
+  <Transition name="ck" @before-leave="antesDeSair">
   <aside
     v-if="aberto"
     ref="el"
@@ -108,6 +118,7 @@ onBeforeUnmount(() => {
     aria-labelledby="ck-titulo"
   >
     <p id="ck-titulo" class="ck__txt">
+      <MarcaCorte :largura="18" />
       Análise e anúncios só com a sua escolha.
       <span class="ck__links">
         <NuxtLink to="/institucional/privacy">Privacidade</NuxtLink>
@@ -120,9 +131,12 @@ onBeforeUnmount(() => {
       <button type="button" class="ck__btn" @click="recusar">Recusar</button>
     </div>
   </aside>
+  </Transition>
 </template>
 
 <style scoped>
+/* a faixa do aviso na Aportou: a banda creme, o fio de 1,5px, o corte como
+   sinal e duas pílulas de contorno iguais (nenhuma é a "certa") */
 .ck {
   position: relative;
   z-index: 1;
@@ -132,17 +146,18 @@ onBeforeUnmount(() => {
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  gap: 8px 10px;
+  gap: 8px 14px;
   width: 100%;
   max-width: 100%;
   margin: 0;
   box-sizing: border-box;
-  padding: 8px 12px;
+  /* o texto e os botões alinham com o contêiner do topo (1240px), não com a borda da janela */
+  padding: 8px max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   border-radius: 0;
-  background: var(--nu-cream);
-  color: var(--nu-navy);
+  background: var(--nu-band);
+  color: var(--nu-ink);
   border: 0;
-  border-bottom: 1px solid rgba(12, 21, 36, 0.14);
+  border-bottom: 1px solid var(--nu-line-2);
   box-shadow: none;
   font-family: var(--nu-font);
 }
@@ -150,43 +165,69 @@ onBeforeUnmount(() => {
   flex: 1 1 12rem;
   min-width: 0;
   margin: 0;
-  color: var(--nu-navy);
-  font-size: 13px;
-  font-weight: 500;
+  color: var(--nu-gray-3);
+  font-size: 14px;
+  font-weight: var(--nu-w-medio);
+  letter-spacing: var(--nu-ls-texto);
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
-.ck__links { white-space: normal; }
+.ck__txt :deep(.mkc) { display: inline-block; vertical-align: -2px; margin-right: 10px; }
+.ck__links { white-space: normal; font-weight: var(--nu-w-texto); margin-left: 4px; }
 .ck__txt a {
-  color: var(--nu-blue);
-  font-weight: 700;
+  color: var(--nu-blue-text);
+  font-weight: var(--nu-w-medio);
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.ck__txt a:hover { color: var(--nu-blue-hover); }
+.ck__txt a:hover { color: var(--nu-blue-deep); }
 .ck__acoes { display: flex; flex-wrap: wrap; gap: 8px; flex: 0 0 auto; }
 .ck__btn {
+  position: relative;
   flex: 1 1 0;
   margin: 0;
-  padding: 7px 12px;
+  min-height: 36px;
+  padding: 0 16px;
   border-radius: var(--nu-r-pill);
-  border: 1px solid var(--nu-navy);
-  background: var(--nu-cream);
-  color: var(--nu-navy);
+  border: 0;
+  box-shadow: inset 0 0 0 1.5px var(--nu-ink);
+  background: var(--nu-white);
+  color: var(--nu-ink);
   font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: var(--nu-w-medio);
   line-height: 1.2;
   cursor: pointer;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
-.ck__btn:hover { background: var(--nu-white); }
-.ck__btn:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+/* o alvo de toque tem 44px; a pílula, 36 (o aviso é pequeno de propósito) */
+.ck__btn::after { content: ''; position: absolute; inset: -4px 0; }
+.ck__btn:hover { background: var(--nu-row-hover); }
+.ck__btn:active { transform: scale(.98); }
+/* entrar (reaberto pelo rodapé): fade; sair: fade rápido e a altura recolhe, sem pulo */
+.ck-enter-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.ck-enter-from { opacity: 0; }
+.ck-leave-active {
+  overflow: hidden;
+  transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), height var(--nu-dur-media) var(--nu-ease-troca),
+    padding var(--nu-dur-media) var(--nu-ease-troca), border-bottom-width var(--nu-dur-media) var(--nu-ease-troca);
+}
+.ck-leave-to { opacity: 0; height: 0 !important; padding-top: 0; padding-bottom: 0; border-bottom-width: 0; }
 
 @media (max-width: 759px) {
-  .ck { padding: 8px 10px; }
-  .ck__txt { font-size: 12px; line-height: 1.25; }
+  .ck { padding: 8px 12px; }
+  .ck__txt { font-size: 13.5px; line-height: 1.3; }
   .ck__acoes { gap: 6px; }
-  .ck__btn { padding: 6px 9px; font-size: 12px; }
+  .ck__btn { padding: 0 14px; font-size: 13.5px; }
+}
+/* celular: o corte numa coluna e o texto na outra (a frase não volta para baixo do sinal),
+   e "Privacidade · Cookies" ficam juntos na linha de baixo */
+@media (max-width: 520px) {
+  .ck__txt { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; }
+  .ck__txt :deep(.mkc) { grid-row: 1 / span 2; align-self: start; margin: 1px 0 0; }
+  .ck__links { grid-column: 2; margin: 3px 0 0; }
 }
 /* No fluxo do rodapé o cartão também não sai do documento: a folga, se
    houver, é o padding-bottom do rodapé, não um fixed por cima do texto. */
@@ -196,6 +237,7 @@ onBeforeUnmount(() => {
   right: auto;
   bottom: auto;
 }
+@media (prefers-reduced-motion: reduce) { .ck__btn, .ck-enter-active, .ck-leave-active { transition: none; } }
 </style>
 
 <style>

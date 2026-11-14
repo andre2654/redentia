@@ -7,6 +7,7 @@
  * não precisa da cauda de 1.000+ tickers (a lista completa está no
  * sitemap.xml, e o market_cap do backend não serve de régua de relevância).
  */
+import { ORIGEM_B2B } from '../utils/destino-b2b'
 import { FEATURED_TICKERS } from '../utils/site-pages'
 
 export default defineEventHandler(async (event) => {
@@ -14,9 +15,9 @@ export default defineEventHandler(async (event) => {
   const sections = await getSiteSections()
 
   const lines: string[] = [
-    '# Redentia',
+    `# ${MARCA.nome}`,
     '',
-    '> Plataforma brasileira de investimentos com IA. Cotações da B3, análise fundamentalista, rankings, teses de investimento, calculadoras financeiras gratuitas e um assistente com IA. Este arquivo lista as páginas públicas indexáveis com uma descrição por página. Versão curada e mais curta: /llms.txt.',
+    `> ${MARCA.descricao} Cotações da B3, análise fundamentalista, rankings, teses de investimento, calculadoras financeiras gratuitas e um assistente com IA. A ${MARCA.nome} é uma empresa ${MARCA.b2b}, que faz tecnologia de dados para escritórios de investimento em ${ORIGEM_B2B}. Este arquivo lista as páginas públicas indexáveis com uma descrição por página. Versão curada e mais curta: /llms.txt.`,
     '',
   ]
 
@@ -48,7 +49,7 @@ export default defineEventHandler(async (event) => {
   lines.push(
     '## Política para crawlers de IA',
     '',
-    'A Redentia autoriza citação do conteúdo público destas páginas em produtos de busca com LLM, desde que a citação inclua o domínio canônico ou link rastreável. Dados de cotação mudam durante o pregão: cite a data da coleta. Uso comercial dos dados como base de produto concorrente exige licenciamento (relacionamento@redentia.com.br).',
+    `A ${MARCA.nome} autoriza citação do conteúdo público destas páginas em produtos de busca com LLM, desde que a citação inclua o domínio canônico ou link rastreável. Dados de cotação mudam durante o pregão: cite a data da coleta. Uso comercial dos dados como base de produto concorrente exige licenciamento (relacionamento@redentia.com.br).`,
     '',
   )
 

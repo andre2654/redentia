@@ -55,7 +55,7 @@ test('DARF vence no último dia útil do mês seguinte e antecipa quando o fim d
 })
 
 test('feriados bancários de 2026 batem com o calendário oficial da B3, menos 24/12', () => {
-  // SEM_PREGAO_B3 (useSeguirGancho.ts, Ofício Circular 003/2026-VNC). Em 24/12
+  // SEM_PREGAO_B3 (utils/pregao.ts, Ofício Circular 003/2026-VNC). Em 24/12
   // não há pregão, mas há expediente bancário. 15/11/2026 cai num domingo e
   // não está na lista da B3.
   const b3 = ['2026-01-01', '2026-02-16', '2026-02-17', '2026-04-03', '2026-04-21', '2026-05-01', '2026-06-04',

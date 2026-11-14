@@ -176,11 +176,11 @@ const hov = computed(() => {
   white-space: nowrap; box-shadow: var(--nu-shadow-chart-pill);
 }
 .nperf__endpill-label {
-  display: block; color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: 700;
+  display: block; color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   letter-spacing: .5px; text-transform: uppercase;
 }
 .nperf__endpill-val {
-  display: block; color: var(--nu-navy); font-size: var(--nu-fs-md); font-weight: 800;
+  display: block; color: var(--nu-navy); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte);
   font-variant-numeric: tabular-nums; margin-top: 2px;
 }
 .nperf__cross {
@@ -198,10 +198,10 @@ const hov = computed(() => {
   background: var(--nu-cream); border-radius: var(--nu-r-tile); padding: 12px 17px;
   box-shadow: var(--nu-shadow-chart-tip); pointer-events: none; z-index: 4; white-space: nowrap;
 }
-.nperf__tip-date { color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: 700; }
+.nperf__tip-date { color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
 .nperf__tip-row { display: flex; align-items: baseline; gap: 10px; margin-top: 4px; }
-.nperf__tip-t { color: var(--nu-blue-text); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
-.nperf__tip-b { color: var(--nu-navy-60); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.nperf__tip-t { color: var(--nu-blue-text); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
+.nperf__tip-b { color: var(--nu-navy-60); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 
 /* mobile: sem o marcador de fim de linha (UX do dono 2026-07-11) */
 @media (max-width: 760px) {

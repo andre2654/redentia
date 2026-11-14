@@ -3,8 +3,8 @@
 // visual): Frontend/app/pages/tesouro/[slug].vue (taxa como "preço", cards
 // compra/venda, gráfico com toggle cotação↔taxa, interpretações por regra).
 // O layout default já renderiza NuHeader + NuMarketTicker + NuFooter; aqui
-// vive o miolo na linguagem Nu: hero (creme, taxa-herói) → cards Compra/Venda
-// → gráfico (navy, toggle preço↔taxa + ranges) → leituras por regra →
+// vive o miolo na linguagem Nu: topo em duas colunas (creme: taxa-herói |
+// Compra/Venda no cartão carvão) → gráfico (navy, toggle preço↔taxa + ranges) → leituras por regra →
 // ferramentas relacionadas → FAQ → CTA.
 //
 // SEO: SSR-first (detalhe buscado no servidor via useAsyncData — taxa real no
@@ -33,6 +33,8 @@ definePageMeta({
 })
 
 const slug = String(useRoute().params.slug ?? '').toLowerCase()
+// o sujeito dos cartões que vão ao chat ("P/L PETR4"): useSobreDoContexto
+proverSobreDoContexto(() => data.value?.hero.name)
 
 const {
   data, error,
@@ -100,7 +102,7 @@ const structuredData: Record<string, unknown>[] = [
     url: `${origin}/tesouro/${slug}`,
     // O emissor é o Tesouro Nacional. A Redentia informa sobre o título, não o
     // distribui: declarar `provider: Redentia` era afirmação falsa em dado
-    // estruturado, do mesmo tipo que a trava de RbSeguranca.vue evita na copy.
+    // estruturado, do mesmo tipo que a trava de copy de compliance evita.
     provider: { '@type': 'GovernmentOrganization', name: 'Tesouro Nacional', url: 'https://www.tesourodireto.com.br' },
     // `offers` REMOVIDO (2026-08-03). Declarava availability InStock e um preço
     // de compra num produto que este site não vende. Além de falso, era o que
@@ -125,15 +127,22 @@ usePageSeo({
     { name: titulo.value.hero.name, path: `/tesouro/${slug}` },
   ],
 })
+
+// "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
+// mora no painel desde 02/11, e a /busca não é mais onde se conversa.
+const painel = useChatPainel()
 </script>
 
 <template>
   <div>
-    <!-- ============ Hero (badge + nome + taxa-herói + prazo) ============ -->
-    <TesouroHero :hero="titulo.hero" />
-
-    <!-- ============ Cards Compra / Venda ============ -->
-    <TesouroSideCards :cards="sideCards" />
+    <!-- ============ Topo em duas colunas: o título e a taxa-herói à esquerda,
+         Compra e Venda no cartão carvão à direita ============ -->
+    <section class="tsd__topo">
+      <div class="tsd__topo-grade">
+        <TesouroHero :hero="titulo.hero" />
+        <TesouroSideCards :cards="sideCards" />
+      </div>
+    </section>
 
     <!-- ============ Histórico (navy, toggle preço↔taxa + ranges) ============ -->
     <TesouroChartSection
@@ -151,7 +160,7 @@ usePageSeo({
 
     <!-- ============ Leituras determinísticas (regras, zero LLM) ============ -->
     <CalcBand tone="cream" kicker="Leitura do título" title="Como ler este título">
-      <div class="tsd__readings">
+      <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="tsd__readings">
         <article v-for="r in titulo.readings" :key="r.title" class="tsd__reading">
           <h3 class="tsd__reading-title">{{ r.title }}</h3>
           <p class="tsd__reading-body">{{ r.body }}</p>
@@ -161,18 +170,21 @@ usePageSeo({
 
     <!-- ============ Ferramentas relacionadas ============ -->
     <CalcBand tone="white" title="Continue a análise">
-      <div class="tsd__grid-cards">
+      <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="tsd__grid-cards">
         <NuxtLink to="/ranking/tesouro-direto" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Ranking do Tesouro Direto</h3>
           <p class="tsd__card-link-desc">Compare este título com os demais, ordenados pela maior taxa de hoje.</p>
+          <span class="tsd__card-link-ir">Abrir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </NuxtLink>
         <NuxtLink v-if="quantoRendeHref" :to="quantoRendeHref" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Quanto rende um valor neste título</h3>
           <p class="tsd__card-link-desc">A taxa de hoje aplicada a um valor, com o bruto e o IR quando a conta fecha.</p>
+          <span class="tsd__card-link-ir">Abrir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </NuxtLink>
         <NuxtLink :to="titulo.calcHref" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Simular na calculadora de juros compostos</h3>
           <p class="tsd__card-link-desc">Abre a simulação já preenchida com uma taxa nominal estimada pra este título.</p>
+          <span class="tsd__card-link-ir">Abrir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </NuxtLink>
       </div>
     </CalcBand>
@@ -181,56 +193,78 @@ usePageSeo({
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas frequentes sobre o {{ shortName }}</template>
       <template #left>
-        <NuxtLink to="/busca" class="tsd__pill">Perguntar à Redentia AI</NuxtLink>
+        <NuBotaoSeta variante="azul" tamanho="m" class="tsd__pill" @click="painel.abrir()">Perguntar à IA</NuBotaoSeta>
       </template>
       <NuFaqAccordion :items="titulo.faq" surface="white" />
     </CalcSplit>
 
-    <!-- ============ CTA final full-bleed (só deslogado — mesmo padrão dos
-         outros CTAs da Redentia: NuCtaPhoto) ============ -->
-    <NuCtaPhoto
-      v-if="!isAuthenticated"
+    <!-- ============ Fecho (só deslogado): o painel azul da marca, com o corte de fundo ============ -->
+    <MercadoFecho
+      v-if="!isAuthenticated" eyebrow="Sua carteira" fundo="faixa"
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
       :secondary="{ label: 'Ver todos os títulos', to: '/tesouro' }"
     >
-      <template #title>Acompanhe seus títulos<br>na Redentia</template>
+      <template #title>Acompanhe seus títulos na Aportou</template>
       <template #subtitle>Cadastre-se e veja renda fixa, ações e FIIs em uma carteira só, com análises automáticas e dados atualizados diariamente.</template>
-    </NuCtaPhoto>
+    </MercadoFecho>
   </div>
 </template>
 
 <style scoped>
-/* ——— leituras (cards brancos na banda creme, família das calculadoras) ——— */
+/* ——— o topo em duas colunas (2ª rodada da Aportou): como o topo do /asset ——— */
+/* Robustez (11/11/2026): a margem é a da coluna (--nu-coluna), os espaços no
+   ritmo de 8 e o movimento e a cor por token. As leituras deixam a caixa: fio,
+   não caixa (cada uma é uma coluna sob o fio carvão, reto); os cartões de
+   "Continue a análise" sobem 2px e afundam ao apertar. */
+.tsd__topo {
+  background: var(--nu-page);
+  padding: clamp(40px, 4.4vw, 64px) var(--nu-coluna) clamp(48px, 5vw, 72px);
+}
+.tsd__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(32px, 3.4vw, 40px); }
+@media (min-width: 1080px) {
+  .tsd__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(40px, 4.4vw, 72px); align-items: center; }
+}
+
+/* ——— leituras: colunas sob o fio carvão (reto: o fio não acompanha o raio de um cartão) ——— */
 .tsd__readings {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  gap: 32px clamp(24px, 3vw, 40px); margin-top: clamp(32px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.tsd__reading { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
-.tsd__reading-title { margin: 0 0 8px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.tsd__reading-body { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
+.tsd__reading { padding-top: 20px; border-top: 2px solid var(--nu-ink); }
+.tsd__reading-title { margin: 0 0 8px; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+.tsd__reading-body { margin: 0; color: var(--nu-gray-3); font-size: 15.5px; font-weight: var(--nu-w-texto); line-height: 1.55; }
 
-/* ——— ferramentas relacionadas ——— */
+/* ——— ferramentas relacionadas: o cartão inteiro é o clique ——— */
 .tsd__grid-cards {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  gap: 16px; margin-top: clamp(32px, 4vw, 48px);
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .tsd__card-link {
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
-  display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px 24px 20px; box-shadow: var(--nu-shadow-quente);
+  display: flex; flex-direction: column; gap: 8px; -webkit-tap-highlight-color: transparent;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.tsd__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
-.tsd__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.tsd__card-link:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.tsd__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+.tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); transition: color var(--nu-dur-rapida) var(--nu-ease-cor); }
+.tsd__card-link-desc { margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 1.5; }
+/* o "Abrir →" fala como o NuLinkSeta (o cartão já é o link) */
+.tsd__card-link-ir {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px;
+  color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
+}
+.tsd__card-link-ir svg { width: 16px; height: 16px; flex: none; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+@media (hover: hover) {
+  .tsd__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+  .tsd__card-link:hover .tsd__card-link-title { color: var(--nu-blue-text); }
+  .tsd__card-link:hover .tsd__card-link-ir svg { transform: translateX(3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tsd__card-link:hover, .tsd__card-link:active, .tsd__card-link:hover .tsd__card-link-ir svg { transform: none; }
+}
 
-/* ——— pills / CTA (mesma família dos rankings/calculadoras) ——— */
-.tsd__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.tsd__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-/* (CTA final = NuCtaPhoto full-bleed, estilos no componente) */
+/* ——— a pílula da IA no FAQ ——— */
+.tsd__pill { margin-top: 32px; }
 </style>

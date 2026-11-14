@@ -9,7 +9,7 @@
  * arquivo está no ar.
  *
  * O /sitemap.xml de produção é um índice. Este script segue cada filho
- * (/sitemaps/*.xml), junta os <loc> de https://www.redentia.com.br e envia em
+ * (/sitemaps/*.xml), junta os <loc> de https://aportou.com.br e envia em
  * lotes de 10.000 (o teto de um POST do protocolo).
  *
  * Modo diário (sem flags, o que o cron roda): lastmod no dia de hoje (UTC) ou
@@ -21,10 +21,11 @@
  *   node scripts/indexnow.mjs                        # diário
  *   node scripts/indexnow.mjs --desde 2026-10-20     # lastmod a partir do dia
  *   node scripts/indexnow.mjs --tudo                 # o sitemap inteiro
- *   node scripts/indexnow.mjs https://www.redentia.com.br/business ...
+ *   node scripts/indexnow.mjs https://aportou.com.br/mcp ...
  *   node scripts/indexnow.mjs --tudo --seco          # só lista, não envia
  */
-export const HOST = 'www.redentia.com.br'
+// a Aportou, desde a virada de domínio (docs/aportou/virada-de-dominio.md)
+export const HOST = 'aportou.com.br'
 export const CHAVE = '04f40646b171378956bfef8ed9f90790'
 export const ORIGEM = `https://${HOST}`
 export const ENDPOINT = 'https://api.indexnow.org/indexnow'

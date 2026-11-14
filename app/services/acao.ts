@@ -137,15 +137,15 @@ export function acaoFetchThesisDetail(base: string, slug: string) {
 }
 
 /**
- * GET /news/ticker/{symbol} — notícias do ticker. O endpoint valida a regex
- * estrita `^[A-Z]{4}\d{1,2}$` (rejeita B3SA3, E1TN34…) — pra esses casos o
- * useAcao cai pro filtro `/news?ticker=`.
+ * GET /news/ticker/{symbol} — notícias do ticker. Aceita a forma de ticker da
+ * B3, inclusive com dígito no meio (B3SA3, M1TA34), desde o redentia-api#28
+ * (no ar em 14/11/2026). O que não tem essa forma vai pelo filtro `/news?ticker=`.
  */
 export function acaoFetchNewsByTicker(base: string, ticker: string) {
   return $fetch<{ data: NewsApi[] }>(`${base}/news/ticker/${ticker}`, json)
 }
 
-/** GET /news?ticker= — fallback pra tickers fora da regex do endpoint acima. */
+/** GET /news?ticker= — fallback pra símbolos fora da forma de ticker da B3 (o endpoint acima). */
 export function acaoFetchNewsFiltered(base: string, ticker: string, limit = 8) {
   return $fetch<{ data: NewsApi[] }>(`${base}/news?ticker=${ticker}&limit=${limit}`, json)
 }

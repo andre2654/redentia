@@ -62,7 +62,10 @@ export function usePageSeo(input: PageSeoInput) {
   const origin = useSiteOrigin()
   const path = input.path ?? route.path
   const canonical = `${origin}${path}`
-  const image = input.image ?? `${origin}/og-default.png`
+  // a marca que assina a página (as telas de escritório, que assinavam Redentia, saíram em 12/11/2026)
+  const marca = MARCA.nome
+  const image = input.image ?? `${origin}/og-aportou.png`
+  const logoDaMarca = `${origin}/icone-aportou.svg`
 
   useSeoMeta({
     title: input.title,
@@ -71,9 +74,11 @@ export function usePageSeo(input: PageSeoInput) {
     ogDescription: input.description,
     ogUrl: canonical,
     ogImage: image,
+    // a imagem padrão tem tamanho conhecido: sem as dimensões, a prévia do WhatsApp e do LinkedIn às vezes não monta
+    ...(input.image ? {} : { ogImageWidth: 1200, ogImageHeight: 630, ogImageAlt: `${marca}: investir fica mais claro`, twitterImageAlt: `${marca}: investir fica mais claro` }),
     ogType: 'website',
     ogLocale: 'pt_BR',
-    ogSiteName: 'Redentia',
+    ogSiteName: marca,
     twitterCard: 'summary_large_image',
     twitterTitle: input.title,
     twitterDescription: input.description,
@@ -96,7 +101,7 @@ export function usePageSeo(input: PageSeoInput) {
     if (tipo === 'Article' || tipo === 'NewsArticle') {
       normalized.image ??= image
       normalized.mainEntityOfPage ??= canonical
-      normalized.publisher ??= { '@type': 'Organization', name: 'Redentia', logo: { '@type': 'ImageObject', url: `${origin}/logo-azul.svg` } }
+      normalized.publisher ??= { '@type': 'Organization', name: marca, logo: { '@type': 'ImageObject', url: logoDaMarca } }
     }
     if (tipo === 'WebSite' || tipo === 'WebPage') {
       normalized.publisher ??= refOrg
@@ -130,7 +135,7 @@ export function usePageSeo(input: PageSeoInput) {
           name: input.title,
           dateModified: dateModified.value,
           inLanguage: 'pt-BR',
-          isPartOf: { '@type': 'WebSite', name: 'Redentia', url: origin },
+          isPartOf: { '@type': 'WebSite', name: marca, url: origin },
           publisher: refOrg,
         })
       }

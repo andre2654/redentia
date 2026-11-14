@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * newsletter-semana — monta o RASCUNHO da newsletter semanal da Redentia
+ * newsletter-semana — monta o RASCUNHO da newsletter semanal da Aportou
+ * (até 11/11/2026, Redentia: o nome ficou só com o produto de escritório)
  * ("O mercado da semana no seu e-mail", toda sexta). O dono revisa e manda com
  * o scripts/newsletter-enviar.mjs (primeiro só para ele, com --teste). Este
  * script não envia, não agenda e não fica esperando hora: só lê a API e
@@ -55,7 +56,7 @@
  *     separada da renda). Papéis: a carteira do Ibovespa e os FIIs conhecidos
  *     do site (FEATURED_TICKERS, server/utils/site-pages.ts).
  *
- *  4. Da Redentia. Um guia ou uma ferramenta, em rodízio pela semana do ano.
+ *  4. Da Aportou. Um guia ou uma ferramenta, em rodízio pela semana do ano.
  *     Preço-teto fica de fora (veto do dono).
  *
  * PROIBIDO no texto que vai ao assinante: dizer o que comprar ou vender,
@@ -112,7 +113,7 @@ const ACOES_RESERVA = ['PETR4', 'VALE3', 'ITUB4', 'BBDC4', 'BBAS3', 'ABEV3', 'WE
 /** Fora da carteira do índice, mas é onde o Atlas marca a notícia de dólar e de bolsa americana. */
 const EXTRA_NOTICIAS = ['IVVB11', 'NASD11']
 
-/** Rodízio do "Da Redentia" (semana ISO do ano). Preço-teto NUNCA entra: veto do dono. */
+/** Rodízio do "Da Aportou" (semana ISO do ano). Preço-teto NUNCA entra: veto do dono. */
 const DA_REDENTIA = [
   { caminho: '/guias/data-com-e-data-ex', tipo: 'Guia', titulo: 'Data com e data ex: quando o dividendo passa a ser seu', texto: 'As quatro datas de um provento, por que a ação cai na data ex e quanto tempo o dinheiro leva para cair na conta.' },
   { caminho: '/calculadora/acoes', tipo: 'Ferramenta', titulo: 'Simulador de ações e dividendos', texto: 'Quanto um aporte em PETR4, ITUB4 ou VALE3 teria virado, com os dividendos reinvestidos, mês a mês.' },
@@ -141,7 +142,7 @@ const PROIBIDAS = [
   [/pode (subir|ganhar|valorizar|saltar|disparar|render)( ainda)?( mais\b| até\b| \d)/i, 'promessa de alta'],
   [/melhores a[cç][oõ]es|a[cç][aã]o (preferida|favorita)|eleg[ea]m? (as )?a[cç][oõ]es/i, 'lista de indicação'],
   [/pre[cç]o[- ]teto/i, 'preço-teto'],
-  [/redentia score|\bscore\b|convic[cç][aã]o|nota da tese/i, 'nota ou score'],
+  [/(redentia|aportou) score|\bscore\b|convic[cç][aã]o|nota da tese/i, 'nota ou score'],
   [/hora de (comprar|vender|entrar|sair)|vale a pena (comprar|investir)/i, 'chamada de compra'],
   [/barganha|pechincha|\bdescontad[ao]s?\b|subavaliad|sobrevalorizad|subprecificad/i, 'juízo de preço'],
 ]
@@ -667,8 +668,8 @@ async function secaoNoticias(sem, ibov, universo) {
     // leitura fica. Se a tese está na frase de abertura, o que sobra começa no
     // meio do raciocínio: a notícia sai inteira.
     const leitura = leituraSemTese(t.atlasReading)
-    if (leitura.abertura) { descartar(t, 'a frase de abertura da leitura cita tese da Redentia'); continue }
-    if (leitura.texto.length < 80) { descartar(t, 'a leitura é quase toda sobre tese da Redentia'); continue }
+    if (leitura.abertura) { descartar(t, 'a frase de abertura da leitura cita tese da Aportou'); continue }
+    if (leitura.texto.length < 80) { descartar(t, 'a leitura é quase toda sobre tese da Aportou'); continue }
     // o que vai para o e-mail passa pelo veto; o texto inteiro (com a frase da
     // tese) passa pelas conferências de peça paga e de sinal
     const exibido = `${t.title}\n${leitura.texto}`
@@ -836,7 +837,7 @@ async function secaoProventos(sem, universo) {
   return out
 }
 
-// ——— 4. Da Redentia ———
+// ——— 4. Da Aportou ———
 
 function secaoRedentia(sem) {
   const opcoes = DA_REDENTIA.filter((x) => !/preco-teto|preço-teto/i.test(x.caminho))
@@ -889,14 +890,19 @@ function montarPreheader(dados) {
 // semana, blocos cinza e um azul. O <style> do <head> é o mesmo da casca do
 // Backend (celular e modo escuro do Apple Mail); o resto é inline.
 
+// A paleta da Aportou (11/11/2026; os mesmos valores de app/assets/css/tokens.css,
+// escritos aqui porque e-mail não lê variável de CSS): `branco` é o creme da
+// página, `bloco` a faixa quente, `tinta` e `heroi` o carvão, `azul` o cobalto
+// que lê como letra sobre creme. O herói é carvão liso: o brilho antigo
+// (email/brilho.jpg) tinha o navy da Redentia embutido na imagem.
 const COR = {
-  branco: '#FFFFFF', bloco: '#F5F5F7', tinta: '#1D1D1F', texto: '#424245', apoio: '#6E6E73', nota: '#86868B',
-  linha: '#E5E5EA', linhaBloco: '#DCDCE1', azul: '#2F6AFF', heroi: '#0A1020', heroiApoio: '#A1A1A6', heroiTinta: '#F5F5F7',
-  alta: '#15803D', queda: '#C9302C', barraAlta: '#30D158', barraQueda: '#FF6961',
+  branco: '#F9F3EC', bloco: '#F1E8DB', tinta: '#111827', texto: '#1F2937', apoio: '#4B5563', nota: '#4B5563',
+  linha: '#E6D9C6', linhaBloco: '#D9CDB9', azul: '#1D4ED8', heroi: '#111827', heroiApoio: '#D1D5DB', heroiNota: '#B6BCC8', heroiTinta: '#FFFFFF',
+  alta: '#18703A', queda: '#B42318', barraAlta: '#86EFAC', barraQueda: '#FCA5A5',
 }
-const FONTE = "-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif"
-const LOGO = `${SITE}/email-logo.png`
-const BRILHO = `${SITE}/email/brilho.jpg`
+// Figtree na frente para quem tem a fonte; o resto é a fonte do sistema
+const FONTE = "Figtree,-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif"
+const LOGO = `${SITE}/email/aportou-icone.png`
 /** Comentário HTML com a fonte do número; "--" dentro de comentário quebra o HTML. */
 const comentario = (t) => `<!-- ${String(t).replace(/-{2,}/g, (m) => m.split('').join(' '))} -->`
 /** "data-com" quebrava no hífen na coluna estreita do celular. */
@@ -918,14 +924,15 @@ a { text-decoration: none; }
   .rd-cartao-pad { padding: 22px 20px !important; }
 }
 @media (prefers-color-scheme: dark) {
-  .rd-fundo { background: #000000 !important; }
-  .rd-bloco { background: #1C1C1E !important; }
-  .rd-tinta { color: #F5F5F7 !important; }
-  .rd-texto { color: #E5E5EA !important; }
-  .rd-apoio { color: #A1A1A6 !important; }
-  .rd-nota { color: #8E8E93 !important; }
-  .rd-linha { border-color: #38383A !important; }
-  .rd-azul { color: #5E8BFF !important; }
+  .rd-fundo { background: #111827 !important; }
+  .rd-bloco { background: #1B2434 !important; }
+  .rd-tinta { color: #FFFFFF !important; }
+  .rd-texto { color: #D1D5DB !important; }
+  .rd-apoio { color: #B6BCC8 !important; }
+  .rd-nota { color: #B6BCC8 !important; }
+  .rd-linha { border-color: #263042 !important; }
+  .rd-azul { color: #5B8CFF !important; }
+  .rd-heroi { background-color: #1B2434 !important; }
 }`
 
 function htmlEmail(dados) {
@@ -940,20 +947,20 @@ function montarHtml(dados) {
         <tr><td style="padding:${padding};">${miolo}
         </td></tr>`)
   const secaoTitulo = (t, apoio) => `
-          <h2 class="rd-tinta" style="margin:0;${fonte}font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;color:${COR.tinta};">${esc(t)}</h2>${apoio ? `
+          <h2 class="rd-tinta" style="margin:0;${fonte}font-size:26px;line-height:1.15;font-weight:800;letter-spacing:-0.025em;color:${COR.tinta};">${esc(t)}</h2>${apoio ? `
           <p class="rd-apoio" style="margin:8px 0 0;${fonte}font-size:17px;line-height:1.45;color:${COR.apoio};">${apoio}</p>` : ''}
           <div style="height:16px;line-height:16px;font-size:0;">&nbsp;</div>`
   const bloco = (tipo, miolo, extra = '') => `
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="rd-bloco" style="border-collapse:separate;background:${COR.bloco};border-radius:24px;${extra}">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="rd-bloco" style="border-collapse:separate;background:${COR.bloco};border-radius:28px;${extra}">
             <tr><td class="${tipo === 'cartao' ? 'rd-cartao-pad' : 'rd-lista-pad'}" style="padding:${tipo === 'cartao' ? '26px' : '4px 24px'};">${miolo}
             </td></tr>
           </table>`
   const nota = (t) => `
           <p class="rd-nota" style="margin:12px 0 0;${fonte}font-size:12px;line-height:1.5;color:${COR.nota};">${esc(t)}</p>`
-  const linkSeta = (url, t) => `<a href="${esc(url)}" class="rd-azul" style="${fonte}font-size:17px;line-height:1.4;color:${COR.azul};text-decoration:none;">${esc(t)}&nbsp;›</a>`
+  const linkSeta = (url, t) => `<a href="${esc(url)}" class="rd-azul" style="${fonte}font-size:17px;line-height:1.4;font-weight:700;color:${COR.azul};text-decoration:none;">${esc(t)}&nbsp;→</a>`
 
   // a marca e o título
-  linha('0 0 36px', `<img src="${LOGO}" width="30" height="30" alt="Redentia" style="display:block;margin:0 auto;width:30px;height:30px;border:0;">`)
+  linha('0 0 36px', `<img src="${LOGO}" width="36" height="36" alt="Aportou" style="display:block;margin:0 auto;width:36px;height:36px;border:0;border-radius:9px;">`)
   const partes = []
   if (ibov.ok) partes.push('o Ibovespa')
   if (noticias.ok) partes.push('as notícias que mexeram na bolsa')
@@ -961,8 +968,8 @@ function montarHtml(dados) {
   const apoio = partes.length ? `${partes.length > 1 ? `${partes.slice(0, -1).join(', ')} e ${partes.at(-1)}` : partes[0]}.`.replace(/^./, (c) => c.toUpperCase()) : 'O que mexeu com a bolsa na semana.'
   linhas.push(`
         <tr><td align="center" style="padding:0 20px;">
-          <div class="rd-azul" style="${fonte}font-size:15px;line-height:1.35;font-weight:600;color:${COR.azul};">O mercado da semana</div>
-          <h1 class="rd-h1 rd-tinta" style="margin:10px 0 0;${fonte}font-size:48px;line-height:1.07;font-weight:600;letter-spacing:-0.03em;color:${COR.tinta};">${esc(intervaloLongo(sem.seg, sem.sex).replace(/ de \d{4}$/, ''))}</h1>
+          <div class="rd-tinta" style="${fonte}font-size:13px;line-height:1.35;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:${COR.tinta};">O mercado da semana</div>
+          <h1 class="rd-h1 rd-tinta" style="margin:10px 0 0;${fonte}font-size:48px;line-height:1.02;font-weight:800;letter-spacing:-0.035em;color:${COR.tinta};">${esc(intervaloLongo(sem.seg, sem.sex).replace(/ de \d{4}$/, ''))}</h1>
           <p class="rd-apoio" style="margin:14px auto 0;max-width:460px;${fonte}font-size:19px;line-height:1.45;color:${COR.apoio};">${esc(apoio)}</p>
         </td></tr>`)
 
@@ -979,7 +986,7 @@ function montarHtml(dados) {
     const altura = (v) => Math.max(4, Math.round((Math.abs(v) / maior) * 56))
     const coluna = (x) => {
       const ultimo = x.d === ibov.fechamento.data
-      const rotulo = `<div style="${fonte}font-size:12px;line-height:1.3;${ultimo ? 'font-weight:600;' : ''}color:${x.var === null ? '#636366' : ultimo ? COR.heroiTinta : COR.heroiApoio};">${esc(x.feriado ? 'feriado' : x.rot)}</div>`
+      const rotulo = `<div style="${fonte}font-size:12px;line-height:1.3;${ultimo ? 'font-weight:600;' : ''}color:${x.var === null ? COR.heroiNota : ultimo ? COR.heroiTinta : COR.heroiApoio};">${esc(x.feriado ? 'feriado' : x.rot)}</div>`
       const valor = x.var === null ? '' : `<div style="${fonte}font-size:12px;line-height:1.3;font-weight:600;color:${COR.heroiTinta};white-space:nowrap;">${esc(pct(x.var))}</div>`
       const barra = (cor) => `<div style="width:28px;height:${altura(x.var)}px;line-height:0;font-size:0;border-radius:6px;background:${cor};margin:0 auto;">&nbsp;</div>`
       const cima = x.var !== null && x.var >= 0 ? `${valor}<div style="height:5px;line-height:5px;font-size:0;">&nbsp;</div>${barra(COR.barraAlta)}` : ''
@@ -987,7 +994,7 @@ function montarHtml(dados) {
       return `<td width="56" align="center" style="width:56px;padding:0 6px;">
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr><td align="center" valign="bottom" style="height:84px;">${cima}</td></tr>
-                    <tr><td style="height:1px;line-height:1px;font-size:0;background:rgba(245,245,247,0.22);">&nbsp;</td></tr>
+                    <tr><td style="height:1px;line-height:1px;font-size:0;background:rgba(246,242,233,0.22);">&nbsp;</td></tr>
                     <tr><td align="center" valign="top" style="height:34px;">${baixo}</td></tr>
                     <tr><td align="center" style="padding-top:6px;">${rotulo}</td></tr>
                   </table>
@@ -997,17 +1004,17 @@ function montarHtml(dados) {
     linhas.push(`
         <tr><td style="padding:36px 0 0;">
           ${comentario(`fonte: ${API}/indices/IBOV/prices — ${dataBr(ibov.referencia.data)} ${pontos2(ibov.referencia.valor)} e ${dataBr(ibov.fechamento.data)} ${pontos2(ibov.fechamento.valor)}; variação ${pct(ibov.variacao, 4)}${ibov.dolar ? `; PTAX ${dataBr(ibov.dolar.data)} R$ ${NF4.format(ibov.dolar.valor)} (${API}/macro/snapshot)` : ''}`)}
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:${COR.heroi};background-image:url('${BRILHO}');background-repeat:no-repeat;background-position:center top;background-size:600px auto;border-radius:28px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="rd-heroi" style="border-collapse:separate;background-color:${COR.heroi};border-radius:28px;">
             <tr><td align="center" class="rd-heroi-pad" style="padding:44px 32px 38px;border-radius:28px;">
               <div style="${fonte}font-size:15px;line-height:1.35;font-weight:500;color:${COR.heroiApoio};">Ibovespa na semana${ibov.parcial ? `, até ${esc(diaNome(ibov.fechamento.data))}` : ''}</div>
-              <div class="rd-num" style="margin-top:10px;${fonte}font-size:80px;line-height:1;font-weight:300;letter-spacing:-0.045em;color:${COR.heroiTinta};white-space:nowrap;">${esc(pct(ibov.variacao))}</div>
+              <div class="rd-num" style="margin-top:10px;${fonte}font-size:80px;line-height:1;font-weight:800;letter-spacing:-0.035em;color:${COR.heroiTinta};white-space:nowrap;">${esc(pct(ibov.variacao))}</div>
               <div style="margin-top:10px;${fonte}font-size:17px;line-height:1.4;color:${COR.heroiApoio};">${esc(sub)}</div>
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:28px auto 0;">
                 <tr>
                 ${diasSemana.map(coluna).join('\n                ')}
                 </tr>
               </table>
-              <div style="margin-top:22px;${fonte}font-size:12px;line-height:1.5;color:${COR.nota};">${esc(f.fonte)}</div>
+              <div style="margin-top:22px;${fonte}font-size:12px;line-height:1.5;color:${COR.heroiNota};">${esc(f.fonte)}</div>
             </td></tr>
           </table>
         </td></tr>`)
@@ -1020,10 +1027,10 @@ function montarHtml(dados) {
       return `
           ${comentario(`fonte: ${t.url} · /research/news id ${t.id} · ${t.publishedAt}`)}${bloco('cartao', `
               <div class="rd-nota" style="${fonte}font-size:13px;line-height:1.35;font-weight:600;color:${COR.nota};">${esc(nomeFonte(t.source))} · ${esc(diaNome(e.quando.data))}, ${esc(dataCurta(e.quando.data))}</div>
-              <a href="${esc(t.url)}" class="rd-tinta" style="display:block;margin-top:8px;${fonte}font-size:21px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;color:${COR.tinta};text-decoration:none;">${esc(t.title)}</a>
+              <a href="${esc(t.url)}" class="rd-tinta" style="display:block;margin-top:8px;${fonte}font-size:21px;line-height:1.25;font-weight:700;letter-spacing:-0.015em;color:${COR.tinta};text-decoration:none;">${esc(t.title)}</a>
               <p class="rd-texto" style="margin:10px 0 0;${fonte}font-size:16px;line-height:1.5;color:${COR.texto};"><span class="rd-azul" style="font-weight:600;color:${COR.azul};">A leitura da IA</span> · ${esc(e.leitura)}</p>`, 'margin-bottom:12px;')}`
     }).join('')
-    linha('56px 0 0', `${secaoTitulo('O que mexeu com a bolsa')}${itens}${nota('Títulos e fatos: os veículos citados, com a data da publicação. A leitura é da IA da Redentia.')}`)
+    linha('56px 0 0', `${secaoTitulo('O que mexeu com a bolsa')}${itens}${nota('Títulos e fatos: os veículos citados, com a data da publicação. A leitura é da IA da Aportou.')}`)
   }
 
   // proventos da semana que vem: datas-com e pagamentos, em listas
@@ -1043,13 +1050,13 @@ function montarHtml(dados) {
     }
     const lista = (titulo, itens, chave) => itens.length ? `
           <div class="rd-nota" style="margin:${titulo === 'Pagamentos' && proventos.datasCom.length ? '20px' : '0'} 0 8px;${fonte}font-size:13px;line-height:1.35;font-weight:600;color:${COR.nota};">${semQuebra(esc(titulo))}</div>${bloco('lista', itens.map((x, i) => linhaProvento(x, i === itens.length - 1, chave)).join(''))}` : ''
-    linha('56px 0 0', `${secaoTitulo('Proventos da semana que vem', `${semQuebra('Datas-com')} e pagamentos de ${esc(intervaloLongo(proventos.prox.seg, proventos.prox.sex))}, entre as ações do Ibovespa e os fundos imobiliários mais conhecidos.`)}${lista('Datas-com', proventos.datasCom, 'dataCom')}${lista('Pagamentos', proventos.pagamentos, 'pagamento')}${nota(`Fonte: comunicados das empresas e dos fundos à B3, compilados pela Redentia em ${dataBr(AGORA.hoje)}. Valor bruto por ação ou cota, antes do imposto quando há.`)}`)
+    linha('56px 0 0', `${secaoTitulo('Proventos da semana que vem', `${semQuebra('Datas-com')} e pagamentos de ${esc(intervaloLongo(proventos.prox.seg, proventos.prox.sex))}, entre as ações do Ibovespa e os fundos imobiliários mais conhecidos.`)}${lista('Datas-com', proventos.datasCom, 'dataCom')}${lista('Pagamentos', proventos.pagamentos, 'pagamento')}${nota(`Fonte: comunicados das empresas e dos fundos à B3, compilados pela Aportou em ${dataBr(AGORA.hoje)}. Valor bruto por ação ou cota, antes do imposto quando há.`)}`)
   }
 
-  // da Redentia: um guia ou ferramenta
-  linha('56px 0 0', `${secaoTitulo('Da Redentia')}${bloco('cartao', `
+  // da Aportou: um guia ou ferramenta
+  linha('56px 0 0', `${secaoTitulo('Da Aportou')}${bloco('cartao', `
               <div class="rd-nota" style="${fonte}font-size:13px;line-height:1.35;font-weight:600;color:${COR.nota};">${esc(redentia.tipo)}</div>
-              <a href="${esc(redentia.url)}" class="rd-tinta" style="display:block;margin-top:8px;${fonte}font-size:21px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;color:${COR.tinta};text-decoration:none;">${esc(redentia.titulo)}</a>
+              <a href="${esc(redentia.url)}" class="rd-tinta" style="display:block;margin-top:8px;${fonte}font-size:21px;line-height:1.25;font-weight:700;letter-spacing:-0.015em;color:${COR.tinta};text-decoration:none;">${esc(redentia.titulo)}</a>
               <p class="rd-apoio" style="margin:8px 0 0;${fonte}font-size:16px;line-height:1.5;color:${COR.apoio};">${esc(redentia.texto)}</p>
               <p style="margin:12px 0 0;">${linkSeta(redentia.url, redentia.tipo === 'Guia' ? 'Ler o guia' : 'Abrir a ferramenta')}</p>`)}`)
 
@@ -1063,7 +1070,7 @@ function montarHtml(dados) {
               <td class="rd-linha rd-nota" style="border-top:1px solid ${COR.linha};padding-top:20px;${fonte}font-size:12px;line-height:1.5;color:${COR.nota};">
                 <p style="margin:0;">Você recebe este e-mail porque assinou O mercado da semana. <span style="color:${COR.apoio};text-decoration:underline;">Cancelar inscrição</span></p>
                 <p style="margin:10px 0 0;">Conteúdo educacional. Não é recomendação de investimento.</p>
-                <p style="margin:10px 0 0;">Redentia Tecnologia S.A. · <a href="${SITE}" style="color:${COR.apoio};text-decoration:underline;">redentia.com.br</a></p>
+                <p style="margin:10px 0 0;">Aportou, uma empresa Redentia · Redentia Tecnologia S.A. · <a href="${SITE}" style="color:${COR.apoio};text-decoration:underline;">redentia.com.br</a></p>
               </td>
             </tr></table>
           </td></tr></table>
@@ -1123,7 +1130,7 @@ function mdRascunho(dados) {
     for (const e of noticias.escolhidas) {
       L.push(`### [${e.t.title}](${e.t.url})`, `${nomeFonte(e.t.source)} · ${diaNome(e.quando.data)}, ${dataBr(e.quando.data)}`, '', `**A leitura da IA:** ${e.leitura}`, '')
     }
-    L.push('<sub>Títulos e fatos: os veículos citados, com a data da publicação. A leitura é da IA da Redentia.</sub>', '')
+    L.push('<sub>Títulos e fatos: os veículos citados, com a data da publicação. A leitura é da IA da Aportou.</sub>', '')
   }
   if (proventos.ok) {
     L.push('## Proventos da semana que vem', '', `Datas-com e pagamentos de ${intervaloLongo(proventos.prox.seg, proventos.prox.sex)}, entre as ações do Ibovespa e os fundos imobiliários mais conhecidos.`, '')
@@ -1140,9 +1147,9 @@ function mdRascunho(dados) {
     }
     tab('Data-com na semana (quem tiver o papel no fim do pregão da data-com recebe)', proventos.datasCom, 'dataCom')
     tab('Pagamentos na semana (cai na conta de quem tinha o papel na data-com)', proventos.pagamentos, 'pagamento')
-    L.push(`<sub>Fonte: comunicados das empresas e dos fundos à B3, compilados pela Redentia em ${dataBr(AGORA.hoje)}. Valor bruto, antes do imposto quando há.</sub>`, '')
+    L.push(`<sub>Fonte: comunicados das empresas e dos fundos à B3, compilados pela Aportou em ${dataBr(AGORA.hoje)}. Valor bruto, antes do imposto quando há.</sub>`, '')
   }
-  L.push('## Da Redentia', '', `**${redentia.tipo}:** [${redentia.titulo}](${redentia.url})  `, redentia.texto, '')
+  L.push('## Da Aportou', '', `**${redentia.tipo}:** [${redentia.titulo}](${redentia.url})  `, redentia.texto, '')
   L.push('---', '', '**Conteúdo educacional. Não é recomendação de investimento.**', '')
 
   L.push('---', '', '# Notas de conferência (não vão no e-mail)', '')
@@ -1163,7 +1170,7 @@ function mdRascunho(dados) {
       L.push(`  - sinal: ${e.conferido.length ? e.conferido.join('; ') : 'o texto não afirma direção nem número de papel ou do Ibovespa (nada a conferir)'}${e.diaConferido !== e.quando.data ? ` (conferido no pregão seguinte, ${dataBr(e.diaConferido)})` : ''}`)
       if (e.naoConferido.length) L.push(`  - número não conferido (a API não tem o dado): ${e.naoConferido.join('; ')}`)
       L.push(`  - peça paga: não (matéria ${e.crua.id} no /news, seção "${e.crua.secao ?? '—'}", byline ${e.crua.autor ?? '—'})`)
-      if (e.cortadas.length) L.push(`  - frase cortada da leitura (cita tese da Redentia): "${e.cortadas.join(' ')}"`)
+      if (e.cortadas.length) L.push(`  - frase cortada da leitura (cita tese da Aportou): "${e.cortadas.join(' ')}"`)
     }
   }
   if (noticias.descartadas.length) {
@@ -1181,7 +1188,7 @@ function mdRascunho(dados) {
   }
   for (const o of proventos.omitidos) L.push(`- omitido: ${o}`)
   L.push('')
-  L.push('## 4. Da Redentia', '', `- Rodízio pela semana ISO ${redentia.semanaIso}: ${redentia.url}. Preço-teto fica de fora (veto do dono).`, '')
+  L.push('## 4. Da Aportou', '', `- Rodízio pela semana ISO ${redentia.semanaIso}: ${redentia.url}. Preço-teto fica de fora (veto do dono).`, '')
   if (dados.varredura.length) {
     L.push('## Varredura do texto do e-mail', '')
     for (const v of dados.varredura) L.push(`- ${v}`)

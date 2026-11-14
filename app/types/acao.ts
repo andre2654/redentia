@@ -337,7 +337,7 @@ export interface EtfXrayTreeNodeApi {
  */
 export type AssetKind = 'stock' | 'fii' | 'bdr' | 'etf' | 'crypto'
 
-export type AcaoRange = '1mo' | '6mo' | '12mo'
+export type AcaoRange = '1mo' | '6mo' | '12mo' | '5y'
 
 /** enum completo do `mode` de /prices (PR5: o IBOV da tese olha além de 12M). */
 export type PriceMode = AcaoRange | 'ytd' | '3mo' | '2y' | '3y' | '4y' | '5y' | 'full'
@@ -513,14 +513,12 @@ export interface SupplyRestApi {
   fora_da_conta: number
 }
 
-/** Uma linha de "Compra de / Vende para" (AcaoCadeia.vue). */
+/** Uma ligação de "Compra de / Vende para" (CadeiaRazao.vue, via utils/cadeiaLeitura). */
 export interface AcaoCadeiaItemVM {
   /** ticker da empresa; nos nós de resto, uma chave ('resto-clientes') */
   ticker: string
   /** nó "Outros clientes" / "Restante do custo": sem logo e sem link */
   resto: boolean
-  /** fatia da receita (venda) ou do custo (compra) para a espessura da linha; null = traço fino */
-  peso: number | null
   nome: string
   /** 'nafta', 'transporte ferroviário'; null quando a fonte não diz */
   oQue: string | null
@@ -564,12 +562,42 @@ export interface AcaoCadeiaDetalheVM {
   }[]
 }
 
-/** Bloco "De quem compra e para quem vende" do /asset (AcaoCadeia.vue). */
+/** Bloco "De quem compra e para quem vende" do /asset (CadeiaRazao.vue). */
 export interface AcaoCadeiaVM {
   compraDe: AcaoCadeiaItemVM[]
   vendePara: AcaoCadeiaItemVM[]
   /** 'Formulário de Referência (CVM) e relatórios anuais na SEC' */
   fontes: string
+  /**
+   * Quanto da receita e do custo do ano as ligações com valor explicam
+   * (GET /assets/{t}/supply-chain → totais + restante). É o "restante" dito
+   * com honestidade: o que conhecemos é uma fração. null sem DFP do ano.
+   */
+  cobertura?: AcaoCadeiaCoberturaVM | null
+}
+
+export interface AcaoCadeiaLadoVM {
+  /** 'R$ 497,5 bi' (receita) ou o custo dos produtos vendidos */
+  total: string
+  /** soma das ligações com listadas que entram na conta (valor anual em R$ do ano) */
+  conhecido: string
+  /** '3,2%' · 'menos de 0,1%' · '0%' */
+  pct: string
+  /** 0..100, para a barra fina */
+  pctN: number
+  /** ligações daquele lado sem valor anual comparável (contrato, dólar, sem valor) */
+  semValor: number
+}
+
+export interface AcaoCadeiaCoberturaVM {
+  ano: number
+  /** 'DFP consolidada (CVM)' */
+  fonte: string
+  url: string
+  /** vendas: a receita do ano; null quando a empresa não tem cliente listado */
+  receita: AcaoCadeiaLadoVM | null
+  /** compras: o custo dos produtos vendidos; null sem fornecedor listado */
+  custo: AcaoCadeiaLadoVM | null
 }
 
 export interface AcaoNewsVM {

@@ -5,20 +5,23 @@
 import type { GuideStat } from '~/types/guias'
 
 defineProps<{ stat: GuideStat }>()
+// o cartão como contexto do chat: o rótulo leva o sujeito da página
+// (proverSobreDoContexto), "P/L PETR4"
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
-  <div class="nsc">
+  <div v-contexto-chat="{ id: `numero:${sobre}:${stat.label}`, tipo: 'grafico', rotulo: rotuloComSobre(stat.label, sobre), texto: `${stat.label}: ${stat.value}` }" class="nsc">
     <div class="nsc__value">{{ stat.value }}</div>
     <div class="nsc__label">{{ stat.label }}</div>
   </div>
 </template>
 
 <style scoped>
-.nsc { background: var(--nu-cream); border-radius: 20px; padding: 22px; }
+.nsc { background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 22px; box-shadow: var(--nu-shadow-quente); }
 .nsc__value {
-  color: var(--nu-ink); font-size: clamp(26px, 2.4vw, 34px); font-weight: 800;
-  letter-spacing: -1px; font-variant-numeric: tabular-nums;
+  color: var(--nu-ink); font-size: clamp(26px, 2.4vw, 34px); font-weight: var(--nu-w-forte);
+  letter-spacing: -0.035em; line-height: 1; font-variant-numeric: tabular-nums;
 }
-.nsc__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 6px; }
+.nsc__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; margin-top: 10px; }
 </style>

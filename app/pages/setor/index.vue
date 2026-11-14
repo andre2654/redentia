@@ -50,7 +50,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'ItemList',
-      name: 'Setores da B3 - Redentia',
+      name: `Setores da B3 - ${MARCA.nome}`,
       numberOfItems: SETORES.length,
       itemListElement: SETORES.map((s, i) => ({
         '@type': 'ListItem',
@@ -75,58 +75,79 @@ usePageSeo({
 
     <!-- ============ Grid dos setores ============ -->
     <section class="sth__grid-wrap">
-      <div class="sth__grid">
+      <!-- os cartões entram em cascata ao rolar (o que nasce na tela fica parado) -->
+      <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="sth__grid">
         <NuxtLink
           v-for="s in cards" :key="s.ptSlug" :to="`/setor/${s.ptSlug}`"
           class="sth__card"
         >
           <div class="sth__card-top">
             <h2 class="sth__card-title">{{ s.name }}</h2>
-            <span v-if="s.count != null" class="sth__card-count">
+            <NuSelo v-if="s.count != null" tom="carvao">
               {{ nf0.format(s.count) }} {{ s.count === 1 ? 'empresa' : 'empresas' }}
-            </span>
+            </NuSelo>
           </div>
           <p class="sth__card-desc">{{ s.blurb }}</p>
-          <span class="sth__card-cta">Ver setor</span>
+          <span class="sth__card-cta"><span class="sth__cta-txt">Ver setor</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </NuxtLink>
       </div>
     </section>
 
-    <!-- ============ CTA final full-bleed (padrão NuCtaPhoto) ============ -->
-    <NuCtaPhoto
+    <!-- ============ Fecho: o painel azul da marca, com o corte de fundo ============ -->
+    <MercadoFecho
+      eyebrow="Sua carteira"
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
       :secondary="{ label: 'Ver os rankings', to: '/rankings' }"
     >
-      <template #title>Descubra os melhores<br>ativos de cada setor</template>
+      <template #title>Descubra os melhores ativos de cada setor</template>
       <template #subtitle>Crie sua conta grátis e acompanhe as empresas de cada setor da B3 na sua carteira, com dados atualizados diariamente.</template>
-    </NuCtaPhoto>
+    </MercadoFecho>
   </div>
 </template>
 
 <style scoped>
+/* Aportou: a grade corre sobre o creme da página; cada setor é um cartão creme
+   com a sombra quente, que sobe 2px ao passar o ponteiro.
+   Robustez (11/11/2026): a contagem no NuSelo carvão, o "Ver setor →" com o
+   desenho do NuLinkSeta (o cartão já é o link), a entrada ao rolar
+   (v-revelar), o apertar que afunda e o movimento e a cor por token. */
 .sth__grid-wrap {
-  background: var(--nu-white);
-  padding: clamp(40px, 5.5vw, 72px) clamp(22px, 5.5vw, 80px) clamp(64px, 8vw, 104px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-page);
+  padding: 16px var(--nu-coluna) 16px;
 }
 .sth__grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 16px;
 }
 .sth__card {
-  display: flex; flex-direction: column; gap: 10px;
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
-  transition: transform .18s, box-shadow .2s;
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px; box-shadow: var(--nu-shadow-quente);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.sth__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.sth__card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.sth__card-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
-.sth__card-count {
-  color: var(--nu-blue-text); font-size: var(--nu-fs-dense); font-weight: 700;
-  font-variant-numeric: tabular-nums; white-space: nowrap;
-}
+.sth__card:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.sth__card:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+.sth__card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.sth__card-title { margin: 0; color: var(--nu-ink); font-size: clamp(20px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.1; transition: color var(--nu-dur-rapida) var(--nu-ease-cor); }
 .sth__card-desc {
-  margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
+  margin: 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 1.5;
 }
-.sth__card-cta { margin-top: auto; padding-top: 6px; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.sth__card-cta {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 4px;
+  color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
+}
+.sth__cta-txt {
+  text-decoration-line: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: transparent;
+  transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.sth__card-cta svg { width: 16px; height: 16px; flex: none; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+@media (hover: hover) {
+  .sth__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+  .sth__card:hover .sth__card-title { color: var(--nu-blue-text); }
+  .sth__card:hover .sth__cta-txt { text-decoration-color: currentColor; }
+  .sth__card:hover .sth__card-cta svg { transform: translateX(3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sth__card:hover, .sth__card:active, .sth__card:hover .sth__card-cta svg { transform: none; }
+}
 </style>

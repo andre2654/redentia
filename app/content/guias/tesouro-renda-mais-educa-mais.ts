@@ -47,11 +47,11 @@ export const TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE: GuideDoc = {
   title: 'Tesouro Renda+ e Educa+: os títulos que pagam renda mensal',
   dek: 'O Tesouro que não devolve tudo de uma vez, e sim em parcelas. Como funcionam as duas fases, por que esses títulos balançam mais que qualquer outro e quando a isenção de custódia vale.',
   description:
-    'O que são o Tesouro Renda+ e o Tesouro Educa+, como funcionam a fase de acumulação e a data de conversão, quantas parcelas mensais cada um paga, por que a duration longa faz o preço oscilar tanto, como funciona a carência e a venda antecipada, e a isenção da taxa de custódia para quem carrega até o fim. Guia claro e honesto da Redentia.',
+    'O que são o Tesouro Renda+ e o Tesouro Educa+, como funcionam a fase de acumulação e a data de conversão, quantas parcelas mensais cada um paga, por que a duration longa faz o preço oscilar tanto, como funciona a carência e a venda antecipada, e a isenção da taxa de custódia para quem carrega até o fim. Guia claro e honesto da Aportou.',
   summary:
     'Os dois títulos mais incompreendidos do Tesouro Direto não pagam um valor único no vencimento: pagam uma renda mensal por anos. Entenda a data de conversão, por que o preço na tela oscila mais que o de qualquer outro título público e o que você perde ao vender antes da hora.',
   minutes: 10,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-08-19',
   dateModified: '2026-08-19',
   updatedLine: 'Atualizado em 19 ago 2026 · 10 min de leitura',
@@ -234,14 +234,14 @@ export const TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para seguir daqui: a página de <a href="/tesouro">títulos do Tesouro</a> lista o que está disponível hoje com prazo e característica de cada papel, as <a href="/calculadoras">calculadoras da Redentia</a> transformam objetivo em aporte mensal, o <a href="/glossario">glossário</a> destrincha os termos citados, a <a href="/metodologia">metodologia</a> explica como a Redentia calcula os indicadores das páginas de ativo e a <a href="/carteira">carteira</a> reúne suas posições em um lugar só.',
+          html: 'Para seguir daqui: a página de <a href="/tesouro">títulos do Tesouro</a> lista o que está disponível hoje com prazo e característica de cada papel, as <a href="/calculadoras">calculadoras da Aportou</a> transformam objetivo em aporte mensal, o <a href="/glossario">glossário</a> destrincha os termos citados, a <a href="/metodologia">metodologia</a> explica como a Aportou calcula os indicadores das páginas de ativo e a <a href="/carteira">carteira</a> reúne suas posições em um lugar só.',
         },
       ],
     },
   ],
   cta: {
     title: 'Veja os títulos do Tesouro disponíveis hoje',
-    subtitle: 'Redentia · prazo, característica e objetivo de cada título público, em uma página',
+    subtitle: 'Aportou · prazo, característica e objetivo de cada título público, em uma página',
     to: '/tesouro',
   },
   faqTitle: 'Perguntas frequentes',

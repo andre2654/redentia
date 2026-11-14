@@ -16,15 +16,15 @@ import type { GuideDoc } from '~/types/guias'
 
 export const COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE: GuideDoc = {
   slug: 'como-declarar-investimentos-no-ir',
-  tag: 'Guia Redentia',
+  tag: 'Guia Aportou',
   title: 'Como declarar investimentos no IR',
   dek: 'Ações, FIIs e cripto na declaração, sem juridiquês: o que é isento, o que paga imposto, quando cai a DARF e o passo a passo para não cair na malha fina.',
   description:
-    'Como declarar investimentos no Imposto de Renda: ações, FIIs e cripto na declaração anual, a isenção mensal em vendas de ações, quando gerar DARF, o passo a passo e os erros que levam à malha fina. Guia claro da Redentia, com regras gerais que você confirma no ano vigente.',
+    'Como declarar investimentos no Imposto de Renda: ações, FIIs e cripto na declaração anual, a isenção mensal em vendas de ações, quando gerar DARF, o passo a passo e os erros que levam à malha fina. Guia claro da Aportou, com regras gerais que você confirma no ano vigente.',
   summary:
     'Declarar investimentos assusta mais do que devia. Veja o que é isento, o que paga imposto, quando a DARF é sua responsabilidade e o passo a passo de ações, FIIs e cripto na declaração, sem juridiquês.',
   minutes: 15,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-13',
   dateModified: '2026-07-13',
   updatedLine: 'Atualizado em 13 jul 2026 · 15 min de leitura',
@@ -166,7 +166,7 @@ export const COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'A melhor forma de fazer a declaração fácil é não deixar tudo para abril: mantenha uma planilha de operações ao longo do ano. As <a href="/calculadoras">calculadoras da Redentia</a> ajudam a acompanhar aportes e resultados, e a ter esses números na mão quando a declaração chegar.',
+          html: 'A melhor forma de fazer a declaração fácil é não deixar tudo para abril: mantenha uma planilha de operações ao longo do ano. As <a href="/calculadoras">calculadoras da Aportou</a> ajudam a acompanhar aportes e resultados, e a ter esses números na mão quando a declaração chegar.',
         },
       ],
     },

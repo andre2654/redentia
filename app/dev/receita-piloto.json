@@ -1,0 +1,1419 @@
+{
+    "data": {
+        "ABEV3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161292",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "País sede da Companhia",
+                    "pct": 55.6
+                },
+                {
+                    "chave": "america_latina",
+                    "tipo": "regiao",
+                    "nome": "América Latina Sul",
+                    "pct": 20.4
+                },
+                {
+                    "chave": "america_latina",
+                    "tipo": "regiao",
+                    "nome": "América Central e Caribe",
+                    "pct": 12.4
+                },
+                {
+                    "chave": "CA",
+                    "tipo": "pais",
+                    "nome": "Canadá",
+                    "pct": 11.6
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "B3SA3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161624",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Clientes brasileiros",
+                    "pct": 80
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Clientes estrangeiros",
+                    "pct": 20
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "BBAS3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161398",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 96
+                }
+            ],
+            "cobertura_pct": 96
+        },
+        "BBDC3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161783",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "BBDC4": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161783",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "BBSE3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161895",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "BPAC11": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=159614",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 83.39
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Fora do Brasil",
+                    "pct": 16.61
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "BPAC3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=159614",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 83.39
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Fora do Brasil",
+                    "pct": 16.61
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "BPAC5": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=159614",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 83.39
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Fora do Brasil",
+                    "pct": 16.61
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "BRFS3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=159359",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Mercado Interno",
+                    "pct": 55
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Outros países",
+                    "pct": 22.8
+                },
+                {
+                    "chave": "SA",
+                    "tipo": "pais",
+                    "nome": "Arabia Saudita",
+                    "pct": 7
+                },
+                {
+                    "chave": "TR",
+                    "tipo": "pais",
+                    "nome": "Turquia",
+                    "pct": 6.1
+                },
+                {
+                    "chave": "CN",
+                    "tipo": "pais",
+                    "nome": "China",
+                    "pct": 4.3
+                },
+                {
+                    "chave": "JP",
+                    "tipo": "pais",
+                    "nome": "Japão",
+                    "pct": 2.7
+                },
+                {
+                    "chave": "AE",
+                    "tipo": "pais",
+                    "nome": "Emirados Árabes Unidos",
+                    "pct": 1.8
+                }
+            ],
+            "cobertura_pct": 99.7
+        },
+        "CMIG3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161853",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "CMIG4": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161853",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "CPLE3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=160389",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "CSAN3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161509",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 86
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Países estrangeiros",
+                    "pct": 14
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "CXSE3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161660",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "ELET3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161886",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "ELET6": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161886",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "EMBR3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161175",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "america_do_norte",
+                    "tipo": "regiao",
+                    "nome": "América do Norte",
+                    "pct": 58.6
+                },
+                {
+                    "chave": "europa",
+                    "tipo": "regiao",
+                    "nome": "Europa",
+                    "pct": 24.4
+                },
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 8.4
+                },
+                {
+                    "chave": "asia",
+                    "tipo": "regiao",
+                    "nome": "Ásia Pacífico",
+                    "pct": 5.4
+                },
+                {
+                    "chave": "america_latina",
+                    "tipo": "regiao",
+                    "nome": "América Latina, exceto Brasil",
+                    "pct": 1.9
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Outras Regiões",
+                    "pct": 1.4
+                }
+            ],
+            "cobertura_pct": 100.1
+        },
+        "EQTL3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161894",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "FLRY3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161798",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "GGBR3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161877",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "america_do_norte",
+                    "tipo": "regiao",
+                    "nome": "América do Norte",
+                    "pct": 51.2
+                },
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 42.5
+                },
+                {
+                    "chave": "america_latina",
+                    "tipo": "regiao",
+                    "nome": "América do Sul",
+                    "pct": 8
+                }
+            ],
+            "cobertura_pct": 101.7
+        },
+        "GGBR4": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161877",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "america_do_norte",
+                    "tipo": "regiao",
+                    "nome": "América do Norte",
+                    "pct": 51.2
+                },
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 42.5
+                },
+                {
+                    "chave": "america_latina",
+                    "tipo": "regiao",
+                    "nome": "América do Sul",
+                    "pct": 8
+                }
+            ],
+            "cobertura_pct": 101.7
+        },
+        "ITSA3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=159348",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "ITSA4": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=159348",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "ITUB3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161558",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 85
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Fora do Brasil",
+                    "pct": 15
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "ITUB4": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161558",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 85
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Fora do Brasil",
+                    "pct": 15
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "JBSS3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161405",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "US",
+                    "tipo": "pais",
+                    "nome": "Estados Unidos",
+                    "pct": 49.8
+                },
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 11.8
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Outros",
+                    "pct": 11.2
+                },
+                {
+                    "chave": "GB",
+                    "tipo": "pais",
+                    "nome": "Reino Unido",
+                    "pct": 5.5
+                },
+                {
+                    "chave": "CN",
+                    "tipo": "pais",
+                    "nome": "China",
+                    "pct": 5.5
+                },
+                {
+                    "chave": "MX",
+                    "tipo": "pais",
+                    "nome": "México",
+                    "pct": 4.6
+                },
+                {
+                    "chave": "CA",
+                    "tipo": "pais",
+                    "nome": "Canadá",
+                    "pct": 3.7
+                },
+                {
+                    "chave": "AU",
+                    "tipo": "pais",
+                    "nome": "Austrália",
+                    "pct": 2.8
+                },
+                {
+                    "chave": "JP",
+                    "tipo": "pais",
+                    "nome": "Japão",
+                    "pct": 2.3
+                },
+                {
+                    "chave": "KR",
+                    "tipo": "pais",
+                    "nome": "Coréia do Sul",
+                    "pct": 2.2
+                },
+                {
+                    "chave": "SA",
+                    "tipo": "pais",
+                    "nome": "Arábia Saudita",
+                    "pct": 0.8
+                }
+            ],
+            "cobertura_pct": 100.2
+        },
+        "JBSS32": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161878",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "US",
+                    "tipo": "pais",
+                    "nome": "Estados Unidos",
+                    "pct": 49.8
+                },
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 11.8
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Outros",
+                    "pct": 11.2
+                },
+                {
+                    "chave": "GB",
+                    "tipo": "pais",
+                    "nome": "Reino Unido",
+                    "pct": 5.5
+                },
+                {
+                    "chave": "CN",
+                    "tipo": "pais",
+                    "nome": "China",
+                    "pct": 5.5
+                },
+                {
+                    "chave": "MX",
+                    "tipo": "pais",
+                    "nome": "México",
+                    "pct": 4.6
+                },
+                {
+                    "chave": "CA",
+                    "tipo": "pais",
+                    "nome": "Canadá",
+                    "pct": 3.7
+                },
+                {
+                    "chave": "AU",
+                    "tipo": "pais",
+                    "nome": "Austrália",
+                    "pct": 2.8
+                },
+                {
+                    "chave": "JP",
+                    "tipo": "pais",
+                    "nome": "Japão",
+                    "pct": 2.3
+                },
+                {
+                    "chave": "KR",
+                    "tipo": "pais",
+                    "nome": "Coréia do Sul",
+                    "pct": 2.2
+                },
+                {
+                    "chave": "SA",
+                    "tipo": "pais",
+                    "nome": "Arábia Saudita",
+                    "pct": 0.8
+                }
+            ],
+            "cobertura_pct": 100.2
+        },
+        "KLBN11": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=159573",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Mercado brasileiro",
+                    "pct": 63
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Demais países",
+                    "pct": 8.5
+                },
+                {
+                    "chave": "IT",
+                    "tipo": "pais",
+                    "nome": "Itália",
+                    "pct": 4.7
+                },
+                {
+                    "chave": "CN",
+                    "tipo": "pais",
+                    "nome": "China",
+                    "pct": 4.5
+                },
+                {
+                    "chave": "US",
+                    "tipo": "pais",
+                    "nome": "EUA",
+                    "pct": 3.8
+                },
+                {
+                    "chave": "MX",
+                    "tipo": "pais",
+                    "nome": "México",
+                    "pct": 3.7
+                },
+                {
+                    "chave": "AR",
+                    "tipo": "pais",
+                    "nome": "Argentina",
+                    "pct": 3.4
+                },
+                {
+                    "chave": "EC",
+                    "tipo": "pais",
+                    "nome": "Equador",
+                    "pct": 1.1
+                },
+                {
+                    "chave": "VN",
+                    "tipo": "pais",
+                    "nome": "Vietnã",
+                    "pct": 1.1
+                },
+                {
+                    "chave": "AE",
+                    "tipo": "pais",
+                    "nome": "Emirados Árabes Unidos",
+                    "pct": 1.1
+                },
+                {
+                    "chave": "TR",
+                    "tipo": "pais",
+                    "nome": "Turquia",
+                    "pct": 1
+                },
+                {
+                    "chave": "SA",
+                    "tipo": "pais",
+                    "nome": "Arábia Saudita",
+                    "pct": 0.8
+                },
+                {
+                    "chave": "CA",
+                    "tipo": "pais",
+                    "nome": "Canadá",
+                    "pct": 0.8
+                },
+                {
+                    "chave": "FR",
+                    "tipo": "pais",
+                    "nome": "França",
+                    "pct": 0.8
+                },
+                {
+                    "chave": "ES",
+                    "tipo": "pais",
+                    "nome": "Espanha",
+                    "pct": 0.7
+                },
+                {
+                    "chave": "DE",
+                    "tipo": "pais",
+                    "nome": "Alemanha",
+                    "pct": 0.7
+                }
+            ],
+            "cobertura_pct": 99.7
+        },
+        "KLBN3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=159573",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Mercado brasileiro",
+                    "pct": 63
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Demais países",
+                    "pct": 8.5
+                },
+                {
+                    "chave": "IT",
+                    "tipo": "pais",
+                    "nome": "Itália",
+                    "pct": 4.7
+                },
+                {
+                    "chave": "CN",
+                    "tipo": "pais",
+                    "nome": "China",
+                    "pct": 4.5
+                },
+                {
+                    "chave": "US",
+                    "tipo": "pais",
+                    "nome": "EUA",
+                    "pct": 3.8
+                },
+                {
+                    "chave": "MX",
+                    "tipo": "pais",
+                    "nome": "México",
+                    "pct": 3.7
+                },
+                {
+                    "chave": "AR",
+                    "tipo": "pais",
+                    "nome": "Argentina",
+                    "pct": 3.4
+                },
+                {
+                    "chave": "EC",
+                    "tipo": "pais",
+                    "nome": "Equador",
+                    "pct": 1.1
+                },
+                {
+                    "chave": "VN",
+                    "tipo": "pais",
+                    "nome": "Vietnã",
+                    "pct": 1.1
+                },
+                {
+                    "chave": "AE",
+                    "tipo": "pais",
+                    "nome": "Emirados Árabes Unidos",
+                    "pct": 1.1
+                },
+                {
+                    "chave": "TR",
+                    "tipo": "pais",
+                    "nome": "Turquia",
+                    "pct": 1
+                },
+                {
+                    "chave": "SA",
+                    "tipo": "pais",
+                    "nome": "Arábia Saudita",
+                    "pct": 0.8
+                },
+                {
+                    "chave": "CA",
+                    "tipo": "pais",
+                    "nome": "Canadá",
+                    "pct": 0.8
+                },
+                {
+                    "chave": "FR",
+                    "tipo": "pais",
+                    "nome": "França",
+                    "pct": 0.8
+                },
+                {
+                    "chave": "ES",
+                    "tipo": "pais",
+                    "nome": "Espanha",
+                    "pct": 0.7
+                },
+                {
+                    "chave": "DE",
+                    "tipo": "pais",
+                    "nome": "Alemanha",
+                    "pct": 0.7
+                }
+            ],
+            "cobertura_pct": 99.7
+        },
+        "KLBN4": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=159573",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Mercado brasileiro",
+                    "pct": 63
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Demais países",
+                    "pct": 8.5
+                },
+                {
+                    "chave": "IT",
+                    "tipo": "pais",
+                    "nome": "Itália",
+                    "pct": 4.7
+                },
+                {
+                    "chave": "CN",
+                    "tipo": "pais",
+                    "nome": "China",
+                    "pct": 4.5
+                },
+                {
+                    "chave": "US",
+                    "tipo": "pais",
+                    "nome": "EUA",
+                    "pct": 3.8
+                },
+                {
+                    "chave": "MX",
+                    "tipo": "pais",
+                    "nome": "México",
+                    "pct": 3.7
+                },
+                {
+                    "chave": "AR",
+                    "tipo": "pais",
+                    "nome": "Argentina",
+                    "pct": 3.4
+                },
+                {
+                    "chave": "EC",
+                    "tipo": "pais",
+                    "nome": "Equador",
+                    "pct": 1.1
+                },
+                {
+                    "chave": "VN",
+                    "tipo": "pais",
+                    "nome": "Vietnã",
+                    "pct": 1.1
+                },
+                {
+                    "chave": "AE",
+                    "tipo": "pais",
+                    "nome": "Emirados Árabes Unidos",
+                    "pct": 1.1
+                },
+                {
+                    "chave": "TR",
+                    "tipo": "pais",
+                    "nome": "Turquia",
+                    "pct": 1
+                },
+                {
+                    "chave": "SA",
+                    "tipo": "pais",
+                    "nome": "Arábia Saudita",
+                    "pct": 0.8
+                },
+                {
+                    "chave": "CA",
+                    "tipo": "pais",
+                    "nome": "Canadá",
+                    "pct": 0.8
+                },
+                {
+                    "chave": "FR",
+                    "tipo": "pais",
+                    "nome": "França",
+                    "pct": 0.8
+                },
+                {
+                    "chave": "ES",
+                    "tipo": "pais",
+                    "nome": "Espanha",
+                    "pct": 0.7
+                },
+                {
+                    "chave": "DE",
+                    "tipo": "pais",
+                    "nome": "Alemanha",
+                    "pct": 0.7
+                }
+            ],
+            "cobertura_pct": 99.7
+        },
+        "PETR3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161309",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 70.63
+                },
+                {
+                    "chave": "CN",
+                    "tipo": "pais",
+                    "nome": "China",
+                    "pct": 10.74
+                },
+                {
+                    "chave": "asia",
+                    "tipo": "regiao",
+                    "nome": "Ásia (exceto China e Singapura)",
+                    "pct": 4.86
+                },
+                {
+                    "chave": "europa",
+                    "tipo": "regiao",
+                    "nome": "Europa",
+                    "pct": 4.13
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Américas (exceto Estados Unidos da América)",
+                    "pct": 4.03
+                },
+                {
+                    "chave": "SG",
+                    "tipo": "pais",
+                    "nome": "Singapura",
+                    "pct": 2.96
+                },
+                {
+                    "chave": "US",
+                    "tipo": "pais",
+                    "nome": "Estados Unidos da América",
+                    "pct": 2.19
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Outros",
+                    "pct": 0.47
+                }
+            ],
+            "cobertura_pct": 100.01
+        },
+        "PETR4": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161309",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 70.63
+                },
+                {
+                    "chave": "CN",
+                    "tipo": "pais",
+                    "nome": "China",
+                    "pct": 10.74
+                },
+                {
+                    "chave": "asia",
+                    "tipo": "regiao",
+                    "nome": "Ásia (exceto China e Singapura)",
+                    "pct": 4.86
+                },
+                {
+                    "chave": "europa",
+                    "tipo": "regiao",
+                    "nome": "Europa",
+                    "pct": 4.13
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Américas (exceto Estados Unidos da América)",
+                    "pct": 4.03
+                },
+                {
+                    "chave": "SG",
+                    "tipo": "pais",
+                    "nome": "Singapura",
+                    "pct": 2.96
+                },
+                {
+                    "chave": "US",
+                    "tipo": "pais",
+                    "nome": "Estados Unidos da América",
+                    "pct": 2.19
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Outros",
+                    "pct": 0.47
+                }
+            ],
+            "cobertura_pct": 100.01
+        },
+        "PRIO3": null,
+        "RADL3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161704",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "RAIL3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161728",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "RANI3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=159243",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 90.9
+                },
+                {
+                    "chave": "AR",
+                    "tipo": "pais",
+                    "nome": "Argentina",
+                    "pct": 1.95
+                },
+                {
+                    "chave": "SA",
+                    "tipo": "pais",
+                    "nome": "Arábia Saudita",
+                    "pct": 1.93
+                },
+                {
+                    "chave": "ZA",
+                    "tipo": "pais",
+                    "nome": "África do Sul",
+                    "pct": 0.8
+                },
+                {
+                    "chave": "CN",
+                    "tipo": "pais",
+                    "nome": "China",
+                    "pct": 0.72
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Outros países",
+                    "pct": 0.55
+                },
+                {
+                    "chave": "PY",
+                    "tipo": "pais",
+                    "nome": "Paraguai",
+                    "pct": 0.54
+                },
+                {
+                    "chave": "CL",
+                    "tipo": "pais",
+                    "nome": "Chile",
+                    "pct": 0.52
+                },
+                {
+                    "chave": "PK",
+                    "tipo": "pais",
+                    "nome": "Paquistão",
+                    "pct": 0.39
+                },
+                {
+                    "chave": "PT",
+                    "tipo": "pais",
+                    "nome": "Portugal",
+                    "pct": 0.37
+                },
+                {
+                    "chave": "AE",
+                    "tipo": "pais",
+                    "nome": "Emirados Árabes Unidos",
+                    "pct": 0.28
+                },
+                {
+                    "chave": "PE",
+                    "tipo": "pais",
+                    "nome": "Peru",
+                    "pct": 0.24
+                },
+                {
+                    "chave": "KW",
+                    "tipo": "pais",
+                    "nome": "Kuwait",
+                    "pct": 0.23
+                },
+                {
+                    "chave": "DE",
+                    "tipo": "pais",
+                    "nome": "Alemanha",
+                    "pct": 0.21
+                },
+                {
+                    "chave": "UY",
+                    "tipo": "pais",
+                    "nome": "Uruguai",
+                    "pct": 0.19
+                },
+                {
+                    "chave": "BO",
+                    "tipo": "pais",
+                    "nome": "Bolívia",
+                    "pct": 0.18
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "RDOR3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161861",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "RENT3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161316",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 99.4
+                }
+            ],
+            "cobertura_pct": 99.4
+        },
+        "SBSP3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161933",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "SUZB3": null,
+        "TAEE11": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161829",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Mercado brasileiro",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "TAEE3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161829",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Mercado brasileiro",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "TAEE4": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161829",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Mercado brasileiro",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "TOTS3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161802",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "País sede do emissor",
+                    "pct": 97.8
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Fora do Brasil",
+                    "pct": 2.2
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "UGPA3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=158948",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Mercado interno",
+                    "pct": 98
+                }
+            ],
+            "cobertura_pct": 98
+        },
+        "VALE3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161642",
+            "status": "lido",
+            "fatias": [
+                {
+                    "chave": "CN",
+                    "tipo": "pais",
+                    "nome": "China",
+                    "pct": 50.4
+                },
+                {
+                    "chave": "asia",
+                    "tipo": "regiao",
+                    "nome": "Ásia › Outros",
+                    "pct": 10.1
+                },
+                {
+                    "chave": "europa",
+                    "tipo": "regiao",
+                    "nome": "Europa › Outros",
+                    "pct": 10.1
+                },
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 8.2
+                },
+                {
+                    "chave": "JP",
+                    "tipo": "pais",
+                    "nome": "Japão",
+                    "pct": 6.3
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Demais países",
+                    "pct": 5.1
+                },
+                {
+                    "chave": "DE",
+                    "tipo": "pais",
+                    "nome": "Alemanha",
+                    "pct": 4.8
+                },
+                {
+                    "chave": "US",
+                    "tipo": "pais",
+                    "nome": "EUA",
+                    "pct": 2.9
+                },
+                {
+                    "chave": "outros",
+                    "tipo": "regiao",
+                    "nome": "Outros",
+                    "pct": 2
+                }
+            ],
+            "cobertura_pct": 99.9
+        },
+        "VIVT3": {
+            "ano": 2026,
+            "fonte_url": "https://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=160414",
+            "status": "nao_aplicavel_100_brasil",
+            "fatias": [
+                {
+                    "chave": "BR",
+                    "tipo": "pais",
+                    "nome": "Brasil",
+                    "pct": 100
+                }
+            ],
+            "cobertura_pct": 100
+        },
+        "WEGE3": null
+    }
+}

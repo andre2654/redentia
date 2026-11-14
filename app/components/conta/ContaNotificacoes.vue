@@ -1,14 +1,30 @@
 <script setup lang="ts">
 // Seção Notificações de /conta (PR4). Central onde a pessoa escolhe ONDE recebe
-// (canais e-mail / WhatsApp) e O QUÊ — por enquanto só o resumo diário. MOCK
-// (decisão do dono): as preferências vivem em localStorage via useBriefingPrefs,
-// compartilhadas com o botão da home; a entrega real por canal é iniciativa
-// futura. Alternar salva na hora. Contato (e-mail/telefone) vem do /auth/me.
+// (canais e-mail / WhatsApp) e O QUÊ. O resumo diário vive em useBriefingPrefs
+// (cache local + o backend), compartilhado com o botão da home. Alternar salva
+// na hora. Contato (e-mail/telefone) vem do /auth/me.
+//
+// "Avisos da carteira" (07/11/2026; plano, Parte 4.8): uma linha por tópico
+// novo (a semana, os proventos do mês e o do dia, o relatório, o imposto e as
+// ideias), com o exemplo da mensagem e os dois canais. É o mesmo lugar que o pé
+// do modal de avisos da /carteira grava (usePreferenciasDaCarteira). O
+// WhatsApp só liga com o aceite da pessoa; sem ele, fica desligado com a dica.
+import { TOPICOS_CARTEIRA, type TopicoCarteira } from '~/utils/avisosCanais'
+import { semQuebraNoReal } from '~/utils/carteiraVisao'
+
 const { data: me } = await useMe()
 const { prefs, save, hydrate } = useBriefingPrefs()
+const carteira = usePreferenciasDaCarteira()
 
 const u = computed(() => me.value?.user ?? null)
-onMounted(hydrate)
+onMounted(() => {
+  hydrate()
+  void carteira.carregar({ user: u.value })
+})
+const carteiraPronta = computed(() => carteira.estado.value === 'pronto')
+function mudarCarteira(t: TopicoCarteira, canal: 'email' | 'whatsapp', v: boolean) {
+  void carteira.salvar(t, { ...carteira.prefs.value[t], [canal]: v })
+}
 
 const hasPhone = computed(() => !!u.value?.celular)
 
@@ -35,7 +51,7 @@ const em = computed({
 </script>
 
 <template>
-  <ContaSection title="Notificações" subtitle="Escolha onde e o que você recebe da Redentia.">
+  <ContaSection title="Notificações" subtitle="Escolha onde e o que você recebe da Aportou.">
     <div class="nt">
       <div class="nt__topic">
         <div class="nt__topic-head">
@@ -70,27 +86,98 @@ const em = computed({
         </div>
       </div>
 
+      <div class="nt__topic nt__carteira">
+        <h3 class="nt__topic-title">Avisos da carteira</h3>
+        <p class="nt__topic-desc">O que a Aportou manda sobre a sua carteira, além da tela. Sem nada ligado, o aviso fica só na carteira.</p>
+
+        <ul class="nt__avisos">
+          <li v-for="t in TOPICOS_CARTEIRA" :key="t.id" class="nt__aviso">
+            <div class="nt__aviso-txt">
+              <span class="nt__aviso-n">{{ t.nome }}<span class="nt__aviso-q">{{ t.quando }}</span></span>
+              <span class="nt__aviso-ex">“{{ semQuebraNoReal(t.exemplo) }}”</span>
+            </div>
+            <div v-if="carteiraPronta" class="nt__aviso-ch">
+              <label class="nt__aviso-c" :class="{ 'nt__aviso-c--off': !carteira.optIn.value }">
+                <span>WhatsApp</span>
+                <NuToggle :model-value="carteira.prefs.value[t.id].whatsapp" :disabled="!carteira.optIn.value" :aria-label="`${t.nome} por WhatsApp`" @update:model-value="(v: boolean) => mudarCarteira(t.id, 'whatsapp', v)" />
+              </label>
+              <label class="nt__aviso-c">
+                <span>E-mail</span>
+                <NuToggle :model-value="carteira.prefs.value[t.id].email" :aria-label="`${t.nome} por e-mail`" @update:model-value="(v: boolean) => mudarCarteira(t.id, 'email', v)" />
+              </label>
+            </div>
+            <div v-else-if="carteira.estado.value !== 'erro'" class="nt__aviso-ch" aria-hidden="true">
+              <NuSkeleton width="112px" height="30px" radius="pill" />
+              <NuSkeleton width="96px" height="30px" radius="pill" />
+            </div>
+            <p v-if="carteira.erro.value?.topico === t.id" class="nt__erro nt__erro--linha" role="status">{{ carteira.erro.value.texto }}</p>
+          </li>
+        </ul>
+        <p v-if="carteiraPronta && !carteira.optIn.value" class="nt__dica">O WhatsApp fica desligado até você aceitar receber a Aportou por lá.</p>
+        <p v-if="carteira.estado.value === 'erro'" class="nt__erro">Não consegui ler estes avisos agora. Recarregue a página para tentar de novo.</p>
+      </div>
+
       <p class="nt__note">Suas preferências são salvas automaticamente.</p>
     </div>
   </ContaSection>
 </template>
 
 <style scoped>
-.nt__topic { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 22px 24px; }
-.nt__topic-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
-.nt__topic-desc { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+/* Aportou (11/11/2026): cada assunto é um cartão branco dentro do painel creme
+   (raio 22, a sombra do branco); as linhas de canal e de aviso ficam no creme
+   da página, com raio 16. */
+.nt__topic { background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-branco); padding: clamp(18px, 2.4vw, 24px); }
+.nt__topic-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+.nt__topic-desc { margin: 6px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
 .nt__channels { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
 .nt__ch {
-  display: flex; align-items: center; gap: 14px;
-  background: var(--nu-white); border-radius: var(--nu-r-input); padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px; min-height: 68px;
+  background: var(--nu-page); border-radius: var(--nu-r-tile); padding: 12px 16px;
 }
-.nt__ch-ic { flex-shrink: 0; width: 40px; height: 40px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; }
-.nt__ch-ic--wa { background: var(--nu-green-bg); color: var(--nu-green); }
-.nt__ch-ic--mail { background: var(--nu-blue-bg); color: var(--nu-blue); }
+.nt__ch-ic { flex-shrink: 0; width: 44px; height: 44px; border-radius: var(--nu-r-chip); display: inline-flex; align-items: center; justify-content: center; }
+.nt__ch-ic--wa { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.nt__ch-ic--mail { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .nt__ch-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.nt__ch-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
-.nt__ch-meta { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nt__ch-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
+.nt__ch-meta { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.nt__note { margin: 16px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.nt__note { margin: 18px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); }
+
+/* avisos da carteira: o mesmo cartão, uma linha creme por tópico */
+.nt__carteira { margin-top: 16px; }
+.nt__avisos { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 20px 0 0; padding: 0; }
+.nt__aviso { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; background: var(--nu-page); border-radius: var(--nu-r-tile); padding: 14px 16px; }
+.nt__erro--linha { flex-basis: 100%; margin: 0; }
+.nt__aviso-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.nt__aviso-n { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
+.nt__aviso-q { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
+.nt__aviso-ex { color: var(--nu-gray-3); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); line-height: 1.5; font-variant-numeric: tabular-nums; }
+.nt__aviso-ch { flex-shrink: 0; display: flex; align-items: center; gap: 16px; }
+.nt__aviso-c { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap; cursor: pointer; }
+.nt__aviso-c--off { color: var(--nu-gray); cursor: not-allowed; }
+/* sobre o creme da página o esqueleto padrão quase some: um tom acima, com o mesmo brilho */
+.nt__aviso-ch :deep(.nusk) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-page)); background-image: linear-gradient(100deg, var(--esq) 25%, var(--nu-white) 50%, var(--esq) 75%); }
+/* o interruptor desligado, sobre o creme: o trilho um tom acima para não sumir */
+.nt :deep(.ntg:not(.ntg--on)) { background: var(--nu-line); }
+.nt__dica { margin: 14px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.5; }
+.nt__erro { margin: 12px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); line-height: 1.5; }
+/* no celular, um canal por linha (o nome à esquerda, o interruptor à direita), como no resumo diário */
+@media (max-width: 640px) {
+  /* três cartões um dentro do outro deixavam o texto com 230px: o assunto perde a caixa branca
+     (vira título + fio) e são as linhas que sobem para o branco, na largura toda do painel */
+  .nt__topic { background: transparent; box-shadow: none; border-radius: 0; padding: 0; }
+  .nt__carteira { margin-top: 26px; padding-top: 24px; border-top: 1px solid var(--nu-line); }
+  .nt__ch, .nt__aviso { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
+  .nt__aviso-ch :deep(.nusk) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-white)); }
+  /* o canal em duas linhas: ícone, nome e interruptor em cima; o contato embaixo, na largura toda
+     (ao lado do interruptor o e-mail quebrava no meio) */
+  .nt__ch { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 10px 14px; padding: 14px 16px; }
+  .nt__ch-txt { display: contents; }
+  .nt__ch-meta { grid-column: 1 / -1; grid-row: 2; white-space: normal; overflow-wrap: anywhere; }
+  .nt__ch > :deep(.ntg) { grid-column: 3; grid-row: 1; }
+  .nt__aviso { flex-direction: column; align-items: stretch; }
+  .nt__aviso-ch { flex-direction: column; align-items: stretch; gap: 0; }
+  .nt__aviso-c { justify-content: space-between; }
+}
 </style>

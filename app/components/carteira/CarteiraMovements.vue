@@ -8,9 +8,15 @@
 // círculo azul 52px e gap 14→19px no hover — aqui ele é FUNCIONAL: expande
 // a lista pros últimos 12 meses buscados (não existe página de extrato).
 import type { CarteiraMovementsVM, CarteiraMovementVM } from '~/types/carteira'
+import type { SeloImposto } from '~/types/carteiraVisao'
+import { SELO } from '~/utils/impostoVisao'
 
-const props = defineProps<{ movements: CarteiraMovementsVM }>()
+// selos (a /carteira nova, 07/11/2026): o selo do imposto do mês de cada venda,
+// pela chave 'AAAA-MM|TICKER' do histórico do imposto; venda fora dele fica sem
+const props = defineProps<{ movements: CarteiraMovementsVM; selos?: Record<string, SeloImposto> }>()
 const { hidden } = useHiddenValues()
+const seloDe = (e: CarteiraMovementVM): SeloImposto | null =>
+  (e.badge === 'Venda' && e.mes ? props.selos?.[`${e.mes}|${e.ticker}`] ?? null : null)
 
 const TABS = ['Tudo', 'Compras', 'Vendas', 'Proventos'] as const
 const tab = ref<string>('Tudo')
@@ -33,13 +39,21 @@ const maskVal = (e: CarteiraMovementVM) => (hidden.value ? (e.valRaw < 0 ? '-R$ 
 const saldoMasked = computed(() => (hidden.value ? (props.movements.saldoDir === 'down' ? '-R$ ••' : '+R$ ••') : props.movements.saldo))
 
 const hasMore = computed(() => props.movements.allEvents.length > props.movements.monthEvents.length)
+
+// o filtro no trilho da base (NuTrilho, robustez 11/11): cada opção com a contagem do que ela mostra
+const opcoesDoFiltro = computed(() => TABS.map((t) => {
+  const want = BADGE_OF[t]
+  return { valor: t as string, rotulo: t, contagem: want ? pool.value.filter((e) => e.badge === want).length : pool.value.length }
+}))
+// o tipo de cada operação no selo da base: provento verde, compra azul, venda âmbar
+const TOM_DO_TIPO: Record<CarteiraMovementVM['badge'], 'verde' | 'azul' | 'ambar'> = { Provento: 'verde', Compra: 'azul', Venda: 'ambar' }
 </script>
 
 <template>
-  <section class="cmv">
+  <section v-contexto-chat="{ id: 'carteira:movimentacoes', tipo: 'carteira', rotulo: 'Movimentações' }" v-revelar="{ alvo: 'filhos' }" class="cmv">
     <div class="cmv__head">
       <h2 class="cmv__title">Movimentações.</h2>
-      <NuFilterPills v-model="tab" :items="TABS" />
+      <NuTrilho v-model="tab" :opcoes="opcoesDoFiltro" rotulo="Filtrar as movimentações" largo="celular" class="cmv__filtro" />
     </div>
     <div class="cmv__sub">
       {{ periodLabel }} · {{ saldoLabel }}
@@ -47,7 +61,9 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
       · {{ countLabel }}
     </div>
     <div class="cmv__list">
-      <div v-for="e in rows" :key="e.key" class="cmv__row">
+      <!-- o cabeçalho da tabela, em caixa alta espaçada (cada linha já se lê sozinha no leitor de tela) -->
+      <p v-if="rows.length" class="cmv__cab" aria-hidden="true"><span>Data</span><span>Operação</span><span>Valor</span></p>
+      <div v-for="e in rows" :key="e.key" v-contexto-chat="{ id: `carteira:mov:${e.key}`, tipo: 'posicao', rotulo: `${e.badge} ${e.ticker} ${e.d}/${e.m}` }" class="cmv__row">
         <span class="cmv__date-tile">
           <span class="cmv__date-d">{{ e.d }}</span>
           <span class="cmv__date-m">{{ e.m }}</span>
@@ -56,7 +72,9 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
         <span class="cmv__main">
           <span class="cmv__ticker-row">
             <span class="cmv__ticker">{{ e.ticker }}</span>
-            <span class="cmv__badge" :class="`cmv__badge--${e.badge.toLowerCase()}`">{{ e.badge }}</span>
+            <NuSelo :tom="TOM_DO_TIPO[e.badge]" tamanho="p">{{ e.badge }}</NuSelo>
+            <!-- o selo do imposto da venda: contorno, com o ponto na cor do selo (não briga com o tipo) -->
+            <NuSelo v-if="seloDe(e)" tom="contorno" tamanho="p" ponto class="cmv__selo" :class="`cmv__selo--${seloDe(e)}`">{{ SELO[seloDe(e)!] }}</NuSelo>
           </span>
           <span class="cmv__desc">{{ e.sub }}</span>
         </span>
@@ -64,63 +82,66 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
       </div>
       <div v-if="!rows.length" class="cmv__empty">Nenhuma operação nesse filtro em {{ periodLabel.toLowerCase() }}.</div>
     </div>
-    <button v-if="hasMore && !expanded" type="button" class="cmv__more" @click="expanded = true">
-      <span class="cmv__more-circle">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--nu-white)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-      </span>
-      <span class="cmv__more-label">Ver extrato completo</span>
-    </button>
+    <NuBotaoSeta v-if="hasMore && !expanded" variante="carvao" tamanho="m" class="cmv__more" @click="expanded = true">Ver extrato completo</NuBotaoSeta>
   </section>
 </template>
 
 <style scoped>
 .cmv {
-  background: var(--nu-white);
-  padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-page);
+  padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px));
 }
+/* o trilho do filtro sobre a página: um tom abaixo do creme, para o trilho não sumir */
+.cmv__filtro { --ntr-trilho: color-mix(in srgb, var(--nu-ink) 6%, var(--nu-page)); }
 .cmv__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .cmv__title {
-  margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02;
 }
-.cmv__sub { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; margin-top: 14px; }
-.cmv__saldo--up { color: var(--nu-green-2); font-weight: 800; }
-.cmv__saldo--down { color: var(--nu-ink); font-weight: 800; }
-.cmv__list { margin-top: 26px; }
-.cmv__row { display: flex; align-items: center; gap: 16px; padding: 15px 0; border-top: 1.5px solid var(--nu-cream-2); }
+.cmv__sub { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); margin-top: 14px; }
+.cmv__saldo--up { color: var(--nu-green-text); font-weight: var(--nu-w-forte); }
+.cmv__saldo--down { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
+/* as operações num cartão quente, com fios de 1,5px */
+.cmv__list { margin-top: 26px; padding: clamp(6px, 1vw, 12px) clamp(18px, 2.4vw, 28px); border-radius: var(--nu-r-card); background: var(--nu-band); box-shadow: var(--nu-shadow-quente); }
+.cmv__cab { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 16px; margin: 0; padding: 14px 0 10px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
+.cmv__cab span:first-child { text-align: center; }
+/* "Operação" começa onde começa o código do ativo (depois do quadrado do logo) */
+.cmv__cab span:nth-child(2) { padding-left: 64px; }
+.cmv__cab span:last-child { text-align: right; }
+.cmv__row { display: flex; align-items: center; gap: 16px; padding: 15px 10px; margin: 0 -10px; border-top: 1px solid var(--nu-line); border-radius: 0; transition: background var(--nu-dur-media) var(--nu-ease-cor); }
+.cmv__row:hover { background: var(--nu-cream-2); }
 .cmv__date-tile {
-  width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--nu-r-input);
-  background: var(--nu-cream); display: flex; flex-direction: column;
+  width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--nu-r-chip);
+  background: var(--nu-cream-2); display: flex; flex-direction: column;
   align-items: center; justify-content: center;
 }
-.cmv__date-d { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1; }
-.cmv__date-m { color: var(--nu-gray); font-size: 9px; font-weight: 800; letter-spacing: .5px; margin-top: 2px; }
+.cmv__date-d { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); line-height: 1; }
+.cmv__date-m { color: var(--nu-gray); font-size: 9px; font-weight: var(--nu-w-forte); letter-spacing: .5px; margin-top: 2px; }
 .cmv__main { flex: 1; min-width: 0; overflow: hidden; }
-.cmv__ticker-row { display: flex; align-items: center; gap: 10px; }
-.cmv__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; white-space: nowrap; }
-.cmv__badge {
-  display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: 700;
-  padding: 3px 10px; border-radius: var(--nu-r-pill); white-space: nowrap; flex-shrink: 0;
-}
-.cmv__badge--provento { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.cmv__badge--compra { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
-.cmv__badge--venda { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
+.cmv__ticker-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; }
+.cmv__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); white-space: nowrap; }
+/* o ponto do selo do imposto na cor de cada estado (a variável do NuSelo) */
+.cmv__selo--isento { --nsl-ponto: var(--nu-green); }
+.cmv__selo--pago { --nsl-ponto: var(--nu-blue); }
+.cmv__selo--a_conferir, .cmv__selo--custo_desconhecido { --nsl-ponto: var(--nu-amber); }
 .cmv__desc {
-  display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 3px;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); margin-top: 3px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.cmv__val { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
-.cmv__val--pos { color: var(--nu-green-2); }
-.cmv__empty { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; padding: 22px 0; border-top: 1.5px solid var(--nu-cream-2); }
-.cmv__more {
-  display: inline-flex; align-items: center; gap: 14px; margin-top: 34px;
-  background: transparent; border: none; padding: 0; cursor: pointer; transition: gap .2s;
+.cmv__val { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.cmv__val--pos { color: var(--nu-green-text); }
+.cmv__empty { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); padding: 22px 0; }
+.cmv__more { margin-top: 24px; }
+/* no celular (07/11/2026): com a data, a logo e o valor na mesma linha, sobravam
+   59 px para o ticker em 375 (o GOLD11 saía cortado). O ticker e os selos ganham
+   a largura toda; a descrição e o valor descem para a segunda linha. */
+@media (max-width: 640px) {
+  .cmv__row { display: grid; grid-template-columns: 48px 48px minmax(0, 1fr) auto; grid-template-areas: 'd l t t' 'd l s v'; align-items: center; column-gap: 12px; row-gap: 2px; }
+  .cmv__date-tile { grid-area: d; }
+  .cmv__row > :nth-child(2) { grid-area: l; }
+  .cmv__main { display: contents; }
+  .cmv__ticker-row { grid-area: t; }
+  .cmv__desc { grid-area: s; margin-top: 0; }
+  .cmv__val { grid-area: v; }
 }
-.cmv__more:hover { gap: 19px; }
-.cmv__more-circle {
-  width: 52px; height: 52px; border-radius: 50%; background: var(--nu-blue);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.cmv__more-label { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
 </style>

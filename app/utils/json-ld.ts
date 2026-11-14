@@ -1,5 +1,6 @@
 /**
- * JSON-LD da entidade Redentia. A Organization sai uma vez, no app.vue.
+ * JSON-LD da entidade Aportou (o produto de investidor; a Redentia, empresa-mãe,
+ * ficou com o B2B em redentia.com.br). A Organization sai uma vez, no app.vue.
  * WebSite, WebPage e SoftwareApplication apontam para o @id (publisher ou
  * provider) em vez de repetir o objeto.
  *
@@ -18,9 +19,10 @@
  * 9h–18h), então o schema não declara horário.
  */
 import { EMPRESA } from '../../shared/utils/empresa.ts'
+import { MARCA } from '../../shared/utils/marca.ts'
 
 export const EMAIL_SUPORTE = 'relacionamento@redentia.com.br'
-const LOGO_PATH = '/logo-azul.svg'
+const LOGO_PATH = '/icone-aportou.svg'
 
 const SAME_AS_EMPRESA = [
   'https://www.instagram.com/redentia.wealth/',
@@ -55,12 +57,14 @@ export function organizacaoJsonLd(origem: string) {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': idOrganizacao(site),
-    name: 'Redentia',
+    name: MARCA.nome,
+    slogan: MARCA.frase,
+    parentOrganization: { '@type': 'Organization', name: MARCA.b2b, url: 'https://www.redentia.com.br' },
     legalName: EMPRESA.razaoSocial,
     taxID: EMPRESA.cnpj,
     url: site,
     logo: `${site}${LOGO_PATH}`,
-    description: 'Plataforma brasileira de análise de investimentos com IA: ações, FIIs, notícias, teses e carteira.',
+    description: MARCA.descricao,
     sameAs: [...SAME_AS_EMPRESA],
     founder: {
       '@type': 'Person',
@@ -83,7 +87,7 @@ export function websiteInicio(origem: string, entidade = origem) {
   return {
     '@type': 'WebSite',
     '@id': `${site}/#website`,
-    name: 'Redentia',
+    name: MARCA.nome,
     url: `${site}/`,
     inLanguage: 'pt-BR',
     publisher: referenciaOrganizacao(entidade),
@@ -123,7 +127,7 @@ export function faqJsonLd(items: { q: string, a: string }[]) {
 
 /**
  * Os quatro scripts da home quando a origem canônica e o siteUrl são o
- * mesmo valor (produção: https://www.redentia.com.br). Ordem de registro:
+ * mesmo valor (produção: https://aportou.com.br). Ordem de registro:
  * Organization (app.vue), WebSite e BreadcrumbList (usePageSeo), FAQPage
  * (NuFaqAccordion da home).
  */

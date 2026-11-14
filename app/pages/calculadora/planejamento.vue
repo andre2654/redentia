@@ -104,7 +104,7 @@ const faqItems = [
   { q: 'Devo incluir imóveis no planejamento patrimonial?', a: 'Imóveis físicos são ilíquidos e difíceis de precificar, então nossa calculadora não os inclui. Você pode investir em Fundos Imobiliários (FIIs), que têm liquidez, diversificação e pagam dividendos mensais. FIIs entram nas carteiras recomendadas. Se você já tem imóveis próprios, considere-os como parte do patrimônio total e foque os investimentos em ações e FIIs para diversificação.' },
   { q: 'Quanto da minha renda devo investir mensalmente?', a: 'Uma regra comum é 20-30% da renda líquida, mínimo de 10%. Depende da sua situação: idade, dependentes, custo de vida, dívidas. Se você ganha R$ 5.000, investir R$ 500-1.500/mês é razoável. Comece com o que é confortável e aumente gradualmente. O mais importante é a consistência: melhor investir R$ 300/mês todo mês do que R$ 1.000 de forma irregular. Comece agora, mesmo que com pouco.' },
   { q: 'Qual a diferença entre estratégia de rentabilidade e segurança?', a: 'Rentabilidade prioriza ativos com melhor performance histórica (80-90% ações + 10-20% FIIs), com retorno médio de 14-18% a.a. e maior volatilidade, ideal para horizontes de 10+ anos. Segurança mistura defensivos (50-60% bancos/energia/saneamento), 30-40% FIIs e 10% renda fixa, com retorno de 10-13% a.a. e menor oscilação, ideal para horizontes de 5-10 anos ou perfil conservador.' },
-  { q: 'Como compartilhar uma simulação específica de planejamento?', a: 'Basta copiar a URL com os parâmetros: https://redentia.com.br/calculadora/planejamento?goal=500000&monthly=1500&strategy=rentabilidade já abre a calculadora preenchida e calcula automaticamente a carteira sugerida. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a meta nos favoritos.' },
+  { q: 'Como compartilhar uma simulação específica de planejamento?', a: 'Basta copiar a URL com os parâmetros: https://aportou.com.br/calculadora/planejamento?goal=500000&monthly=1500&strategy=rentabilidade já abre a calculadora preenchida e calcula automaticamente a carteira sugerida. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a meta nos favoritos.' },
   { q: 'O que é asset allocation e por que importa?', a: 'Asset allocation é a distribuição percentual da carteira entre classes de ativos (renda fixa, ações, FIIs, internacional, ouro). O estudo clássico Brinson (1986) mostra que 90% da variação de retorno de longo prazo vem da ALOCAÇÃO, não da escolha de ativos individuais. Por isso decidir "quanto em cada classe" é mais importante que "qual ação comprar". Exemplo: 60% renda variável + 40% renda fixa é moderado clássico.' },
   { q: 'Quando faz sentido fazer planejamento sucessório?', a: 'Quando o patrimônio passa de R$ 500.000, você tem múltiplos herdeiros, ou conduz atividade empresarial. Instrumentos: testamento (define partilha), doação em vida com usufruto (você fica com renda enquanto vivo), holding familiar (PJ que centraliza ativos, economiza ITCMD), seguro de vida resgatável (não entra em inventário). ITCMD varia 4-8% por estado.' },
   { q: 'O que é uma holding familiar?', a: 'É uma empresa (geralmente Ltda) criada pra centralizar o patrimônio da família. Vantagens: planejamento sucessório (cotas se transferem por procuração simples, sem inventário), economia de ITCMD (em alguns estados), proteção patrimonial (em casos específicos). Custos: R$ 5-15k/ano de contabilidade + ITBI/ITCMD na transferência inicial. Só vale a pena pra patrimônio acima de R$ 1 milhão.' },
@@ -124,7 +124,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: 'Calculadora de Planejamento Patrimonial Redentia',
+      name: `Calculadora de Planejamento Patrimonial ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       applicationSubCategory: 'Planejamento patrimonial',
       operatingSystem: 'Web',
@@ -179,13 +179,13 @@ usePageSeo({
     <CalcFaixaCta
       compacta
       titulo="Veja como essa conta se adapta à sua vida."
-      texto="Com a conta grátis da Redentia, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
+      texto="Com a conta grátis da Aportou, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
     />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <CalcBand tone="cream" title="Cenários populares de planejamento">
+    <CalcBand v-revelar tone="cream" title="Cenários populares de planejamento">
       <template #dek>
         <p>Veja na hora a carteira sugerida e o tempo até a meta dos cenários mais buscados, basta clicar e a simulação carrega já preenchida.</p>
       </template>
@@ -198,7 +198,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Simulador de Planejamento Patrimonial grátis e online</template>
       <template #left>
         <h2 class="pl__sub">O que é Planejamento Patrimonial?</h2>
@@ -211,7 +211,7 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcBand tone="cream" title-tag="h3" title="Por que Fazer um Planejamento Patrimonial?">
+    <CalcBand v-revelar tone="cream" title-tag="h3" title="Por que Fazer um Planejamento Patrimonial?">
       <div class="pl__tiles">
         <div v-for="c in whyCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--accent">{{ c.title }}</h4>
@@ -220,7 +220,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Reserva de Emergência: Pré-requisito do Planejamento</template>
       <div class="pl__prose">
         <p>Antes de qualquer estratégia patrimonial, monte uma reserva de emergência. Quanto: 6 a 12 meses do seu custo de vida (autônomo ou renda variável: 12 meses; CLT estável: 6 meses). Onde guardar: Tesouro Selic 2030, CDB com liquidez diária de banco grande (FGC até R$ 250 mil), conta remunerada como Nubank, Inter ou C6 que rende ~100% do CDI.</p>
@@ -229,12 +229,12 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
-    <CalcBand tone="cream" title="Como Usar a Calculadora de Planejamento">
+    <CalcBand v-revelar tone="cream" title="Como Usar a Calculadora de Planejamento">
       <div class="pl__band-body"><CalcSteps :steps="howToSteps" /></div>
     </CalcBand>
 
     <!-- ============ Asset allocation (split: título gigante + prosa e tiles à direita) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Asset Allocation: Alocação de Ativos por Perfil</template>
       <div class="pl__prose">
         <p>Asset allocation é a distribuição percentual da carteira entre classes de ativos: ações, FIIs, renda fixa, ouro, internacional. A decisão estratégica de "quanto em cada classe" pesa mais que qual ativo individual escolher dentro da classe.</p>
@@ -249,7 +249,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Estratégias (banda creme, cards brancos com título h3) ============ -->
-    <CalcBand tone="cream" title="Estratégias de Planejamento">
+    <CalcBand v-revelar tone="cream" title="Estratégias de Planejamento">
       <div class="pl__ex-grid">
         <div>
           <h3 class="pl__ex-title">Maior Rentabilidade</h3>
@@ -293,7 +293,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Exemplos de metas (banda branca, cards creme com título h3) ============ -->
-    <CalcBand tone="white" title="Exemplos de Metas e Resultados">
+    <CalcBand v-revelar tone="white" title="Exemplos de Metas e Resultados">
       <div class="pl__ex-grid">
         <div>
           <h3 class="pl__ex-title">Exemplo 1: Aposentadoria Antecipada</h3>
@@ -348,7 +348,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Como interpretar (banda creme centrada + tiles brancos) ============ -->
-    <CalcBand tone="cream" title="Como Interpretar a Carteira Recomendada">
+    <CalcBand v-revelar tone="cream" title="Como Interpretar a Carteira Recomendada">
       <template #dek>
         <p>A carteira recomendada mostra ativos específicos e seus pesos sugeridos. Veja o que cada informação significa:</p>
       </template>
@@ -361,7 +361,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Patrimonial vs sucessório (split: prosa + tiles à direita) ============ -->
-    <CalcSplit tone="white">
+    <CalcSplit v-revelar tone="white">
       <template #title>Planejamento Patrimonial vs Planejamento Sucessório</template>
       <div class="pl__prose">
         <p>Os dois conceitos são complementares mas têm focos distintos. Planejamento patrimonial foca em ACUMULAR e GERIR riqueza durante a vida ativa do investidor, escolha de ativos, asset allocation, otimização tributária. Planejamento sucessório foca em TRANSMITIR esse patrimônio aos herdeiros com mínimo de impostos e mínimo de conflito, é uma camada que entra em cena quando o patrimônio começa a ficar relevante.</p>
@@ -376,16 +376,16 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
-    <CalcSplit tone="cream" wide>
+    <CalcSplit v-revelar tone="cream" wide>
       <template #title>Perguntas Frequentes</template>
       <template #left>
-        <NuxtLink to="/busca" class="pl__pill">Perguntar à Redentia AI</NuxtLink>
+        <CalcPerguntarIa />
       </template>
       <NuFaqAccordion :items="faqItems" surface="white" />
     </CalcSplit>
 
     <!-- ============ Dicas (banda branca, tiles creme) ============ -->
-    <CalcBand tone="white" title="Dicas para Executar Seu Planejamento">
+    <CalcBand v-revelar tone="white" title="Dicas para Executar Seu Planejamento">
       <div class="pl__tiles">
         <div v-for="c in tipCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--accent">{{ c.title }}</h4>
@@ -395,7 +395,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Erros comuns (banda creme, tiles brancos com h4 negativo) ============ -->
-    <CalcBand tone="cream" title="Erros Comuns a Evitar">
+    <CalcBand v-revelar tone="cream" title="Erros Comuns a Evitar">
       <div class="pl__tiles">
         <div v-for="c in errorCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--negative">{{ c.title }}</h4>
@@ -405,7 +405,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Rankings + outras ferramentas + CTA ============ -->
-    <CalcBand tone="white" title="Rankings Relacionados">
+    <CalcBand v-revelar tone="white" title="Rankings Relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -417,7 +417,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="cream" title="Outras Ferramentas">
+    <CalcBand v-revelar tone="cream" title="Outras Ferramentas">
       <div class="pl__grid-cards">
         <NuxtLink to="/calculadora/juros-compostos" class="pl__card-link">
           <h3 class="pl__card-link-title">Calculadora de Juros Compostos</h3>
@@ -432,7 +432,7 @@ usePageSeo({
 
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta
-      titulo="Acompanhe seu progresso na Redentia"
+      titulo="Acompanhe seu progresso na Aportou"
       texto="Crie sua conta e monitore sua carteira real, receba alertas personalizados e análises com IA."
       :primario="{ label: 'Criar conta grátis', to: '/login' }"
       :secundario="{ label: 'Ver mais guias', to: '/guias' }"
@@ -442,21 +442,22 @@ usePageSeo({
 
 <style scoped>
 /* ——— tipografia compartilhada ——— */
-.pl__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.pl__h4--accent { color: var(--nu-blue-text); }
+.pl__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
+/* robustez (11/11/2026): título de cartão que não é link fica em carvão (azul é o que se clica ou se mexe) */
+.pl__h4--accent { color: var(--nu-ink); }
 .pl__h4--positive { color: var(--nu-green-text); }
 .pl__h4--negative { color: var(--nu-red-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .pl__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto);
   line-height: 1.7;
 }
 .pl__prose p:last-child { margin-bottom: 0; }
-.pl__prose strong { color: var(--nu-ink); font-weight: 800; }
+.pl__prose strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.pl__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.pl__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .pl__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -467,13 +468,15 @@ usePageSeo({
   gap: 10px; margin-top: clamp(24px, 3.5vw, 36px);
 }
 .pl__scenario {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); border-radius: var(--nu-r-tile); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 3px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .pl__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pl__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
-.pl__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.pl__scenario:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.pl__scenario:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+.pl__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
+.pl__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 
 /* ——— tiles (grid de cards pequenos, mesma família do exemplar) ——— */
 .pl__tiles {
@@ -491,13 +494,13 @@ usePageSeo({
    neste setup — descendente é dropado — então fica o descendente scoped puro,
    que casa porque só o último elemento do seletor recebe o data-v). */
 .cbd--cream .pl__tile { background: var(--nu-white); }
-.pl__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
-.pl__card-p--strong { color: var(--nu-ink); font-weight: 700; margin-top: 14px; }
-.pl__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
+.pl__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.6; }
+.pl__card-p--strong { color: var(--nu-ink); font-weight: var(--nu-w-medio); margin-top: 14px; }
+.pl__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.7; }
 .pl__list--plain { list-style: none; padding-left: 0; }
 .pl__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
-.pl__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
-.pl__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
+.pl__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
+.pl__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 
 /* ——— ex-grid (cards com título h3 acima, família dos exemplos do exemplar) ——— */
 .pl__ex-grid {
@@ -505,7 +508,7 @@ usePageSeo({
   gap: 18px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pl__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.pl__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .pl__ex-card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px; }
 .cbd--cream .pl__ex-card { background: var(--nu-white); }
 
@@ -516,19 +519,14 @@ usePageSeo({
   max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .pl__card-link {
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
+  background: var(--nu-cream); box-shadow: var(--nu-shadow-quente); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
-  transition: transform .18s, box-shadow .2s;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .cbd--cream .pl__card-link { background: var(--nu-white); }
 .pl__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pl__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.pl__card-link:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.pl__card-link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+.pl__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
-/* ——— pills / CTA ——— */
-.pl__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.pl__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 </style>

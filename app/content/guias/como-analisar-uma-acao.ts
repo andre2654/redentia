@@ -27,11 +27,11 @@ export const COMO_ANALISAR_UMA_ACAO_GUIDE: GuideDoc = {
   title: 'Como analisar uma ação: os indicadores que importam',
   dek: 'O que olhar antes de comprar, em que ordem e por que nenhum indicador sozinho responde se a ação vale a pena.',
   description:
-    'Como analisar uma ação na prática: o que significam P/L, P/VP, ROE, ROIC, margens, endividamento e dividend yield, em que ordem ler cada um e os erros que fazem um indicador barato parecer oportunidade. Guia claro e honesto da Redentia.',
+    'Como analisar uma ação na prática: o que significam P/L, P/VP, ROE, ROIC, margens, endividamento e dividend yield, em que ordem ler cada um e os erros que fazem um indicador barato parecer oportunidade. Guia claro e honesto da Aportou.',
   summary:
     'Preço na tela não diz se a ação está cara. Veja o que cada indicador mede de verdade, como comparar empresas sem se enganar e o roteiro de análise que separa uma ação descontada de uma armadilha de valor.',
   minutes: 11,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-29',
   dateModified: '2026-07-29',
   updatedLine: 'Atualizado em 29 jul 2026 · 11 min de leitura',
@@ -105,7 +105,7 @@ export const COMO_ANALISAR_UMA_ACAO_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Rentabilidade só se compara dentro do mesmo setor. Banco, varejo, mineradora e empresa de energia operam com estruturas de capital tão diferentes que confrontar o ROE de um com o de outro não produz informação. Os <a href="/rankings">rankings da Redentia</a> permitem essa leitura relativa, incluindo o de <a href="/ranking/maiores-roe">maiores ROE</a> da bolsa.',
+          html: 'Rentabilidade só se compara dentro do mesmo setor. Banco, varejo, mineradora e empresa de energia operam com estruturas de capital tão diferentes que confrontar o ROE de um com o de outro não produz informação. Os <a href="/rankings">rankings da Aportou</a> permitem essa leitura relativa, incluindo o de <a href="/ranking/maiores-roe">maiores ROE</a> da bolsa.',
         },
       ],
     },
@@ -203,7 +203,7 @@ export const COMO_ANALISAR_UMA_ACAO_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Vale lembrar o limite dessa caixa de ferramentas. Todo indicador olha para trás, para números já publicados, enquanto o preço da ação olha para frente. Análise fundamentalista não prevê cotação e não deve ser usada para acertar o timing, ela serve para você saber o que está comprando e a que custo. O <a href="/glossario">glossário</a> destrincha cada termo, a <a href="/metodologia">metodologia</a> explica como a Redentia calcula os indicadores das páginas de ativo e as <a href="/teses">teses</a> mostram esse raciocínio aplicado do começo ao fim.',
+          html: 'Vale lembrar o limite dessa caixa de ferramentas. Todo indicador olha para trás, para números já publicados, enquanto o preço da ação olha para frente. Análise fundamentalista não prevê cotação e não deve ser usada para acertar o timing, ela serve para você saber o que está comprando e a que custo. O <a href="/glossario">glossário</a> destrincha cada termo, a <a href="/metodologia">metodologia</a> explica como a Aportou calcula os indicadores das páginas de ativo e as <a href="/teses">teses</a> mostram esse raciocínio aplicado do começo ao fim.',
         },
         {
           kind: 'p',
@@ -214,7 +214,7 @@ export const COMO_ANALISAR_UMA_ACAO_GUIDE: GuideDoc = {
   ],
   cta: {
     title: 'Compare os indicadores de todas as ações da B3',
-    subtitle: 'Rankings da Redentia · empresas ordenadas por P/L, ROE e dividend yield',
+    subtitle: 'Rankings da Aportou · empresas ordenadas por P/L, ROE e dividend yield',
     to: '/rankings',
   },
   faqTitle: 'Perguntas frequentes',

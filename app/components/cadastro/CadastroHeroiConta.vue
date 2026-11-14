@@ -30,9 +30,9 @@ const id = useId()
       <div>
         <div class="chc__sub">{{ conta.rotulo }}</div>
         <div class="chc__valor">{{ conta.valor }}</div>
-        <span v-if="conta.selo" class="chc__meta-selo" :class="{ 'chc__meta-selo--falta': conta.seloFalta }">{{ conta.selo }}</span>
+        <NuSelo v-if="conta.selo" class="chc__meta-selo" :tom="conta.seloFalta ? 'ambar' : 'verde'" sobre="escuro">{{ conta.selo }}</NuSelo>
       </div>
-      <span v-if="guardada" class="chc__selo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>Conta guardada</span>
+      <NuSelo v-if="guardada" class="chc__selo" tom="verde" sobre="escuro"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>Conta guardada</NuSelo>
     </div>
     <svg v-if="curva" class="chc__grafico" viewBox="0 -14 520 208">
       <defs>
@@ -61,32 +61,25 @@ const id = useId()
 .chc { display: flex; flex-direction: column; padding: 22px 28px 12px; color: var(--nu-cream-text); }
 .chc--sem-curva { padding-bottom: 26px; }
 .chc__topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 44px; }
-.chc__sub { color: var(--nu-cream-text-60); font-size: var(--nu-fs-sm); font-weight: 700; }
-.chc__valor { margin-top: 2px; font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.chc__meta-selo {
-  display: inline-flex; margin-top: 10px; padding: 6px 12px; border-radius: var(--nu-r-pill);
-  background: rgba(143, 240, 181, 0.16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
-}
-.chc__meta-selo--falta { background: rgba(255, 181, 71, 0.16); color: var(--nu-serie-2); }
-.chc__selo {
-  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-pill);
-  background: rgba(143, 240, 181, 0.16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: 700;
-}
+.chc__sub { color: var(--nu-cream-text-60); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.chc__valor { margin-top: 2px; font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+/* os selos são o NuSelo sobre o carvão (verde: passa da meta; âmbar: falta) */
+.chc__meta-selo { margin-top: 12px; }
 .chc__grafico { display: block; width: 100%; height: auto; margin-top: 6px; overflow: visible; }
 .chc__stop-alto { stop-color: var(--nu-blue-soft); stop-opacity: 0.28; }
 .chc__stop-baixo { stop-color: var(--nu-blue-soft); stop-opacity: 0; }
 .chc__meta { stroke: var(--nu-cream-text); stroke-opacity: 0.4; stroke-width: 1.5; stroke-dasharray: 5 6; }
-.chc__rotulo { fill: var(--nu-cream-text); fill-opacity: 0.6; font-size: 14px; font-weight: 700; }
+.chc__rotulo { fill: var(--nu-cream-text); fill-opacity: 0.6; font-size: 14px; font-weight: var(--nu-w-medio); }
 .chc__linha {
   fill: none; stroke: var(--nu-blue-soft); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
-  filter: drop-shadow(0 0 6px rgba(158, 200, 255, 0.6));
-  stroke-dasharray: 100; stroke-dashoffset: 0; animation: chc-desenha 1.4s cubic-bezier(.5, 0, .2, 1) both;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nu-blue-soft) 60%, transparent));
+  stroke-dasharray: 100; stroke-dashoffset: 0; animation: chc-desenha calc(var(--nu-dur-entrada) * 2) var(--nu-ease-troca) both;
 }
-.chc__area { animation: chc-surge 1.4s ease both; }
+.chc__area { animation: chc-surge calc(var(--nu-dur-entrada) * 2) var(--nu-ease-cor) both; }
 .chc__ponto { fill: var(--nu-blue-soft); }
 .chc__onda {
   fill: none; stroke: var(--nu-blue-soft); stroke-width: 2;
-  transform-box: fill-box; transform-origin: center; animation: chc-onda 1.8s ease-out infinite;
+  transform-box: fill-box; transform-origin: center; animation: chc-onda calc(var(--nu-dur-entrada) * 2.5) var(--nu-ease-saida) infinite;
 }
 .chc--guardada .chc__onda { animation: none; opacity: 0; }
 @keyframes chc-desenha { from { stroke-dashoffset: 100; } }

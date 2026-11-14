@@ -96,8 +96,8 @@ export function rotuloDia(iso: string): string {
 export function periodoCurto(inicio: string, fim: string): string {
   const [y1, m1, d1] = inicio.split('-').map(Number)
   const [y2, m2, d2] = fim.split('-').map(Number)
-  const mes1 = MONTH_LONG_PT[m1 - 1] ?? ''
-  const mes2 = MONTH_LONG_PT[m2 - 1] ?? ''
+  const mes1 = MONTH_LONG_PT[(m1 ?? 0) - 1] ?? ''
+  const mes2 = MONTH_LONG_PT[(m2 ?? 0) - 1] ?? ''
   if (y1 === y2 && m1 === m2) return `${d1} a ${d2} de ${mes2} de ${y2}`
   if (y1 === y2) return `${d1} de ${mes1} a ${d2} de ${mes2} de ${y2}`
   return `${dataCurta(inicio)} a ${dataCurta(fim)}`

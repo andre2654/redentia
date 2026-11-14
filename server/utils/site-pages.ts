@@ -27,7 +27,6 @@
  *    12 h, e /quanto-rende/tesouro/{slug} quando a conta da taxa fecha. Sem
  *    fallback: lista vazia ou endpoint fora omite a seção.
  */
-import { DESCRICAO_BUSINESS, TITULO_BUSINESS } from '../../app/utils/jsonld-paginas'
 import { RANKINGS } from '../../app/content/rankings/registry'
 import { SETORES } from '../../app/content/setores'
 import { GUIDE_DOCS } from '../../app/content/guias'
@@ -49,7 +48,6 @@ import { spISODate } from '../../app/utils/format'
 import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 import { PRECO_TETO_ELEGIVEIS } from '../data/preco-teto-elegiveis'
-import { WEALTH_2030_PAGINA } from '../../app/content/estudo/wealth-2030'
 import { GRAFICOS_PAGINA } from '../../app/utils/graficos'
 
 export interface SitePage {
@@ -94,7 +92,7 @@ const CORE_PAGES: SitePage[] = [
   // fusão home+carteira (2026-07-13): /mercado morreu (301 → '/') e a home
   // pública herdou o panorama do mercado — 1 entrada só.
   // lastmod de '/', '/noticias' e '/teses' sai do dado em getSiteSections
-  { path: '/', title: 'Home', description: 'Panorama diário do mercado brasileiro: índices, altas, baixas, Tesouro Direto, notícias e a IA da Redentia.' },
+  { path: '/', title: 'Home', description: 'Panorama diário do mercado brasileiro: índices, altas, baixas, Tesouro Direto, notícias e a IA da Aportou.' },
   { path: '/noticias', title: 'Notícias', description: 'Notícias do mercado financeiro brasileiro curadas e comentadas.' },
   { path: '/teses', title: 'Teses de investimento', description: 'Teses temáticas com empresas, score de convicção e fontes, revalidadas diariamente.' },
   { path: '/guias', title: 'Guias', description: 'Conteúdo educacional sobre investimentos no Brasil.' },
@@ -103,11 +101,10 @@ const CORE_PAGES: SitePage[] = [
   // toda URL do sitemap resolve 200. Cards href-only (ex.: Análise PETR4 →
   // /asset/PETR4) não têm doc e já entram pela seção de ativos.
   ...guideDocPages(),
-  { path: '/calculadoras', title: 'Hub de calculadoras', description: 'Todas as calculadoras financeiras gratuitas da Redentia.' },
-  { path: '/mcp', title: 'Redentia MCP', description: 'Servidor MCP da Redentia: conecte sua carteira da B3, teses e dados de mercado ao Claude, ChatGPT e Cursor.' },
-  // Indexável desde 20/10/2026 (decisão do dono; o noindex era trava de
-  // compliance). lastmod = a última mudança de conteúdo da página.
-  { path: '/business', title: TITULO_BUSINESS, description: DESCRICAO_BUSINESS, lastmod: '2026-10-15' },
+  { path: '/calculadoras', title: 'Hub de calculadoras', description: 'Todas as calculadoras financeiras gratuitas da Aportou.' },
+  { path: '/mcp', title: 'Aportou MCP', description: 'Servidor MCP da Aportou: conecte sua carteira da B3, teses e dados de mercado ao Claude, ChatGPT e Cursor.' },
+  // A página do plano único (31/10/2026): R$ 19,99 por mês, 3 dias grátis.
+  { path: '/assinar', title: 'Assinatura Aportou', description: 'Sua carteira de qualquer banco pelo Open Finance, testada em 2.000 cenários, com a IA que responde com os seus números.', lastmod: '2026-10-31' },
   { path: '/rankings', title: 'Hub de rankings', description: '22 rankings de ações, FIIs, BDRs e Tesouro Direto atualizados diariamente.' },
   // O hub do Tesouro estava fora do sitemap (só os títulos entravam) e teve
   // 2.446 impressões de 19/07 a 18/10/2026. lastmod = o preço mais novo dos títulos.
@@ -116,26 +113,19 @@ const CORE_PAGES: SitePage[] = [
   { path: '/glossario', title: 'Glossário do investidor', description: 'Dicionário do mercado financeiro brasileiro: os principais termos da bolsa explicados de forma clara, de A a Z.' },
   { path: '/benchmark-ia', title: 'Ranking de IAs em finanças', description: 'Dez IAs na mesma prova de finanças, corrigida por gabarito: números inventados, planos ruins, golpes e uma carteira de R$ 10 mil. Placar com margem de erro e custo declarado.' },
   { path: '/metodologia', title: 'Metodologia', description: 'Como cada calculadora e ranking funciona, fórmulas, fontes oficiais e limitações.' },
-  // Estudo WEALTH 2030 (edição 01, agosto de 2026). lastmod = levantamento
-  // encerrado em 13/08/2026, data do colofão. O hub /estudo segue 404.
-  WEALTH_2030_PAGINA,
+  // As páginas do produto de escritório (a landing e a de campanha) saíram com
+  // o B2B em 12/11/2026: moram em redentia.com.br, no sitemap de lá.
+  // O estudo WEALTH 2030 (/estudo/**) também foi para o B2B, em redentia.com.br
+  // (decisão do dono, 14/11/2026: "Vem para o B2B").
   // /graficos muda todo dia, mas a data de cada série só existe depois do
   // fetch (BCB, agenda de proventos, pregão do ranking). Sem uma data única
   // verificável aqui, a página entra sem lastmod: o dateModified vive no
   // JSON-LD de cada gráfico, com a data da fonte.
   GRAFICOS_PAGINA,
-  // Wealth Intelligence Dinner (07/11/2026). Landing de campanha, fora do menu.
-  // lastmod é o dia em que a página entrou — a data do jantar ainda não existe.
-  {
-    path: '/jantar',
-    title: 'Redentia Wealth Intelligence Dinner',
-    description: 'Mesa fechada em São Paulo, dezembro, data a combinar. 10 cadeiras, uma mesa, nenhuma palestra. Convite sob curadoria. Jantar a R$ 600, só após a aprovação.',
-    lastmod: '2026-11-07',
-  },
 ]
 
 const INSTITUCIONAL_PAGES: SitePage[] = [
-  { path: '/institucional/about', title: 'Sobre a Redentia' },
+  { path: '/institucional/about', title: 'Sobre a Aportou' },
   { path: '/institucional/contact', title: 'Contato' },
   { path: '/institucional/how-works', title: 'Como funciona' },
   { path: '/institucional/privacy', title: 'Política de privacidade' },

@@ -11,7 +11,8 @@ import { editorialExibido, textoEditorialVedado, type AssetEditorialCopy } from 
 import { fundirFaq } from '../app/utils/assetResumo.ts'
 
 const DIR = fileURLToPath(new URL('../app/content/asset-editorials/', import.meta.url))
-const VUE = fileURLToPath(new URL('../app/components/acao/AcaoEditorial.vue', import.meta.url))
+// a prosa editorial do /asset (era o AcaoEditorial até 03/11/2026)
+const VUE = fileURLToPath(new URL('../app/components/ativo/AtivoProsa.vue', import.meta.url))
 
 function copias(): { ticker: string; copy: AssetEditorialCopy }[] {
   return readdirSync(DIR)

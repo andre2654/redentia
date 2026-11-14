@@ -5,8 +5,7 @@
 // de cotações, com o fecho escrito à mão e um botão que abre a janela.
 //  - para todo mundo, logado ou não: é o banner pequeno que o Google aceita no
 //    lugar do diálogo que cobre a página;
-//  - fora da preço teto (veto do dono, 15/10), do login, do /business e das
-//    páginas do cliente do escritório;
+//  - fora da preço teto (veto do dono, 15/10) e do login;
 //  - sai no HTML do servidor enquanto o recado está no ar (sem empurrar a
 //    página depois); no cliente, some para quem fechou e quando o prazo passa.
 import { IBOV_MENSAL } from '~/content/ibov-mensal'
@@ -20,7 +19,7 @@ const noAr = ref(recadoNoAr())
 const fechada = ref(false)
 const foraDaPagina = computed(() => {
   const p = route.path
-  return p === '/calculadora/preco-teto' || p === '/login' || p.startsWith('/business') || p.startsWith('/cliente')
+  return p === '/calculadora/preco-teto' || p === '/login'
 })
 const visivel = computed(() => noAr.value && !fechada.value && !foraDaPagina.value)
 
@@ -55,7 +54,7 @@ const serra = logs
 
 <template>
   <div v-if="visivel" class="rfx" role="region" aria-label="Recado do André">
-    <svg class="rfx__serra" :viewBox="`0 0 ${VW} ${VH}`" preserveAspectRatio="none" aria-hidden="true">
+    <svg class="rfx__serra" :viewBox.attr="`0 0 ${VW} ${VH}`" preserveAspectRatio="none" aria-hidden="true">
       <path :d="serra" />
     </svg>
     <div class="rfx__in">
@@ -72,7 +71,7 @@ const serra = logs
 .rfx {
   position: relative; overflow: hidden;
   background: linear-gradient(90deg, var(--nu-navy) 0%, color-mix(in srgb, var(--nu-blue-deep) 55%, var(--nu-navy)) 62%, var(--nu-blue-deep) 100%);
-  padding: 11px calc(clamp(22px, 5.5vw, 80px) + 40px) 11px clamp(22px, 5.5vw, 80px);
+  padding: 11px calc(max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) + 40px) 11px max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   animation: nu-fade .5s ease both;
 }
 .rfx__serra { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
@@ -82,21 +81,21 @@ const serra = logs
 .rfx__mao {
   margin: 0; color: var(--nu-cream-text);
   font-family: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
-  font-size: var(--nu-fs-2xl); font-weight: 700; line-height: 1; white-space: nowrap;
+  font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-medio); line-height: 1; white-space: nowrap;
 }
-.rfx__txt { margin: 0; color: var(--nu-cream-text-78); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rfx__txt { margin: 0; color: var(--nu-cream-text-78); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .rfx__ler {
   border: none; cursor: pointer; white-space: nowrap;
   background: var(--nu-cream-text-12); color: var(--nu-cream-text);
   border-radius: var(--nu-r-pill); padding: 7px 14px;
-  font-size: var(--nu-fs-sm); font-weight: 800; transition: background .2s;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); transition: background .2s;
 }
 .rfx__ler:hover { background: var(--nu-white-30); }
 .rfx__x {
   position: absolute; top: 50%; right: clamp(22px, 5.5vw, 80px); transform: translateY(-50%);
   width: 30px; height: 30px; border-radius: 50%; border: none; cursor: pointer;
   background: transparent; color: var(--nu-cream-text-78);
-  font-size: var(--nu-fs-sm); font-weight: 800;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte);
   display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
 .rfx__x:hover { background: var(--nu-cream-text-12); }

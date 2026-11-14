@@ -9,15 +9,15 @@ import type { GuideDoc } from '~/types/guias'
 
 export const CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE: GuideDoc = {
   slug: 'conectar-carteira-ao-chatgpt',
-  tag: 'Guia Redentia',
+  tag: 'Guia Aportou',
   title: 'Como conectar sua carteira ao ChatGPT e ao Claude',
   dek: 'A IA responde sobre finanças em geral, mas não sabe da sua carteira. Veja como dar a ela os seus dados reais da B3, no Brasil, com acesso somente leitura.',
   description:
-    'Como conectar sua carteira de investimentos ao ChatGPT, ao Claude e ao Cursor no Brasil. O ChatGPT Finances da OpenAI é só nos EUA; o caminho brasileiro é o Open Finance com o Redentia MCP, grátis e somente leitura.',
+    'Como conectar sua carteira de investimentos ao ChatGPT, ao Claude e ao Cursor no Brasil. O ChatGPT Finances da OpenAI é só nos EUA; o caminho brasileiro é o Open Finance com o Aportou MCP, grátis e somente leitura.',
   summary:
-    'A IA não conhece a sua carteira. O ChatGPT Finances da OpenAI existe, mas só nos EUA. No Brasil, o caminho é o Open Finance com o Redentia MCP: sua carteira da B3 dentro do Claude, do ChatGPT ou do Cursor, grátis e somente leitura.',
+    'A IA não conhece a sua carteira. O ChatGPT Finances da OpenAI existe, mas só nos EUA. No Brasil, o caminho é o Open Finance com o Aportou MCP: sua carteira da B3 dentro do Claude, do ChatGPT ou do Cursor, grátis e somente leitura.',
   minutes: 9,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-19',
   dateModified: '2026-07-19',
   updatedLine: 'Atualizado em 19 jul 2026 · 9 min de leitura',
@@ -57,11 +57,11 @@ export const CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'A ponte no Brasil tem duas partes. A primeira é o <strong>Open Finance</strong>, o sistema do Banco Central que deixa você compartilhar suas posições de qualquer corretora ou banco com o seu consentimento, somente leitura, sem entregar senha. A Redentia usa o Open Finance para consolidar a sua carteira da B3.',
+          html: 'A ponte no Brasil tem duas partes. A primeira é o <strong>Open Finance</strong>, o sistema do Banco Central que deixa você compartilhar suas posições de qualquer corretora ou banco com o seu consentimento, somente leitura, sem entregar senha. A Aportou usa o Open Finance para consolidar a sua carteira da B3.',
         },
         {
           kind: 'p',
-          html: 'A segunda parte é o <strong>MCP (Model Context Protocol)</strong>, o padrão aberto que conecta assistentes de IA a fontes de dados externas. O Redentia MCP é o servidor oficial da Redentia nesse padrão: com ele, o Claude, o Cursor e outros clientes compatíveis passam a responder com a sua carteira, cotações da B3, teses e notícias.',
+          html: 'A segunda parte é o <strong>MCP (Model Context Protocol)</strong>, o padrão aberto que conecta assistentes de IA a fontes de dados externas. O Aportou MCP é o servidor oficial da Aportou nesse padrão: com ele, o Claude, o Cursor e outros clientes compatíveis passam a responder com a sua carteira, cotações da B3, teses e notícias.',
         },
         {
           kind: 'stats',
@@ -80,15 +80,15 @@ export const CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE: GuideDoc = {
         {
           kind: 'steps',
           items: [
-            'Conecte a sua carteira na Redentia pelo Open Finance (escolhe a corretora, autoriza o compartilhamento, pronto).',
-            'Gere a sua chave gratuita do Redentia MCP em Configurações, na seção MCP. Ela aparece uma única vez, copie na hora.',
-            'Cole a configuração no seu assistente. Cada um tem o seu formato, e todos estão prontos para copiar na página do Redentia MCP.',
+            'Conecte a sua carteira na Aportou pelo Open Finance (escolhe a corretora, autoriza o compartilhamento, pronto).',
+            'Gere a sua chave gratuita do Aportou MCP em Configurações, na seção MCP. Ela aparece uma única vez, copie na hora.',
+            'Cole a configuração no seu assistente. Cada um tem o seu formato, e todos estão prontos para copiar na página do Aportou MCP.',
             'Pergunte: "como está a minha carteira hoje?" e a resposta vem com os seus números reais.',
           ],
         },
         {
           kind: 'p',
-          html: 'A página com os blocos de configuração de cada assistente, com prints, fica em <strong>redentia.com.br/mcp</strong>. Lá você escolhe o seu cliente e segue as instruções específicas dele.',
+          html: 'Os blocos de configuração de cada assistente, com prints, ficam na <a href="/mcp">página do Aportou MCP</a>. Lá você escolhe o seu cliente e segue as instruções específicas dele.',
         },
       ],
     },
@@ -101,13 +101,13 @@ export const CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE: GuideDoc = {
           items: [
             'Cursor, Claude Code e Raycast conectam direto com a chave, sem passo extra.',
             'Claude Desktop conecta pela ponte mcp-remote (instruções na página do MCP).',
-            'No claude.ai (web), conecta como conector personalizado: cole a URL do servidor, clique em Connect e autorize com a sua chave na página da Redentia.',
-            'No ChatGPT, conecta pelo modo desenvolvedor da OpenAI (plano pago): crie o conector com a URL do servidor, escolha OAuth e autorize com a sua chave na página da Redentia.',
+            'No claude.ai (web), conecta como conector personalizado: cole a URL do servidor, clique em Connect e autorize com a sua chave na página da Aportou.',
+            'No ChatGPT, conecta pelo modo desenvolvedor da OpenAI (plano pago): crie o conector com a URL do servidor, escolha OAuth e autorize com a sua chave na página da Aportou.',
           ],
         },
         {
           kind: 'p',
-          html: 'Vale registrar o requisito: no ChatGPT o conector vive atrás do modo desenvolvedor, que pede plano pago da OpenAI. No claude.ai, no Cursor, no Claude Code e no Raycast o caminho é direto, e a Redentia AI dentro da plataforma cobre quem não usa assistente nenhum.',
+          html: 'Vale registrar o requisito: no ChatGPT o conector vive atrás do modo desenvolvedor, que pede plano pago da OpenAI. No claude.ai, no Cursor, no Claude Code e no Raycast o caminho é direto, e a IA da Aportou dentro da plataforma cobre quem não usa assistente nenhum.',
         },
       ],
     },
@@ -117,7 +117,7 @@ export const CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'Não. O acesso é <strong>somente leitura por design</strong>: o Redentia MCP responde consultas (posições, proventos, cotações, teses, notícias) e não executa nenhuma ação. Não existe ferramenta de compra, venda ou transferência. A IA enxerga a carteira, mas não toca nela.',
+          html: 'Não. O acesso é <strong>somente leitura por design</strong>: o Aportou MCP responde consultas (posições, proventos, cotações, teses, notícias) e não executa nenhuma ação. Não existe ferramenta de compra, venda ou transferência. A IA enxerga a carteira, mas não toca nela.',
         },
         {
           kind: 'p',
@@ -128,18 +128,18 @@ export const CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE: GuideDoc = {
   ],
   cta: {
     title: 'Coloque a sua carteira dentro da sua IA',
-    subtitle: 'Gere a chave gratuita do Redentia MCP e conecte ao Claude, ao Cursor ou ao Raycast em dois minutos.',
+    subtitle: 'Gere a chave gratuita do Aportou MCP e conecte ao Claude, ao Cursor ou ao Raycast em dois minutos.',
     to: '/mcp',
   },
   faqTitle: 'Perguntas frequentes',
   faq: [
     {
       q: 'O ChatGPT consegue ver a minha carteira brasileira?',
-      a: 'Pelo recurso oficial da OpenAI, não: o ChatGPT Finances funciona via Plaid e cobre instituições dos Estados Unidos. No Brasil, o caminho é o Open Finance com o Redentia MCP — e o conector funciona no ChatGPT pelo modo desenvolvedor (OAuth com a sua chave), além do claude.ai, do Cursor e do Raycast.',
+      a: 'Pelo recurso oficial da OpenAI, não: o ChatGPT Finances funciona via Plaid e cobre instituições dos Estados Unidos. No Brasil, o caminho é o Open Finance com o Aportou MCP, e o conector funciona no ChatGPT pelo modo desenvolvedor (OAuth com a sua chave), além do claude.ai, do Cursor e do Raycast.',
     },
     {
       q: 'Preciso pagar alguma coisa?',
-      a: 'Não. A chave do Redentia MCP é gratuita: basta ter uma conta na Redentia, conectar a carteira pelo Open Finance e gerar a chave em Configurações.',
+      a: 'Não. A chave do Aportou MCP é gratuita: basta ter uma conta na Aportou, conectar a carteira pelo Open Finance e gerar a chave em Configurações.',
     },
     {
       q: 'A IA pode comprar ou vender por mim?',
@@ -151,7 +151,7 @@ export const CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE: GuideDoc = {
     },
     {
       q: 'Que dados a IA passa a acessar?',
-      a: 'Só o que a sua chave permitir, por escopo: carteira (posições, saldo e proventos, somente leitura), mercado (cotações e fundamentos da B3), teses da Redentia e notícias com a análise da Redentia. Cada escopo tem o próprio interruptor.',
+      a: 'Só o que a sua chave permitir, por escopo: carteira (posições, saldo e proventos, somente leitura), mercado (cotações e fundamentos da B3), teses da Aportou e notícias com a análise da Aportou. Cada escopo tem o próprio interruptor.',
     },
   ],
   related: ['Open Finance: sua carteira está espalhada?', 'Como montar uma carteira de investimentos'],

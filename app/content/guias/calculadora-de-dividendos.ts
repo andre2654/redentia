@@ -24,13 +24,13 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
   // de uma consulta de intenção de ferramenta. Ver o bloco de canibalização
   // em app/pages/calculadora/dividend-yield.vue.
   title: 'Como calcular dividendos: a fórmula',
-  dek: 'O que é dividend yield, como transformar um aporte em renda passiva estimada e como usar a calculadora da Redentia para simular sem chute.',
+  dek: 'O que é dividend yield, como transformar um aporte em renda passiva estimada e como usar a calculadora da Aportou para simular sem chute.',
   description:
-    'Calculadora de dividendos: entenda o dividend yield (DY), calcule quanto investir para atingir sua meta de renda passiva e simule o DY real de qualquer ação ou FII com a calculadora da Redentia. Guia claro, sem promessa de rendimento.',
+    'Calculadora de dividendos: entenda o dividend yield (DY), calcule quanto investir para atingir sua meta de renda passiva e simule o DY real de qualquer ação ou FII com a calculadora da Aportou. Guia claro, sem promessa de rendimento.',
   summary:
-    'Quanto preciso investir para receber uma renda de dividendos? Entenda o dividend yield, veja a conta que liga aporte a renda passiva e aprenda a simular na calculadora da Redentia, sem chute e sem promessa.',
+    'Quanto preciso investir para receber uma renda de dividendos? Entenda o dividend yield, veja a conta que liga aporte a renda passiva e aprenda a simular na calculadora da Aportou, sem chute e sem promessa.',
   minutes: 7,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-13',
   dateModified: '2026-07-13',
   updatedLine: 'Atualizado em 13 jul 2026 · 7 min de leitura',
@@ -72,7 +72,7 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Existe ainda o <strong>yield on cost</strong>, que é o DY calculado sobre o preço que <strong>você</strong> pagou, não sobre o preço atual. Quem comprou barato há anos e viu os proventos crescerem costuma ter um yield on cost bem acima do DY que aparece na tela hoje. A <a href="/calculadora/dividend-yield">calculadora de dividend yield da Redentia</a> tem um modo dedicado a essa conta.',
+          html: 'Existe ainda o <strong>yield on cost</strong>, que é o DY calculado sobre o preço que <strong>você</strong> pagou, não sobre o preço atual. Quem comprou barato há anos e viu os proventos crescerem costuma ter um yield on cost bem acima do DY que aparece na tela hoje. A <a href="/calculadora/dividend-yield">calculadora de dividend yield da Aportou</a> tem um modo dedicado a essa conta.',
         },
       ],
     },
@@ -96,7 +96,7 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
     },
     {
       id: 'sec-4',
-      title: 'Como usar a calculadora da Redentia',
+      title: 'Como usar a calculadora da Aportou',
       blocks: [
         {
           kind: 'p',
@@ -113,7 +113,7 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para ver o que o reinvestimento fez de verdade, rode o papel no <a href="/calculadora/acoes">simulador de dividendos</a>: ele refaz o histórico real da B3 com cada provento comprando mais cotas. Para dimensionar o aporte daqui pra frente, combine com as demais <a href="/calculadoras">calculadoras da Redentia</a>, como a de juros compostos. Meta e prazo viram número, e o número vira plano.',
+          html: 'Para ver o que o reinvestimento fez de verdade, rode o papel no <a href="/calculadora/acoes">simulador de dividendos</a>: ele refaz o histórico real da B3 com cada provento comprando mais cotas. Para dimensionar o aporte daqui pra frente, combine com as demais <a href="/calculadoras">calculadoras da Aportou</a>, como a de juros compostos. Meta e prazo viram número, e o número vira plano.',
         },
       ],
     },
@@ -169,7 +169,7 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
   faq: [
     {
       q: 'Como calcular o dividend yield de uma ação?',
-      a: 'Divida os proventos pagos por cota no ano pelo preço atual da cota e multiplique por 100. Por exemplo, R$ 6 de proventos sobre um preço de R$ 100 dá um DY de 6% (valores ilustrativos). O modo simples da calculadora de dividend yield da Redentia faz essa conta para você a partir do preço e dos proventos.',
+      a: 'Divida os proventos pagos por cota no ano pelo preço atual da cota e multiplique por 100. Por exemplo, R$ 6 de proventos sobre um preço de R$ 100 dá um DY de 6% (valores ilustrativos). O modo simples da calculadora de dividend yield da Aportou faz essa conta para você a partir do preço e dos proventos.',
     },
     {
       q: 'Quanto preciso investir para viver de dividendos?',
@@ -177,7 +177,7 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
     },
     {
       q: 'Qual a diferença entre dividend yield e yield on cost?',
-      a: 'O dividend yield usa o preço atual da cota; o yield on cost usa o preço que você pagou quando comprou. Quem comprou barato e viu os proventos crescerem costuma ter um yield on cost maior que o DY exibido hoje. A calculadora da Redentia tem um modo específico para essa conta.',
+      a: 'O dividend yield usa o preço atual da cota; o yield on cost usa o preço que você pagou quando comprou. Quem comprou barato e viu os proventos crescerem costuma ter um yield on cost maior que o DY exibido hoje. A calculadora da Aportou tem um modo específico para essa conta.',
     },
     {
       q: 'Um dividend yield alto é sempre bom?',

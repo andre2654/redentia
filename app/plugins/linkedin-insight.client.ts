@@ -12,17 +12,12 @@
  *
  * Visita paga (gclid, li_fat_id, utm_medium=cpc…): entra na hora do aceite,
  * no mesmo critério do GTM. Orgânico espera o requestIdleCallback.
- *
- * NÃO carrega em rota com token no path. Ver utils/analytics-privacy.ts.
  */
-import { isSecretTokenPath } from '~/utils/analytics-privacy'
 import { agendarComConsentimento, lerConsentimento } from '~/utils/consent'
 
 const PARTNER_ID_FORMAT = /^\d+$/
 
 export default defineNuxtPlugin(() => {
-  if (isSecretTokenPath(window.location.pathname)) return
-
   const partnerId = String(
     (useRuntimeConfig().public as Record<string, unknown>).linkedinPartnerId ?? '',
   ).trim()
@@ -30,7 +25,6 @@ export default defineNuxtPlugin(() => {
 
   const instalar = () => {
     if (lerConsentimento() !== 'granted') return
-    if (isSecretTokenPath(window.location.pathname)) return
 
     const w = window as Window & {
       __nuLinkedInLoaded?: boolean

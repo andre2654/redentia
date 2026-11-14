@@ -1,0 +1,781 @@
+{
+  "ibov": {
+    "pontos": 168498.45,
+    "pct": 1.39,
+    "data": "2026-11-06",
+    "asOf": "2026-11-12T09:24:24-03:00"
+  },
+  "seguidas": {
+    "n": 1,
+    "sentido": "alta",
+    "ate": "2026-11-06"
+  },
+  "mes": {
+    "mes": "2026-11",
+    "pct": 0.3434038939554185,
+    "ultimoPregao": false,
+    "piorDesde": null,
+    "melhorDesde": null,
+    "raros": null,
+    "confiavel": true
+  },
+  "semana": {
+    "inicio": "2026-11-03",
+    "fim": "2026-11-06",
+    "de": 167921.8,
+    "ate": 168498.45,
+    "pct": 0.3434038939554185,
+    "altas": 2,
+    "quedas": 2,
+    "confiavel": true
+  },
+  "contagem": {
+    "altas": 59,
+    "quedas": 16,
+    "total": 76
+  },
+  "pesos": {
+    "variacao": 2310.019188282866,
+    "soma": 2306.9884696979902,
+    "confere": true,
+    "negativas": [
+      {
+        "nome": "Petrobras",
+        "ticker": "PETR4",
+        "tickers": [
+          "PETR3",
+          "PETR4"
+        ],
+        "pontos": -285.3511861103659,
+        "pct": -1.284
+      },
+      {
+        "nome": "Ultrapar",
+        "ticker": "UGPA3",
+        "tickers": [
+          "UGPA3"
+        ],
+        "pontos": -63.33311471258508,
+        "pct": -2.7124
+      },
+      {
+        "nome": "PRIO",
+        "ticker": "PRIO3",
+        "tickers": [
+          "PRIO3"
+        ],
+        "pontos": -57.080158671392645,
+        "pct": -1.7225
+      },
+      {
+        "nome": "Caixa Seguridade",
+        "ticker": "CXSE3",
+        "tickers": [
+          "CXSE3"
+        ],
+        "pontos": -19.276528466712698,
+        "pct": -2.148
+      },
+      {
+        "nome": "WEG",
+        "ticker": "WEGE3",
+        "tickers": [
+          "WEGE3"
+        ],
+        "pontos": -11.47720735754463,
+        "pct": -0.2277
+      }
+    ],
+    "positivas": [
+      {
+        "nome": "Sabesp",
+        "ticker": "SBSP3",
+        "tickers": [
+          "SBSP3"
+        ],
+        "pontos": 440.601214061726,
+        "pct": 6.9916
+      },
+      {
+        "nome": "Vale",
+        "ticker": "VALE3",
+        "tickers": [
+          "VALE3"
+        ],
+        "pontos": 360.9067187087514,
+        "pct": 2.1861
+      },
+      {
+        "nome": "Itaú Unibanco",
+        "ticker": "ITUB4",
+        "tickers": [
+          "ITUB4"
+        ],
+        "pontos": 213.56691106832434,
+        "pct": 1.4011
+      },
+      {
+        "nome": "Bradesco",
+        "ticker": "BBDC4",
+        "tickers": [
+          "BBDC3",
+          "BBDC4"
+        ],
+        "pontos": 192.30186324215558,
+        "pct": 3.1227
+      },
+      {
+        "nome": "BTG Pactual",
+        "ticker": "BPAC11",
+        "tickers": [
+          "BPAC11"
+        ],
+        "pontos": 139.9671304564918,
+        "pct": 3.0438
+      }
+    ]
+  },
+  "leitura": null,
+  "tese": {
+    "slug": "agua-virou-ativo",
+    "titulo": "A água virou ativo",
+    "convicao": 86,
+    "nomes": [
+      "Sabesp"
+    ],
+    "antes": {
+      "valor": 87,
+      "ate": "2026-10-27"
+    }
+  },
+  "intradia": null,
+  "diarias": [
+    {
+      "d": "2026-10-05",
+      "v": 206911.89
+    },
+    {
+      "d": "2026-10-06",
+      "v": 205835.29
+    },
+    {
+      "d": "2026-10-07",
+      "v": 204302.33
+    },
+    {
+      "d": "2026-10-08",
+      "v": 206220.24
+    },
+    {
+      "d": "2026-10-09",
+      "v": 209066.9
+    },
+    {
+      "d": "2026-10-13",
+      "v": 206887.52
+    },
+    {
+      "d": "2026-10-14",
+      "v": 206505.98
+    },
+    {
+      "d": "2026-10-15",
+      "v": 204324.26
+    },
+    {
+      "d": "2026-10-16",
+      "v": 205430.33
+    },
+    {
+      "d": "2026-10-19",
+      "v": 205079.25
+    },
+    {
+      "d": "2026-10-20",
+      "v": 208295.98
+    },
+    {
+      "d": "2026-10-21",
+      "v": 206495.23
+    },
+    {
+      "d": "2026-10-22",
+      "v": 204120.12
+    },
+    {
+      "d": "2026-10-23",
+      "v": 205082.56
+    },
+    {
+      "d": "2026-10-26",
+      "v": 176608.23
+    },
+    {
+      "d": "2026-10-27",
+      "v": 175710.05
+    },
+    {
+      "d": "2026-10-28",
+      "v": 171006.1
+    },
+    {
+      "d": "2026-10-29",
+      "v": 169186.42
+    },
+    {
+      "d": "2026-10-30",
+      "v": 167921.8
+    },
+    {
+      "d": "2026-11-03",
+      "v": 165528.92
+    },
+    {
+      "d": "2026-11-04",
+      "v": 167563.47
+    },
+    {
+      "d": "2026-11-05",
+      "v": 166191.45
+    },
+    {
+      "d": "2026-11-06",
+      "v": 168498.45
+    }
+  ],
+  "mercados": [],
+  "acoes": [
+    {
+      "ticker": "ABEV3",
+      "empresa": "Ambev",
+      "pct": 0,
+      "peso": 2.691,
+      "pontos": 0
+    },
+    {
+      "ticker": "ALOS3",
+      "empresa": "Allos",
+      "pct": 5.6287,
+      "peso": 0.516,
+      "pontos": 48.26792073831148
+    },
+    {
+      "ticker": "ASAI3",
+      "empresa": "Assaí",
+      "pct": 4.2604,
+      "peso": 0.485,
+      "pontos": 34.339415745566626
+    },
+    {
+      "ticker": "AURE3",
+      "empresa": "Auren",
+      "pct": 3.4884,
+      "peso": 0.153,
+      "pontos": 8.869895347266988
+    },
+    {
+      "ticker": "AXIA3",
+      "empresa": "Axia Energia",
+      "pct": 1.2581,
+      "peso": 4.672,
+      "pontos": 97.6829537965322
+    },
+    {
+      "ticker": "AZZA3",
+      "empresa": "Azzas 2154",
+      "pct": 4.9787,
+      "peso": 0.079,
+      "pontos": 6.536478489810139
+    },
+    {
+      "ticker": "B3SA3",
+      "empresa": "B3",
+      "pct": 0.2089,
+      "peso": 3.077,
+      "pontos": 10.682348035583885
+    },
+    {
+      "ticker": "BBAS3",
+      "empresa": "Banco do Brasil",
+      "pct": 3.8811,
+      "peso": 2.015,
+      "pontos": 129.96627464290611
+    },
+    {
+      "ticker": "BBDC3",
+      "empresa": "Bradesco",
+      "pct": 2.6793,
+      "peso": 0.799,
+      "pontos": 35.57696614763932
+    },
+    {
+      "ticker": "BBDC4",
+      "empresa": "Bradesco",
+      "pct": 3.1227,
+      "peso": 3.02,
+      "pontos": 156.72489709451625
+    },
+    {
+      "ticker": "BBSE3",
+      "empresa": "BB Seguridade",
+      "pct": 0.8971,
+      "peso": 1.004,
+      "pontos": 14.968399184631622
+    },
+    {
+      "ticker": "BEEF3",
+      "empresa": "Minerva",
+      "pct": 2.7559,
+      "peso": 0.049,
+      "pontos": 2.2441936127226554
+    },
+    {
+      "ticker": "BPAC11",
+      "empresa": "BTG Pactual",
+      "pct": 3.0438,
+      "peso": 2.767,
+      "pontos": 139.9671304564918
+    },
+    {
+      "ticker": "BRAP4",
+      "empresa": "Bradespar",
+      "pct": 1.4301,
+      "peso": 0.204,
+      "pontos": 4.848387928038267
+    },
+    {
+      "ticker": "BRAV3",
+      "empresa": "Brava",
+      "pct": -1.3959,
+      "peso": 0.188,
+      "pontos": -4.361269694717428
+    },
+    {
+      "ticker": "CEAB3",
+      "empresa": "C&A Modas",
+      "pct": 9.0054,
+      "peso": 0.065,
+      "pontos": 9.727856416406944
+    },
+    {
+      "ticker": "CMIG4",
+      "empresa": "Cemig",
+      "pct": 2.2638,
+      "peso": 0.796,
+      "pontos": 29.946902625856595
+    },
+    {
+      "ticker": "CMIN3",
+      "empresa": "CSN Mineração",
+      "pct": 2.6531,
+      "peso": 0.331,
+      "pontos": 14.59427080353536
+    },
+    {
+      "ticker": "COGN3",
+      "empresa": "Cogna",
+      "pct": 5.036,
+      "peso": 0.115,
+      "pontos": 9.624636782029786
+    },
+    {
+      "ticker": "CPFE3",
+      "empresa": "CPFL Energia",
+      "pct": 3.3412,
+      "peso": 0.341,
+      "pontos": 18.93466556945853
+    },
+    {
+      "ticker": "CPLE3",
+      "empresa": "Copel",
+      "pct": 2.6298,
+      "peso": 1.845,
+      "pontos": 80.63431087182661
+    },
+    {
+      "ticker": "CSAN3",
+      "empresa": "Cosan",
+      "pct": 10.8,
+      "peso": 0.245,
+      "pontos": 43.973458792780356
+    },
+    {
+      "ticker": "CSMG3",
+      "empresa": "Copasa",
+      "pct": 3.2482,
+      "peso": 0.798,
+      "pontos": 43.07709822481706
+    },
+    {
+      "ticker": "CSNA3",
+      "empresa": "CSN",
+      "pct": 8.8889,
+      "peso": 0.127,
+      "pontos": 18.760850751556863
+    },
+    {
+      "ticker": "CURY3",
+      "empresa": "Cury",
+      "pct": 1.6886,
+      "peso": 0.184,
+      "pontos": 5.163514430543447
+    },
+    {
+      "ticker": "CXSE3",
+      "empresa": "Caixa Seguridade",
+      "pct": -2.148,
+      "peso": 0.54,
+      "pontos": -19.276528466712698
+    },
+    {
+      "ticker": "CYRE3",
+      "empresa": "Cyrela",
+      "pct": 6.1023,
+      "peso": 0.2,
+      "pontos": 20.28263322684683
+    },
+    {
+      "ticker": "DIRR3",
+      "empresa": "Direcional",
+      "pct": 5.1435,
+      "peso": 0.117,
+      "pontos": 10.001045268396787
+    },
+    {
+      "ticker": "EGIE3",
+      "empresa": "Engie Brasil",
+      "pct": 1.9895,
+      "peso": 0.507,
+      "pontos": 16.7630364731655
+    },
+    {
+      "ticker": "EMBJ3",
+      "empresa": "Embraer",
+      "pct": 0.7469,
+      "peso": 3.114,
+      "pontos": 38.652879676276754
+    },
+    {
+      "ticker": "ENEV3",
+      "empresa": "Eneva",
+      "pct": 1.9757,
+      "peso": 2.169,
+      "pontos": 71.21661690949651
+    },
+    {
+      "ticker": "ENGI11",
+      "empresa": "Energisa",
+      "pct": 2.9248,
+      "peso": 0.689,
+      "pontos": 33.4900798559858
+    },
+    {
+      "ticker": "EQTL3",
+      "empresa": "Equatorial",
+      "pct": 2.6823,
+      "peso": 1.777,
+      "pontos": 79.21283640960597
+    },
+    {
+      "ticker": "FLRY3",
+      "empresa": "Fleury",
+      "pct": -1.036,
+      "peso": 0.388,
+      "pontos": -6.680243115652433
+    },
+    {
+      "ticker": "GGBR4",
+      "empresa": "Gerdau",
+      "pct": 0.6669,
+      "peso": 1.283,
+      "pontos": 14.219625576419276
+    },
+    {
+      "ticker": "GOAU4",
+      "empresa": "Gerdau Met",
+      "pct": -0.0935,
+      "peso": 0.38,
+      "pontos": -0.5904674946740309
+    },
+    {
+      "ticker": "HAPV3",
+      "empresa": "Hapvida",
+      "pct": 6.4593,
+      "peso": 0.05,
+      "pontos": 5.3673046557106225
+    },
+    {
+      "ticker": "HYPE3",
+      "empresa": "Hypera",
+      "pct": 1.1436,
+      "peso": 0.278,
+      "pontos": 5.283475887440577
+    },
+    {
+      "ticker": "IGTI11",
+      "empresa": "Iguatemi",
+      "pct": 2.3674,
+      "peso": 0.216,
+      "pontos": 8.498185007839037
+    },
+    {
+      "ticker": "ISAE4",
+      "empresa": "Isa Energia",
+      "pct": 0.9335,
+      "peso": 0.509,
+      "pontos": 7.896468218283362
+    },
+    {
+      "ticker": "ITSA4",
+      "empresa": "Itaúsa",
+      "pct": 1.014,
+      "peso": 3.296,
+      "pontos": 55.54256669067955
+    },
+    {
+      "ticker": "ITUB4",
+      "empresa": "Itaú Unibanco",
+      "pct": 1.4011,
+      "peso": 9.172,
+      "pontos": 213.56691106832434
+    },
+    {
+      "ticker": "KLBN11",
+      "empresa": "Klabin",
+      "pct": -0.6211,
+      "peso": 0.599,
+      "pontos": -6.182856099191734
+    },
+    {
+      "ticker": "LREN3",
+      "empresa": "Lojas Renner",
+      "pct": 4.1973,
+      "peso": 0.4,
+      "pontos": 27.90170802584082
+    },
+    {
+      "ticker": "MBRF3",
+      "empresa": "Marfrig",
+      "pct": -0.128,
+      "peso": 0.494,
+      "pontos": -1.05084268570865
+    },
+    {
+      "ticker": "MGLU3",
+      "empresa": "Magazine Luiza",
+      "pct": 3.3149,
+      "peso": 0.091,
+      "pontos": 5.013172066609628
+    },
+    {
+      "ticker": "MOTV3",
+      "empresa": "Motiva",
+      "pct": 1.9204,
+      "peso": 0.628,
+      "pontos": 20.0425108869356
+    },
+    {
+      "ticker": "MRVE3",
+      "empresa": "Mrv",
+      "pct": 8.5366,
+      "peso": 0.066,
+      "pontos": 9.36331544588421
+    },
+    {
+      "ticker": "MULT3",
+      "empresa": "Multiplan",
+      "pct": 3.6966,
+      "peso": 0.363,
+      "pontos": 22.300257166190946
+    },
+    {
+      "ticker": "NATU3",
+      "empresa": "Natura",
+      "pct": -3.3645,
+      "peso": 0.193,
+      "pontos": -10.791420826494232
+    },
+    {
+      "ticker": "PETR3",
+      "empresa": "Petrobras",
+      "pct": -1.1008,
+      "peso": 5.435,
+      "pontos": -99.42801209050204
+    },
+    {
+      "ticker": "PETR4",
+      "empresa": "Petrobras",
+      "pct": -1.284,
+      "peso": 8.713,
+      "pontos": -185.9231740198639
+    },
+    {
+      "ticker": "POMO4",
+      "empresa": "Marcopolo",
+      "pct": 2.7933,
+      "peso": 0.112,
+      "pontos": 5.199198410407339
+    },
+    {
+      "ticker": "PRIO3",
+      "empresa": "PRIO",
+      "pct": -1.7225,
+      "peso": 1.994,
+      "pontos": -57.080158671392645
+    },
+    {
+      "ticker": "PSSA3",
+      "empresa": "Porto Seguro",
+      "pct": 1.4642,
+      "peso": 0.336,
+      "pontos": 8.175992173255745
+    },
+    {
+      "ticker": "RADL3",
+      "empresa": "Raia Drogasil",
+      "pct": 0.953,
+      "peso": 0.829,
+      "pontos": 13.129500931319656
+    },
+    {
+      "ticker": "RAIL3",
+      "empresa": "Rumo",
+      "pct": 1.9027,
+      "peso": 0.858,
+      "pontos": 27.13053720280797
+    },
+    {
+      "ticker": "RDOR3",
+      "empresa": "Rede D'Or",
+      "pct": 3.3058,
+      "peso": 1.447,
+      "pontos": 79.4961128993461
+    },
+    {
+      "ticker": "RENT3",
+      "empresa": "Localiza",
+      "pct": 4.1968,
+      "peso": 1.221,
+      "pontos": 85.15981794517803
+    },
+    {
+      "ticker": "SANB11",
+      "empresa": "Santander Brasil",
+      "pct": -1.0794,
+      "peso": 0.397,
+      "pontos": -7.12153655106125
+    },
+    {
+      "ticker": "SBSP3",
+      "empresa": "Sabesp",
+      "pct": 6.9916,
+      "peso": 3.792,
+      "pontos": 440.601214061726
+    },
+    {
+      "ticker": "SMFT3",
+      "empresa": "Smart Fit",
+      "pct": 3.0491,
+      "peso": 0.423,
+      "pontos": 21.434473607612688
+    },
+    {
+      "ticker": "SUZB3",
+      "empresa": "Suzano",
+      "pct": 2.1228,
+      "peso": 1.367,
+      "pontos": 48.225682286736365
+    },
+    {
+      "ticker": "TAEE11",
+      "empresa": "Taesa",
+      "pct": 1.5404,
+      "peso": 0.372,
+      "pontos": 9.52307570819213
+    },
+    {
+      "ticker": "TEND3",
+      "empresa": "Tenda",
+      "pct": 4.1231,
+      "peso": 0.083,
+      "pontos": 5.687255608362265
+    },
+    {
+      "ticker": "TIMS3",
+      "empresa": "TIM",
+      "pct": -0.4008,
+      "peso": 0.666,
+      "pontos": -4.436114316417794
+    },
+    {
+      "ticker": "TOTS3",
+      "empresa": "TOTVS",
+      "pct": 1.5008,
+      "peso": 0.724,
+      "pontos": 18.057689220065097
+    },
+    {
+      "ticker": "UGPA3",
+      "empresa": "Ultrapar",
+      "pct": -2.7124,
+      "peso": 1.405,
+      "pontos": -63.33311471258508
+    },
+    {
+      "ticker": "USIM5",
+      "empresa": "Usiminas",
+      "pct": 2.8986,
+      "peso": 0.108,
+      "pontos": 5.202508883949108
+    },
+    {
+      "ticker": "VALE3",
+      "empresa": "Vale",
+      "pct": 2.1861,
+      "peso": 9.934,
+      "pontos": 360.9067187087514
+    },
+    {
+      "ticker": "VAMO3",
+      "empresa": "Vamos",
+      "pct": 3.0888,
+      "peso": 0.059,
+      "pontos": 3.028604668038268
+    },
+    {
+      "ticker": "VBBR3",
+      "empresa": "Vibra",
+      "pct": -0.035,
+      "peso": 1.468,
+      "pontos": -0.8538761575106029
+    },
+    {
+      "ticker": "VIVA3",
+      "empresa": "Vivara",
+      "pct": -1.4851,
+      "peso": 0.097,
+      "pontos": -2.3940224544052673
+    },
+    {
+      "ticker": "VIVT3",
+      "empresa": "Telefônica Brasil",
+      "pct": 1.4781,
+      "peso": 0.946,
+      "pontos": 23.237839112532793
+    },
+    {
+      "ticker": "WEGE3",
+      "empresa": "WEG",
+      "pct": -0.2277,
+      "peso": 3.033,
+      "pontos": -11.47720735754463
+    },
+    {
+      "ticker": "YDUQ3",
+      "empresa": "Yduqs Part",
+      "pct": 2.5358,
+      "peso": 0.096,
+      "pontos": 4.045637979382583
+    }
+  ]
+}

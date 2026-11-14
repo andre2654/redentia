@@ -27,11 +27,11 @@ export const COMO_INVESTIR_EM_ETF_GUIDE: GuideDoc = {
   title: 'ETFs: o que são e como investir',
   dek: 'O fundo de índice que se compra como ação, o que ele resolve de verdade e o que ele não resolve.',
   description:
-    'O que é um ETF, como funciona um fundo de índice negociado na B3, quais tipos existem, como comparar taxa e liquidez, como o imposto de renda muda em relação às ações e o passo a passo da primeira compra. Guia claro e honesto da Redentia.',
+    'O que é um ETF, como funciona um fundo de índice negociado na B3, quais tipos existem, como comparar taxa e liquidez, como o imposto de renda muda em relação às ações e o passo a passo da primeira compra. Guia claro e honesto da Aportou.',
   summary:
     'Uma cota, uma cesta inteira de ativos. Entenda como o ETF replica um índice, onde ele ganha da escolha manual de ações, onde ele perde e o que conferir antes de comprar o primeiro.',
   minutes: 10,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-08-03',
   dateModified: '2026-08-03',
   updatedLine: 'Atualizado em 3 ago 2026 · 10 min de leitura',
@@ -209,14 +209,14 @@ export const COMO_INVESTIR_EM_ETF_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Com esses limites claros, o ETF vira o que ele é de melhor: uma forma barata, simples e transparente de ter mercado na carteira sem depender de acertar empresas. Para se aprofundar, o <a href="/glossario">glossário</a> destrincha cada termo citado aqui, a <a href="/metodologia">metodologia</a> explica como a Redentia calcula os indicadores das páginas de ativo, e o guia de <a href="/guias/como-investir-em-acoes">como investir em ações</a> cobre a abertura de conta e a primeira ordem, que é exatamente o mesmo caminho usado para comprar uma cota de ETF.',
+          html: 'Com esses limites claros, o ETF vira o que ele é de melhor: uma forma barata, simples e transparente de ter mercado na carteira sem depender de acertar empresas. Para se aprofundar, o <a href="/glossario">glossário</a> destrincha cada termo citado aqui, a <a href="/metodologia">metodologia</a> explica como a Aportou calcula os indicadores das páginas de ativo, e o guia de <a href="/guias/como-investir-em-acoes">como investir em ações</a> cobre a abertura de conta e a primeira ordem, que é exatamente o mesmo caminho usado para comprar uma cota de ETF.',
         },
       ],
     },
   ],
   cta: {
     title: 'Veja o que está dentro dos índices que os ETFs replicam',
-    subtitle: 'Rankings da Redentia · as empresas da B3 ordenadas por tamanho, lucro e dividendos',
+    subtitle: 'Rankings da Aportou · as empresas da B3 ordenadas por tamanho, lucro e dividendos',
     to: '/rankings',
   },
   faqTitle: 'Perguntas frequentes',

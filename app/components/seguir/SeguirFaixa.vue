@@ -12,6 +12,18 @@
 // Degrada até o Backend enriquecer o GET /watchlist: item sem nome/cotação
 // mostra o ticker e busca o resto no perfil público (useWatchlist.enrich);
 // campo que não veio some, nunca vira zero.
+//
+// Aportou, segunda rodada (11/11/2026): a faixa é a faixa quente da marca
+// (--nu-band), no contêiner de 1.240 px das outras seções da home (era o recuo
+// próprio de 80 px), com os cartões brancos por cima (raio 22, a sombra de
+// cartão branco em painel). Assim ela separa o topo creme de quem tem conta do
+// que vem abaixo, sem faixa branca de ponta a ponta.
+//
+// Robustez (11/11/2026, docs/aportou/robustez.md): a variação do dia é o
+// NuSelo; o cartão branco leva a sombra de cartão branco (era a do creme), sobe
+// 2 px no hover e afunda ao apertar; a faixa e os cartões chegam com a entrada
+// do sistema (720 ms, --nu-ease-saida, cascata de 60 ms); pesos e tracking por
+// token; a faixa respira no ritmo de seção, na coluna de 1.240 (--nu-coluna).
 import type { WatchlistEntry } from '~/types/watchlist'
 
 const wl = useWatchlist()
@@ -82,7 +94,7 @@ async function deixar(t: string) {
 <template>
   <section v-show="visivel" id="seguindo" class="sgf" :class="{ 'sgf--so-gancho': !cards.length }">
     <template v-if="cards.length">
-      <NuSectionHeading>Seus ativos.
+      <NuSectionHeading eyebrow="Você segue">Seus ativos.
         <template #dek>A cotação do último pregão de cada ativo que você segue.</template>
       </NuSectionHeading>
 
@@ -99,7 +111,7 @@ async function deixar(t: string) {
             <span v-if="c.priceFmt" class="sgf__price">{{ c.priceFmt }}</span>
             <NuSkeleton v-else-if="c.loading" variant="line" width="112px" height="28px" radius="chip" class="sgf__sk" />
             <span v-if="c.changeFmt || c.priceAt" class="sgf__meta">
-              <span v-if="c.changeFmt" class="sgf__chg" :class="`sgf__chg--${c.dir}`">{{ c.changeFmt }}</span>
+              <NuSelo v-if="c.changeFmt" :tom="c.dir === 'down' ? 'vermelho' : 'verde'" class="sgf__chg">{{ c.changeFmt }}</NuSelo>
               <span v-if="c.priceAt" class="sgf__date">{{ c.priceAt }}</span>
             </span>
           </NuxtLink>
@@ -115,62 +127,77 @@ async function deixar(t: string) {
     </template>
 
     <div class="sgf__gancho" :class="{ 'sgf__gancho--solo': !cards.length }">
-      <SeguirGancho surface="white" @visivel="ganchoVisivel = $event" />
+      <!-- sobre a faixa quente o cartão do gancho é o branco (surface "cream" = pousa num painel creme) -->
+      <SeguirGancho surface="cream" @visivel="ganchoVisivel = $event" />
     </div>
   </section>
 </template>
 
 <style scoped>
+/* a faixa quente: a coluna de 1.240 px e o ritmo de seção do sistema; chega com a entrada do sistema */
 .sgf {
-  background: var(--nu-white);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-band);
+  padding: clamp(72px, 8vw, 128px) var(--nu-coluna);
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both;
 }
 /* só o gancho (ninguém seguido ainda): banda mais baixa, o card é o conteúdo */
-.sgf--so-gancho { padding-top: clamp(36px, 4.5vw, 56px); padding-bottom: clamp(36px, 4.5vw, 56px); }
+.sgf--so-gancho { padding-top: clamp(40px, 4.5vw, 56px); padding-bottom: clamp(40px, 4.5vw, 56px); }
 
 /* a faixa rola, a página não (regra 10) */
 .sgf__row {
-  list-style: none; margin: clamp(28px, 3.5vw, 44px) 0 0; padding: 0 0 4px;
-  display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x proximity;
+  list-style: none; margin: clamp(32px, 3.5vw, 48px) -8px 0; padding: 8px 8px 12px;
+  display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x proximity;
 }
+/* o cartão branco sobre a faixa: a sombra de cartão branco; clicável (sobe 2 px, afunda ao apertar) */
 .sgf__card {
   position: relative; flex: 0 0 auto; width: min(236px, 72vw);
-  background: var(--nu-cream); border-radius: var(--nu-r-panel);
-  scroll-snap-align: start; transition: transform .2s, box-shadow .2s;
+  background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-branco);
+  scroll-snap-align: start; transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
+  animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) backwards;
 }
+.sgf__card:nth-child(2) { animation-delay: 60ms; }
+.sgf__card:nth-child(3) { animation-delay: 120ms; }
+.sgf__card:nth-child(4) { animation-delay: 180ms; }
+.sgf__card:nth-child(n + 5) { animation-delay: 240ms; }
 .sgf__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.sgf__link { display: flex; flex-direction: column; gap: 14px; padding: 20px 20px 18px; min-height: 100%; }
-.sgf__top { display: flex; align-items: center; gap: 12px; padding-right: 30px; min-width: 0; }
+.sgf__card:has(.sgf__link:active) { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.sgf__link { display: flex; flex-direction: column; gap: 16px; padding: 20px 20px 20px; min-height: 100%; -webkit-tap-highlight-color: transparent; }
+.sgf__top { display: flex; align-items: center; gap: 12px; padding-right: 36px; min-width: 0; }
 .sgf__id { display: flex; flex-direction: column; min-width: 0; }
-.sgf__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; font-variant-numeric: tabular-nums; }
-.sgf__name { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sgf__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-texto); font-variant-numeric: tabular-nums; }
+.sgf__name { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sgf__price {
-  color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.5px;
+  color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo);
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .sgf__sk { display: block; }
-.sgf__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.sgf__chg {
-  display: inline-flex; align-items: center; font-size: var(--nu-fs-sm); font-weight: 700;
-  padding: 5px 11px; border-radius: var(--nu-r-pill); font-variant-numeric: tabular-nums; white-space: nowrap;
-}
-.sgf__chg--up { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.sgf__chg--down { background: var(--nu-red-bg); color: var(--nu-red-2); }
-.sgf__date { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
+.sgf__meta { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; }
+/* a variação do dia: o NuSelo */
+.sgf__chg { font-size: 14px; }
+.sgf__date { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 
 .sgf__unstar {
-  position: absolute; top: 14px; right: 12px; width: 36px; height: 36px;
+  position: absolute; top: 10px; right: 8px; width: 44px; height: 44px;
   display: inline-flex; align-items: center; justify-content: center;
   border: none; border-radius: 50%; cursor: pointer;
-  background: transparent; color: var(--nu-blue-text); transition: background .2s;
+  background: transparent; color: var(--nu-blue);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
+  -webkit-tap-highlight-color: transparent;
 }
+.sgf__unstar:active { transform: scale(.92); }
 .sgf__unstar:hover { background: var(--nu-blue-bg); }
 .sgf__unstar[aria-busy='true'] { cursor: progress; }
-.sgf__unstar:focus-visible, .sgf__link:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
+.sgf__unstar:focus-visible, .sgf__link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
+.sgf__link { border-radius: var(--nu-r-panel); }
+@media (prefers-reduced-motion: reduce) {
+  .sgf, .sgf__card { animation: none; transition: none; }
+  .sgf__card:hover, .sgf__card:has(.sgf__link:active) { transform: none; }
+}
 
-.sgf__err { margin: 14px 0 0; color: var(--nu-red-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.sgf__err { margin: 16px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
 
-.sgf__gancho { margin-top: clamp(24px, 3vw, 36px); }
+.sgf__gancho { margin-top: clamp(24px, 3vw, 40px); }
 .sgf__gancho:empty, .sgf__gancho--solo { margin-top: 0; }
+/* a margem de cima do gancho é a desta faixa (a do /asset é dele) */
+.sgf__gancho :deep(.sgg) { margin-top: 0; }
 </style>

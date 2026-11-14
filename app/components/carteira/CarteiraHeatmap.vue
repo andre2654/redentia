@@ -23,14 +23,14 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
 </script>
 
 <template>
-  <section class="chm">
+  <section v-contexto-chat="{ id: 'carteira:pnl', tipo: 'grafico', rotulo: 'P&L mês a mês' }" v-revelar="{ alvo: 'filhos' }" class="chm">
     <div class="chm__head">
       <div>
         <h2 class="chm__title">P&amp;L mês a mês.</h2>
         <div class="chm__sub">{{ heatmap.sub }}</div>
       </div>
       <div class="chm__legend">
-        <span class="chm__legend-lbl">-3%</span>
+        <span class="chm__legend-lbl">−3%</span>
         <span class="chm__swatches">
           <span class="chm__swatch chm__swatch--r85" />
           <span class="chm__swatch chm__swatch--r40" />
@@ -48,7 +48,7 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
           <span v-for="m in MESES" :key="m" class="chm__month">{{ m }}</span>
           <span class="chm__month chm__month--ano">Ano</span>
         </div>
-        <div v-for="y in heatmap.years" :key="y.y" class="chm__grid chm__grid--row">
+        <div v-for="y in heatmap.years" :key="y.y" v-contexto-chat="{ id: `carteira:pnl:${y.y}`, tipo: 'grafico', rotulo: `P&L ${y.y}`, texto: `P&L da carteira em ${y.y}, mês a mês: ${y.cells.map((c) => c?.txt ?? '—').join(' · ')}. Ano: ${y.ano}` }" class="chm__grid chm__grid--row">
           <span class="chm__year">{{ y.y }}</span>
           <span v-for="(c, i) in y.cells" :key="i" class="chm__cell" :style="cellStyle(c)">{{ c?.txt ?? '' }}</span>
           <span class="chm__cell chm__cell--ano" :class="y.anoNeg ? 'chm__cell--ano-neg' : 'chm__cell--ano-pos'">{{ y.ano }}</span>
@@ -61,39 +61,41 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
 
 <style scoped>
 .chm {
-  background: var(--nu-cream);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-band);
+  padding: var(--cvi-v, clamp(64px, 7vw, 100px)) var(--cvi-g, clamp(20px, 5.5vw, 80px));
 }
 .chm__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .chm__title {
-  margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02;
 }
-.chm__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 14px; }
+.chm__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); margin-top: 14px; }
 .chm__legend { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.chm__legend-lbl { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
+.chm__legend-lbl { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); }
 .chm__swatches { display: flex; gap: 4px; }
 .chm__swatch { width: 22px; height: 16px; border-radius: 5px; }
+.chm__swatch:first-child { border-radius: 8px 5px 5px 8px; }
+.chm__swatch:last-child { border-radius: 5px 8px 8px 5px; }
 .chm__swatch--r85 { background: rgba(var(--nu-hm-red-rgb), 0.85); }
 .chm__swatch--r40 { background: rgba(var(--nu-hm-red-rgb), 0.4); }
 .chm__swatch--empty { background: var(--nu-hm-empty); }
 .chm__swatch--g40 { background: rgba(var(--nu-hm-green-rgb), 0.4); }
 .chm__swatch--g85 { background: rgba(var(--nu-hm-green-rgb), 0.85); }
-.chm__scroll { overflow-x: auto; margin-top: 36px; }
+/* a matriz num cartão creme sobre a faixa */
+.chm__scroll { overflow-x: auto; margin-top: 36px; padding: clamp(16px, 2vw, 26px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
 .chm__matrix { min-width: 920px; }
 .chm__grid { display: grid; grid-template-columns: 56px repeat(12, 1fr) 96px; gap: 6px; }
 .chm__grid--row { margin-top: 6px; align-items: stretch; }
-.chm__month { text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.chm__month { text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: var(--nu-ls-caixa); }
 .chm__month--ano { color: var(--nu-ink); }
-.chm__year { display: flex; align-items: center; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.chm__year { display: flex; align-items: center; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .chm__cell {
   display: flex; align-items: center; justify-content: center; height: 46px;
-  border-radius: 10px; font-size: var(--nu-fs-dense); font-weight: 700;
+  border-radius: var(--nu-r-tag); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .chm__cell--ano { color: var(--nu-white); font-size: var(--nu-fs-dense); }
 .chm__cell--ano-pos { background: var(--nu-hm-green); }
 .chm__cell--ano-neg { background: var(--nu-red); }
-.chm__note { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 22px; }
+.chm__note { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); margin-top: 22px; }
 </style>

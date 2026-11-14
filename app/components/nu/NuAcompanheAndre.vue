@@ -32,7 +32,6 @@ const hrefThreads = urlAcompanhe('threads', props.lugar)
       <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path fill="currentColor" d="M14.23 10.16 22.14 1h-1.87l-6.86 7.95L7.7 1H1.5l8.3 12.06L1.5 23h1.87l7.26-8.41L15.8 23h6.2l-7.77-12.84Zm-2.57 2.98-.84-1.2L4.56 2.8h2.88l5.4 7.72.84 1.2 7.02 10.04h-2.88l-5.76-8.62Z" />
       </svg>
-      <span>X</span>
     </a>
     <span>e no</span>
     <a
@@ -64,43 +63,43 @@ const hrefThreads = urlAcompanhe('threads', props.lugar)
   font-size: var(--nu-fs-sm);
   font-weight: 500;
   line-height: 1.45;
-  color: var(--nu-navy);
+  color: var(--nu-ink);
 }
+/* sem fundo próprio: a linha senta no creme da seção em que está (Aportou,
+   11/11/2026; antes pintava uma tira creme ou branca de ponta a ponta) */
 .aa--calculadora {
   justify-content: center;
-  background: var(--nu-cream);
-  padding: 0 clamp(22px, 5.5vw, 80px) 18px;
+  padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) 18px;
 }
 .aa--asset {
-  background: var(--nu-white);
-  padding: 0 clamp(22px, 5.5vw, 80px) 18px;
+  padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) 18px;
 }
 .aa--rodape {
   margin-top: 22px;
   align-self: stretch;
 }
-.aa--escuro { color: var(--nu-cream-text); }
+.aa--escuro { color: var(--nu-on-dark); }
 
 .aa__link {
   display: inline-flex;
   align-items: center;
   gap: 0.28em;
-  color: var(--nu-blue);
-  font-weight: 700;
+  color: var(--nu-blue-text);
+  font-weight: var(--nu-w-medio);
   line-height: 1.2;
   white-space: nowrap;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
-.aa--escuro .aa__link { color: var(--nu-blue); }
-.aa__link:hover { color: var(--nu-blue-hover); }
-.aa--escuro .aa__link:hover { color: var(--nu-cream-text); }
+.aa--escuro .aa__link { color: var(--nu-blue-on-dark); }
+.aa__link:hover { color: var(--nu-ink); }
+.aa--escuro .aa__link:hover { color: var(--nu-white); }
 .aa__link:focus-visible {
   outline: 2px solid var(--nu-blue);
   outline-offset: 3px;
   border-radius: 2px;
 }
-.aa--escuro .aa__link:focus-visible { outline-color: var(--nu-blue-soft); }
+.aa--escuro .aa__link:focus-visible { outline-color: var(--nu-blue-on-dark); }
 .aa__link svg { display: block; flex: none; }
 </style>

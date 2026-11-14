@@ -253,7 +253,7 @@ useConviteDaConta('quanto-investir', () => JSON.stringify(simParams.value), () =
         ref="salvar" variant="save" calculator="quanto-investir" :caminho="CAMINHO"
         :params="simParams" :label="simLabel" :result="simResult" :folha="folhaConta"
       >
-        <CalcCompartilhar :link="link" titulo="A minha meta, na Redentia" />
+        <CalcCompartilhar :link="link" titulo="A minha meta, na Aportou" />
       </CalcSimSaves>
     </template>
 

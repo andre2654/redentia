@@ -3,10 +3,9 @@
  *
  * Texto e eventos ficam aqui, sem Nuxt, para o node --test. O GA4 sai só pelo
  * gtag que o plugin de consentimento já instalou, e só com consentimento
- * granted fora de rota com segredo — o mesmo portão dos outros eventos.
+ * granted — o mesmo portão dos outros eventos.
  * Sem gtag, sem aceite ou com aceite negado, a função não chama nada.
  */
-import { isSecretTokenPath } from './analytics-privacy.ts'
 import { lerConsentimento, type ConsentChoice } from './consent.ts'
 
 export const TITULO_CONVITE_PRECO_TETO = 'Acompanhar este ticker'
@@ -23,9 +22,15 @@ export type EventoConvitePrecoTeto = typeof EVENTO_VIEW_CONVITE_PRECO_TETO | typ
 
 export type ResultadoConvitePrecoTeto = 'enviado' | 'recusado' | 'repetido' | 'sem-ticker'
 
-const TICKER = /^[A-Z]{4}\d{1,2}$/
+// A forma de ticker da B3: a mesma expressão do utils/tickerClass.ts
+// (B3_TICKER_RE), que decide se a página /calculadora/preco-teto/{TICKER}
+// existe. Até 13/11/2026 valia aqui uma cópia que pedia quatro letras antes do
+// número, e a página da B3SA3 existia sem o convite. Fica escrita, e não
+// importada, porque cada import com `.ts` (o node --test precisa dele) soma um
+// TS5097 ao vue-tsc; o teste confere que as duas são a mesma, letra por letra.
+const TICKER = /^[A-Z][A-Z0-9]{3}\d{1,2}$/
 
-/** PETR4, TAEE11. Qualquer outra coisa não vira evento nem frase. */
+/** PETR4, TAEE11, B3SA3. Qualquer outra coisa não vira evento nem frase. */
 export function normalizarTickerConvite(raw: string): string | null {
   const t = raw.trim().toUpperCase()
   return TICKER.test(t) ? t : null
@@ -68,22 +73,20 @@ export interface GtagConvite {
 export interface AmbienteConvite {
   consentimento: ConsentChoice | null
   gtag?: GtagConvite
-  caminho: string
 }
 
 export function ambienteConviteAtual(): AmbienteConvite {
-  if (typeof window === 'undefined') return { consentimento: null, caminho: '' }
+  if (typeof window === 'undefined') return { consentimento: null }
   const w = window as Window & { gtag?: GtagConvite }
   return {
     consentimento: lerConsentimento(),
     gtag: typeof w.gtag === 'function' ? w.gtag : undefined,
-    caminho: window.location.pathname,
   }
 }
 
 /**
- * Um evento, com `ticker`. Recusa sem consentimento granted, sem gtag, em
- * rota com segredo ou com ticker inválido. Não carrega script.
+ * Um evento, com `ticker`. Recusa sem consentimento granted, sem gtag ou com
+ * ticker inválido. Não carrega script.
  */
 export function dispararEventoConvitePrecoTeto(
   nome: EventoConvitePrecoTeto,
@@ -93,7 +96,6 @@ export function dispararEventoConvitePrecoTeto(
   const t = normalizarTickerConvite(ticker)
   if (!t) return 'sem-ticker'
   if (ambiente.consentimento !== 'granted') return 'recusado'
-  if (isSecretTokenPath(ambiente.caminho)) return 'recusado'
   if (typeof ambiente.gtag !== 'function') return 'recusado'
   try {
     ambiente.gtag('event', nome, { ticker: t })

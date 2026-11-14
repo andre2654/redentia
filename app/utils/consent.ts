@@ -13,13 +13,12 @@
  * GA4, GTM, Clarity nem a Insight Tag. O Vercel Web Analytics fica de fora
  * deste portão: não grava cookie, não identifica a pessoa e mede audiência
  * de forma anônima e agregada, com base no legítimo interesse (LGPD,
- * art. 7º, IX). Continua bloqueado em rota com token secreto na URL.
+ * art. 7º, IX).
  *
  * Consent Mode do Google não entra: com o consentimento negado o gtag.js
  * ainda seria baixado de googletagmanager.com, e o requisito é sem aceite,
  * sem script.
  */
-import { isSecretTokenPath } from './analytics-privacy.ts'
 import { isPaidLanding } from './paid-landing.ts'
 
 export const CONSENT_POLICY_VERSION = '1'
@@ -123,7 +122,7 @@ export function avisarAceite(): void {
 }
 
 /**
- * Roda `executar` só com consentimento granted e fora de rota com segredo.
+ * Roda `executar` só com consentimento granted.
  * Se a escolha já existe, dispara agora; senão, quando a pessoa aceitar.
  *
  * `pagoNaHora`: visita paga não espera o ocioso (o GTM e a Insight Tag).
@@ -135,13 +134,11 @@ export function agendarComConsentimento(executar: () => void, opts?: { pagoNaHor
 
   const executarSePuder = () => {
     if (lerConsentimento() !== 'granted') return
-    if (isSecretTokenPath(window.location.pathname)) return
     executar()
   }
 
   const disparar = () => {
     if (lerConsentimento() !== 'granted') return
-    if (isSecretTokenPath(window.location.pathname)) return
     if (opts?.pagoNaHora && isPaidLanding(window.location.search)) {
       executarSePuder()
       return

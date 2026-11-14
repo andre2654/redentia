@@ -13,12 +13,12 @@ const origin = useSiteOrigin()
 
 usePageSeo({
   title: `Glossário do investidor: ${TERM_COUNT} termos da bolsa explicados`,
-  description: `Dicionário de investimentos da Redentia: ${TERM_COUNT} termos do mercado financeiro, de Dividend Yield a P/L, explicados de forma clara e com exemplos. Busca A-Z instantânea.`,
+  description: `Dicionário de investimentos da ${MARCA.nome}: ${TERM_COUNT} termos do mercado financeiro, de Dividend Yield a P/L, explicados de forma clara e com exemplos. Busca A-Z instantânea.`,
   path: '/glossario',
   structuredData: [
     {
       '@type': 'DefinedTermSet',
-      name: 'Glossário do investidor Redentia',
+      name: `Glossário do investidor ${MARCA.nome}`,
       description: 'Termos do mercado financeiro brasileiro definidos de forma clara e honesta.',
       hasDefinedTerm: allTerms.map((t) => ({
         '@type': 'DefinedTerm',
@@ -78,6 +78,70 @@ function groupByLetter(list: typeof allTerms) {
 const activeLetters = computed(() => new Set(sections.value.map((s) => s.letter)))
 
 const totalShown = computed(() => filtered.value.length)
+
+// "Perguntar à IA" abre o painel do chat aqui mesmo (11/11/2026): a pergunta
+// mora no painel desde 02/11, e a /busca não é mais onde se conversa.
+const painel = useChatPainel()
+
+// ROBUSTEZ (11/11/2026): o A-Z mostra onde a leitura está. A letra da seção
+// atual ganha o traço cobalto de 2px que DESLIZA de letra em letra (o mesmo do
+// topo e do sumário, --nu-dur-lenta --nu-ease-troca); o clique rola suave até a
+// letra e acende na hora (a âncora #letra-X fica). No celular a faixa rola de
+// lado e traz a letra atual para a vista. Os cartões entram ao chegar (v-revelar).
+const azEl = ref<HTMLElement | null>(null)
+const azBarra = ref<HTMLElement | null>(null)
+const letraAtual = ref<string | null>(null)
+const azMarca = ref({ x: 0, w: 0 })
+const azQuieto = ref(true)
+let azFixo = false
+useNuScrollFrame(() => {
+  if (azFixo) return
+  const linha = (azBarra.value?.getBoundingClientRect().bottom ?? 160) + 32
+  let atual: string | null = null
+  for (const sec of sections.value) {
+    const el = document.getElementById(`letra-${sec.letter}`)
+    if (el && el.getBoundingClientRect().top <= linha) atual = sec.letter
+  }
+  letraAtual.value = atual
+})
+const reduzido = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+function medirAz(): boolean {
+  const l = letraAtual.value
+  const el = l ? azEl.value?.querySelector<HTMLElement>(`[data-letra="${l}"]`) : null
+  if (!el) return false
+  // um traço curto, centrado na letra
+  azMarca.value = { x: el.offsetLeft + (el.offsetWidth - 16) / 2, w: 16 }
+  // no celular a faixa rola de lado: a letra atual vem para a vista
+  const c = azEl.value!
+  if (c.scrollWidth > c.clientWidth + 1 && (el.offsetLeft < c.scrollLeft + 24 || el.offsetLeft + el.offsetWidth > c.scrollLeft + c.clientWidth - 24)) {
+    c.scrollTo({ left: Math.max(0, el.offsetLeft - (c.clientWidth - el.offsetWidth) / 2), behavior: reduzido() ? 'auto' : 'smooth' })
+  }
+  return true
+}
+watch(letraAtual, (agora, antes) => {
+  // a primeira letra aparece no lugar, sem vir deslizando da ponta
+  if (!antes) azQuieto.value = true
+  medirAz()
+  if (!antes) requestAnimationFrame(() => requestAnimationFrame(() => { azQuieto.value = false }))
+})
+function irParaLetra(l: string, ev: MouseEvent) {
+  const alvo = document.getElementById(`letra-${l}`)
+  if (!alvo || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button !== 0) return
+  ev.preventDefault()
+  letraAtual.value = l
+  azFixo = true
+  const solta = () => { azFixo = false }
+  window.addEventListener('scrollend', solta, { once: true })
+  setTimeout(solta, 1200)
+  alvo.scrollIntoView({ behavior: reduzido() ? 'auto' : 'smooth', block: 'start' })
+  history.replaceState(history.state, '', `#letra-${l}`)
+  // pelo teclado, o foco vai junto (o Tab seguinte continua da letra, como na âncora)
+  if (ev.detail === 0) {
+    if (!alvo.hasAttribute('tabindex')) alvo.setAttribute('tabindex', '-1')
+    alvo.focus({ preventScroll: true })
+  }
+}
+const estiloAzMarca = computed(() => ({ width: `${azMarca.value.w}px`, transform: `translateX(${azMarca.value.x}px)` }))
 </script>
 
 <template>
@@ -106,15 +170,19 @@ const totalShown = computed(() => filtered.value.length)
     </NuPageHero>
 
     <!-- nav A-Z sticky -->
-    <nav class="glx__az" aria-label="Índice alfabético">
-      <div class="glx__az-inner">
+    <nav ref="azBarra" class="glx__az" aria-label="Índice alfabético">
+      <div ref="azEl" class="glx__az-inner">
+        <span class="glx__az-marca" :class="{ 'glx__az-marca--on': !!letraAtual, 'glx__az-marca--quieto': azQuieto }" :style="estiloAzMarca" aria-hidden="true" />
         <a
           v-for="l in ALPHABET"
           :key="l"
           :href="activeLetters.has(l) ? `#letra-${l}` : undefined"
           class="glx__az-item"
-          :class="{ 'glx__az-item--off': !activeLetters.has(l) }"
+          :class="{ 'glx__az-item--off': !activeLetters.has(l), 'glx__az-item--atual': letraAtual === l }"
+          :data-letra="l"
           :aria-disabled="!activeLetters.has(l)"
+          :aria-current="letraAtual === l ? 'location' : undefined"
+          @click="activeLetters.has(l) && irParaLetra(l, $event)"
         >{{ l }}</a>
       </div>
     </nav>
@@ -127,13 +195,13 @@ const totalShown = computed(() => filtered.value.length)
       </div>
 
       <p v-if="totalShown === 0" class="glx__empty">
-        Tente outra palavra, ou pergunte diretamente à
-        <NuxtLink to="/busca" class="glx__empty-link">Redentia AI</NuxtLink>.
+        Tente outra palavra, ou pergunte direto à
+        <button type="button" class="glx__empty-link" @click="painel.preencher(`O que é ${query}?`)">IA da Aportou</button>.
       </p>
 
       <section v-for="sec in sections" :id="`letra-${sec.letter}`" :key="sec.letter" class="glx__section">
         <div class="glx__letter">{{ sec.letter }}</div>
-        <div class="glx__grid">
+        <div v-revelar="{ alvo: 'filhos' }" class="glx__grid">
           <NuxtLink
             v-for="t in sec.terms"
             :key="t.slug"
@@ -153,95 +221,144 @@ const totalShown = computed(() => filtered.value.length)
 </template>
 
 <style scoped>
-.glx { background: var(--nu-white); }
+/* O hub na personalidade da Aportou (11/11/2026): creme da página, a busca no
+   padrão de campo (borda de 1,5px, anel cobalto no foco), o A-Z com fios de
+   1,5px e cartões creme com a sombra quente. Estrutura e conteúdo iguais.
+   Robustez (11/11/2026): a linha de apoio a 20px do título e a busca a 40px
+   dela; o A-Z gruda logo abaixo da régua (pela altura que ela publica) e marca
+   a letra atual; a seta do cartão sempre à vista; tudo em token. */
+/* --lado: a coluna do site (1240px centrada, margem fluida abaixo de 1400px) */
+.glx { --lado: var(--nu-coluna); background: var(--nu-page); }
 
-/* hero extras (busca dentro do slot de ações do NuPageHero) */
+/* hero extras (a linha de apoio e a busca dentro do slot de ações do NuPageHero) */
+.glx :deep(.nph__actions) { margin-top: 20px; }
 .glx__hero-sub {
-  color: var(--nu-gray); font-size: clamp(17px, 1.8vw, 21px); font-weight: 500;
-  line-height: 1.55; max-width: 620px;
+  margin: 0; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto);
+  line-height: 1.45; max-width: 620px; text-wrap: pretty;
 }
 .glx__search {
-  display: flex; align-items: center; gap: 12px; margin-top: 28px;
-  max-width: 560px; background: var(--nu-white);
-  border: 2px solid var(--nu-ink-10); border-radius: var(--nu-r-pill);
-  padding: 4px 8px 4px 20px; transition: border-color .2s, box-shadow .2s;
+  display: flex; align-items: center; gap: 12px; margin-top: 40px;
+  max-width: 560px; min-height: 56px; background: var(--nu-white);
+  border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-pill);
+  padding: 0 8px 0 20px;
+  transition: border-color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor);
 }
-.glx__search:focus-within { border-color: var(--nu-blue); box-shadow: 0 0 0 4px var(--nu-blue-tint); }
-.glx__search-ic { color: var(--nu-gray-2); flex-shrink: 0; }
+.glx__search:hover { border-color: var(--nu-gray); }
+.glx__search:focus-within { border-color: var(--nu-blue); box-shadow: 0 0 0 3px var(--nu-blue-tint); }
+.glx__search-ic { color: var(--nu-gray); flex-shrink: 0; transition: color var(--nu-dur-media) var(--nu-ease-cor); }
+.glx__search:focus-within .glx__search-ic { color: var(--nu-ink); }
 .glx__search-input {
   flex: 1; min-width: 0; border: none; outline: none; background: transparent;
-  font-family: inherit; font-size: var(--nu-fs-md); font-weight: 500; color: var(--nu-ink);
+  font-family: inherit; font-size: 17px; font-weight: var(--nu-w-texto); color: var(--nu-ink);
   padding: 14px 0;
 }
-.glx__search-input::placeholder { color: var(--nu-gray-2); font-weight: 500; }
+.glx__search-input::placeholder { color: var(--nu-gray); font-weight: var(--nu-w-texto); }
+.glx__search-input::-webkit-search-cancel-button { display: none; }
 .glx__search-clear {
-  width: 34px; height: 34px; flex-shrink: 0; border: none; cursor: pointer;
-  background: var(--nu-cream); border-radius: 50%; color: var(--nu-ink);
-  display: flex; align-items: center; justify-content: center; transition: background .15s;
+  width: 40px; height: 40px; flex-shrink: 0; border: none; cursor: pointer;
+  background: var(--nu-cream-2); border-radius: 50%; color: var(--nu-ink);
+  display: flex; align-items: center; justify-content: center;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
+  animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both;
 }
-.glx__search-clear:hover { background: var(--nu-cream-hover); }
+.glx__search-clear:hover { background: var(--nu-line); }
+.glx__search-clear:active { transform: scale(.92); }
 
-/* nav A-Z sticky */
+/* nav A-Z: gruda embaixo do topo E da régua do mercado, como a barra dos guias */
 .glx__az {
-  position: sticky; top: var(--nuh-h, 76px); z-index: 20;
-  background: var(--nu-white); border-bottom: 1.5px solid var(--nu-cream-2);
-  transition: top .28s ease;
+  position: sticky; top: calc(var(--nuh-h, 72px) + var(--nut-h, 40px) - 1px); z-index: 20;
+  background: color-mix(in srgb, var(--nu-page) 92%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px);
+  border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2);
+  transition: top var(--nu-dur-topo) var(--nu-ease-saida);
 }
+/* uma linha só, na coluna: quando não cabe (tablet, celular) rola de lado */
 .glx__az-inner {
-  display: flex; flex-wrap: wrap; gap: 2px; justify-content: center;
-  max-width: 980px; margin: 0 auto; padding: 12px clamp(16px, 4vw, 40px);
+  position: relative; display: flex; flex-wrap: nowrap; gap: 4px; overflow-x: auto; scrollbar-width: none;
+  padding: 8px var(--lado) 8px calc(var(--lado) - 11px);
 }
+.glx__az-inner::-webkit-scrollbar { display: none; }
 .glx__az-item {
-  min-width: 30px; height: 30px; padding: 0 4px;
+  position: relative; z-index: 1; flex: 0 0 auto; min-width: 38px; height: 38px; padding: 0 4px;
   display: inline-flex; align-items: center; justify-content: center;
-  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
-  border-radius: 9px; transition: background .15s, color .15s;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
+  border-radius: var(--nu-r-tag); -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
   font-variant-numeric: tabular-nums;
 }
-.glx__az-item:hover { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
-.glx__az-item--off { color: var(--nu-ink-30); pointer-events: none; cursor: default; }
-
-.glx__body {
-  max-width: 980px; margin: 0 auto;
-  padding: clamp(32px, 5vw, 56px) clamp(20px, 5vw, 48px) clamp(64px, 8vw, 110px);
+.glx__az-item:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
+.glx__az-item:active { transform: scale(.94); }
+.glx__az-item:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: -3px; }
+.glx__az-item--atual { color: var(--nu-ink); }
+.glx__az-item--off { color: var(--nu-sand); pointer-events: none; cursor: default; }
+/* a letra atual: o traço cobalto que desliza */
+.glx__az-marca {
+  position: absolute; left: 0; bottom: 9px; height: 2px; border-radius: 2px; background: var(--nu-blue);
+  opacity: 0; pointer-events: none; transform-origin: 0 50%;
+  transition: transform var(--nu-dur-lenta) var(--nu-ease-troca), width var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
+.glx__az-marca--on { opacity: 1; }
+.glx__az-marca--quieto { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+
+.glx__body { padding: clamp(32px, 5vw, 56px) var(--lado) clamp(72px, 8vw, 128px); }
 .glx__count {
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto);
   font-variant-numeric: tabular-nums; margin-bottom: 12px;
 }
-.glx__empty { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 24px; }
-.glx__empty-link { color: var(--nu-blue-text); font-weight: 800; }
+.glx__empty { color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); margin-top: 24px; animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; }
+.glx__empty-link {
+  padding: 0; border: 0; background: none; font: inherit; cursor: pointer;
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.glx__empty-link:hover { color: var(--nu-blue-hover); text-decoration-color: currentColor; }
 
-.glx__section { margin-top: clamp(36px, 4.5vw, 56px); scroll-margin-top: calc(var(--nuh-h, 76px) + 60px); }
+.glx__section { margin-top: clamp(40px, 5vw, 64px); scroll-margin-top: calc(var(--nuh-h, 72px) + var(--nut-h, 40px) + 72px); }
 .glx__section:first-of-type { margin-top: 8px; }
+/* a letra: número-herói cobalto sobre um fio carvão de 3px */
 .glx__letter {
-  color: var(--nu-blue-text); font-size: clamp(30px, 4vw, 44px); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1; margin-bottom: 20px;
-  padding-bottom: 14px; border-bottom: 2px solid var(--nu-cream-2);
+  color: var(--nu-blue); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display);
+  letter-spacing: var(--nu-ls-display); line-height: 1; margin-bottom: 24px;
+  padding-bottom: 12px; border-bottom: 3px solid var(--nu-ink);
 }
 .glx__grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 14px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: clamp(12px, 1.4vw, 18px);
 }
 .glx__card {
   position: relative; display: flex; flex-direction: column; gap: 8px;
-  background: var(--nu-cream); border-radius: var(--nu-r-tile);
-  padding: 22px 24px; transition: background .18s, transform .18s;
-  animation: nu-fade .4s ease both;
+  background: var(--nu-card); border-radius: var(--nu-r-panel);
+  box-shadow: var(--nu-shadow-quente); -webkit-tap-highlight-color: transparent;
+  padding: 22px 24px;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.glx__card:hover { background: var(--nu-cream-hover); transform: translateY(-2px); }
-.glx__card-term { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
+@media (hover: hover) { .glx__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); } }
+.glx__card:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.glx__card:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+.glx__card-term { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); padding-right: 28px; }
 .glx__card-short {
-  color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55;
   display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
+/* a seta sempre à vista (o que é clicável parece clicável); sob o ponteiro fica cobalto e anda */
 .glx__card-arrow {
-  position: absolute; top: 20px; right: 20px; color: var(--nu-gray);
-  opacity: 0; transform: translateX(-4px); transition: opacity .18s, transform .18s;
+  position: absolute; top: 24px; right: 20px; display: flex; color: var(--nu-sand);
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
-.glx__card:hover .glx__card-arrow { opacity: 1; transform: none; color: var(--nu-blue); }
+.glx__card:hover .glx__card-arrow { color: var(--nu-blue); transform: translateX(3px); }
 
 @media (max-width: 760px) {
   .glx__grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  /* no dedo: alvo de 44px, e a letra cortada na borda diz que tem mais */
+  .glx__az-inner { gap: 2px; padding: 6px var(--lado) 6px calc(var(--lado) - 14px); }
+  .glx__az-item { min-width: 44px; height: 44px; }
+  .glx__az-marca { bottom: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glx__card, .glx__card-arrow, .glx__az-item, .glx__az-marca, .glx__az { transition: none; }
+  .glx__empty, .glx__search-clear { animation: none; }
 }
 </style>

@@ -4,6 +4,8 @@
 // useNewsletter (anônimo: e-mail → código → conta e inscrição; logado com
 // e-mail confirmado: um clique). Saiu da faixa do /guias em 21/10/2026 para
 // servir também ao rodapé e ao convite do canto (NuNewsletterConvite).
+// APORTOU (11/11/2026): a pílula branca ganha o anel de foco da marca (o campo
+// não tinha foco visível) e o botão vai em 700, com a pílula afundando ao apertar.
 import type { OrigemNewsletter } from '~/composables/useNewsletter'
 import type { FormatoConvite } from '~/utils/newsletter-lugares'
 
@@ -74,8 +76,10 @@ watch(jaAssina, (v) => {
 .nnf { position: relative; }
 .nnf__pill {
   display: flex; gap: 10px; background: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 7px 7px 7px 24px; align-items: center;
+  border-radius: var(--nu-r-pill); padding: 7px 7px 7px 24px; align-items: center; min-height: 58px;
+  transition: box-shadow .2s;
 }
+.nnf__pill:focus-within { box-shadow: 0 0 0 3px var(--nu-blue-on-dark); }
 .nnf__input {
   flex: 1; min-width: 0; background: transparent; border: none; outline: none;
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; padding: 10px 0;
@@ -86,19 +90,20 @@ watch(jaAssina, (v) => {
 }
 .nnf__cta {
   background: var(--nu-blue); color: var(--nu-white); border: none;
-  border-radius: var(--nu-r-pill); padding: 13px 24px; font-size: var(--nu-fs-md); font-weight: 800;
-  cursor: pointer; white-space: nowrap; transition: background .2s;
+  border-radius: var(--nu-r-pill); min-height: 44px; padding: 0 24px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
+  cursor: pointer; white-space: nowrap; transition: background .2s, transform .15s var(--nu-ease-saida);
 }
 .nnf__cta:hover { background: var(--nu-blue-hover); }
+.nnf__cta:active { transform: scale(.98); }
 .nnf__cta:disabled { opacity: .6; cursor: default; }
 .nnf__legal { margin: 12px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
 .nnf__legal a { color: inherit; text-decoration: underline; }
 .nnf__passo { margin: 0 0 12px; color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 500; }
-.nnf__ok { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-lg); font-weight: 700; line-height: 1.45; }
-.nnf__erro { margin: 12px 0 0; color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; }
+.nnf__ok { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); line-height: 1.45; }
+.nnf__erro { margin: 12px 0 0; color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .nnf__trocar {
   margin: 10px 0 0; padding: 0; background: none; border: none; cursor: pointer;
-  color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 700; text-decoration: underline;
+  color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); text-decoration: underline;
 }
 .nnf__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 </style>

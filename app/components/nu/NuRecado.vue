@@ -19,6 +19,10 @@
 // dado é o real (content/ibov-mensal.ts). O fecho vem escrito à mão (Caveat,
 // carregada só quando o bilhete vai abrir) e assinado com a foto do André.
 // Sem recomendação: o texto não diz para vender, segurar nem comprar.
+// Hidratação (13/11/2026): toda medida do SVG da serra com bind vai com .attr.
+// Ao hidratar, o Vue 3.5 tenta gravar o que é dinâmico como propriedade do
+// elemento, e x1, y2, cx, viewBox e companhia só têm leitura (o aviso "Failed
+// setting prop" no console).
 import { IBOV_MENSAL, IBOV_MENSAL_INICIO } from '~/content/ibov-mensal'
 import { RECADO, eventoRecado, recadoNoAr } from '~/composables/useRecado'
 
@@ -162,9 +166,9 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
         @click.stop
       >
         <div class="rec__serra" aria-hidden="true">
-          <svg :viewBox="`0 0 ${VW} ${VH}`" preserveAspectRatio="xMidYMax slice" class="rec__svg">
+          <svg :viewBox.attr="`0 0 ${VW} ${VH}`" preserveAspectRatio="xMidYMax slice" class="rec__svg">
             <defs>
-              <linearGradient id="rec-gelo" x1="0" :y1="TOPO" x2="0" :y2="VH" gradientUnits="userSpaceOnUse">
+              <linearGradient id="rec-gelo" x1="0" :y1.attr="TOPO" x2="0" :y2.attr="VH" gradientUnits="userSpaceOnUse">
                 <stop offset="0" class="rec__s-neve" />
                 <stop offset="1" class="rec__s-base" />
               </linearGradient>
@@ -173,10 +177,10 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
             <path :d="corpoFrente" fill="url(#rec-gelo)" />
             <path :d="cristaFrente" class="rec__crista" pathLength="1" />
             <g v-for="v in VALES" :key="v.rotulo" class="rec__vale">
-              <line :x1="v.x" :y1="v.y + 5" :x2="v.x" :y2="v.y + 16" />
-              <text :x="v.x" :y="v.y + 28" text-anchor="middle">{{ v.rotulo }}</text>
+              <line :x1.attr="v.x" :y1.attr="v.y + 5" :x2.attr="v.x" :y2.attr="v.y + 16" />
+              <text :x.attr="v.x" :y.attr="v.y + 28" text-anchor="middle">{{ v.rotulo }}</text>
             </g>
-            <circle :cx="hoje.x" :cy="hoje.y" r="3.5" class="rec__hoje" />
+            <circle :cx.attr="hoje.x" :cy.attr="hoje.y" r="3.5" class="rec__hoje" />
           </svg>
           <span class="rec__legenda">Ibovespa, mês a mês, desde 1995</span>
         </div>
@@ -202,7 +206,7 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
           </p>
 
           <p class="rec__mao">A vida segue.<br>A bolsa também.</p>
-          <p class="rec__assina"><span class="rec__assina-nome">André</span>, da Redentia</p>
+          <p class="rec__assina"><span class="rec__assina-nome">André</span>, da Aportou</p>
 
           <div class="rec__acoes">
             <NuxtLink to="/carteira" class="rec__cta" @click="fechar('carteira')">Ver minha carteira</NuxtLink>
@@ -221,14 +225,14 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
-  animation: rec-fade .2s ease;
+  animation: nu-surgir .2s ease both;
 }
 .rec__card {
   position: relative;
   width: min(540px, 100%); max-height: calc(100vh - 48px); overflow: auto;
   background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
   box-shadow: var(--nu-shadow-day-modal);
-  animation: rec-sobe .32s cubic-bezier(.2, .8, .2, 1);
+  animation: nu-subir .32s var(--nu-ease-saida) both;
 }
 .rec__card:focus { outline: none; }
 
@@ -248,19 +252,19 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
 }
 .rec__vale line { stroke: var(--nu-navy); stroke-width: 1; opacity: .55; }
 .rec__vale text {
-  fill: var(--nu-navy); font-size: 11px; font-weight: 800; letter-spacing: .04em;
+  fill: var(--nu-navy); font-size: 11px; font-weight: var(--nu-w-forte); letter-spacing: .04em;
   font-variant-numeric: tabular-nums; opacity: .72;
 }
 .rec__hoje { fill: var(--nu-white); stroke: var(--nu-blue); stroke-width: 2; }
 .rec__legenda {
   position: absolute; left: 22px; top: 18px;
-  color: var(--nu-cream-text-78); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .02em;
+  color: var(--nu-cream-text-78); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .02em;
 }
 .rec__x {
   position: absolute; top: 14px; right: 14px; z-index: 1;
   width: 36px; height: 36px; border-radius: 50%; border: none;
   background: var(--nu-cream-text-12); color: var(--nu-cream-text);
-  font-size: var(--nu-fs-sm); font-weight: 800; cursor: pointer;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); cursor: pointer;
   display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
 .rec__x:hover { background: var(--nu-white-30); }
@@ -270,12 +274,12 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
 .rec__de { display: flex; align-items: center; gap: 12px; }
 .rec__foto { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; box-shadow: 0 0 0 3px var(--nu-day-card), 0 0 0 4px var(--nu-day-divider); }
 .rec__de-txt { display: flex; flex-direction: column; gap: 2px; }
-.rec__de-nome { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.rec__de-nome { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .rec__de-data { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 .rec__titulo {
   margin: 22px 0 0; color: var(--nu-ink);
-  font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.06; text-wrap: balance;
+  font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.06; text-wrap: balance;
 }
 .rec__p {
   margin: 12px 0 0; color: var(--nu-day-body);
@@ -286,21 +290,21 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
   padding: 12px 14px; border-radius: 14px; background: var(--nu-cream);
   color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
 }
-.rec__nota b { font-weight: 800; color: var(--nu-ink); }
+.rec__nota b { font-weight: var(--nu-w-forte); color: var(--nu-ink); }
 .rec__nota-i { flex: none; width: 18px; height: 18px; margin-top: 1px; fill: none; stroke: var(--nu-blue); stroke-width: 1.6; stroke-linecap: round; }
 
 /* o fecho à mão: tinta de caneta azul, escrevendo da esquerda para a direita */
 .rec__mao {
   margin: 22px 0 0; color: var(--nu-blue-deep);
   font-family: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
-  font-size: calc(var(--nu-fs-h3) + 2px); font-weight: 700; line-height: 1.02; letter-spacing: .005em;
+  font-size: calc(var(--nu-fs-h3) + 2px); font-weight: var(--nu-w-display); line-height: 1.02; letter-spacing: .005em;
   transform: rotate(-1.2deg); transform-origin: left center;
   animation: rec-escreve 1.5s .5s cubic-bezier(.45, .05, .35, 1) both;
 }
 .rec__assina { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .rec__assina-nome {
   font-family: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
-  color: var(--nu-blue-deep); font-size: var(--nu-fs-2xl); font-weight: 700; margin-right: 1px;
+  color: var(--nu-blue-deep); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-medio); margin-right: 1px;
 }
 
 .rec__acoes { margin-top: 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
@@ -308,17 +312,16 @@ const hoje = { x: xDe(n - 1), y: yDe(logs.at(-1)!) }
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--nu-blue); color: var(--nu-white); text-decoration: none;
   border-radius: var(--nu-r-pill); padding: 13px 24px;
-  font-size: var(--nu-fs-md); font-weight: 800; transition: background .2s, transform .2s;
+  min-height: 52px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); transition: background .2s, transform .15s var(--nu-ease-saida);
 }
-.rec__cta:hover { background: var(--nu-blue-hover); transform: translateY(-1px); }
+.rec__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.rec__cta:active { transform: scale(.98); }
 .rec__ok {
   border: none; background: none; padding: 10px 4px; cursor: pointer;
-  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 700;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
 }
 .rec__ok:hover { color: var(--nu-ink); }
 
-@keyframes rec-fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes rec-sobe { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes rec-desenha { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes rec-escreve { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 

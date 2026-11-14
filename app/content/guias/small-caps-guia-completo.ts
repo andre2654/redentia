@@ -18,11 +18,11 @@ export const SMALL_CAPS_GUIA_COMPLETO_GUIDE: GuideDoc = {
   title: 'Small caps: guia completo',
   dek: 'Empresas menores oferecem o maior potencial de crescimento e o maior risco da bolsa. Entenda o que são small caps, onde mora o perigo e como avaliar uma sem se iludir com a promessa de multiplicar.',
   description:
-    'Small caps: guia completo sobre ações de empresas menores. O que são, por que atraem, os riscos reais (liquidez, volatilidade, informação) e como avaliar por fundamento. Guia claro e honesto da Redentia, sem indicar ticker.',
+    'Small caps: guia completo sobre ações de empresas menores. O que são, por que atraem, os riscos reais (liquidez, volatilidade, informação) e como avaliar por fundamento. Guia claro e honesto da Aportou, sem indicar ticker.',
   summary:
     'Small caps são a promessa de multiplicar e a chance de perder pesado, no mesmo papel. Entenda o que são, os riscos que ninguém conta no grupo de dica e como avaliar uma empresa menor sem apostar às cegas.',
   minutes: 9,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-13',
   dateModified: '2026-07-13',
   updatedLine: 'Atualizado em 13 jul 2026 · 9 min de leitura',
@@ -110,7 +110,7 @@ export const SMALL_CAPS_GUIA_COMPLETO_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Cada um desses filtros vira uma coluna comparável nos <a href="/rankings">rankings da Redentia</a>, e a leitura completa por empresa vive na página do ativo. Se você não faria essa lição de casa, a small cap não é para você, e tudo bem.',
+          html: 'Cada um desses filtros vira uma coluna comparável nos <a href="/rankings">rankings da Aportou</a>, e a leitura completa por empresa vive na página do ativo. Se você não faria essa lição de casa, a small cap não é para você, e tudo bem.',
         },
       ],
     },
@@ -128,7 +128,7 @@ export const SMALL_CAPS_GUIA_COMPLETO_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'E a ordem importa: antes de qualquer small cap vêm a <strong>reserva de emergência</strong> em renda fixa de liquidez diária e uma base de empresas mais sólidas. Para dimensionar aportes e enxergar quanto uma fatia pequena rende no longo prazo, use as <a href="/calculadoras">calculadoras da Redentia</a>. Aportes regulares e diversificação vencem, no tempo, a caça à próxima multiplicadora.',
+          html: 'E a ordem importa: antes de qualquer small cap vêm a <strong>reserva de emergência</strong> em renda fixa de liquidez diária e uma base de empresas mais sólidas. Para dimensionar aportes e enxergar quanto uma fatia pequena rende no longo prazo, use as <a href="/calculadoras">calculadoras da Aportou</a>. Aportes regulares e diversificação vencem, no tempo, a caça à próxima multiplicadora.',
         },
       ],
     },

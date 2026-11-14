@@ -15,7 +15,9 @@ import { createJiti } from 'jiti'
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const APP = join(ROOT, 'app')
 
-const ORIGIN = 'https://www.redentia.com.br'
+// A origem canônica é a mesma do site (nuxt.config: runtimeConfig.public.siteUrl):
+// na virada para aportou.com.br basta a env NUXT_PUBLIC_SITE_URL (auditoria, 12/11/2026).
+const ORIGIN = (process.env.NUXT_PUBLIC_SITE_URL || 'https://www.redentia.com.br').replace(/\/+$/, '')
 const BASE = process.env.NUXT_BACKEND_URL ?? 'https://redentia-api.saraivada.com/api'
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '../server/data/sitemap-semente.ts')
 
@@ -134,7 +136,7 @@ async function main() {
   renameSync(tmp, OUT)
   // readFileSync confirma que o que foi para o disco é o que vamos servir
   const gravado = readFileSync(OUT, 'utf8')
-  if (!gravado.includes('<loc>https://www.redentia.com.br/')) {
+  if (!gravado.includes(`<loc>${ORIGIN}/`)) {
     throw new Error('semente gravada sem <loc> canônico')
   }
 }

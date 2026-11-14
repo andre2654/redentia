@@ -42,23 +42,24 @@ const terms = computed(() =>
   gap: 7px;
   padding: 20px 22px;
   background: var(--nu-white);
-  border: 2px solid var(--nu-sand-border);
-  border-radius: var(--nu-r-card, 18px);
+  border: 1px solid var(--nu-line);
+  border-radius: var(--nu-r-panel);
   text-decoration: none;
-  transition: border-color .2s, transform .2s;
+  transition: border-color .2s, transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .cgl__item:hover {
   border-color: var(--nu-ink);
   transform: translateY(-2px);
+  box-shadow: var(--nu-shadow-card);
 }
 .cgl__term {
   color: var(--nu-blue-text);
   font-size: var(--nu-fs-md);
-  font-weight: 800;
+  font-weight: var(--nu-w-forte);
   letter-spacing: -.2px;
 }
 .cgl__short {
-  color: var(--nu-gray-2);
+  color: var(--nu-gray-3);
   font-size: var(--nu-fs-sm);
   font-weight: 500;
   line-height: 1.5;

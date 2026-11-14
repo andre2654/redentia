@@ -2,11 +2,17 @@
 // Seção navy "Sua carteira em N meses." — COMPARTILHADA entre a Home logada
 // (PR7) e /carteira (PR8): os dois designs desenham o MESMO bloco (movida de
 // components/home/HomeChart.vue no PR8, 1 implementação por responsabilidade).
-// Pills de período 1M/6M/12M funcionais, legenda Você/IBOV/CDI e gráfico do
+// Pills de período 1M/6M/12M funcionais, legenda Patrimônio/IBOV/CDI e gráfico do
 // PATRIMÔNIO em R$ full-bleed (NuPriceChart — gridlines 'R$ NNk', pill
 // 'Patrimônio hoje', crosshair). IBOV/CDI são comparativos DE LEGENDA,
 // como no .dc.html (decisão documentada no relatório do PR).
-//  - Você  = variação do patrimônio no período (curva real /portfolio/equity-curve)
+// Hoje só a tela antiga da /carteira (CarteiraAnalise) usa este bloco; a tela
+// nova mostra a rentabilidade (TWR) do relatório no VisaoDesempenho.
+//  - Patrimônio = variação do patrimônio no período, COM os aportes (curva real
+//    /portfolio/equity-curve). Até 07/11/2026 a legenda dizia "Você", e o
+//    número (+51% em 12 meses, com os aportes) passava por rentabilidade: a
+//    TWR do mesmo período era ~20%. A tela antiga não lê o relatório, então
+//    o mínimo honesto é o nome certo e a meta "com aportes".
 //  - IBOV  = /indices/IBOV/prices?mode= (12mo pré-buscado no SSR; 1M/6M lazy)
 //  - CDI   = linha composta DERIVADA da taxa vigente (/macro/snapshot), base
 //            365 corridos — aproximação documentada (não existe série CDI no
@@ -97,7 +103,7 @@ const pillValue = computed(() => (hidden.value ? 'R$ ••••' : props.chart
 </script>
 
 <template>
-  <section class="hch">
+  <section v-contexto-chat="{ id: 'carteira:desempenho', tipo: 'grafico', rotulo: 'Desempenho da carteira' }" class="hch">
     <div class="hch__head">
       <h2 class="hch__title">Sua carteira<br>{{ TITLE[period] }}</h2>
       <div v-if="!chart.collecting" class="hch__periods">
@@ -110,7 +116,7 @@ const pillValue = computed(() => (hidden.value ? 'R$ ••••' : props.chart
 
     <template v-if="!chart.collecting">
       <div class="hch__legend">
-        <span v-if="vocePct != null" class="hch__leg"><span class="hch__leg-label">Você</span><span class="hch__leg-val hch__leg-val--you">{{ fmtP(vocePct) }}</span></span>
+        <span v-if="vocePct != null" class="hch__leg"><span class="hch__leg-label">Patrimônio</span><span class="hch__leg-val hch__leg-val--you">{{ fmtP(vocePct) }}</span><span class="hch__leg-meta">com aportes</span></span>
         <span v-if="ibovPct != null" class="hch__leg"><span class="hch__leg-label">IBOV</span><span class="hch__leg-val">{{ fmtP(ibovPct) }}</span></span>
         <span v-if="cdiPct != null" class="hch__leg"><span class="hch__leg-label">CDI</span><span class="hch__leg-val">{{ fmtP(cdiPct) }}</span></span>
       </div>
@@ -132,35 +138,39 @@ const pillValue = computed(() => (hidden.value ? 'R$ ••••' : props.chart
 <style scoped>
 .hch {
   background: var(--nu-navy);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
+  padding: clamp(56px, 7.5vw, 96px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(48px, 6vw, 76px);
   animation: nu-fade .5s ease both;
 }
 .hch__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .hch__title {
   margin: 0; color: var(--nu-cream-text); font-size: clamp(36px, 5vw, 64px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1.02;
 }
 .hch__periods { display: flex; gap: 6px; flex-shrink: 0; }
 .hch__period {
   padding: 11px 20px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
+  color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer;
   transition: color .2s, background .2s;
 }
 .hch__period:hover { color: var(--nu-cream-text-85); }
-.hch__period--active { background: var(--nu-cream); color: var(--nu-navy); font-weight: 800; }
+.hch__period--active { background: var(--nu-cream); color: var(--nu-navy); font-weight: var(--nu-w-forte); }
 .hch__period--active:hover { color: var(--nu-navy); }
 .hch__legend { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; margin-top: 20px; }
 .hch__leg { display: inline-flex; align-items: baseline; gap: 9px; }
-.hch__leg-label { color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 700; }
-.hch__leg-val { color: var(--nu-cream-text-85); font-size: var(--nu-fs-2xl); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hch__leg-label { color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
+.hch__leg-val { color: var(--nu-cream-text-85); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .hch__leg-val--you { color: var(--nu-blue-legend); }
+.hch__leg-meta { color: var(--nu-cream-text-50); font-size: var(--nu-fs-sm); font-weight: 600; }
 .hch__chart {
   position: relative; height: clamp(280px, 36vw, 430px);
   margin: 34px calc(clamp(22px, 5.5vw, 80px) * -1) calc(clamp(48px, 6vw, 76px) * -1);
 }
+/* em tela larga a seção centra a coluna de 1240px e a margem lateral passa de 80px:
+   o gráfico para de vazar para a borda e fica na coluna */
+@media (min-width: 1401px) { .hch__chart { margin-left: 0; margin-right: 0; } }
 .hch__collecting { margin-top: 34px; max-width: 640px; }
 .hch__collecting-kicker {
-  color: var(--nu-blue-soft); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-blue-soft); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
   letter-spacing: 1.4px; text-transform: uppercase;
 }
 .hch__collecting-body {

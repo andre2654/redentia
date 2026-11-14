@@ -8,6 +8,8 @@
  *    existir edição publicada, a página mostra só a metodologia (regra 7 do
  *    design system: dado que falta faz o elemento sumir).
  */
+import type { Leitura, LeituraId } from '~/content/benchmark-ia/leituras'
+import type { NuFaqItem } from '~/types/market'
 
 export type BenchIndexId = 'longo' | 'curto' | 'golpe' | 'leao' | 'inventa' | 'amem'
 
@@ -216,7 +218,7 @@ export interface BenchNavItem {
   soon?: boolean
 }
 
-/** número de destaque no topo do /benchmark-ia (BenchHero) */
+/** número de destaque no topo do /benchmark-ia (BenchNoite) */
 export interface BenchHeroStat {
   /** id da seção para onde o cartão leva */
   id: string
@@ -233,4 +235,61 @@ export interface BenchChartInfo {
   sub: string
   /** três blocos: o que mostra, como ler, cuidado */
   blocos: { rotulo: string; texto: string }[]
+}
+
+/* ——— a página "A noite" (03/11/2026): o que a página calcula e BenchNoite mostra ——— */
+export interface BenchIndexSection {
+  id: BenchIndexId
+  label: string
+  icon: string
+  on: boolean
+  /** o que falta para o índice ter nota */
+  next: string
+}
+
+/** linha de índice com o detalhe do gráfico dele (as mesmas linhas da página de hoje) */
+export type BenchRowParts = BenchRankingRow & { parts: number[] }
+
+/**
+ * Tudo o que a página calcula da edição, entregue de uma vez a BenchNoite:
+ * ela só muda a forma, nunca a conta.
+ */
+export interface BenchPaginaVM {
+  edition: BenchEdition | null
+  isPreview: boolean
+  /** linha de frescor do topo ("Dados da Edição 01, de 16/10/2026.") */
+  fresh: string | null
+  heroStats: BenchHeroStat[]
+  geral: BenchRankingRow[] | null
+  geralDesc: string
+  /** acertou, não sei, inventou (%) */
+  inventa: BenchRowParts[]
+  inventaSegments: string[]
+  /** invenção média sem e com os dados da Redentia no enunciado (fora do ranking) */
+  dados: { sem: number; com: number } | null
+  /** disse não, ficou no muro, concordou (%) */
+  amem: BenchRowParts[]
+  golpe: (BenchRankingRow & { caught: number; falseAlarm: number })[]
+  leao: (BenchRankingRow & { cells: number[] })[]
+  leaoTopics: string[]
+  leaoShort: string[]
+  longo: BenchRankingRow[] | null
+  longoSeries: { id: string; name: string; values: number[]; marcos?: { i: number; label: string }[] }[]
+  longoMarcos: { i: number; label: string }[]
+  longoNota: string
+  longoFormacao: boolean
+  longoHeadline: string | null
+  curto: BenchRankingRow[] | null
+  curtoAcaso: boolean
+  curtoParcial: BenchPrevisaoParcial | null
+  curtoParcialSeries: { id: string; name: string; values: (number | null)[] }[]
+  curtoHeadline: string | null
+  /** do mais barato ao mais caro */
+  custo: BenchRankingRow[] | null
+  costPoints: { id: string; name: string; cost: number; rank: number; nota: number }[]
+  leitura: Partial<Record<LeituraId, Leitura>>
+  indices: BenchIndexSection[]
+  proximos: BenchIndexSection[]
+  proximosDesc: string
+  faq: NuFaqItem[]
 }

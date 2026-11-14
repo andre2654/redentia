@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// /institucional/how-works — Como funciona a Redentia (portada VERBATIM de
+// /institucional/how-works — Como funciona a Aportou (até 11/11/2026, "…a Redentia"; portada VERBATIM de
 // Frontend/app/pages/institucional/how-works.vue, cujo texto vinha do config do
 // tenant: brand.howWorks.title + brand.howWorks.steps). Placeholders resolvidos:
 // brand.name = "Redentia". Path e SEO preservados de propósito (mesma URL).
@@ -13,14 +13,14 @@ const steps = [
   { title: 'Crie sua conta grátis', description: 'Cadastro rápido, sem cartão de crédito. Comece em menos de 1 minuto.' },
   { title: 'Explore o mercado', description: 'Acompanhe cotações em tempo real, analise fundamentos e compare ativos.' },
   { title: 'Simule seus investimentos', description: 'Use as calculadoras para planejar aposentadoria, calcular preço teto e mais.' },
-  { title: 'Pergunte à IA', description: 'Tire dúvidas com a Redentia AI, disponível 24/7 com respostas em segundos.' },
+  { title: 'Pergunte à IA', description: 'Tire dúvidas com a IA da Aportou, disponível 24/7 com respostas em segundos.' },
 ]
 
 usePageSeo({
   // SEO igual ao antigo (how-works.vue): brand.name resolvido = "Redentia". O
   // app.vue sufixa "· Redentia" em todo title (house style Nu).
-  title: 'Como funciona a Redentia | Consolide e analise seus investimentos',
-  description: 'Veja passo a passo como a plataforma Redentia conecta corretoras, usa IA para gerar insights e entrega dashboards completos para seus investimentos.',
+  title: `Como funciona a ${MARCA.nome} | Consolide e analise seus investimentos`,
+  description: `Veja passo a passo como a plataforma ${MARCA.nome} conecta corretoras, usa IA para gerar insights e entrega dashboards completos para seus investimentos.`,
   path: '/institucional/how-works',
   breadcrumbs: [
     { name: 'Início', path: '/' },
@@ -34,7 +34,7 @@ useHead({ titleTemplate: null })
 
 <template>
   <div>
-    <LegalHero eyebrow="Institucional" title="Como funciona a Redentia" />
+    <LegalHero eyebrow="Institucional" title="Como funciona a Aportou" />
 
     <section class="hw">
       <ol class="hw__steps">
@@ -47,41 +47,69 @@ useHead({ titleTemplate: null })
         </li>
       </ol>
     </section>
+
+    <!-- o fecho: a frase da marca (MARCA.frase) no painel azul e a mesma
+         chamada do topo, que é o passo 01 -->
+    <section v-revelar class="hwf">
+      <div class="hwf__painel">
+        <MarcaCorte class="hwf__corte nu-corte-fundo" :largura="620" cor="var(--nu-white)" />
+        <NuEyebrow como="p" sobre="azul">{{ MARCA.nome }}</NuEyebrow>
+        <p class="hwf__frase">{{ MARCA.frase }}</p>
+        <NuBotaoSeta to="/assinar?quiz=1&de=como-funciona" variante="creme" class="hwf__cta">Criar conta grátis</NuBotaoSeta>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
+/* Os passos no padrão da Aportou (11/11/2026): número gigante cobalto sobre um
+   fio carvão de 3px, título em 800. Sobre o creme da página, em cascata.
+   Robustez (11/11/2026): a coluna do site, a cascata em token (520ms, 60ms
+   entre um passo e outro) e o fecho que entra ao chegar (v-revelar). */
 .hw {
-  background: var(--nu-white);
-  padding: clamp(44px, 6vw, 76px) clamp(22px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-page);
+  padding: clamp(48px, 6vw, 80px) var(--nu-coluna) clamp(40px, 5vw, 64px);
 }
 .hw__steps {
-  max-width: 720px; margin: 0 auto; list-style: none;
-  display: flex; flex-direction: column; gap: clamp(24px, 3.2vw, 40px);
+  max-width: 1240px; margin: 0; padding: 0; list-style: none;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  gap: clamp(28px, 3.4vw, 44px) clamp(20px, 2.6vw, 36px);
 }
-.hw__step {
-  display: flex; align-items: flex-start; gap: clamp(18px, 2.6vw, 28px);
-}
+.hw__step { display: flex; flex-direction: column; animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; }
+.hw__step:nth-child(2) { animation-delay: var(--nu-passo-cascata); }
+.hw__step:nth-child(3) { animation-delay: calc(var(--nu-passo-cascata) * 2); }
+.hw__step:nth-child(4) { animation-delay: calc(var(--nu-passo-cascata) * 3); }
 .hw__num {
-  flex-shrink: 0; width: clamp(44px, 5vw, 54px); height: clamp(44px, 5vw, 54px);
-  display: flex; align-items: center; justify-content: center;
-  border-radius: var(--nu-r-tile); background: var(--nu-blue-tint);
-  color: var(--nu-blue-text); font-size: clamp(17px, 1.7vw, 20px); font-weight: 800;
-  letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+  color: var(--nu-blue); font-size: clamp(64px, 6.4vw, 88px); font-weight: var(--nu-w-display);
+  letter-spacing: var(--nu-ls-display); line-height: 1; font-variant-numeric: tabular-nums;
+  padding-bottom: 14px; border-bottom: 3px solid var(--nu-ink);
 }
-.hw__body { flex: 1; min-width: 0; padding-top: 2px; }
+.hw__body { padding-top: 24px; }
 .hw__title {
   margin: 0; color: var(--nu-ink);
-  font-size: clamp(20px, 2.1vw, 25px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.18;
+  font-size: clamp(22px, 2.1vw, 26px); font-weight: var(--nu-w-forte);
+  letter-spacing: var(--nu-ls-titulo); line-height: 1.12; text-wrap: balance;
 }
 .hw__desc {
-  margin: 8px 0 0; color: var(--nu-gray-2);
-  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65;
+  margin: 12px 0 0; color: var(--nu-gray-3);
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.55; max-width: 34ch;
 }
 
-@media (max-width: 760px) {
-  .hw__step { gap: 16px; }
+/* ——— o fecho em painel azul (o gradiente cobalto, raio 40, o corte gigante a 8%) ——— */
+.hwf { background: var(--nu-page); padding: 0 var(--nu-coluna) clamp(72px, 8vw, 128px); }
+.hwf__painel {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: clamp(36px, 5.4vw, 76px) clamp(24px, 5vw, 64px);
+  border-radius: var(--nu-r-secao); background: var(--nu-grad-cobalto); color: var(--nu-white);
 }
+/* posição e tamanho são da classe global .nu-corte-fundo (sempre no canto de cima à esquerda) */
+.hwf__corte { z-index: -1; opacity: .08; }
+.hwf__frase {
+  margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display);
+  letter-spacing: var(--nu-ls-display); line-height: 1.02; text-wrap: balance;
+}
+.hwf__cta { margin-top: clamp(26px, 3vw, 36px); }
+@media (max-width: 760px) { .hwf__painel { border-radius: var(--nu-r-card); } }
+@media (prefers-reduced-motion: reduce) { .hw__step { animation: none; } }
 </style>

@@ -7,7 +7,7 @@
 import type { NuFaqItem } from '~/types/market'
 
 export type GuideTag =
-  | 'Guia Redentia'
+  | 'Guia Aportou'
   | 'Ações'
   | 'FIIs'
   | 'Renda fixa'

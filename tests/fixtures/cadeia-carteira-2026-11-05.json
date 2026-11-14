@@ -1,0 +1,792 @@
+{
+  "VALE3": {
+    "ticker": "VALE3",
+    "compra_de": [
+      {
+        "ticker": "MRSA3B",
+        "tickers": [
+          "MRSA3B",
+          "MRSA5B",
+          "MRSA6B"
+        ],
+        "nome": "MRS LOGISTICA S.A.",
+        "nome_b3": "MRS LOGÍSTICA",
+        "o_que": "transporte ferroviário",
+        "anual": {
+          "valor": 459000000,
+          "moeda": "USD",
+          "ano": 2025,
+          "informado_por": "VALE3"
+        },
+        "contratado": null,
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "edgar_10k"
+        ],
+        "fontes": [
+          {
+            "tipo": "edgar_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/917851/000129281426001844/valeform20f_2025.htm",
+            "data": "2026-03-27",
+            "trecho": "MRS Logística S.A. – ( 459 )",
+            "informado_por": "VALE3",
+            "o_que": "transporte ferroviário",
+            "valor": 459000000,
+            "moeda": "USD",
+            "tipo_valor": "anual",
+            "ano": 2025
+          }
+        ]
+      },
+      {
+        "ticker": "PETR4",
+        "tickers": [
+          "PETR3",
+          "PETR4"
+        ],
+        "nome": "Petróleo Brasileiro S.A. - Petrobras",
+        "nome_b3": "PETROBRAS   PN      N2",
+        "o_que": "diesel, diesel renovável",
+        "anual": null,
+        "contratado": null,
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "contrato"
+        ],
+        "fontes": [
+          {
+            "tipo": "contrato",
+            "url": "https://agencia.petrobras.com.br/w/petrobras-e-vale-avan%C3%A7am-com-parceria-no-fornecimento-de-combust%C3%ADveis",
+            "data": "2026-01-05",
+            "trecho": "A Petrobras e a Vale assinaram contrato para fornecimento de diesel em operações da mineradora em Minas Gerais. O acordo envolve o suprimento de diesel S10, produzido pela Petrobras",
+            "informado_por": "PETR4",
+            "o_que": "diesel",
+            "valor": null,
+            "moeda": null,
+            "tipo_valor": null,
+            "ano": 2026
+          },
+          {
+            "tipo": "contrato",
+            "url": "https://agencia.petrobras.com.br/w/negocio/petrobras-vende-diesel-com-conteudo-renovavel-para-a-vale",
+            "data": "2024-10-18",
+            "trecho": "Trata-se da primeira venda da Petrobras do seu diesel coprocessado com conteúdo renovável diretamente para um consumidor final.",
+            "informado_por": "PETR4",
+            "o_que": "diesel renovável",
+            "valor": null,
+            "moeda": null,
+            "tipo_valor": null,
+            "ano": 2024
+          }
+        ]
+      }
+    ],
+    "vende_para": [],
+    "totais": {
+      "ano": 2025,
+      "receita": 213595000000,
+      "custo": 138887000000,
+      "fonte": "DFP consolidada (CVM)",
+      "url": "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
+    },
+    "restante": {
+      "clientes": {
+        "valor": 213595000000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      },
+      "custo": {
+        "valor": 138887000000,
+        "listadas": 0,
+        "fora_da_conta": 2
+      }
+    }
+  },
+  "PETR4": {
+    "ticker": "PETR4",
+    "compra_de": [
+      {
+        "ticker": "BRKM5",
+        "tickers": [
+          "BRKM3",
+          "BRKM5",
+          "BRKM6"
+        ],
+        "nome": "Braskem S.A.",
+        "nome_b3": "BRASKEM     PNA     N1",
+        "o_que": "produtos petroquímicos",
+        "anual": {
+          "valor": 150000000,
+          "moeda": "BRL",
+          "ano": 2025,
+          "informado_por": "BRKM5"
+        },
+        "contratado": null,
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "edgar_10k"
+        ],
+        "fontes": [
+          {
+            "tipo": "edgar_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/1071438/000129281426002427/bakform20f_2025.htm",
+            "data": "2026-04-20",
+            "trecho": "Petrobras and subsidiaries 150 ( 16,151 ) ( 37 ) 28",
+            "informado_por": "BRKM5",
+            "o_que": "produtos petroquímicos",
+            "valor": 150000000,
+            "moeda": "BRL",
+            "tipo_valor": "anual",
+            "ano": 2025
+          }
+        ]
+      },
+      {
+        "ticker": "VBBR3",
+        "tickers": [
+          "VBBR3"
+        ],
+        "nome": "Vibra Energia S.A.",
+        "nome_b3": "VIBRA       ON      NM",
+        "o_que": "produtos para plataformas",
+        "anual": null,
+        "contratado": null,
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "nota_explicativa"
+        ],
+        "fontes": [
+          {
+            "tipo": "nota_explicativa",
+            "url": "https://api.mziq.com/mzfilemanager/v2/d/d243bdaa-0468-4f64-8c09-ba0bcee9789b/7e3acea3-c971-3a8d-7b81-1c6d8ecdd1bc?origin=2",
+            "data": "2026-03-11",
+            "trecho": "abastecendo plataformas, sondas, FPSOs e unidades terrestres com os produtos indispensáveis às operações e demais aplicações, sendo o maior cliente a Petrobras.",
+            "informado_por": "VBBR3",
+            "o_que": "produtos para plataformas",
+            "valor": null,
+            "moeda": null,
+            "tipo_valor": null,
+            "ano": 2025
+          }
+        ]
+      }
+    ],
+    "vende_para": [
+      {
+        "ticker": "BRKM5",
+        "tickers": [
+          "BRKM3",
+          "BRKM5",
+          "BRKM6"
+        ],
+        "nome": "Braskem S.A.",
+        "nome_b3": "BRASKEM     PNA     N1",
+        "o_que": "nafta, etano, propano e hidrogênio, matérias-primas petroquímicas",
+        "anual": {
+          "valor": 16151000000,
+          "moeda": "BRL",
+          "ano": 2025,
+          "informado_por": "BRKM5"
+        },
+        "contratado": {
+          "valor": 70426404329.41,
+          "moeda": "BRL",
+          "contratos": 10,
+          "informado_por": "PETR4"
+        },
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "cvm_partes_relacionadas",
+          "edgar_10k"
+        ],
+        "fontes": [
+          {
+            "tipo": "edgar_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/1071438/000129281426002427/bakform20f_2025.htm",
+            "data": "2026-04-20",
+            "trecho": "Petrobras and subsidiaries 150 ( 16,151 ) ( 37 ) 28",
+            "informado_por": "BRKM5",
+            "o_que": "matérias-primas petroquímicas",
+            "valor": 16151000000,
+            "moeda": "BRL",
+            "tipo_valor": "anual",
+            "ano": 2025
+          },
+          {
+            "tipo": "edgar_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/1119639/000129281426002168/pbrform20f_2025.htm",
+            "data": "2026-04-09",
+            "trecho": "Purchase and sale of petrochemical naphtha to supply Braskem’s plants in the states of São Paulo, Bahia, and Rio Grande do Sul, with prices based on international benchmarks. The contracts stipulate a minimum monthly withdrawal quantity, with the possibility of negotiating additional quantities monthly, which may reach up to 4.116 million tons in 2026 and up to 4.316 million tons in 2030. The estimated value of the contracts is US$ 11.3 billion, with a term of 5 years, starting on January 1, 2026.",
+            "informado_por": "PETR4",
+            "o_que": "nafta",
+            "valor": 11300000000,
+            "moeda": "USD",
+            "tipo_valor": "contratado",
+            "ano": 2026
+          },
+          {
+            "tipo": "edgar_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/1119639/000129281426002168/pbrform20f_2025.htm",
+            "data": "2026-04-09",
+            "trecho": "From 2029 to 2036, it includes an increase in the contracted quantity to 725,000 tons of ethylene equivalent per year to meet Braskem’s planned expansion (currently in the project phase), with production and supply from Reduc and/or the Boaventura Energy Complex. The estimated value of the contract is US$ 5.6 billion, with a term of 11 years, starting on January 1, 2026.",
+            "informado_por": "PETR4",
+            "o_que": "etano, propano e hidrogênio",
+            "valor": 5600000000,
+            "moeda": "USD",
+            "tipo_valor": "contratado",
+            "ano": 2026
+          },
+          {
+            "tipo": "cvm_partes_relacionadas",
+            "url": "http://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161309",
+            "data": "2026-03-08",
+            "trecho": "Contrato spot de compra pela Braskem e venda pela Petrobras de propeno grau polímero, a partir da Refinaria Alberto Pasqualini (\"REFAP\") (\"Décimo Contrato REFAP\"",
+            "informado_por": "PETR4",
+            "o_que": null,
+            "valor": 50100000,
+            "moeda": "BRL",
+            "tipo_valor": "contratado",
+            "ano": 2026
+          },
+          {
+            "tipo": "cvm_partes_relacionadas",
+            "url": "http://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161309",
+            "data": "2026-01-29",
+            "trecho": "Contrato de Fornecimento de Vapor de 42 kgf/cm2 (\"Utilidade\") a ser fornecido pela BRASKEM, a partir da planta localizada em Camaçari/BA à FAFEN, também localizada em Camaçari/BA",
+            "informado_por": "PETR4",
+            "o_que": null,
+            "valor": 161500000,
+            "moeda": "BRL",
+            "tipo_valor": "contratado",
+            "ano": 2026
+          },
+          {
+            "tipo": "cvm_partes_relacionadas",
+            "url": "http://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161309",
+            "data": "2025-12-18",
+            "trecho": "-Contrato de compra pela Braskem e venda pela Petrobras a partir da REDUC de propeno grau polímero e compra pela Petrobras e venda pela Braskem de corrente de retorno -Contrato de compra pela Braskem e venda pela Petrobras a partir da RECAP de propeno grau polímero e compra pela Petrobras e venda pela Braskem de corrente de retorno -G11Contrato de compra pela Braskem e venda pela Petrobras a partir da REFAP de propeno grau polímero",
+            "informado_por": "PETR4",
+            "o_que": null,
+            "valor": 4035878230.78,
+            "moeda": "BRL",
+            "tipo_valor": "contratado",
+            "ano": 2025
+          },
+          {
+            "tipo": "cvm_partes_relacionadas",
+            "url": "http://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161309",
+            "data": "2025-12-18",
+            "trecho": "Contrato de Compra e Venda de Etano, Propano e Hidrogênio com a Braske",
+            "informado_por": "PETR4",
+            "o_que": null,
+            "valor": 30106713136.74,
+            "moeda": "BRL",
+            "tipo_valor": "contratado",
+            "ano": 2025
+          },
+          {
+            "tipo": "cvm_partes_relacionadas",
+            "url": "http://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161309",
+            "data": "2025-12-18",
+            "trecho": "-Contrato firme de nafta petroquímica para suprimento dutoviário da planta da Braskem no Rio Grande do Sul -Contrato flexível de nafta petroquímica para suprimento das plantas da Braskem na Bahia e no Rio Grande do Sul por via marítima e -Contrato firme de nafta petroquímica para suprimento dutoviário da planta da Braskem em São Paul",
+            "informado_por": "PETR4",
+            "o_que": null,
+            "valor": 32240689333.16,
+            "moeda": "BRL",
+            "tipo_valor": "contratado",
+            "ano": 2025
+          }
+        ]
+      },
+      {
+        "ticker": "VBBR3",
+        "tickers": [
+          "VBBR3"
+        ],
+        "nome": "Vibra Energia S.A.",
+        "nome_b3": "VIBRA       ON      NM",
+        "o_que": "derivados de petróleo",
+        "anual": null,
+        "contratado": {
+          "valor": 218000000,
+          "moeda": "BRL",
+          "contratos": 1,
+          "informado_por": "VBBR3"
+        },
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "nota_explicativa"
+        ],
+        "fontes": [
+          {
+            "tipo": "nota_explicativa",
+            "url": "https://api.mziq.com/mzfilemanager/v2/d/d243bdaa-0468-4f64-8c09-ba0bcee9789b/7e3acea3-c971-3a8d-7b81-1c6d8ecdd1bc?origin=2",
+            "data": "2026-03-11",
+            "trecho": "Em 31 de dezembro de 2025, a Companhia possui compromissos de compras de derivados de petróleo, para o período de um ano, que correspondem a um valor total estimado de R$ 218 com a Petrobras",
+            "informado_por": "VBBR3",
+            "o_que": "derivados de petróleo",
+            "valor": 218000000,
+            "moeda": "BRL",
+            "tipo_valor": "contratado",
+            "ano": 2025
+          }
+        ]
+      },
+      {
+        "ticker": "VALE3",
+        "tickers": [
+          "VALE3"
+        ],
+        "nome": "Vale S.A.",
+        "nome_b3": "VALE        ON      NM",
+        "o_que": "diesel, diesel renovável",
+        "anual": null,
+        "contratado": null,
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "contrato"
+        ],
+        "fontes": [
+          {
+            "tipo": "contrato",
+            "url": "https://agencia.petrobras.com.br/w/petrobras-e-vale-avan%C3%A7am-com-parceria-no-fornecimento-de-combust%C3%ADveis",
+            "data": "2026-01-05",
+            "trecho": "A Petrobras e a Vale assinaram contrato para fornecimento de diesel em operações da mineradora em Minas Gerais. O acordo envolve o suprimento de diesel S10, produzido pela Petrobras",
+            "informado_por": "PETR4",
+            "o_que": "diesel",
+            "valor": null,
+            "moeda": null,
+            "tipo_valor": null,
+            "ano": 2026
+          },
+          {
+            "tipo": "contrato",
+            "url": "https://agencia.petrobras.com.br/w/negocio/petrobras-vende-diesel-com-conteudo-renovavel-para-a-vale",
+            "data": "2024-10-18",
+            "trecho": "Trata-se da primeira venda da Petrobras do seu diesel coprocessado com conteúdo renovável diretamente para um consumidor final.",
+            "informado_por": "PETR4",
+            "o_que": "diesel renovável",
+            "valor": null,
+            "moeda": null,
+            "tipo_valor": null,
+            "ano": 2024
+          }
+        ]
+      },
+      {
+        "ticker": "UGPA3",
+        "tickers": [
+          "UGPA3"
+        ],
+        "nome": "Ultrapar Participações S.A.",
+        "nome_b3": "ULTRAPAR    ON      NM",
+        "o_que": "GLP e combustíveis",
+        "anual": null,
+        "contratado": null,
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "edgar_10k"
+        ],
+        "fontes": [
+          {
+            "tipo": "edgar_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/1094972/000155485526000796/ugp-20251231.htm",
+            "data": "2026-04-29",
+            "trecho": "In 2025, 83% of all the LPG purchased by Ultragaz was supplied by Petrobras. With respect to fuel distribution, Petrobras also supplied the majority of Ipiranga and other distributors’ oil-based fuel requirements in 2025,",
+            "informado_por": "UGPA3",
+            "o_que": "GLP e combustíveis",
+            "valor": null,
+            "moeda": null,
+            "tipo_valor": null,
+            "ano": 2025
+          }
+        ]
+      },
+      {
+        "ticker": "GGBR4",
+        "tickers": [
+          "GGBR3",
+          "GGBR4"
+        ],
+        "nome": "Gerdau S.A.",
+        "nome_b3": "GERDAU      PN      N1",
+        "o_que": "coque de petróleo",
+        "anual": null,
+        "contratado": null,
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "edgar_10k"
+        ],
+        "fontes": [
+          {
+            "tipo": "edgar_10k",
+            "url": "https://www.sec.gov/Archives/edgar/data/1073404/000110465926027678/ggb-20251231x20f.htm",
+            "data": "2026-03-13",
+            "trecho": "coking coals imported from Colombia, the United States and Russia as well as petroleum coke purchased from Petrobras",
+            "informado_por": "GGBR4",
+            "o_que": "coque de petróleo",
+            "valor": null,
+            "moeda": null,
+            "tipo_valor": null,
+            "ano": 2026
+          }
+        ]
+      },
+      {
+        "ticker": "SUZB3",
+        "tickers": [
+          "SUZB3"
+        ],
+        "nome": "Suzano S.A.",
+        "nome_b3": "SUZANO S.A. ON  ATZ NM",
+        "o_que": "gás natural",
+        "anual": null,
+        "contratado": null,
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "contrato"
+        ],
+        "fontes": [
+          {
+            "tipo": "contrato",
+            "url": "https://agencia.petrobras.com.br/w/petrobras-e-suzano-formalizam-contrato-para-fornecimento-de-gas-natural-no-mercado-livre-em-sp",
+            "data": "2025-05-15",
+            "trecho": "A Petrobras e a Suzano formalizaram contrato de fornecimento de gás natural para todas as unidades da companhia no estado de São Paulo",
+            "informado_por": "PETR4",
+            "o_que": "gás natural",
+            "valor": null,
+            "moeda": null,
+            "tipo_valor": null,
+            "ano": 2025
+          }
+        ]
+      }
+    ],
+    "totais": {
+      "ano": 2025,
+      "receita": 497549000000,
+      "custo": 260551000000,
+      "fonte": "DFP consolidada (CVM)",
+      "url": "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
+    },
+    "restante": {
+      "clientes": {
+        "valor": 481398000000,
+        "listadas": 16151000000,
+        "fora_da_conta": 5
+      },
+      "custo": {
+        "valor": 260401000000,
+        "listadas": 150000000,
+        "fora_da_conta": 1
+      }
+    }
+  },
+  "PRIO3": {
+    "ticker": "PRIO3",
+    "compra_de": [],
+    "vende_para": [],
+    "totais": {
+      "ano": 2025,
+      "receita": 15583960000,
+      "custo": 12469053000,
+      "fonte": "DFP consolidada (CVM)",
+      "url": "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
+    },
+    "restante": {
+      "clientes": {
+        "valor": 15583960000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      },
+      "custo": {
+        "valor": 12469053000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      }
+    }
+  },
+  "WEGE3": {
+    "ticker": "WEGE3",
+    "compra_de": [],
+    "vende_para": [
+      {
+        "ticker": "AXIA3",
+        "tickers": [
+          "AXIA3",
+          "AXIA7"
+        ],
+        "nome": "AXIA ENERGIA S.A.",
+        "nome_b3": "Axia Energia",
+        "o_que": "aerogeradores e manutenção",
+        "anual": null,
+        "contratado": {
+          "valor": 2100000000,
+          "moeda": "BRL",
+          "contratos": 1,
+          "informado_por": "WEGE3"
+        },
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "noticia"
+        ],
+        "fontes": [
+          {
+            "tipo": "noticia",
+            "url": "https://trademap.com.br/noticias/news-2590955",
+            "data": "2022-02-18",
+            "trecho": "a WEG (WEGE3) comunicou a assinatura de um contrato com a Eletrosul, subsidiária da Eletrobras (ELET6), para o fornecimento de 72 aerogeradores pelo valor de cerca de R$ 2,1 bilhões.",
+            "informado_por": "WEGE3",
+            "o_que": "aerogeradores e manutenção",
+            "valor": 2100000000,
+            "moeda": "BRL",
+            "tipo_valor": "contratado",
+            "ano": 2022
+          }
+        ]
+      }
+    ],
+    "totais": {
+      "ano": 2025,
+      "receita": 40804110000,
+      "custo": 27122477000,
+      "fonte": "DFP consolidada (CVM)",
+      "url": "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
+    },
+    "restante": {
+      "clientes": {
+        "valor": 40804110000,
+        "listadas": 0,
+        "fora_da_conta": 1
+      },
+      "custo": {
+        "valor": 27122477000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      }
+    }
+  },
+  "RANI3": {
+    "ticker": "RANI3",
+    "compra_de": [],
+    "vende_para": [],
+    "totais": {
+      "ano": 2025,
+      "receita": 1686311000,
+      "custo": 986069000,
+      "fonte": "DFP consolidada (CVM)",
+      "url": "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
+    },
+    "restante": {
+      "clientes": {
+        "valor": 1686311000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      },
+      "custo": {
+        "valor": 986069000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      }
+    }
+  },
+  "ITSA4": {
+    "ticker": "ITSA4",
+    "compra_de": [],
+    "vende_para": [],
+    "totais": {
+      "ano": 2025,
+      "receita": 8249000000,
+      "custo": 6239000000,
+      "fonte": "DFP consolidada (CVM)",
+      "url": "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
+    },
+    "restante": {
+      "clientes": {
+        "valor": 8249000000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      },
+      "custo": {
+        "valor": 6239000000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      }
+    }
+  },
+  "BBSE3": {
+    "ticker": "BBSE3",
+    "compra_de": [],
+    "vende_para": [],
+    "totais": null,
+    "restante": null
+  },
+  "CPLE3": {
+    "ticker": "CPLE3",
+    "compra_de": [],
+    "vende_para": [],
+    "totais": {
+      "ano": 2025,
+      "receita": 26116856000,
+      "custo": 20455357000,
+      "fonte": "DFP consolidada (CVM)",
+      "url": "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
+    },
+    "restante": {
+      "clientes": {
+        "valor": 26116856000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      },
+      "custo": {
+        "valor": 20455357000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      }
+    }
+  },
+  "CXSE3": {
+    "ticker": "CXSE3",
+    "compra_de": [],
+    "vende_para": [],
+    "totais": {
+      "ano": 2025,
+      "receita": 0,
+      "custo": 0,
+      "fonte": "DFP consolidada (CVM)",
+      "url": "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
+    },
+    "restante": {
+      "clientes": {
+        "valor": 0,
+        "listadas": 0,
+        "fora_da_conta": 0
+      },
+      "custo": {
+        "valor": 0,
+        "listadas": 0,
+        "fora_da_conta": 0
+      }
+    }
+  },
+  "FLRY3": {
+    "ticker": "FLRY3",
+    "compra_de": [
+      {
+        "ticker": "BBDC4",
+        "tickers": [
+          "BBDC3",
+          "BBDC4"
+        ],
+        "nome": "Banco Bradesco S.A.",
+        "nome_b3": "BRADESCO    PN  EJ  N1",
+        "o_que": null,
+        "anual": null,
+        "contratado": {
+          "valor": 2316662,
+          "moeda": "BRL",
+          "contratos": 1,
+          "informado_por": "FLRY3"
+        },
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "cvm_partes_relacionadas"
+        ],
+        "fontes": [
+          {
+            "tipo": "cvm_partes_relacionadas",
+            "url": "http://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161798",
+            "data": "2022-03-24",
+            "trecho": "Os valores relacionados referem se a contratos de fornecimento de serviços de: Gestão da Folha de pagamento dos colaboradores (pagamento parcelado, dividido pelos 5 anos de vigência)",
+            "informado_por": "FLRY3",
+            "o_que": null,
+            "valor": 2316662,
+            "moeda": "BRL",
+            "tipo_valor": "contratado",
+            "ano": 2022
+          }
+        ]
+      }
+    ],
+    "vende_para": [
+      {
+        "ticker": "BBDC4",
+        "tickers": [
+          "BBDC3",
+          "BBDC4"
+        ],
+        "nome": "Banco Bradesco S.A.",
+        "nome_b3": "BRADESCO    PN  EJ  N1",
+        "o_que": null,
+        "anual": null,
+        "contratado": {
+          "valor": 4168588,
+          "moeda": "BRL",
+          "contratos": 1,
+          "informado_por": "FLRY3"
+        },
+        "participacao_receita": null,
+        "tipos_fonte": [
+          "cvm_partes_relacionadas"
+        ],
+        "fontes": [
+          {
+            "tipo": "cvm_partes_relacionadas",
+            "url": "http://www.rad.cvm.gov.br/ENETCONSULTA/frmDownloadDocumento.aspx?CodigoInstituicao=1&NumeroSequencialDocumento=161798",
+            "data": "2022-03-24",
+            "trecho": "Os valores relacionados referem se a contratos de fornecimento de serviços de: Gestão da Folha de pagamento dos colaboradores (pagamento parcelado, dividido pelos 5 anos de vigência)",
+            "informado_por": "FLRY3",
+            "o_que": null,
+            "valor": 4168588,
+            "moeda": "BRL",
+            "tipo_valor": "contratado",
+            "ano": 2022
+          }
+        ]
+      }
+    ],
+    "totais": {
+      "ano": 2025,
+      "receita": 8291182000,
+      "custo": 6085145000,
+      "fonte": "DFP consolidada (CVM)",
+      "url": "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
+    },
+    "restante": {
+      "clientes": {
+        "valor": 8291182000,
+        "listadas": 0,
+        "fora_da_conta": 1
+      },
+      "custo": {
+        "valor": 6085145000,
+        "listadas": 0,
+        "fora_da_conta": 1
+      }
+    }
+  },
+  "TAEE11": {
+    "ticker": "TAEE11",
+    "compra_de": [],
+    "vende_para": [],
+    "totais": {
+      "ano": 2025,
+      "receita": 4624113000,
+      "custo": 2077823000,
+      "fonte": "DFP consolidada (CVM)",
+      "url": "https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp"
+    },
+    "restante": {
+      "clientes": {
+        "valor": 4624113000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      },
+      "custo": {
+        "valor": 2077823000,
+        "listadas": 0,
+        "fora_da_conta": 0
+      }
+    }
+  }
+}

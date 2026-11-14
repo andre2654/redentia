@@ -2,6 +2,12 @@
 // /calculadora/preco-teto — PR10 fase 2.
 // Contrato de UX: docs/redentia-nu/designs/Redentia Calculadoras Nu.dc.html
 // (kit app/components/calc/*: sliders + preset chips + número-herói + FAQ).
+// Aportou, 11/11/2026 (dono: "tem que tentar padronizar" e "tire isso e deixe
+// só selecionar os ativos"): a calculadora entrou no padrão das outras
+// (CalcTopo + CalcConta + a frase). A entrada é só o ativo, num selo da frase;
+// os cinco números da conta aparecem para ler em "Os dados desta conta", com
+// os rótulos de sempre, e "Usar meus números" os transforma em selos
+// editáveis. A conta, os valores padrão e os textos abaixo são os mesmos.
 // Contrato de SEO (regra nº1): TODO o texto da página antiga
 // (Frontend/app/pages/calculadora/preco-teto.vue) verbatim, na MESMA ordem
 // de tags (h1 → h2/h3/h4 → p → li → FAQ). Muda o visual, não o conteúdo.
@@ -120,8 +126,12 @@ async function fetchSectorPE(sectorName: string): Promise<number | null> {
 // Semântica idêntica à antiga: LPA/VPA dos fundamentos, dividendo = soma dos
 // proventos pagos nos últimos 365d (fallback DY×preço), preço da rota
 // canônica /tickers/{t}. Falhou qualquer coisa → seeds/sliders ficam como estão.
+// Só ticker da B3, pela regra única do utils/tickerClass.ts. Até 13/11/2026
+// valia aqui uma cópia que pedia quatro letras antes do número: escolher a
+// B3SA3 trocava o nome do ativo e deixava os números do anterior (os três
+// endpoints respondem por ela).
 async function seedFromBackend(t: string) {
-  if (!/^[A-Z]{4}\d{1,2}$/.test(t)) return
+  if (symbolShape(t) !== 'b3') return
   try {
     const [overview, quote, dividends] = await Promise.all([
       $fetch<any>(`/api/backend/fundamentals/${t}/overview`),
@@ -165,9 +175,6 @@ async function seedFromBackend(t: string) {
 
 /* ————— seletor de ativo (busca única, mesma fonte /tickers-full da calc de ações) ————— */
 interface AssetItem { id: string; label: string; suffix?: string }
-const searchTerm = ref('')
-const searchOpen = ref(false)
-
 const { data: assetsData, pending: assetsLoading } = useAsyncData(
   'calc-teto-tickers-full',
   () => $fetch<unknown>('/api/backend/tickers-full', { headers: { Accept: 'application/json' } }),
@@ -196,12 +203,18 @@ const normalizedAssets = computed<AssetItem[]>(() =>
     .sort((a, b) => a.label.localeCompare(b.label)),
 )
 
-const filteredAssets = computed(() => {
-  const term = searchTerm.value.trim().toLowerCase()
-  if (!term) return normalizedAssets.value.slice(0, 30)
-  return normalizedAssets.value
-    .filter((a) => a.label.toLowerCase().includes(term) || (a.suffix ?? '').toLowerCase().includes(term))
-    .slice(0, 30)
+// O painel do selo do ativo: a lista da B3 quando ela chega; antes disso (e se
+// ela falhar), os dois exemplos, para a busca nunca abrir vazia.
+const ativosDaBusca = computed<AssetItem[]>(() =>
+  normalizedAssets.value.length ? normalizedAssets.value : Object.keys(EXAMPLES).map((t) => ({ id: t, label: t })),
+)
+// o selo fala a língua do CalcFraseAtivos (uma lista); aqui ela tem um ativo só
+const ativoDaFrase = computed<AssetItem[]>({
+  get: () => [{ id: activeTicker.value, label: activeTicker.value }],
+  set: (lista) => {
+    const a = lista[lista.length - 1]
+    if (a) selectTicker(a.id)
+  },
 })
 
 // escolher 1 ticker → seed instantâneo (se exemplo) + hidratação real da B3
@@ -211,12 +224,6 @@ function selectTicker(ticker: string) {
   selectedTicker.value = t
   seedExample(t)
   if (import.meta.client) seedFromBackend(t)
-}
-
-function pickAsset(item: AssetItem) {
-  selectTicker(item.id)
-  searchTerm.value = item.label
-  searchOpen.value = false
 }
 
 watch(queryTicker, (t, old) => {
@@ -281,28 +288,38 @@ const methods = computed(() => {
   ]
 })
 
-// comparação visual — mesmas cores semânticas da antiga (Graham=positivo,
-// Bazin/PL=primário, VPA=negativo) e mesma fórmula de largura capped 100%
-const visualMethods = computed(() => {
+// o desenho (CalcBarras): o preço atual e cada método na MESMA escala, a do
+// maior valor entre eles. Antes a largura era o método sobre o preço, com teto
+// em 100%: todo método acima do preço saía com a barra cheia, igual à do
+// preço, e o desenho não mostrava a distância (11/11/2026).
+const barras = computed(() => {
   const r = results.value
   if (!r) return []
+  const pl = sectorPlConta.value
+  const valores = [price.value, r.graham.fairPrice, r.bazin.fairPrice, r.bookValue.fairPrice, ...(pl ? [r.plSector.fairPrice] : [])]
+  const maior = Math.max(...valores.filter((v) => Number.isFinite(v) && v > 0), 0.01)
+  const largura = (v: number) => `${Math.max(2, Math.min(100, (v / maior) * 100)).toFixed(1)}%`
+  const metodo = (rotulo: string, fairPrice: number, ausente = false) => ({
+    rotulo, valor: ausente ? 'Indisponível' : formatCurrency(fairPrice), largura: ausente ? null : largura(fairPrice),
+  })
   return [
-    { key: 'graham', label: 'Graham', fairPrice: r.graham.fairPrice, color: 'var(--nu-green)', ausente: false },
-    { key: 'bazin', label: 'Bazin', fairPrice: r.bazin.fairPrice, color: 'var(--nu-blue)', ausente: false },
-    { key: 'plSector', label: 'P/L setorial', fairPrice: r.plSector.fairPrice, color: 'var(--nu-blue)', ausente: !sectorPlConta.value },
-    { key: 'bookValue', label: 'Valor patrimonial', fairPrice: r.bookValue.fairPrice, color: 'var(--nu-red)', ausente: false },
+    { rotulo: 'Preço atual', valor: formatCurrency(price.value), largura: largura(price.value), tom: 'preco' as const },
+    metodo('Graham', r.graham.fairPrice),
+    metodo('Bazin', r.bazin.fairPrice),
+    metodo('P/L setorial', r.plSector.fairPrice, !pl),
+    metodo('Valor patrimonial', r.bookValue.fairPrice),
   ]
 })
 
-function barWidth(fairPrice: number): string {
-  return `${Math.min(100, (fairPrice / Math.max(price.value, 0.01)) * 100).toFixed(1)}%`
-}
+/** percentual no formato brasileiro: 15,8% */
+const pct = (v: number) => `${(v * 100).toFixed(1).replace('.', ',')}%`
 
-const recoClass = computed(() => {
+// o tom do selo do CalcNumero: abaixo do teto, verde; acima, vermelho; na faixa, azul
+const recoTom = computed<'ok' | 'falta' | 'azul'>(() => {
   const rec = results.value?.consensus.recommendation
-  if (rec === 'Abaixo do teto') return 'pt__reco--positive'
-  if (rec === 'Acima do teto') return 'pt__reco--negative'
-  return 'pt__reco--neutral'
+  if (rec === 'Abaixo do teto') return 'ok'
+  if (rec === 'Acima do teto') return 'falta'
+  return 'azul'
 })
 
 /* ————— textos dos sliders + presets ————— */
@@ -311,6 +328,10 @@ const lpaTxt = computed(() => formatCurrency(lpa.value))
 const vpaTxt = computed(() => formatCurrency(vpa.value))
 const dividendTxt = computed(() => formatCurrency(dividend.value))
 const sectorPLTxt = computed(() => sectorPL.value.toLocaleString('pt-BR'))
+
+// "Os dados desta conta": fechado, a lista é só para ler; "Usar meus números"
+// transforma cada valor num selo da frase (CalcFraseCampo)
+const meusNumeros = ref(false)
 
 // P/Ls típicos citados no próprio conteúdo (bancos 8-12, varejo 12-18,
 // tecnologia 20-30, petróleo do exemplo PETR4)
@@ -429,7 +450,7 @@ const examplePetr = {
 }
 
 const howToSteps = [
-  { title: 'Reúna os dados da ação', html: 'Use a própria página do ativo aqui na Redentia ou o site de RI da empresa. Você precisa de: LPA, VPA, dividendos dos últimos 12 meses e P/L médio do setor.' },
+  { title: 'Reúna os dados da ação', html: 'Use a própria página do ativo aqui na Aportou ou o site de RI da empresa. Você precisa de: LPA, VPA, dividendos dos últimos 12 meses e P/L médio do setor.' },
   { title: 'Preencha os campos', html: 'Insira ticker, preço atual e os indicadores. Use valores dos últimos 12 meses (TTM - Trailing Twelve Months) para maior precisão.' },
   { title: 'Analise as 4 metodologias', html: 'Cada método tem seus pontos fortes. Graham é conservador, Bazin foca dividendos, P/L setorial contextualiza, e VPA é bom para empresas com ativos.' },
   { title: 'Veja o consenso', html: 'A média das metodologias com número é o consenso. Se a maioria ficar abaixo do preço de tela, há margem em relação a essas réguas. Isso não diz se a pessoa deve comprar.' },
@@ -471,7 +492,7 @@ const faqItems: NuFaqItem[] = [
   { q: 'A calculadora serve para FIIs (Fundos Imobiliários)?', a: 'Parcialmente. Para FIIs use principalmente o Método Bazin (Dividendo ÷ Yield mínimo) e a análise de P/VP. Um bom FII costuma ter P/VP abaixo de 1,0, DY acima de 8% e vacância baixa. A fórmula de Graham não se aplica bem porque FIIs não têm "lucro" tradicional.' },
   { q: 'E para empresas de crescimento como Magazine Luiza?', a: 'As fórmulas tradicionais de preço teto não capturam bem growth stocks. Empresas que reinvestem todo o lucro têm LPA baixo ou negativo, mas podem ter um futuro excelente. Para essas, prefira múltiplos de receita (P/S ou EV/Sales), fluxo de caixa descontado (DCF) ou comparação com pares de mercado.' },
   { q: 'Com que frequência devo recalcular o preço teto?', a: 'Recalcule trimestralmente, após cada balanço da empresa. LPA, VPA e dividendos mudam a cada trimestre. Se você acompanha a empresa de perto, revise a cada 3 meses. Para investidores de longo prazo, uma vez por ano pode bastar, desde que não haja eventos materiais no meio do caminho.' },
-  { q: 'De onde vêm os dados da calculadora?', a: 'A Redentia utiliza dados públicos da B3 (Bolsa brasileira), Comissão de Valores Mobiliários (CVM) e demonstrações financeiras oficiais das empresas, atualizados automaticamente após cada pregão e divulgação de balanço.' },
+  { q: 'De onde vêm os dados da calculadora?', a: 'A Aportou utiliza dados públicos da B3 (Bolsa brasileira), Comissão de Valores Mobiliários (CVM) e demonstrações financeiras oficiais das empresas, atualizados automaticamente após cada pregão e divulgação de balanço.' },
   { q: 'Vale usar preço teto para small caps?', a: 'Sim, com cautela. Small caps tendem a ter P/L mais alto porque o mercado paga pelo crescimento futuro. Use P/L setorial ajustado para small caps (15-20), exija margem de segurança maior (30-40%) e diversifique, já que esses papéis têm volatilidade e risco de liquidez maiores.' },
   { q: 'O que fazer se as 4 metodologias derem resultados muito diferentes?', a: 'É normal. Cada método olha a empresa por um ângulo. Se Graham, Bazin, P/L e VPA divergem bastante, dê mais peso ao método que faz mais sentido para aquela empresa: bancos tendem a responder bem a VPA e P/L, pagadoras de dividendos ao Bazin, industriais a Graham. Use a média ponderada como consenso.' },
 ]
@@ -489,7 +510,7 @@ usePageSeo({
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: 'Calculadora de Preço Teto Redentia',
+      name: `Calculadora de Preço Teto ${MARCA.nome}`,
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
@@ -519,88 +540,85 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
-    <CalcHero desc="Descubra até quanto vale pagar por uma ação, em segundos.">
+    <!-- ============ Topo e conta na primeira tela, no padrão das outras calculadoras ============ -->
+    <CalcTopo desc="Descubra até quanto vale pagar por uma ação, em segundos.">
       Calculadora de Preço Teto e Preço Justo:
       <em>Graham, Bazin, P/L e VPA.</em>
-    </CalcHero>
+    </CalcTopo>
 
-    <!-- ============ Calculadora interativa (design/kit) ============ -->
-    <CalcShell section-id="teto" eyebrow="Calculadora">
+    <!-- ============ Calculadora na frase: a entrada é o ativo ============ -->
+    <CalcConta section-id="teto">
       <template #title>Preço teto.</template>
-      <template #controls>
-        <!-- seletor de ativo (busca, mesmo padrão da calc de ações) -->
-        <div class="pt__search">
-          <span class="pt__search-label">Escolha a ação</span>
-          <input
-            v-model="searchTerm"
-            type="text"
-            class="pt__search-input"
-            placeholder="Buscar ação ou FII (ex.: PETR4)…"
-            aria-label="Escolha a ação"
-            @focus="searchOpen = true"
-            @blur="searchOpen = false"
-          >
-          <div v-if="searchOpen && (filteredAssets.length || assetsLoading)" class="pt__dropdown">
-            <p v-if="assetsLoading" class="pt__search-hint">Carregando ativos…</p>
-            <button
-              v-for="a in filteredAssets"
-              :key="a.id"
-              type="button"
-              class="pt__option"
-              @mousedown.prevent="pickAsset(a)"
-            >
-              <span class="pt__option-ticker">{{ a.label }}</span>
-              <span v-if="a.suffix" class="pt__option-name">{{ a.suffix }}</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="pt__examples">
-          <span class="pt__examples-label">Exemplos</span>
-          <button
-            v-for="t in Object.keys(EXAMPLES)"
-            :key="t"
-            type="button"
-            class="pt__chip-btn"
-            :class="{ 'pt__chip-btn--active': activeTicker === t }"
-            @click="selectTicker(t)"
-          >{{ t }}</button>
-        </div>
-        <div class="pt__gap">
-          <CalcSliderField v-model="price" label="Preço Atual (R$)" :min="1" :max="priceMax" :step="0.5" :value-text="priceTxt" />
-        </div>
-        <div class="pt__gap">
-          <CalcSliderField v-model="lpa" label="Lucro por Ação - LPA (R$)" :min="0" :max="lpaMax" :step="0.1" :value-text="lpaTxt" />
-        </div>
-        <div class="pt__gap">
-          <CalcSliderField v-model="vpa" label="Valor Patrimonial - VPA (R$)" :min="0" :max="vpaMax" :step="0.5" :value-text="vpaTxt" />
-        </div>
-        <div class="pt__gap">
-          <CalcSliderField v-model="dividend" label="Dividendo Anual (R$)" :min="0" :max="dividendMax" :step="0.1" :value-text="dividendTxt" />
-        </div>
-        <div class="pt__gap">
-          <CalcSliderField v-model="sectorPL" label="P/L Médio do Setor" :min="1" :max="plMax" :step="0.5" :value-text="sectorPLTxt" :presets="plPresets" />
-        </div>
-        <p class="pt__controls-note">Valores ilustrativos, ajuste com os fundamentos reais da ação (LPA, VPA e dividendos dos últimos 12 meses).</p>
-        <p v-if="!sectorPlConta" class="pt__controls-note">Não há P/L médio publicado para o setor. O método fica indisponível e fora do consenso até você informar um múltiplo neste campo.</p>
+      <template #frase>
+        <CalcFrase>
+          Até quanto vale pagar por <CalcFraseAtivos
+            v-model="ativoDaFrase" unico rotulo="Escolha a ação" placeholder="Buscar ação ou FII (ex.: PETR4)…"
+            rotulo-sugeridos="Exemplos" :ativos="ativosDaBusca" :carregando="assetsLoading" :sugeridos="Object.keys(EXAMPLES)"
+          />?
+        </CalcFrase>
+        <!-- os números que a conta usa, com os rótulos de sempre: para ler; "Usar
+             meus números" acende cada valor no lugar, como o selo da frase (CalcFraseCampo leitura) -->
+        <CalcPremissas v-model:aberto="meusNumeros" class="pt__dados" nome="Os dados desta conta" abrir="Usar meus números" fechar="Pronto">
+          <template #resumo>
+            <span class="pt__dado">Preço Atual (R$) <CalcFraseCampo :leitura="!meusNumeros" v-model="price" livre rotulo="Preço Atual (R$)" :min="1" :max="priceMax" :passo="0.5" :texto="priceTxt" prefixo="R$" /></span>
+            <span class="pt__dado">Lucro por Ação - LPA (R$) <CalcFraseCampo :leitura="!meusNumeros" v-model="lpa" livre rotulo="Lucro por Ação - LPA (R$)" :min="0" :max="lpaMax" :passo="0.1" :texto="lpaTxt" prefixo="R$" /></span>
+            <span class="pt__dado">Valor Patrimonial - VPA (R$) <CalcFraseCampo :leitura="!meusNumeros" v-model="vpa" livre rotulo="Valor Patrimonial - VPA (R$)" :min="0" :max="vpaMax" :passo="0.5" :texto="vpaTxt" prefixo="R$" /></span>
+            <span class="pt__dado">Dividendo Anual (R$) <CalcFraseCampo :leitura="!meusNumeros" v-model="dividend" livre rotulo="Dividendo Anual (R$)" :min="0" :max="dividendMax" :passo="0.1" :texto="dividendTxt" prefixo="R$" /></span>
+            <span class="pt__dado">P/L Médio do Setor <CalcFraseCampo :leitura="!meusNumeros" v-model="sectorPL" livre rotulo="P/L Médio do Setor" :min="1" :max="plMax" :passo="0.5" :texto="sectorPLTxt" :atalhos="plPresets" /></span>
+          </template>
+        </CalcPremissas>
+        <p class="pt__dica">Valores ilustrativos, ajuste com os fundamentos reais da ação (LPA, VPA e dividendos dos últimos 12 meses).</p>
+        <p v-if="!sectorPlConta" class="pt__dica">Não há P/L médio publicado para o setor. O método fica indisponível e fora do consenso até você informar um múltiplo neste campo.</p>
       </template>
-      <template #result>
-        <CalcResultPanel
-          v-if="results"
-          caption="Pelas metodologias com número, com os fundamentos ao lado, o preço teto médio é"
-          :value="formatCurrency(results.consensus.averageFairPrice)"
-          :items="[
-            { dot: 'var(--nu-ink)', label: 'Preço atual', value: formatCurrency(price) },
-            { dot: 'var(--nu-blue)', label: 'Margem de segurança', value: `${(results.consensus.averageMargin * 100).toFixed(1)}%`, accent: true },
-          ]"
-        >
-          <div class="pt__reco" :class="recoClass">
-            <span class="pt__reco-label">Posição em relação ao teto</span>
-            <span class="pt__reco-value">{{ results.consensus.recommendation }}</span>
-          </div>
-          <p class="pt__reco-explain">{{ results.consensus.explanation }}</p>
 
+      <template #resultado>
+        <CalcNumero
+          v-if="results"
+          legenda="Pelas metodologias com número, com os fundamentos ao lado, o preço teto médio é"
+          :valor="formatCurrency(results.consensus.averageFairPrice)"
+          :selo="`Posição em relação ao teto: ${results.consensus.recommendation}`"
+          :tom="recoTom"
+          :explica="results.consensus.explanation"
+        >
+          <p class="pt__legenda">
+            <span><i class="pt__ponto pt__ponto--preco" aria-hidden="true" />Preço atual <b>{{ formatCurrency(price) }}</b></span>
+            <span><i class="pt__ponto" aria-hidden="true" />Margem de segurança <b class="pt__legenda-azul">{{ pct(results.consensus.averageMargin) }}</b></span>
+          </p>
+        </CalcNumero>
+      </template>
+
+      <!-- o desenho: cada método contra o preço atual -->
+      <template #grafico>
+        <template v-if="results">
+          <CalcBarras :itens="barras" />
+
+          <!-- UPPERCASE (20/08/2026): /asset/{ticker} minúsculo 301a pro
+               maiúsculo. Este link saía em minúscula na página que mais recebe
+               clique do site inteiro, então TODA renderização mandava o Google
+               num redirect em vez de na URL canônica. Alimentava as 1.073
+               "Página com redirecionamento" do relatório de cobertura. -->
+          <p class="pt__asset-link">
+            <NuLinkSeta :to="`/asset/${activeTicker.toUpperCase()}`">Ver análise completa de {{ activeTicker }}</NuLinkSeta>
+          </p>
+        </template>
+      </template>
+
+      <!-- no pé do cartão, depois do fio -->
+      <template v-if="results" #premissas>
+        <!-- Captura (21/10/2026): o alerta "avise quando cruzar o preço teto"
+             e a newsletter de sexta, O mercado da semana. O dono
+             liberou mexer na página só para isto: título, H1, URL e rótulos
+             ficam. Ver app/components/calc/CalcCapturaTeto.vue. -->
+        <CalcCapturaTeto :ticker="activeTicker" :alvo="results.consensus.averageFairPrice" />
+
+        <div class="pt__insight">
+          <strong>Fonte dos dados:</strong> preço e fundamentos calculados com dados públicos da B3, fechamento do último pregão. O preço teto é uma referência, não uma garantia. Analise sempre os fundamentos da empresa, perspectivas futuras e seu perfil de risco antes de investir.
+        </div>
+      </template>
+
+      <!-- embaixo do cartão: o que cada método deu -->
+      <template v-if="results" #depois>
+        <CalcEse :itens="[]">
           <div class="pt__methods">
             <div v-for="m in methods" :key="m.key" class="pt__method" :class="m.ausente ? '' : getMethodStatus(m.res.ratio)">
               <div class="pt__method-head">
@@ -608,47 +626,13 @@ usePageSeo({
                 <span class="pt__method-badge">{{ m.ausente ? 'Indisponível' : getStatusText(m.res.ratio) }}</span>
               </div>
               <p class="pt__method-value">{{ m.ausente ? 'Indisponível' : formatCurrency(m.res.fairPrice) }}</p>
-              <p class="pt__method-margin">{{ m.ausente ? 'Sem P/L médio do setor. Fora do consenso.' : `Margem: ${(m.res.margin * 100).toFixed(1)}%` }}</p>
+              <p class="pt__method-margin">{{ m.ausente ? 'Sem P/L médio do setor. Fora do consenso.' : `Margem: ${pct(m.res.margin)}` }}</p>
               <p class="pt__method-formula">{{ m.formula }}</p>
             </div>
           </div>
-
-          <div class="pt__bars">
-            <div class="pt__bar-row">
-              <span class="pt__bar-label">Preço atual</span>
-              <span class="pt__bar-value">{{ formatCurrency(price) }}</span>
-            </div>
-            <div class="pt__bar-track"><span class="pt__bar-fill" :style="{ width: '100%', background: 'var(--nu-ink)' }" /></div>
-            <template v-for="m in visualMethods" :key="m.key">
-              <div class="pt__bar-row">
-                <span class="pt__bar-label">{{ m.label }}</span>
-                <span class="pt__bar-value">{{ m.ausente ? 'Indisponível' : formatCurrency(m.fairPrice) }}</span>
-              </div>
-              <div v-if="!m.ausente" class="pt__bar-track"><span class="pt__bar-fill" :style="{ width: barWidth(m.fairPrice), background: m.color }" /></div>
-            </template>
-          </div>
-
-          <!-- UPPERCASE (20/08/2026): /asset/{ticker} minúsculo 301a pro
-               maiúsculo. Este link saía em minúscula na página que mais recebe
-               clique do site inteiro, então TODA renderização mandava o Google
-               num redirect em vez de na URL canônica. Alimentava as 1.073
-               "Página com redirecionamento" do relatório de cobertura. -->
-          <NuxtLink :to="`/asset/${activeTicker.toUpperCase()}`" class="pt__asset-link">
-            Ver análise completa de {{ activeTicker }} →
-          </NuxtLink>
-
-          <!-- Captura (21/10/2026): o alerta "avise quando cruzar o preço teto"
-               e a newsletter de sexta, O mercado da semana. O dono
-               liberou mexer na página só para isto: título, H1, URL e rótulos
-               ficam. Ver app/components/calc/CalcCapturaTeto.vue. -->
-          <CalcCapturaTeto :ticker="activeTicker" :alvo="results.consensus.averageFairPrice" />
-
-          <div class="pt__insight">
-            <strong>Fonte dos dados:</strong> preço e fundamentos calculados com dados públicos da B3, fechamento do último pregão. O preço teto é uma referência, não uma garantia. Analise sempre os fundamentos da empresa, perspectivas futuras e seu perfil de risco antes de investir.
-          </div>
-        </CalcResultPanel>
+        </CalcEse>
       </template>
-    </CalcShell>
+    </CalcConta>
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip
@@ -924,7 +908,7 @@ usePageSeo({
     <CalcSplit tone="cream" wide>
       <template #title>Perguntas frequentes</template>
       <template #left>
-        <NuxtLink to="/busca" class="pt__pill">Perguntar à Redentia AI</NuxtLink>
+        <NuxtLink to="/busca" class="pt__pill">Perguntar à IA</NuxtLink>
       </template>
       <NuFaqAccordion :items="faqItems" surface="white" />
     </CalcSplit>
@@ -995,7 +979,7 @@ usePageSeo({
       </div>
 
       <div class="pt__cta">
-        <h2 class="pt__cta-title">Analise Ações na Redentia</h2>
+        <h2 class="pt__cta-title">Analise Ações na Aportou</h2>
         <p class="pt__cta-sub">Acesse dados fundamentalistas em tempo real, compare indicadores e receba análises com IA.</p>
         <div class="pt__cta-actions">
           <NuxtLink to="/login" class="pt__pill pt__pill--light">Criar conta grátis</NuxtLink>
@@ -1008,114 +992,71 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— controles da calculadora ——— */
-.pt__gap { margin-top: 36px; }
-.pt__examples { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.pt__examples-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; margin-right: 4px; }
-/* chips no MESMO estilo visual do kit (csf__chip do CalcSliderField) */
-.pt__chip-btn {
-  padding: 8px 14px; border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-dense); font-weight: 700; white-space: nowrap; cursor: pointer;
-  border: 2px solid var(--nu-sand-border); background: var(--nu-white);
-  color: var(--nu-gray-2); transition: all .2s;
-}
-.pt__chip-btn--active { border-color: var(--nu-ink); background: var(--nu-ink); color: var(--nu-white); }
-.pt__controls-note { margin: 22px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.55; }
+/* ——— a calculadora, no padrão das outras (Aportou, 11/11/2026) ———
+   O topo, o cartão, a frase, o selo do ativo, o número e a linha dos dados são
+   as peças das outras calculadoras (CalcTopo, CalcConta, CalcFrase,
+   CalcFraseAtivos, CalcNumero, CalcPremissas). Aqui fica só o que é desta
+   conta: a lista dos dados e os cartões de cada método (as barras são o CalcBarras). */
+.pt__dados { margin-top: 16px; }
+/* cada dado é um bloco que não se parte: a linha quebra entre um dado e outro */
+/* a entrelinha já cabe o selo: ao virar editável, o valor acende no lugar e a linha não se mexe */
+.pt__dado { display: inline-block; white-space: nowrap; line-height: 1.9; }
+.pt__dado:not(:last-child)::after { content: '·'; margin: 0 9px; color: var(--nu-gray); }
+.pt__dado .cfc { font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
+.pt__dica { margin: 8px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 
-/* ——— seletor de ativo (busca, mesmo padrão da calc de ações) ——— */
-.pt__search { position: relative; margin-bottom: 22px; }
-.pt__search-label { display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; margin-bottom: 10px; }
-.pt__search-input {
-  width: 100%; padding: 13px 16px;
-  background: var(--nu-white); border: 2px solid var(--nu-sand-border);
-  border-radius: var(--nu-r-input); color: var(--nu-ink);
-  font-size: var(--nu-fs-md); font-weight: 700; font-family: var(--nu-font); outline: none;
-  transition: border-color .2s;
-}
-.pt__search-input::placeholder { color: var(--nu-placeholder); font-weight: 500; }
-.pt__search-input:focus { border-color: var(--nu-blue); }
-.pt__dropdown {
-  position: absolute; left: 0; right: 0; top: 100%; z-index: 30; margin-top: 6px;
-  background: var(--nu-white); border-radius: var(--nu-r-tile);
-  box-shadow: var(--nu-shadow-card); max-height: 280px; overflow-y: auto; padding: 6px;
-}
-.pt__search-hint { margin: 8px 0; padding: 0 12px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
-.pt__option {
-  display: flex; align-items: baseline; gap: 10px; width: 100%;
-  background: transparent; border: none; text-align: left; cursor: pointer;
-  padding: 10px 12px; border-radius: 10px; transition: background .15s;
-}
-.pt__option:hover { background: var(--nu-cream); }
-.pt__option-ticker { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; flex-shrink: 0; }
-.pt__option-name { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* embaixo do número: o preço e a margem */
+.pt__legenda { display: flex; gap: 8px 24px; flex-wrap: wrap; margin: 16px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; }
+.pt__legenda span { display: inline-flex; align-items: center; gap: 8px; }
+.pt__legenda b { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
+.pt__legenda .pt__legenda-azul { color: var(--nu-blue-text); }
+.pt__ponto { width: 11px; height: 11px; border-radius: 50%; background: var(--nu-blue); flex: none; }
+.pt__ponto--preco { background: var(--nu-ink); }
 
-/* ——— resultado ——— */
-.pt__reco {
-  display: inline-flex; align-items: center; gap: 12px;
-  border-radius: var(--nu-r-pill); padding: 10px 18px; margin-top: 24px;
-}
-.pt__reco--positive { background: var(--nu-green-bg); }
-.pt__reco--positive .pt__reco-value { color: var(--nu-green-2); }
-.pt__reco--neutral { background: var(--nu-blue-tint); }
-.pt__reco--neutral .pt__reco-value { color: var(--nu-blue-text); }
-.pt__reco--negative { background: var(--nu-red-tint); }
-.pt__reco--negative .pt__reco-value { color: var(--nu-red-text); }
-.pt__reco-label { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700; }
-.pt__reco-value { font-size: var(--nu-fs-md); font-weight: 800; }
-.pt__reco-explain {
-  margin: 14px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500;
-  line-height: 1.6; max-width: 640px;
-}
+.pt__asset-link { margin: 20px 0 0; font-size: var(--nu-fs-sm); }
 
+/* no pé do cartão: o alerta e a newsletter lado a lado, a fonte como aviso curto */
+:deep(.cco__premissas .cct) { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); margin-top: 0; }
+.pt__insight { margin-top: 14px; max-width: 900px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
+.pt__insight strong { color: var(--nu-gray-3); font-weight: var(--nu-w-medio); }
+
+/* embaixo do cartão: o que cada método deu (cartão branco sobre o creme, o veredito no selo) */
 .pt__methods {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
-  gap: 12px; margin-top: 26px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 10px; max-width: 1080px; margin: 0 auto;
 }
-.pt__method { background: var(--nu-cream); border-radius: var(--nu-r-tile); padding: 18px 20px; }
-.pt__method--positive { background: var(--nu-green-bg); }
-.pt__method--neutral { background: var(--nu-blue-tint); }
-.pt__method--negative { background: var(--nu-red-tint); }
-.pt__method-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.pt__method-title { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.pt__method { background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 18px 20px; box-shadow: var(--nu-shadow-quente); }
+.pt__method-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.pt__method-title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); line-height: 1.3; }
 .pt__method-badge {
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 4px 10px; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: .4px; text-transform: uppercase; white-space: nowrap;
+  flex: none; background: var(--nu-cream-2); border-radius: var(--nu-r-tag);
+  padding: 3px 8px; color: var(--nu-gray-3); font-size: 13.5px; font-weight: var(--nu-w-medio); white-space: nowrap;
 }
+.pt__method--positive .pt__method-badge { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.pt__method--neutral .pt__method-badge { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
+.pt__method--negative .pt__method-badge { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .pt__method-value {
-  margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800;
-  letter-spacing: -.03em; font-variant-numeric: tabular-nums;
+  margin: 10px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte);
+  letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums;
 }
-.pt__method-margin { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
-.pt__method-formula { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
+.pt__method-margin { margin: 4px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
+.pt__method-formula { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 600; }
 
-.pt__bars { margin-top: 28px; max-width: 640px; }
-.pt__bar-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 14px; }
-.pt__bar-row:first-child { margin-top: 0; }
-.pt__bar-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.pt__bar-value { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
-.pt__bar-track {
-  height: 10px; border-radius: var(--nu-r-pill); background: var(--nu-sand-2);
-  margin-top: 6px; overflow: hidden;
+@media (max-width: 640px) {
+  /* no celular, um dado por linha, sem o ponto */
+  .pt__dado { display: block; }
+  .pt__dado:not(:last-child)::after { content: none; }
+  .pt__methods { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pt__method { padding: 14px; }
+  .pt__method-head { flex-direction: column-reverse; gap: 8px; }
+  .pt__method-value { font-size: var(--nu-fs-xl); }
 }
-.pt__bar-fill { display: block; height: 100%; border-radius: var(--nu-r-pill); transition: width .25s ease; }
-
-.pt__asset-link {
-  display: inline-flex; margin-top: 24px;
-  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700;
-}
-.pt__asset-link:hover { color: var(--nu-blue-hover); }
-.pt__insight {
-  background: var(--nu-cream); border-radius: 18px; padding: 18px 22px; margin-top: 20px;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
-}
-.pt__insight strong { color: var(--nu-ink); font-weight: 800; }
 
 /* ——— tipografia compartilhada ——— */
 /* Um padrão de card só na página (out/2026): título 18/800 em tinta, sem
    cor de destaque no título. O sinal de "limitação" é o filete vermelho do
    card, não o título vermelho nem o fundo rosa. */
-.pt__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.pt__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .pt__prose p {
@@ -1123,11 +1064,11 @@ usePageSeo({
   line-height: 1.7;
 }
 .pt__prose p:last-child { margin-bottom: 0; }
-.pt__prose strong { color: var(--nu-ink); font-weight: 800; }
+.pt__prose strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 .pt__prose--gap { margin-top: 20px; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.pt__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.pt__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -.3px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .pt__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -1143,7 +1084,7 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .pt__ticker:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pt__ticker-code { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.pt__ticker-code { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -.1px; }
 .pt__ticker-name { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— fórmulas ——— */
@@ -1162,9 +1103,9 @@ usePageSeo({
   max-width: none; margin-top: 0;
 }
 .pt__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-:global(.cbd--cream) .pt__tile { background: var(--nu-white); }
-/* Limitações moram numa banda creme: card branco explícito (o :global acima
-   não vence o escopo do card) e o sinal é um traço vermelho curto sobre o
+.cbd--cream .pt__tile { background: var(--nu-white); }
+/* Limitações moram numa banda creme: card branco explícito (a regra acima era
+   um :global que não vencia o escopo do card) e o sinal é um traço vermelho curto sobre o
    título, não fundo rosa nem filete que dobra no raio do canto. */
 .pt__tile--negative { background: var(--nu-white); }
 .pt__tile--negative::before {
@@ -1179,7 +1120,7 @@ usePageSeo({
 .pt__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
 .pt__ind-list { margin: 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.75; }
 .pt__ind-list li + li { margin-top: 8px; }
-.pt__ind-list strong { color: var(--nu-ink); font-weight: 800; }
+.pt__ind-list strong { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 
 /* ——— exemplos práticos (cards brancos na banda creme) ——— */
 .pt__ex-grid {
@@ -1187,18 +1128,18 @@ usePageSeo({
   gap: 18px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pt__ex-title { margin: 0 0 16px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.pt__ex-title { margin: 0 0 16px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 .pt__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px; }
 .pt__ex-boxes {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 12px; margin-top: 16px;
 }
 .pt__ex-box { background: var(--nu-cream); border-radius: var(--nu-r-input); padding: 14px 16px; }
-.pt__ex-label { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .4px; text-transform: uppercase; }
-.pt__ex-value { margin: 6px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.pt__ex-label { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .4px; text-transform: uppercase; }
+.pt__ex-value { margin: 6px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .pt__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 16px; }
 .pt__result-box--positive { background: var(--nu-green-tint); }
-.pt__result-main { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.pt__result-main { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .pt__result-main--positive { color: var(--nu-green-text); }
 .pt__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
 
@@ -1214,14 +1155,16 @@ usePageSeo({
   display: flex; flex-direction: column; gap: 8px;
   transition: transform .18s, box-shadow .2s;
 }
-:global(.cbd--cream) .pt__card-link { background: var(--nu-white); }
+/* Aportou (11/11/2026), só contraste: o :global engolia o resto do seletor e o
+   cartão ficava creme sobre a faixa creme (sumia). Agora é branco na faixa. */
+.cbd--cream .pt__card-link { background: var(--nu-white); }
 .pt__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pt__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.pt__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; }
 
 /* ——— pills / CTA ——— */
 .pt__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
   margin-top: 30px; transition: background .2s;
 }
 .pt__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -1230,7 +1173,7 @@ usePageSeo({
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pt__cta-title { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.pt__cta-title { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.1; }
 .pt__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .pt__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .pt__cta .pt__pill { margin-top: 0; }
@@ -1239,9 +1182,4 @@ usePageSeo({
 .pt__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
 .pt__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 
-/* breakpoint padrão do app */
-@media (max-width: 760px) {
-  .pt__methods { grid-template-columns: 1fr 1fr; }
-  .pt__method-value { font-size: var(--nu-fs-xl); }
-}
 </style>

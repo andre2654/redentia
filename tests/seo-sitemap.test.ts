@@ -68,7 +68,7 @@ test('metas reescritas para CTR cabem no SERP', () => {
     ['Quem lucrou mais na B3 em 2026', 'Ranking das empresas com maior lucro líquido na B3: Petrobras, Itaú, Vale e os bancos. Atualizado com o último balanço.'],
     ['Ações que mais caíram no mês na B3', 'As 50 ações e FIIs que mais caíram em 30 dias na B3, com a variação e o valor de mercado. Atualizado após o pregão.'],
   ]
-  const guia = 'Como investir em ações do zero: abrir conta, escolher a ação por fundamento e enviar a primeira ordem. Guia da Redentia.'
+  const guia = 'Como investir em ações do zero: abrir conta, escolher a ação por fundamento e enviar a primeira ordem. Guia da Aportou.'
   assert.ok(guia.length <= TETO_DESCRICAO, String(guia.length))
   for (const [title, description] of metas) {
     assert.ok(title.length + SUFIXO_MARCA.length <= TETO_TITULO, `${title} (${title.length + SUFIXO_MARCA.length})`)

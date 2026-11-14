@@ -1,16 +1,23 @@
 <script setup lang="ts">
-// Spotlight do #1 do ranking — card branco com logo grande (NuAssetLogo,
-// fallback tile de letra), ticker + nome + setor à esquerda e o número-herói
-// da métrica primária em 2 tons à direita (identidade dos cards Nu:
-// número gigante ink + label muted, tabular-nums, sem quadriculado).
+// O nº 1 do ranking no cartão carvão com a faixa da marca (Aportou, 2ª rodada,
+// 11/11/2026): senta à direita do topo da página, como o cartão do gráfico no
+// /asset. Logo (NuAssetLogo, com o tile de letra de reserva), ticker, nome e
+// setor; o número-herói da métrica do ranking (verde ou vermelho claro quando a
+// métrica tem sinal) e a cotação. Embaixo, o 2º e o 3º da MESMA lista (`pódio`),
+// quando a página passa. Nenhum dado novo: são as três primeiras linhas da tabela.
+// Robustez (11/11/2026): o pódio fala como a tabela (a linha acende sob o
+// ponteiro e a seta aparece no fim), a legenda em 14px/500, o movimento e a
+// cor por token, e o foco no anel claro que lê sobre o carvão.
 import type { RankingColumnKey, RankingRowApi } from '~/types/rankings'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   row: RankingRowApi
   primaryMetric: RankingColumnKey
   /** label da métrica (sobrescreve o default da coluna, ex.: 'Variação 30d'). */
   metricLabel?: string
-}>()
+  /** as linhas seguintes da mesma lista (2º, 3º) */
+  podio?: RankingRowApi[]
+}>(), { podio: () => [] })
 
 const ticker = computed(() => rankingTicker(props.row))
 const name = computed(() => rankingName(props.row))
@@ -26,61 +33,102 @@ const tone = computed(() => {
 </script>
 
 <template>
-  <NuxtLink :to="`/asset/${ticker}`" class="rkl">
-    <span class="rkl__crown">Nº 1 do ranking</span>
-    <div class="rkl__main">
-      <div class="rkl__id">
+  <NuFaixaMarca rotulo="Nº 1 do ranking" como="p" :altura="56" class="rkl">
+    <NuxtLink :to="`/asset/${ticker}`" class="rkl__lider">
+      <span class="rkl__id">
         <NuAssetLogo
           :ticker="ticker" :letter="ticker.charAt(0) || '?'"
-          tile-bg="var(--nu-tile-blue-bg)" tile-fg="var(--nu-blue-deep)"
-          :size="52" :radius="16"
+          tile-bg="var(--nu-dark-chip)" tile-fg="var(--nu-white)"
+          :size="56" :radius="16"
         />
-        <div class="rkl__who">
+        <span class="rkl__who">
           <span class="rkl__ticker">{{ ticker }}</span>
           <span v-if="name" class="rkl__name">{{ name }}</span>
           <span v-if="row.sector" class="rkl__sector">{{ row.sector }}</span>
-        </div>
-      </div>
-      <div class="rkl__metric">
+        </span>
+      </span>
+      <span class="rkl__metric">
         <span class="rkl__value" :class="tone">{{ value }}</span>
-        <span class="rkl__label">{{ label }}</span>
-        <span v-if="price !== '—'" class="rkl__price">Cotação {{ price }}</span>
-      </div>
-    </div>
-  </NuxtLink>
+        <span class="rkl__label">{{ label }}<template v-if="price !== '—'"><span aria-hidden="true"> · </span>Cotação {{ price }}</template></span>
+      </span>
+    </NuxtLink>
+    <ol v-if="podio.length" class="rkl__podio" start="2">
+      <li v-for="(r, i) in podio" :key="rankingTicker(r)">
+        <NuxtLink :to="`/asset/${rankingTicker(r)}`" class="rkl__linha">
+          <span class="rkl__pos">{{ i + 2 }}</span>
+          <NuAssetLogo
+            :ticker="rankingTicker(r)" :letter="rankingTicker(r).charAt(0) || '?'"
+            tile-bg="var(--nu-dark-chip)" tile-fg="var(--nu-white)" :size="32" :radius="10"
+          />
+          <span class="rkl__linha-tk">{{ rankingTicker(r) }}</span>
+          <span class="rkl__linha-nome">{{ rankingName(r) }}</span>
+          <span class="rkl__linha-v">{{ col.format(r) }}</span>
+          <svg class="rkl__ir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg>
+        </NuxtLink>
+      </li>
+    </ol>
+  </NuFaixaMarca>
 </template>
 
 <style scoped>
-.rkl {
-  display: block; background: var(--nu-white); border-radius: var(--nu-r-card-lg);
-  padding: clamp(24px, 3vw, 36px); transition: transform .18s, box-shadow .2s;
-}
-.rkl:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.rkl__crown {
-  display: inline-flex; background: var(--nu-blue-tint); color: var(--nu-blue-text);
-  border-radius: var(--nu-r-pill); padding: 6px 14px;
-  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .2px; text-transform: uppercase;
-}
-.rkl__main {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 24px; flex-wrap: wrap; margin-top: 20px;
+.rkl { --pad: clamp(20px, 2.4vw, 32px); overflow: hidden; }
+.rkl__lider {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px 32px; flex-wrap: wrap;
+  padding: clamp(24px, 2.6vw, 32px) var(--pad); color: var(--nu-white);
 }
 .rkl__id { display: flex; align-items: center; gap: 16px; min-width: 0; }
-.rkl__who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.rkl__ticker { color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px); font-weight: 800; letter-spacing: -.4px; }
-.rkl__name { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
-.rkl__sector { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
-.rkl__metric { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.rkl__who { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.rkl__ticker { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; transition: color var(--nu-dur-rapida) var(--nu-ease-cor); }
+.rkl__name { color: var(--nu-on-dark); font-size: 14px; font-weight: var(--nu-w-medio); }
+.rkl__sector { color: var(--nu-on-dark-2); font-size: 13px; font-weight: var(--nu-w-texto); }
+.rkl__metric { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin-left: auto; }
 .rkl__value {
-  color: var(--nu-ink); font-size: clamp(38px, 4.5vw, 56px); font-weight: 800;
-  letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums;
+  color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display);
+  letter-spacing: var(--nu-ls-display); line-height: 1; font-variant-numeric: tabular-nums;
 }
-.rkl__value--up { color: var(--nu-green-text); }
-.rkl__value--down { color: var(--nu-red-text); }
-.rkl__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.rkl__price { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
+.rkl__value--up { color: var(--nu-green-soft); }
+.rkl__value--down { color: var(--nu-red-soft); }
+.rkl__label { color: var(--nu-on-dark-2); font-size: 14px; font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; text-align: right; }
 
-@media (max-width: 760px) {
-  .rkl__metric { align-items: flex-start; }
+/* o 2º e o 3º: linhas com fio escuro, que acendem como as da tabela. A lista
+   recua 12px de cada lado para a linha acesa ter respiro; o fio fica na
+   vertical do texto e some em volta da linha acesa */
+.rkl__podio { list-style: none; margin: 0; padding: 0 calc(var(--pad) - 12px) 12px; }
+.rkl__podio li { position: relative; }
+.rkl__podio li::before {
+  content: ''; position: absolute; left: 12px; right: 12px; top: 0; height: 1px; background: var(--nu-dark-line);
+  pointer-events: none; transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor);
+}
+.rkl__linha {
+  display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 12px; border-radius: var(--nu-r-chip);
+  color: var(--nu-white); font-variant-numeric: tabular-nums; -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor);
+}
+.rkl__pos { width: 16px; color: var(--nu-on-dark-2); font-size: 13px; font-weight: var(--nu-w-texto); }
+.rkl__linha-tk { font-size: 15px; font-weight: var(--nu-w-forte); letter-spacing: .04em; }
+.rkl__linha-nome { flex: 1; min-width: 0; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-texto); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rkl__linha-v { font-size: 15px; font-weight: var(--nu-w-forte); }
+.rkl__ir {
+  flex: none; width: 16px; height: 16px; color: var(--nu-white); opacity: 0; transform: translateX(-4px);
+  transition: opacity var(--nu-dur-media) var(--nu-ease-saida), transform var(--nu-dur-media) var(--nu-ease-saida);
+}
+@media (hover: hover) {
+  .rkl__lider:hover .rkl__ticker { color: var(--nu-blue-soft); }
+  /* um véu mais leve que o tile do logo (--nu-dark-chip): o tile continua a ler na linha acesa */
+  .rkl__linha:hover { background-color: color-mix(in srgb, var(--nu-dark-chip) 65%, transparent); }
+  .rkl__linha:hover .rkl__ir { opacity: 1; transform: none; }
+  .rkl__podio li:hover::before, .rkl__podio li:hover + li::before { opacity: 0; }
+}
+.rkl__linha:active { background-color: var(--nu-dark-chip); }
+/* o anel de foco que lê sobre o carvão */
+.rkl__lider:focus-visible, .rkl__linha:focus-visible { outline-color: var(--nu-blue-on-dark); }
+.rkl__lider:focus-visible { outline-offset: -6px; border-radius: var(--nu-r-card); }
+.rkl__linha:focus-visible { outline-offset: -3px; }
+.rkl__linha:focus-visible .rkl__ir { opacity: 1; transform: none; }
+
+@media (max-width: 560px) {
+  .rkl__metric { align-items: flex-start; margin-left: 0; }
+  .rkl__label { text-align: left; }
+  .rkl__ir { display: none; }
 }
 </style>

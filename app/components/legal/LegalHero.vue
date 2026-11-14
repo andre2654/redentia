@@ -24,7 +24,7 @@ const updatedText = computed(() => {
 <template>
   <div class="lgh">
     <div class="lgh__inner">
-      <div class="lgh__eyebrow">{{ eyebrow }}</div>
+      <NuEyebrow como="div">{{ eyebrow }}</NuEyebrow>
       <h1 class="lgh__title">{{ title }}</h1>
       <div v-if="updatedText" class="lgh__updated">Atualizado em {{ updatedText }}</div>
     </div>
@@ -32,23 +32,26 @@ const updatedText = computed(() => {
 </template>
 
 <style scoped>
+/* Na Aportou (11/11/2026) o herói senta no creme da página, como o NuPageHero:
+   eyebrow com o corte, H1 em 800 com a entrelinha apertada e um fio de 1,5px
+   separando do documento.
+   Robustez (11/11/2026): a coluna do site (--nu-coluna), a entrada em token
+   (520ms na curva de saída) e a data como legenda (500, cinza, tabular). */
 .lgh {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(36px, 4.5vw, 56px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-page);
+  padding: clamp(48px, 6.5vw, 88px) var(--nu-coluna) clamp(32px, 4vw, 48px);
+  border-bottom: 1px solid var(--nu-line-2);
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both;
 }
 .lgh__inner { max-width: 920px; }
-.lgh__eyebrow {
-  color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800;
-  letter-spacing: -.2px;
-}
 .lgh__title {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(38px, 5.2vw, 68px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.02;
+  margin: 18px 0 0; color: var(--nu-ink);
+  font-size: clamp(40px, 5.5vw, 76px); font-weight: var(--nu-w-display);
+  letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance;
 }
 .lgh__updated {
-  margin-top: 20px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
+  margin-top: 20px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto);
   font-variant-numeric: tabular-nums;
 }
+@media (prefers-reduced-motion: reduce) { .lgh { animation: none; } }
 </style>

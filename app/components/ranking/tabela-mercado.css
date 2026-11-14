@@ -1,0 +1,132 @@
+/* A pele das tabelas de mercado (robustez, 11/11/2026): o ranking (RankTable,
+   RankTesouroTable), o setor (RankTable) e o Tesouro (TesouroTable), e o
+   esqueleto delas (MercadoEsqueleto). Cada uma importa com escopo próprio:
+   <style scoped src="…/tabela-mercado.css">. A régua é a Rogo:
+   - cabeçalho em caixa alta de 12px com --nu-ls-caixa, num fio de 1px; o
+     rótulo de coluna numérica devolve o tracking da última letra, para a
+     borda do texto cair na mesma vertical dos números;
+   - linhas de 56px separadas por fio de 1px; a linha inteira acende no hover
+     (e no foco do link dela) e a seta aparece no fim;
+   - números tabulares à direita, 14,5px/500; a métrica do ranking em 16px/600
+     carvão: a hierarquia é o tamanho, não o negrito;
+   - em tela larga o cabeçalho gruda logo abaixo do topo e da régua do mercado
+     (--nuh-h + --nut-h); no celular o cartão rola de lado por dentro e o ativo
+     fica preso à esquerda. */
+
+.rkt {
+  --rkt-borda: clamp(16px, 2vw, 24px);  /* o respiro das pontas da tabela */
+  --rkt-pad: clamp(12px, 1.1vw, 16px);   /* o respiro entre as colunas */
+  --rkt-linha: 56px;
+  --rkt-cola: calc(var(--nuh-h, 72px) + var(--nut-h, 0px));
+  --rkt-acende: var(--nu-page);         /* a linha sob o ponteiro */
+  --rkt-aperta: var(--nu-card);         /* a linha apertada */
+  background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente);
+  overflow-x: auto; scrollbar-width: thin;
+  transition: opacity var(--nu-dur-media) var(--nu-ease-cor);
+}
+/* a troca de filtro: a lista de antes fica, esmaecida, até a nova chegar */
+.rkt--ocupada { opacity: .5; }
+.rkt__table { width: 100%; min-width: 720px; border-collapse: separate; border-spacing: 0; }
+
+/* ——— cabeçalho ——— */
+.rkt__th {
+  height: 44px; padding: 0 var(--rkt-pad); text-align: right; vertical-align: middle; white-space: nowrap;
+  background: var(--nu-white); color: var(--nu-gray);
+  font-size: 12px; font-weight: var(--nu-w-medio); line-height: 16px; letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
+  border-bottom: 1px solid var(--nu-line-2);
+}
+/* a última letra de um rótulo em caixa alta carrega o tracking: devolvido, o texto fecha na vertical dos números */
+.rkt__th--num { padding-right: calc(var(--rkt-pad) - var(--nu-ls-caixa)); }
+.rkt__th--pos { width: 28px; padding-left: var(--rkt-borda); padding-right: 4px; text-align: left; }
+.rkt__th--asset { text-align: left; }
+.rkt__th--main { color: var(--nu-ink); }
+.rkt__th--ir { width: 44px; padding: 0; }
+
+/* ——— linhas ——— */
+.rkt__row { cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor); }
+/* :not(:first-child) e não sibling: a linha aberta do detalhe (RankTable) não quebra a cadeia dos fios */
+.rkt__row:not(:first-child) .rkt__cell { border-top: 1px solid var(--nu-line-2); }
+.rkt__cell {
+  height: var(--rkt-linha); padding: 8px var(--rkt-pad); text-align: right; vertical-align: middle; white-space: nowrap;
+  color: var(--nu-gray-3); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 20px; letter-spacing: var(--nu-ls-texto);
+  font-variant-numeric: tabular-nums;
+}
+.rkt__cell--pos { padding-left: var(--rkt-borda); padding-right: 4px; text-align: left; color: var(--nu-gray); font-size: 13px; }
+.rkt__cell--asset { text-align: left; }
+/* a métrica do ranking: o número que a pessoa veio ver */
+.rkt__cell--main { color: var(--nu-ink); font-size: 16px; font-weight: var(--nu-w-forte); }
+.rkt__cell--ir { width: 44px; padding: 0 var(--rkt-borda) 0 0; }
+
+/* a seta do fim: aparece quando a linha acende (o clique leva ao ativo) */
+.rkt__ir {
+  display: block; width: 16px; height: 16px; margin-left: auto; color: var(--nu-ink);
+  opacity: 0; transform: translateX(-4px);
+  transition: opacity var(--nu-dur-media) var(--nu-ease-saida), transform var(--nu-dur-media) var(--nu-ease-saida);
+}
+@media (hover: hover) {
+  .rkt__row:hover { background-color: var(--rkt-acende); }
+  .rkt__row:hover .rkt__ir { opacity: 1; transform: none; }
+  .rkt__row:hover .rkt__asset-name { color: var(--nu-gray-3); }
+}
+/* pelo teclado: o foco no link da linha acende a linha inteira, como o ponteiro */
+.rkt__row:has(.rkt__asset:focus-visible, .rkt__nome:focus-visible) { background-color: var(--rkt-acende); }
+.rkt__row:has(.rkt__asset:focus-visible, .rkt__nome:focus-visible) .rkt__ir { opacity: 1; transform: none; }
+.rkt__row:active { background-color: var(--rkt-aperta); }
+
+/* ——— o ativo: logo, ticker na etiqueta carvão (NuSelo) e o nome ——— */
+/* o link abraça o logo, o ticker e o nome: o anel de foco (3px) fica justo neles, com o raio do selo */
+.rkt__asset { display: inline-flex; align-items: center; gap: 12px; min-width: 0; max-width: 100%; vertical-align: middle; border-radius: var(--nu-r-tag); color: var(--nu-ink); }
+.rkt__nome { border-radius: 4px; }
+.rkt__logo { flex: none; }
+.rkt__asset-id { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.rkt__asset-name {
+  max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 18px;
+  transition: color var(--nu-dur-rapida) var(--nu-ease-cor);
+}
+/* o nome de um título público é o próprio ativo */
+.rkt__nome { color: var(--nu-ink); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
+
+/* ——— tela larga: o cabeçalho gruda ao rolar a lista ———
+   O cartão deixa de ser um contêiner de rolagem (overflow: clip ainda corta os
+   cantos redondos) e o cabeçalho passa a grudar na janela, logo abaixo do topo
+   e da régua do mercado. A partir de 1280px a tabela mais larga (a do score,
+   com nove colunas) cabe inteira; abaixo disso o cartão rola de lado. */
+@media (min-width: 1280px) {
+  .rkt { overflow: clip; }
+  .rkt__th { position: sticky; top: var(--rkt-cola); z-index: 2; transition: top var(--nu-dur-media) var(--nu-ease-saida); }
+}
+
+/* ——— celular: o ativo preso à esquerda, as outras colunas rolam por baixo ——— */
+@media (max-width: 760px) {
+  .rkt { --rkt-linha: 60px; }
+  .rkt__table { min-width: 0; }
+  .rkt__th, .rkt__cell { padding-left: 10px; padding-right: 10px; }
+  .rkt__th--num { padding-right: calc(10px - var(--nu-ls-caixa)); }
+  /* alturas inteiras: a coluna presa é composta à parte, e meia fração de pixel desalinha o fio */
+  .rkt__th { height: 48px; }
+  /* o rótulo da métrica quebra em duas linhas ("VALOR DE / MERCADO"): a coluna fica na largura do número */
+  .rkt__th--main { white-space: normal; letter-spacing: .12em; }
+  .rkt__th--pos, .rkt__cell--pos {
+    position: sticky; left: 0; z-index: 2; width: 34px; min-width: 34px; padding-left: 14px; padding-right: 0; background: var(--nu-white);
+  }
+  .rkt__th--asset, .rkt__cell--asset {
+    position: sticky; left: 34px; z-index: 2; padding-left: 8px; background: var(--nu-white);
+    box-shadow: 8px 0 10px -8px color-mix(in srgb, var(--nu-ink) 12%, transparent);
+  }
+  .rkt--sem-pos .rkt__th--asset, .rkt--sem-pos .rkt__cell--asset { left: 0; padding-left: 14px; }
+  .rkt__row:active .rkt__cell--pos, .rkt__row:active .rkt__cell--asset { background-color: var(--rkt-aperta); }
+  .rkt__row:has(.rkt__asset:focus-visible, .rkt__nome:focus-visible) :is(.rkt__cell--pos, .rkt__cell--asset) { background-color: var(--rkt-acende); }
+  /* sem ponteiro, a seta não tem quando aparecer: a coluna sai */
+  .rkt__th--ir, .rkt__cell--ir { display: none; }
+  .rkt__asset { gap: 10px; }
+  .rkt__asset-id { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .rkt__asset-name { max-width: 104px; font-size: 12.5px; line-height: 16px; }
+  .rkt__cell--main { font-size: 15px; }
+  /* a última coluna visível (a da seta saiu) fecha com o respiro da ponta */
+  .rkt__cell:nth-last-child(2) { padding-right: 16px; }
+  .rkt__th:nth-last-child(2) { padding-right: calc(16px - var(--nu-ls-caixa)); }
+}
+@media (max-width: 760px) and (hover: hover) {
+  .rkt__row:hover .rkt__cell--pos, .rkt__row:hover .rkt__cell--asset { background-color: var(--rkt-acende); }
+}

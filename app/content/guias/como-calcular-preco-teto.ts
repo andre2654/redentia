@@ -26,7 +26,7 @@ export const COMO_CALCULAR_PRECO_TETO_GUIDE: GuideDoc = {
   summary:
     'Cinco fórmulas de preço teto, o que cada uma pede de insumo, um exemplo em que a conta fecha, e onde o número deixa de dizer qualquer coisa.',
   minutes: 13,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-10-26',
   dateModified: '2026-10-26',
   updatedLine: 'Atualizado em 26 out 2026 · 13 min de leitura',

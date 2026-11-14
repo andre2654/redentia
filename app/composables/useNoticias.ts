@@ -180,14 +180,19 @@ export async function useNoticias() {
   const { isAuthenticated } = useAuthState()
 
   const { data } = await useAsyncData<NoticiasItem[]>('noticias:feed', async () => {
+    // As manchetes de exemplo do design (atribuídas a veículos de verdade) só no
+    // dev. Em produção: o feed que vier, mesmo curto (a página tem o vazio), e
+    // sem feed, 503 (a borda não guarda erro; guardava o seed como notícia).
     try {
       const items = await fetchFeed(import.meta.server ? serverBase : clientBase, PAGE_SIZE)
-      if (items.length >= 2) return items.slice(0, PAGE_SIZE)
-    } catch { /* degrada pro seed */ }
+      if (items.length >= 2 || !import.meta.dev) return items.slice(0, PAGE_SIZE)
+    } catch {
+      if (!import.meta.dev) throw createError({ statusCode: 503, statusMessage: 'Notícias temporariamente indisponíveis' })
+    }
     return NOTICIAS_SEED
   })
 
-  const items = ref<NoticiasItem[]>(data.value ?? NOTICIAS_SEED)
+  const items = ref<NoticiasItem[]>(data.value ?? (import.meta.dev ? NOTICIAS_SEED : []))
   const isSeed = computed(() => items.value[0]?.id.startsWith('seed-') ?? false)
 
   /* — carregar mais (limit incremental + dedupe; sem offset no backend) — */

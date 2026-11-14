@@ -193,7 +193,7 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
     },
     faq: [
       { q: 'Como calcular o preço teto pelo P/L setorial?', a: 'Multiplique o lucro por ação dos últimos 12 meses pelo P/L médio do setor. Se o LPA é R$ 3,50 e o setor negocia a P/L 10, o preço teto é R$ 35,00.' },
-      { q: 'Onde encontro o P/L médio de um setor da B3?', a: 'Você pode calcular a partir das empresas do setor (a Redentia publica isso em /setor) ou usar a média de um grupo pequeno de pares diretos, que costuma ser mais informativa que a média do setor inteiro.' },
+      { q: 'Onde encontro o P/L médio de um setor da B3?', a: 'Você pode calcular a partir das empresas do setor (a Aportou publica isso em /setor) ou usar a média de um grupo pequeno de pares diretos, que costuma ser mais informativa que a média do setor inteiro.' },
       { q: 'Este método serve para FIIs?', a: 'Não bem. Fundo imobiliário não tem lucro por ação no sentido contábil de empresa; a régua equivalente é P/VP e o dividend yield sobre o rendimento mensal distribuído.' },
       { q: 'O que fazer quando o setor inteiro está caro?', a: 'Use o P/L médio histórico do setor em vez do atual, e cruze com um método absoluto (Graham ou Bazin). Método relativo herda o erro da referência: num setor em bolha, ele sinaliza barato para o que está apenas menos caro.' },
     ],

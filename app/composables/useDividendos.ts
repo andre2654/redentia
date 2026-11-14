@@ -567,7 +567,7 @@ function buildPayload(c: Core): DividendosPayload {
         },
     {
       q: `Onde acompanhar os próximos pagamentos de ${c.ticker}?`,
-      a: `Os anúncios oficiais saem como fato relevante no site de RI e no sistema da CVM. Esta página consolida o histórico com dados da B3, e a página do ativo na Redentia traz cotação, fundamentos, notícias e a leitura da Redentia AI sobre ${c.ticker}.`,
+      a: `Os anúncios oficiais saem como fato relevante no site de RI e no sistema da CVM. Esta página consolida o histórico com dados da B3, e a página do ativo na Aportou traz cotação, fundamentos, notícias e a leitura da IA da Aportou sobre ${c.ticker}.`,
     },
   ]
 
@@ -689,7 +689,8 @@ async function loadDividendos(base: string, ticker: string): Promise<DividendosP
     if (status === 410) {
       throw delistedError(ticker, delistedAtOfError(e))
     }
-    if (ticker === 'PETR4') return petr4Seed()
+    // o seed do design só no dev (em produção era provento inventado com cache público)
+    if (ticker === 'PETR4' && import.meta.dev) return petr4Seed()
     throw createError({ statusCode: 503, statusMessage: 'Dados temporariamente indisponíveis' })
   }
 

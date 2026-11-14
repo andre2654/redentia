@@ -2,6 +2,9 @@
 // Faixa "Continue lendo." do guia: header (H2 + link "Ver todos os guias" com
 // hover de gap 12→16px) e grid responsivo de GuiasCard variant related.
 // Valores exatos do design (Redentia Guia Open Finance.dc.html).
+// ROBUSTEZ (11/11/2026): "Ver todos os guias" é a ação secundária da dobra (os
+// cartões são a principal): vira o NuLinkSeta. A faixa e os cartões entram ao
+// chegar (v-revelar, os cartões em cascata de 60ms); a coluna é a do site.
 import type { GuideTag } from '~/types/guias'
 
 defineProps<{ items: { title: string; tag: GuideTag; minutes: number; to: string }[] }>()
@@ -9,16 +12,14 @@ defineProps<{ items: { title: string; tag: GuideTag; minutes: number; to: string
 
 <template>
   <section class="grl">
-    <div class="grl__head">
-      <h2 class="grl__title">Continue lendo.</h2>
-      <NuxtLink to="/guias" class="grl__all">
-        <span class="grl__all-label">Ver todos os guias</span>
-        <span class="grl__all-circle">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-        </span>
-      </NuxtLink>
+    <div v-revelar class="grl__head">
+      <div>
+        <NuEyebrow como="p">Guias</NuEyebrow>
+        <h2 class="grl__title">Continue lendo.</h2>
+      </div>
+      <p class="grl__todos"><NuLinkSeta to="/guias" tom="tinta">Ver todos os guias</NuLinkSeta></p>
     </div>
-    <div class="grl__grid">
+    <div v-revelar="{ alvo: 'filhos' }" class="grl__grid">
       <GuiasCard
         v-for="(g, i) in items" :key="g.title"
         :title="g.title" :tag="g.tag" :minutes="g.minutes" :to="g.to"
@@ -30,27 +31,21 @@ defineProps<{ items: { title: string; tag: GuideTag; minutes: number; to: string
 
 <style scoped>
 .grl {
-  background: var(--nu-cream);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-band);
+  padding: clamp(72px, 8vw, 128px) var(--nu-coluna);
 }
 .grl__head {
   display: flex; align-items: flex-end; justify-content: space-between;
   gap: 22px; flex-wrap: wrap;
 }
 .grl__title {
-  margin: 0; color: var(--nu-ink); font-size: clamp(32px, 4vw, 52px);
-  font-weight: 800; letter-spacing: -0.04em; line-height: 1.04;
+  margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm);
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02;
 }
-.grl__all { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; transition: gap .2s; }
-.grl__all:hover { gap: 16px; }
-.grl__all-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
-.grl__all-circle {
-  width: 44px; height: 44px; border-radius: 50%; background: var(--nu-blue);
-  color: var(--nu-white); display: flex; align-items: center; justify-content: center;
-}
+.grl__todos { margin: 0; font-size: var(--nu-fs-md); }
 .grl__grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-  gap: 16px; margin-top: 36px;
+  /* auto-fill: um cartão sozinho mantém a largura de coluna, não estica a faixa inteira */
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: clamp(16px, 1.8vw, 24px); margin-top: 40px;
 }
 </style>

@@ -7,15 +7,29 @@ const require = createRequire(import.meta.url)
 //  - proxies em 3 camadas e routeRules de cache (Frontend)
 //  - deploy git→Vercel e organização por feature (Atlas)
 // Plano mestre: docs/redentia-nu/PLANO-REDENTIA-NU.md (repo raiz).
-import { businessLeadDemoLigadoNoBuild } from './app/utils/business-lead.ts'
 import { CABECALHOS_JSON_DO_PROXY } from './server/utils/backend-proxy-json.ts'
+
+/** Uma rota de app/pages/dev/ (a página ou o arquivo dela). */
+function paginaDeDev(p: { path: string; file?: string }): boolean {
+  return p.path === '/dev' || p.path.startsWith('/dev/') || /[\\/]pages[\\/]dev[\\/]/.test(p.file ?? '')
+}
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-11',
   devtools: { enabled: false },
   ssr: true,
 
-  css: ['~/assets/css/tokens.css', '~/assets/css/jakarta.css', '~/assets/css/base.css'],
+  css: ['~/assets/css/tokens.css', '~/assets/css/fontes.css', '~/assets/css/base.css'],
+
+  // Hover só onde há mouse (11/11/2026, robustez): no toque, o realce ficava
+  // preso depois de tocar (o cartão erguido, a linha acesa, a seta adiantada).
+  // Toda regra com :hover vai para dentro de @media (hover: hover), no mesmo
+  // lugar da cascata (postcss/hover-com-mouse.mjs, com teste; o mesmo do B2B).
+  postcss: {
+    plugins: {
+      [fileURLToPath(new URL('./postcss/hover-com-mouse.mjs', import.meta.url))]: {},
+    },
+  },
 
   app: {
     head: {
@@ -24,12 +38,13 @@ export default defineNuxtConfig({
       // o SSR renderiza o title cru sem sufixo de marca (bug desde o PR0,
       // pego no verify do PR10). O template vive em app.vue via useHead.
       link: [
-        // Fonte auto-hospedada (app/assets/css/jakarta.css). Preload do arquivo
+        // Fonte auto-hospedada (app/assets/css/fontes.css). Preload do arquivo
         // único: o H1 da home usa o peso 800 e não pode esperar um CSS de terceiro.
-        { rel: 'preload', href: '/fonts/plus-jakarta-sans-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
-        { rel: 'icon', type: 'image/svg+xml', href: '/logo-azul.svg' },
+        { rel: 'preload', href: '/fonts/figtree-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/icone-aportou.svg' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
       ],
-      meta: [{ name: 'theme-color', content: '#2F6AFF' }],
+      meta: [{ name: 'theme-color', content: '#F9F3EC' }],
     },
   },
 
@@ -48,10 +63,12 @@ export default defineNuxtConfig({
       chatDirectUrl: process.env.NUXT_PUBLIC_CHAT_DIRECT_URL || '',
       // Origem CANÔNICA do site. É a fonte única de verdade pra canonical, og:url,
       // sitemap, robots e llms-full (ver useSiteOrigin / server/utils/site-origin).
-      // Precisa do `www`: o apex 301a pra www em produção, e o Search Console
-      // indexa www.redentia.com.br. Sem o www aqui, o canonical apontava pro
-      // destino de um 301 — o Google resolve, mas gasta crawl e enfraquece o sinal.
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://www.redentia.com.br',
+      // Desde a virada de domínio (13/11/2026, docs/aportou/virada-de-dominio.md)
+      // é https://aportou.com.br, sem www (o www manda para lá). Tem de bater com o
+      // host que responde 200: canonical que aponta para o destino de um redirect
+      // o Google resolve, mas gasta crawl e enfraquece o sinal. Este valor só vale
+      // em produção com o aportou.com.br no ar (passo 3 da virada).
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://aportou.com.br',
       // Google OAuth Web client ID (público por design — o browser precisa
       // dele pro Google Identity Services emitir o id_token; o secret vive
       // só no Laravel, que valida via tokeninfo + aud). ENV-ONLY, sem
@@ -59,6 +76,12 @@ export default defineNuxtConfig({
       // o botão Google do /login se esconde sozinho (LoginGoogleButton
       // documenta o que falta pra ligar).
       googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+      // Sign in with Apple (o Services ID da Apple, público como o do Google).
+      // O backend confere a assinatura do id_token pela JWKS da Apple e o aud
+      // contra APPLE_CLIENT_IDS. O redirect precisa estar cadastrado no
+      // Services ID (Apple Developer → Identifiers); sem a env, o botão some.
+      appleClientId: process.env.NUXT_PUBLIC_APPLE_CLIENT_ID || '',
+      appleRedirectUri: process.env.NUXT_PUBLIC_APPLE_REDIRECT_URI || '',
       // Observabilidade (migrada do Frontend antigo no cutover). Plugins
       // client carregam lazy (requestIdleCallback) pra não competir com o
       // LCP. Pra desligar num env, basta setar a env correspondente vazia.
@@ -73,10 +96,30 @@ export default defineNuxtConfig({
       // inscrição e o envio são do Backend (tópico `newsletter` e
       // newsletter:enviar). NUXT_PUBLIC_NEWSLETTER_LIGADA=false esconde.
       newsletterLigada: true,
+      // Pré-lançamento (13/11/2026; docs/aportou/virada-de-dominio.md, seção 4.1): a Aportou no ar em aportou.com.br
+      // antes da troca, com o redentia.com.br como está. Ligado (NUXT_PUBLIC_PRE_LANCAMENTO=true na Vercel):
+      //  - o site sai do índice (X-Robots-Tag noindex em toda resposta e o robots sem o sitemap): os dois domínios
+      //    não competem no Google com o mesmo conteúdo;
+      //  - o quiz da assinatura não oferece o aceite do WhatsApp: o backend de produção ainda carimba a versão antiga
+      //    do texto, e o "sim" ficaria registrado com o texto errado (assinatura.ts, TEXTO_ACEITE_WHATSAPP).
+      // Na troca (passo 4), desligar.
+      preLancamento: false,
     },
   },
 
   routeRules: {
+    // Cabeçalhos de segurança em toda resposta (auditoria de produção, 12/11/2026). SÓ
+    // segurança: cache-control aqui vazaria para todas as rotas (a lição do PR #50).
+    // A CSP fica para depois (o GTM e o Clarity pedem uma lista própria).
+    '/**': {
+      headers: {
+        'x-frame-options': 'SAMEORIGIN',
+        'x-content-type-options': 'nosniff',
+        'referrer-policy': 'strict-origin-when-cross-origin',
+        'permissions-policy': 'camera=(), microphone=(), geolocation=()',
+        'strict-transport-security': 'max-age=31536000',
+      },
+    },
     // Proxies server-to-server (prod/Vercel).
     // O proxyRequest do h3 descarta o Accept do cliente. Estes headers vão
     // nas opções do proxy (vencem o mapa filtrado) e fazem o Laravel responder
@@ -119,6 +162,9 @@ export default defineNuxtConfig({
     '/raio-x': { redirect: { to: '/', statusCode: 301 } },
     '/raio-x/**': { redirect: { to: '/', statusCode: 301 } },
     '/carteira': { headers: { 'cache-control': 'private, no-store' } },
+    // /assinar (plano único, 31/10/2026): o SSR lê a assinatura de quem está
+    // logado (assinante vai para a /carteira) → varia por cookie.
+    '/assinar': { headers: { 'cache-control': 'private, no-store' } },
     // /simulacao: pessoal e atrás de login (guard inline na página). O
     // resultado é da carteira de quem pediu — não pode encostar em cache
     // compartilhado de CDN.
@@ -127,34 +173,13 @@ export default defineNuxtConfig({
     // noindex). Página única com seções ancoradas (sem sub-rotas).
     '/conta': { headers: { 'cache-control': 'private, no-store' } },
     // /noticias, /asset/**, /tesouro(/**), /dividendos/**, /guias(/**),
-    // /glossario(/**), /tese/**, /teses, /calculadoras, /mcp e /business:
-    // cache público por request em server/middleware/cache-sessao.ts.
-    // PR-F do MVP B2B: cadastro e chaves VARIAM por cookie (cadastro redireciona
-    // logado pra /business/chaves; chaves é autenticada) → private/no-store,
-    // pela regra "CDN não varia por cookie". O guia de conexão é estático.
-    '/business/cadastro': { headers: { 'cache-control': 'private, no-store' } },
-    '/business/chaves': { headers: { 'cache-control': 'private, no-store' } },
-    '/business/skills': { headers: { 'cache-control': 'private, no-store' } },
-    // Convite de chave: página pública que mostra um SEGREDO uma vez (a chave
-    // nasce na tela de quem abriu o link). Nunca na borda.
-    '/business/convite/**': { headers: { 'cache-control': 'private, no-store' } },
-    // Clientes do escritório (Contrato E, 07/10/2026). O painel do dono mostra
-    // o link de convite do cliente UMA vez; as páginas do cliente final levam
-    // o token (convite ou gestão) na URL. Nenhuma das três encosta em cache de
-    // borda, e o token não pode sair no Referer de link nenhum. As páginas do
-    // cliente também são noindex/nofollow no header (além da meta), porque
-    // existem só por link pessoal. '/cliente/**' cobre convite e acesso.
-    '/business/clientes': { headers: { 'cache-control': 'private, no-store', 'referrer-policy': 'no-referrer' } },
-    '/cliente/**': {
-      headers: {
-        'cache-control': 'private, no-store',
-        'referrer-policy': 'no-referrer',
-        'x-robots-tag': 'noindex, nofollow',
-      },
-    },
-    // O guia de conexão virou o modal do painel de chaves (dono 2026-08-25,
-    // "menos é mais"): 301 exato, mesmo padrão do '/calculadora'.
-    '/business/comecar': { redirect: { to: '/business/chaves', statusCode: 301 } },
+    // /glossario(/**), /tese/**, /teses, /calculadoras e /mcp: cache público
+    // por request em server/middleware/cache-sessao.ts.
+    // O produto de escritório (a landing, o painel, os convites, as páginas do
+    // cliente final e a de campanha) saiu deste front em 12/11/2026. Os endereços
+    // antigos levam a redentia.com.br pelo middleware b2b-para-redentia, com o
+    // mapa em server/utils/destino-b2b.ts: nenhuma regra deles fica aqui (o
+    // routeRules roda antes do middleware e faria dois saltos).
     // PR10: hub mudou de /calculadora pro /calculadoras (301 preserva o link
     // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo
     // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.
@@ -252,13 +277,11 @@ export default defineNuxtConfig({
     '/guias/raio-x-da-carteira-em-crise': { redirect: { to: '/guias/como-montar-carteira-de-investimentos', statusCode: 301 } },
     // /api-portal tinha o 2º melhor CTR do site (7,83%) e é docs de integração:
     // vai pro /mcp, que é a superfície equivalente no Nu E é indexável.
-    // /whitelabel e /pricing vão pro /business, topicamente correto. Ele ficou
-    // `noindex` por trava de compliance até 20/10/2026; desde então é indexável
-    // (decisão do dono) e o 301 também passa o sinal.
+    // /whitelabel e /pricing iam para a landing do produto de escritório; desde
+    // 12/11/2026 vão direto para redentia.com.br (301), pelo middleware
+    // b2b-para-redentia, sem passar por ela.
     '/api-portal': { redirect: { to: '/mcp', statusCode: 301 } },
     '/api-portal/**': { redirect: { to: '/mcp', statusCode: 301 } },
-    '/whitelabel': { redirect: { to: '/business', statusCode: 301 } },
-    '/pricing': { redirect: { to: '/business', statusCode: 301 } },
     '/download': { redirect: { to: '/', statusCode: 301 } },
     // Achado do cruzamento de Páginas.csv: 3 URLs de /embed/ ainda rankeiam em
     // posição 3,8 a 4,1 (77 impressões) e todas dão 404. O Nu não tem embed.
@@ -361,15 +384,18 @@ export default defineNuxtConfig({
   components: [{ path: '~/components', pathPrefix: false }],
   imports: { dirs: ['services'] },
 
-  // Prévia do formulário de /business (`?demo=1`). Constante de build: produção
-  // da Vercel grava false, e a env pública não reverte isso. Ver business-lead.ts.
-  vite: {
-    define: {
-      __REDENTIA_BUSINESS_LEAD_DEMO__: JSON.stringify(businessLeadDemoLigadoNoBuild({
-        VERCEL_ENV: process.env.VERCEL_ENV,
-        NODE_ENV: process.env.NODE_ENV,
-        NUXT_PUBLIC_BUSINESS_LEAD_DEMO: process.env.NUXT_PUBLIC_BUSINESS_LEAD_DEMO,
-      })),
+  // As páginas de pages/dev/ (o /dev/losango) só existem no `nuxi dev`: fora
+  // dele a rota sai da lista antes de virar o routes.mjs, então nem a página
+  // nem o chunk dela entram no build. O middleware de 404 de cada página fica
+  // como segunda trava.
+  modules: [
+    (_opcoes, nuxt) => {
+      if (nuxt.options.dev) return
+      nuxt.hook('pages:extend', (paginas) => {
+        for (let i = paginas.length - 1; i >= 0; i--) {
+          if (paginaDeDev(paginas[i]!)) paginas.splice(i, 1)
+        }
+      })
     },
-  },
+  ],
 })

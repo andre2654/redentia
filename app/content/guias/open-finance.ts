@@ -9,15 +9,15 @@ import type { GuideDoc } from '~/types/guias'
 
 export const OPEN_FINANCE_GUIDE: GuideDoc = {
   slug: 'open-finance',
-  tag: 'Guia Redentia',
+  tag: 'Guia Aportou',
   title: 'Open Finance: sua carteira está espalhada?',
   dek: 'Como consolidar seus investimentos em 2 minutos, com consentimento regulado pelo Banco Central, sem planilha e sem compartilhar senhas.',
   description:
-    'O que é Open Finance, como conectar suas contas em 2 minutos e por que é seguro: consentimento regulado pelo Banco Central, acesso somente leitura e carteira consolidada na Redentia, sincronizada todos os dias.',
+    'O que é Open Finance, como conectar suas contas em 2 minutos e por que é seguro: consentimento regulado pelo Banco Central, acesso somente leitura e carteira consolidada na Aportou, sincronizada todos os dias.',
   summary:
     'O Brasil passou de 100 milhões de clientes no Open Finance. Veja como consolidar tudo em 2 minutos, com consentimento regulado pelo BCB, sem planilha e sem senha.',
   minutes: 13,
-  author: 'Equipe Redentia',
+  author: 'Equipe Aportou',
   datePublished: '2026-07-08',
   dateModified: '2026-07-08',
   updatedLine: 'Atualizado em 8 jul 2026 · 13 min de leitura',
@@ -29,7 +29,7 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'O Open Finance é o sistema do Banco Central que permite compartilhar seus dados financeiros entre instituições, <strong>com o seu consentimento explícito</strong>. Na prática: a corretora onde estão suas ações pode enviar suas posições para a Redentia, e você vê tudo em um lugar só.',
+          html: 'O Open Finance é o sistema do Banco Central que permite compartilhar seus dados financeiros entre instituições, <strong>com o seu consentimento explícito</strong>. Na prática: a corretora onde estão suas ações pode enviar suas posições para a Aportou, e você vê tudo em um lugar só.',
         },
         {
           kind: 'p',
@@ -53,9 +53,9 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
           kind: 'steps',
           items: [
             'Você escolhe a instituição e autoriza o compartilhamento, definindo exatamente o quê (só posições, por exemplo) e por quanto tempo.',
-            'A autenticação acontece <strong>no app da própria instituição</strong>: sua senha nunca passa pela Redentia.',
+            'A autenticação acontece <strong>no app da própria instituição</strong>: sua senha nunca passa pela Aportou.',
             'A instituição envia os dados pelas APIs padronizadas do Banco Central, criptografados de ponta a ponta.',
-            'Sua carteira aparece consolidada na Redentia e sincroniza sozinha todos os dias, sem planilha, sem digitação.',
+            'Sua carteira aparece consolidada na Aportou e sincroniza sozinha todos os dias, sem planilha, sem digitação.',
           ],
         },
       ],
@@ -72,7 +72,7 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
           kind: 'checks',
           items: [
             '<strong>Regulado pelo Banco Central</strong>: regras únicas de segurança e responsabilidade para todas as instituições participantes.',
-            '<strong>Somente leitura</strong>: a Redentia enxerga posições e proventos; ninguém consegue movimentar seu dinheiro.',
+            '<strong>Somente leitura</strong>: a Aportou enxerga posições e proventos; ninguém consegue movimentar seu dinheiro.',
             '<strong>Criptografia de ponta a ponta</strong>: os dados trafegam pelas APIs oficiais, nunca por telas ou robôs que imitam você.',
             '<strong>Consentimento revogável</strong>: você cancela o compartilhamento quando quiser, em um toque.',
           ],
@@ -110,18 +110,18 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
   faq: [
     {
       q: 'Preciso pagar para usar o Open Finance?',
-      a: 'Não. O compartilhamento de dados é gratuito por regulação. Na Redentia, conectar contas está incluído no plano gratuito.',
+      a: 'Não. O compartilhamento de dados é gratuito por regulação. Na Aportou, conectar contas está incluído no plano gratuito.',
     },
     {
       q: 'Posso desconectar quando quiser?',
-      a: 'Sim. O consentimento tem prazo definido e pode ser revogado a qualquer momento, tanto na Redentia quanto na instituição de origem.',
+      a: 'Sim. O consentimento tem prazo definido e pode ser revogado a qualquer momento, tanto na Aportou quanto na instituição de origem.',
     },
     {
       q: 'Quais instituições posso conectar?',
       a: 'Todas as grandes corretoras e bancos participam do Open Finance por obrigação regulatória, incluindo XP, BTG, Rico, Inter, Itaú, Nubank e outras dezenas.',
     },
     {
-      q: 'A Redentia vê minha senha ou movimenta meu dinheiro?',
+      q: 'A Aportou vê minha senha ou movimenta meu dinheiro?',
       a: 'Nunca. A autenticação acontece no app da sua instituição e o acesso é somente leitura: posições e proventos, nada de transações.',
     },
   ],

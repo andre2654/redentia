@@ -6,6 +6,8 @@
  * atendeu. Um robots servido de um preview ou de um subdomínio esquecido
  * apontando pro próprio host é como o sitemap do whitelabel entrou no índice.
  */
+import { preLancamentoLigado, textoDoRobots } from '../utils/pre-lancamento'
+
 export default defineEventHandler((event) => {
   const origin = siteOrigin(event)
 
@@ -25,15 +27,7 @@ export default defineEventHandler((event) => {
   // indexada sem conteúdo, a partir de link. O /login responde 200 com
   // `noindex, follow` no HTML do SSR, e o /carteira anônimo dá 302 pro
   // /login, então liberar o rastreio é o que faz as duas saírem do índice.
-  return [
-    'User-agent: *',
-    'Allow: /',
-    '',
-    `Sitemap: ${origin}/sitemap.xml`,
-    '',
-    '# Guia curado para LLMs (prioridades de citação e política de uso):',
-    `# ${origin}/llms.txt`,
-    `# Inventário completo: ${origin}/llms-full.txt`,
-    '',
-  ].join('\n')
+  //
+  // No pré-lançamento (13/11/2026) o texto sai sem o sitemap: server/utils/pre-lancamento.ts.
+  return textoDoRobots(origin, preLancamentoLigado(useRuntimeConfig(event).public.preLancamento))
 })

@@ -1,41 +1,64 @@
 <script setup lang="ts">
 // "O relatório completo" — a tese em formato de research de verdade (campo
 // JSONB `report`, nullable; tese sem report NÃO renderiza esta seção).
-// Anatomia (referência editorial Finimize, na linguagem Nu): banda branca
-// fechando a alternância creme→branco depois dos números; head no padrão das
-// irmãs (NuSectionHeading + meta à direita — leitura estimada/publicação);
-// corpo em DUAS COLUNAS no padrão dos guias (NuTocSidebar): índice sticky à
-// esquerda que acende a seção ativa no scroll + ARTIGO LONGO à direita em
-// coluna de 760px (mesma medida do corpo dos guias):
-//   Oportunidade (lead em destaque) → pilares (cards numerados) → riscos
-//   (card vermelho suave) → partes argumentativas (h2 frase-argumento + prosa
-//   + fontes-chip) → valuation (premissas + contas numeradas + preço justo em
-//   card hero navy) → conclusão + marcos (checklist de observação) → fontes
-//   consolidadas. O índice (report.toc) lista só o que existe; no ≤1080 ele
-//   some (mesma regra do guia), o artigo segue sozinho.
+//
+// 11/11/2026 (docs/aportou/tese.md): o relatório virou LEITURA RECOLHIDA. Era
+// uma leitura de 18 minutos aberta no meio da página; agora fica à vista o
+// cabeçalho (tempo de leitura, publicação, versão) e o relatório abre por
+// parte: a oportunidade, a tese em pontos, cada parte argumentativa (a
+// frase-argumento no título), o valuation (premissas, contas e preço justo),
+// a conclusão (com os marcos a acompanhar) e as fontes. Tudo continua no HTML
+// do servidor. No computador, o sumário à esquerda (NuTocSidebar, o mesmo dos
+// guias) acende a parte da tela e, ao clicar, abre a parte.
+// Os riscos do relatório ("O que mata a tese") moram agora na seção sálvia "O
+// que pode dar errado" (TeseRiscos), logo acima: aqui não se repetem.
 // Prosa chega JÁ ESCAPADA do useTese ({mark} → .tse-hi, mesmo pipeline do
 // editorial); campos atômicos são texto puro. Toda subseção é opcional —
 // ausente some, e o índice lista só o que existe (estados honestos).
+//
+// Robustez (11/11/2026): cada parte é o NuAcordeao da base (o "+" que gira, a
+// altura e a opacidade em 520ms --nu-ease-troca, o título em h3, o conteúdo no
+// HTML do servidor); o sumário abre a parte pelo estado (abertas[id]). A
+// seção entra ao rolar (v-revelar: o cabeçalho, depois as partes em cascata).
 import type { TeseReportVM } from '~/types/tese'
 
 const props = defineProps<{ report: TeseReportVM }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 
 // pilares com índice 01/02… (tabular-nums) — largura fixa pro ritmo da lista
 const idx = (i: number) => String(i + 1).padStart(2, '0')
 
 const hasConclusion = computed(() => props.report.conclusionHtml.length > 0 || props.report.milestones.length > 0)
+const meta = computed(() => [props.report.metaLine, props.report.version != null ? `Versão ${props.report.version}` : null].filter(Boolean).join(' · '))
 
 // report.toc ({ id, label }) → contrato do NuTocSidebar ({ label, targetId }).
 // Reuso o índice sticky + scrollspy dos guias (1 implementação por
 // responsabilidade); só monta com >1 seção (âncora única não vira índice).
-const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, targetId: t.id })))
+// Os riscos saíram daqui (estão na seção de cima): fora do índice.
+const tocItems = computed(() => props.report.toc.filter((t) => t.id !== 'rel-riscos').map((t) => ({ label: t.label, targetId: t.id })))
+
+// as partes abertas, pelo id da âncora (rel-oportunidade, rel-valuation…)
+const abertas = reactive<Record<string, boolean>>({})
+// clicar no sumário (ou chegar com a âncora na URL) abre a parte recolhida
+function abrirAncora(hash: string) {
+  if (hash.startsWith('#rel-')) abertas[hash.slice(1)] = true
+}
+function aoClicar(e: MouseEvent) {
+  const a = (e.target as HTMLElement | null)?.closest?.('a[href^="#rel-"]')
+  if (a) abrirAncora(a.getAttribute('href') ?? '')
+}
+onMounted(() => abrirAncora(window.location.hash))
 </script>
 
 <template>
-  <section id="relatorio" class="trp">
-    <div class="trp__head">
-      <NuSectionHeading>O relatório completo.</NuSectionHeading>
-      <span v-if="report.metaLine" class="trp__meta">{{ report.metaLine }}</span>
+  <section id="relatorio" class="trp" @click="aoClicar">
+    <div v-revelar class="trp__head">
+      <div>
+        <NuEyebrow como="p">Relatório</NuEyebrow>
+        <h2 class="trp__titulo">O relatório completo.</h2>
+      </div>
+      <span v-if="meta" class="trp__meta">{{ meta }}</span>
     </div>
 
     <div class="trp__cols">
@@ -44,119 +67,139 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
       <NuTocSidebar v-if="tocItems.length > 1" :items="tocItems" label="Neste relatório" />
 
       <article class="trp__article">
-      <!-- A oportunidade: o caso em 1-2 §§, lead em destaque -->
-      <div v-if="report.opportunityHtml.length" id="rel-oportunidade" class="trp__block">
-        <div class="trp__eyebrow">A oportunidade</div>
-        <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
-        <p v-for="(p, i) in report.opportunityHtml" :key="i" class="trp__lead" v-html="p" />
-      </div>
-
-      <!-- A tese em pilares -->
-      <div v-if="report.thesisHtml.length" id="rel-tese" class="trp__block">
-        <h2 class="trp__h2">A tese, em pilares.</h2>
-        <div class="trp__pillars">
-          <div v-for="(b, i) in report.thesisHtml" :key="i" class="trp__pillar">
-            <span class="trp__pillar-idx">{{ idx(i) }}</span>
-            <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
-            <span class="trp__pillar-txt" v-html="b" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Riscos: o que mata a tese (tom vermelho suave) -->
-      <div v-if="report.risksHtml.length" id="rel-riscos" class="trp__block">
-        <h2 class="trp__h2">O que mata a tese.</h2>
-        <div class="trp__risks">
-          <div v-for="(b, i) in report.risksHtml" :key="i" class="trp__risk">
-            <span class="trp__risk-dot" />
-            <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
-            <span class="trp__risk-txt" v-html="b" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Partes argumentativas: h2 frase-argumento + prosa + fontes-chip -->
-      <div v-for="part in report.parts" :id="part.id" :key="part.id" class="trp__block">
-        <h2 class="trp__h2">{{ part.heading }}</h2>
-        <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
-        <p v-for="(p, i) in part.paragraphsHtml" :key="i" class="trp__p" v-html="p" />
-        <div v-if="part.sources.length" class="trp__chips">
-          <component
-            :is="f.url ? 'a' : 'span'"
-            v-for="f in part.sources" :key="f.label"
-            v-bind="f.url ? { href: f.url, target: '_blank', rel: 'noopener noreferrer' } : {}"
-            class="trp__chip"
+        <div v-revelar="{ alvo: 'filhos' }" class="trp__dobras">
+          <!-- A oportunidade: o caso em 1-2 §§, lead em destaque -->
+          <NuAcordeao
+            v-if="report.opportunityHtml.length" id="rel-oportunidade" v-model:aberto="abertas['rel-oportunidade']"
+            class="trp__dobra" como="h3" fio :tamanho-mais="36"
           >
-            <span>{{ f.label }}</span>
-            <svg v-if="f.url" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="trp__chip-icon"><path d="M7 17L17 7M8 7h9v9" /></svg>
-          </component>
-        </div>
-      </div>
-
-      <!-- Valuation: premissas + contas numeradas + preço justo hero -->
-      <div v-if="report.valuation" id="rel-valuation" class="trp__block">
-        <h2 class="trp__h2">O valuation.</h2>
-        <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
-        <p v-if="report.valuation.introHtml" class="trp__p" v-html="report.valuation.introHtml" />
-
-        <div v-if="report.valuation.assumptions.length" class="trp__assump">
-          <div class="trp__card-lbl">Premissas</div>
-          <div v-for="a in report.valuation.assumptions" :key="a.label" class="trp__assump-row">
-            <div class="trp__assump-top">
-              <span class="trp__assump-label">{{ a.label }}</span>
-              <span class="trp__assump-value">{{ a.value }}</span>
-            </div>
-            <div v-if="a.note" class="trp__assump-note">{{ a.note }}</div>
-          </div>
-        </div>
-
-        <div v-if="report.valuation.mathHtml.length" class="trp__math">
-          <div class="trp__card-lbl trp__card-lbl--math">As contas, passo a passo</div>
-          <ol class="trp__math-list">
-            <li v-for="(m, i) in report.valuation.mathHtml" :key="i" class="trp__math-step">
-              <span class="trp__math-idx">{{ idx(i) }}</span>
+            <template #titulo><span class="trp__dobra-t">A oportunidade</span></template>
+            <div class="trp__dobra-corpo">
               <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
-              <span class="trp__math-txt" v-html="m" />
-            </li>
-          </ol>
-        </div>
+              <p v-for="(p, i) in report.opportunityHtml" :key="i" class="trp__lead" v-html="p" />
+            </div>
+          </NuAcordeao>
 
-        <div v-if="report.valuation.fairValue" class="trp__fair">
-          <div class="trp__fair-lbl">Preço justo estimado</div>
-          <div class="trp__fair-value">{{ report.valuation.fairValue }}</div>
-          <div v-if="report.valuation.vsPrice" class="trp__fair-vs">{{ report.valuation.vsPrice }}</div>
-        </div>
-      </div>
-
-      <!-- Conclusão + marcos observáveis -->
-      <div v-if="hasConclusion" id="rel-conclusao" class="trp__block">
-        <h2 class="trp__h2">Conclusão.</h2>
-        <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
-        <p v-for="(p, i) in report.conclusionHtml" :key="i" class="trp__p" v-html="p" />
-        <div v-if="report.milestones.length" class="trp__miles">
-          <div class="trp__card-lbl">Marcos a acompanhar</div>
-          <div v-for="(m, i) in report.milestones" :key="i" class="trp__mile">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="trp__mile-icon"><circle cx="12" cy="12" r="9" /></svg>
-            <span class="trp__mile-txt">{{ m }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Fontes consolidadas -->
-      <div v-if="report.sources.length" id="rel-fontes" class="trp__block">
-        <div class="trp__sources-lbl">Fontes do relatório</div>
-        <div class="trp__sources">
-          <component
-            :is="f.url ? 'a' : 'span'"
-            v-for="f in report.sources" :key="f.label"
-            v-bind="f.url ? { href: f.url, target: '_blank', rel: 'noopener noreferrer' } : {}"
-            class="trp__source"
+          <!-- A tese em pontos -->
+          <NuAcordeao
+            v-if="report.thesisHtml.length" id="rel-tese" v-model:aberto="abertas['rel-tese']"
+            class="trp__dobra" como="h3" fio :tamanho-mais="36"
           >
-            <span class="trp__source-title">{{ f.label }}</span>
-            <svg v-if="f.url" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="trp__source-icon"><path d="M7 17L17 7M8 7h9v9" /></svg>
-          </component>
+            <template #titulo><span class="trp__dobra-t">A tese, em pilares.</span></template>
+            <div class="trp__dobra-corpo">
+              <ol class="trp__pillars">
+                <li v-for="(b, i) in report.thesisHtml" :key="i" v-contexto-chat="{ id: `tese-pilar:${sobre}:${i}`, tipo: 'tese', rotulo: rotuloCurto(`Pilar ${i + 1} · ${sobre}`) }" class="trp__pillar">
+                  <span class="trp__pillar-idx" aria-hidden="true">{{ idx(i) }}</span>
+                  <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
+                  <span class="trp__pillar-txt" v-html="b" />
+                </li>
+              </ol>
+            </div>
+          </NuAcordeao>
+
+          <!-- Partes argumentativas: a frase-argumento abre a prosa e as fontes-chip -->
+          <NuAcordeao
+            v-for="part in report.parts" :id="part.id" :key="part.id" v-model:aberto="abertas[part.id]"
+            class="trp__dobra" como="h3" fio :tamanho-mais="36"
+          >
+            <template #titulo><span class="trp__dobra-t">{{ part.heading }}</span></template>
+            <div class="trp__dobra-corpo">
+              <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
+              <p v-for="(p, i) in part.paragraphsHtml" :key="i" class="trp__p" v-html="p" />
+              <div v-if="part.sources.length" class="trp__chips">
+                <component
+                  :is="f.url ? 'a' : 'span'"
+                  v-for="f in part.sources" :key="f.label"
+                  v-bind="f.url ? { href: f.url, target: '_blank', rel: 'noopener noreferrer' } : {}"
+                  class="trp__chip"
+                >
+                  <span>{{ f.label }}</span>
+                  <svg v-if="f.url" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="trp__chip-icon" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg>
+                </component>
+              </div>
+            </div>
+          </NuAcordeao>
+
+          <!-- Valuation: premissas + contas numeradas + preço justo hero -->
+          <NuAcordeao
+            v-if="report.valuation" id="rel-valuation" v-model:aberto="abertas['rel-valuation']"
+            class="trp__dobra" como="h3" fio :tamanho-mais="36"
+          >
+            <template #titulo><span class="trp__dobra-t">O valuation.</span></template>
+            <div class="trp__dobra-corpo">
+              <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
+              <p v-if="report.valuation.introHtml" class="trp__p" v-html="report.valuation.introHtml" />
+
+              <div v-if="report.valuation.assumptions.length" class="trp__assump">
+                <div class="trp__card-lbl">Premissas</div>
+                <div v-for="a in report.valuation.assumptions" :key="a.label" class="trp__assump-row">
+                  <div class="trp__assump-top">
+                    <span class="trp__assump-label">{{ a.label }}</span>
+                    <span class="trp__assump-value">{{ a.value }}</span>
+                  </div>
+                  <div v-if="a.note" class="trp__assump-note">{{ a.note }}</div>
+                </div>
+              </div>
+
+              <div v-if="report.valuation.mathHtml.length" class="trp__math">
+                <div class="trp__card-lbl trp__card-lbl--math">As contas, passo a passo</div>
+                <ol class="trp__math-list">
+                  <li v-for="(m, i) in report.valuation.mathHtml" :key="i" class="trp__math-step">
+                    <span class="trp__math-idx">{{ idx(i) }}</span>
+                    <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
+                    <span class="trp__math-txt" v-html="m" />
+                  </li>
+                </ol>
+              </div>
+
+              <div v-if="report.valuation.fairValue" class="trp__fair">
+                <div class="trp__fair-lbl">Preço justo estimado</div>
+                <div class="trp__fair-value">{{ report.valuation.fairValue }}</div>
+                <div v-if="report.valuation.vsPrice" class="trp__fair-vs">{{ report.valuation.vsPrice }}</div>
+              </div>
+            </div>
+          </NuAcordeao>
+
+          <!-- Conclusão + marcos observáveis -->
+          <NuAcordeao
+            v-if="hasConclusion" id="rel-conclusao" v-model:aberto="abertas['rel-conclusao']"
+            class="trp__dobra" como="h3" fio :tamanho-mais="36"
+          >
+            <template #titulo><span class="trp__dobra-t">Conclusão.</span></template>
+            <div class="trp__dobra-corpo">
+              <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
+              <p v-for="(p, i) in report.conclusionHtml" :key="i" class="trp__p" v-html="p" />
+              <div v-if="report.milestones.length" class="trp__miles">
+                <div class="trp__card-lbl">Marcos a acompanhar</div>
+                <div v-for="(m, i) in report.milestones" :key="i" class="trp__mile">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="trp__mile-icon" aria-hidden="true"><circle cx="12" cy="12" r="9" /></svg>
+                  <span class="trp__mile-txt">{{ m }}</span>
+                </div>
+              </div>
+            </div>
+          </NuAcordeao>
+
+          <!-- Fontes consolidadas -->
+          <NuAcordeao
+            v-if="report.sources.length" id="rel-fontes" v-model:aberto="abertas['rel-fontes']"
+            class="trp__dobra" como="h3" fio :tamanho-mais="36"
+          >
+            <template #titulo><span class="trp__dobra-t">Fontes do relatório</span></template>
+            <div class="trp__dobra-corpo">
+              <div class="trp__sources">
+                <component
+                  :is="f.url ? 'a' : 'span'"
+                  v-for="f in report.sources" :key="f.label"
+                  v-bind="f.url ? { href: f.url, target: '_blank', rel: 'noopener noreferrer' } : {}"
+                  class="trp__source"
+                >
+                  <span class="trp__source-title">{{ f.label }}</span>
+                  <svg v-if="f.url" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="trp__source-icon" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg>
+                </component>
+              </div>
+            </div>
+          </NuAcordeao>
         </div>
-      </div>
       </article>
     </div>
   </section>
@@ -164,172 +207,157 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
 
 <style scoped>
 .trp {
-  background: var(--nu-white);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
-  animation: nu-fade .5s ease both;
+  background: var(--nu-page); scroll-margin-top: 120px;
+  padding: clamp(72px, 8vw, 128px) var(--nu-coluna);
 }
-.trp__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
-.trp__meta { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; }
+.trp__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
+.trp__titulo { margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; }
+/* a legenda: tempo de leitura, publicação e versão */
+.trp__meta { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 
 /* duas colunas no padrão dos guias: índice sticky (NuTocSidebar) à esquerda +
    artigo longo à direita (mesma medida de 760px do corpo dos guias). */
 .trp__cols {
   display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start;
-  margin: clamp(36px, 4.5vw, 56px) auto 0;
+  margin: clamp(40px, 4vw, 56px) auto 0;
 }
-.trp__article { flex: 1; min-width: 0; max-width: 760px; }
+.trp__article { flex: 1; min-width: 0; max-width: 860px; }
+/* a prosa segue na medida de leitura dos guias */
+.trp__dobra-corpo { max-width: 760px; padding-bottom: 8px; }
 
-/* blocos ancorados: scroll-margin compensa header sticky + faixa "Mercado agora" */
-.trp__block { margin-top: clamp(44px, 5vw, 64px); scroll-margin-top: 132px; }
-.trp__block:first-child { margin-top: 0; }
-
-/* eyebrow + lead da oportunidade */
-.trp__eyebrow { color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
+/* o lead da oportunidade */
 .trp__lead {
-  margin: 16px 0 0; color: var(--nu-ink);
-  font-size: clamp(19px, 2vw, 22px); font-weight: 500; line-height: 1.6;
-  letter-spacing: -0.012em;
-}
-.trp__lead + .trp__lead { margin-top: 18px; }
-
-/* h2 frase-argumento (medidas do corpo de artigo dos guias) */
-.trp__h2 {
   margin: 0; color: var(--nu-ink);
-  font-size: clamp(26px, 3vw, 38px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.1;
+  font-size: clamp(19px, 2vw, 22px); font-weight: var(--nu-w-texto); line-height: 1.5;
+  letter-spacing: var(--nu-ls-texto);
 }
+.trp__lead + .trp__lead { margin-top: 16px; }
 
 /* prosa (mesma voz do editorial da tese) */
 .trp__p {
-  margin: 18px 0 0; color: var(--nu-gray-3);
-  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.75;
+  margin: 16px 0 0; color: var(--nu-gray-3);
+  font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.62;
 }
 .trp__lead :deep(.tse-hi),
 .trp__p :deep(.tse-hi),
 .trp__pillar-txt :deep(.tse-hi),
-.trp__risk-txt :deep(.tse-hi),
 .trp__math-txt :deep(.tse-hi) {
-  background: var(--nu-blue-16); color: var(--nu-ink); font-weight: 800;
+  background: var(--nu-blue-bg); color: var(--nu-ink); font-weight: var(--nu-w-forte); border-radius: 4px;
   padding: 1px 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
-.trp__p :deep(strong), .trp__lead :deep(strong) { font-weight: 800; color: var(--nu-ink); }
+.trp__p :deep(strong), .trp__lead :deep(strong) { font-weight: var(--nu-w-forte); color: var(--nu-ink); }
 
-/* pilares — cards creme numerados */
-.trp__pillars { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
-.trp__pillar {
-  display: flex; align-items: flex-start; gap: 16px;
-  background: var(--nu-cream); border-radius: 20px; padding: 20px 22px;
-}
+/* a tese em pontos: lista numerada, um fio por ponto */
+.trp__pillars { list-style: none; margin: 0; padding: 0; }
+.trp__pillar { display: flex; align-items: baseline; gap: 16px; padding: 16px 0; border-top: 1px solid var(--nu-line-2); }
+.trp__pillar:first-child { border-top: 0; padding-top: 0; }
 .trp__pillar-idx {
-  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800;
-  font-variant-numeric: tabular-nums; margin-top: 2px; flex-shrink: 0;
+  color: var(--nu-blue); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); line-height: 1.2;
+  font-variant-numeric: tabular-nums; flex-shrink: 0;
 }
-.trp__pillar-txt { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
+.trp__pillar-txt { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6; }
 
-/* riscos — card vermelho suave */
-.trp__risks {
-  background: var(--nu-tile-red-bg); border-radius: var(--nu-r-card);
-  padding: 24px 26px; margin-top: 22px;
-  display: flex; flex-direction: column; gap: 14px;
-}
-.trp__risk { display: flex; align-items: flex-start; gap: 12px; }
-.trp__risk-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--nu-red-2);
-  flex-shrink: 0; margin-top: 8px;
-}
-.trp__risk-txt { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
+/* ——— as partes recolhidas: o NuAcordeao, entre fios de 1px ——— */
+.trp__dobras { border-top: 1px solid var(--nu-line); }
+.trp__dobra { scroll-margin-top: 132px; }
+/* o título da parte: um pouco maior que o do FAQ (é o título de uma seção do relatório) */
+.trp__dobra-t { font-size: clamp(19px, 1.7vw, 22px); letter-spacing: var(--nu-ls-titulo); line-height: 1.25; }
+.trp__dobra-corpo > :first-child { margin-top: 0; }
 
 /* fontes-chip no fim de cada parte */
-.trp__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.trp__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
 .trp__chip {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: var(--nu-cream); border-radius: var(--nu-r-pill); padding: 8px 14px;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700;
-  transition: background .2s, color .2s;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--nu-cream-2); border-radius: var(--nu-r-pill); min-height: 44px; padding: 6px 16px;
+  color: var(--nu-gray-3); font-size: 13.5px; font-weight: var(--nu-w-medio);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
-a.trp__chip:hover { background: var(--nu-cream-hover); color: var(--nu-blue-text); }
-.trp__chip-icon { flex-shrink: 0; color: var(--nu-gray); }
+a.trp__chip:hover { background: var(--nu-line-2); color: var(--nu-blue-text); }
+a.trp__chip:active { transform: scale(.98); }
+.trp__chip-icon { flex-shrink: 0; color: var(--nu-gray); transition: color var(--nu-dur-media) var(--nu-ease-cor); }
 a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
 
 /* rótulo pequeno dos cards internos */
 .trp__card-lbl {
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
-  letter-spacing: 1.3px; text-transform: uppercase;
+  color: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-medio);
+  letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
 }
 
 /* valuation — premissas */
-.trp__assump { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 24px 26px; margin-top: 22px; }
-.trp__assump-row { border-top: 1.5px solid var(--nu-cream-line); padding: 14px 0; }
+.trp__assump { background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px 28px; margin-top: 24px; box-shadow: var(--nu-shadow-quente); }
+.trp__assump-row { border-top: 1px solid var(--nu-line-2); padding: 16px 0; }
 .trp__assump-row:first-of-type { border-top: none; margin-top: 12px; padding-top: 0; }
 .trp__assump-row:last-child { padding-bottom: 0; }
-.trp__assump-top { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; }
-.trp__assump-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.trp__assump-top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.trp__assump-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .trp__assump-value {
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte);
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-.trp__assump-note { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; margin-top: 5px; }
+.trp__assump-note { color: var(--nu-gray); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 1.55; margin-top: 4px; }
 
 /* valuation — contas numeradas */
-.trp__math { margin-top: 18px; }
+.trp__math { margin-top: 24px; }
 .trp__card-lbl--math { margin-bottom: 4px; }
 .trp__math-list { list-style: none; margin: 0; padding: 0; }
 .trp__math-step {
   display: flex; align-items: flex-start; gap: 16px;
-  border-bottom: 1.5px solid var(--nu-cream-2); padding: 14px 0;
+  border-bottom: 1px solid var(--nu-line-2); padding: 16px 0;
 }
 .trp__math-idx {
-  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700;
-  font-variant-numeric: tabular-nums; margin-top: 2px; flex-shrink: 0;
+  color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte);
+  font-variant-numeric: tabular-nums; margin-top: 1px; flex-shrink: 0;
 }
 .trp__math-txt {
-  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6;
   font-variant-numeric: tabular-nums;
 }
 
 /* valuation — preço justo hero */
 .trp__fair {
-  background: var(--nu-navy); border-radius: var(--nu-r-card-lg);
-  padding: clamp(26px, 3.5vw, 38px); margin-top: 22px;
+  background: var(--nu-ink); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-escuro);
+  padding: clamp(28px, 3.5vw, 40px); margin-top: 24px;
 }
 .trp__fair-lbl {
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-dense); font-weight: 700;
-  letter-spacing: 1.3px; text-transform: uppercase;
+  color: var(--nu-on-dark-2); font-size: 13px; font-weight: var(--nu-w-medio);
+  letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
 }
 .trp__fair-value {
-  color: var(--nu-cream-text); font-size: clamp(38px, 5vw, 54px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.05; margin-top: 12px;
+  color: var(--nu-white); font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display);
+  letter-spacing: var(--nu-ls-display); line-height: 1.05; margin-top: 12px;
   font-variant-numeric: tabular-nums;
 }
 .trp__fair-vs {
-  color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500;
-  line-height: 1.55; margin-top: 10px; font-variant-numeric: tabular-nums;
+  color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto);
+  line-height: 1.5; margin-top: 8px; font-variant-numeric: tabular-nums;
 }
 
 /* marcos a acompanhar — checklist de observação (círculos, não checks:
    são marcos FUTUROS a vigiar, não itens cumpridos — estado honesto) */
-.trp__miles { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 24px 26px; margin-top: 22px; }
-.trp__mile { display: flex; align-items: flex-start; gap: 13px; margin-top: 14px; }
+.trp__miles { background: var(--nu-card); border-radius: var(--nu-r-panel); padding: 24px 28px; margin-top: 24px; box-shadow: var(--nu-shadow-quente); }
+.trp__mile { display: flex; align-items: flex-start; gap: 12px; margin-top: 16px; }
 .trp__mile-icon { flex-shrink: 0; margin-top: 2px; color: var(--nu-blue); }
-.trp__mile-txt { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
+.trp__mile-txt { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.55; }
 
 /* fontes consolidadas (mesma anatomia das fontes do diário) */
-.trp__sources-lbl {
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
-  letter-spacing: 1.3px; text-transform: uppercase;
-}
 .trp__sources {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 0 clamp(24px, 3vw, 48px); margin-top: 8px;
 }
 .trp__source {
-  display: flex; align-items: center; gap: 14px; padding: 13px 0;
-  border-bottom: 1.5px solid var(--nu-cream-2);
+  display: flex; align-items: center; gap: 16px; min-height: 44px; padding: 12px 0;
+  border-bottom: 1px solid var(--nu-line-2);
 }
 .trp__source-title {
-  flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
-  line-height: 1.4; transition: color .2s;
+  flex: 1; min-width: 0; color: var(--nu-ink); font-size: 14.5px; font-weight: var(--nu-w-medio);
+  line-height: 1.4; transition: color var(--nu-dur-media) var(--nu-ease-cor);
 }
 a.trp__source:hover .trp__source-title { color: var(--nu-blue-text); }
-.trp__source-icon { flex-shrink: 0; stroke: var(--nu-sand); }
+a.trp__source:active { opacity: .72; }
+.trp__source-icon { flex-shrink: 0; stroke: var(--nu-sand); transition: stroke var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida); }
+a.trp__source:hover .trp__source-icon { stroke: var(--nu-blue-text); transform: translate(2px, -2px); }
+@media (prefers-reduced-motion: reduce) {
+  .trp__chip, .trp__chip-icon, .trp__source-title, .trp__source-icon { transition: none; }
+  a.trp__chip:active, a.trp__source:hover .trp__source-icon { transform: none; }
+}
 </style>
