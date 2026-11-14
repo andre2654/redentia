@@ -35,7 +35,9 @@
  */
 
 export const HOST_B2B = 'redentia.com.br'
-export const ORIGEM_B2B = `https://${HOST_B2B}`
+// O destino vai direto ao www (14/11/2026): desde a troca dos domínios, o apex do B2B faz 308 para o www, e
+// mandar para o apex somava um salto a cada link daqui para lá. O HOST_B2B segue sem www: é a comparação de host.
+export const ORIGEM_B2B = `https://www.${HOST_B2B}`
 
 export interface DestinoB2B {
   para: string

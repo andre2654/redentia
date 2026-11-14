@@ -81,7 +81,7 @@ const idDoDegrade = useId()
       <div class="nfa__pe">
         <span class="nfa__copy">© {{ ano }} {{ MARCA.nome }} · {{ MARCA.assinatura }} · {{ EMPRESA.razaoSocial }} · CNPJ {{ EMPRESA.cnpj }}</span>
         <!-- a porta do produto de escritório: é outra marca, em outro site -->
-        <a href="https://redentia.com.br" class="nfa__b2b">Para escritórios: {{ MARCA.b2b }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15" /><path d="M13.5 6.5 19 12l-5.5 5.5" /></svg></a>
+        <a href="https://www.redentia.com.br" class="nfa__b2b">Para escritórios: {{ MARCA.b2b }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15" /><path d="M13.5 6.5 19 12l-5.5 5.5" /></svg></a>
       </div>
 
     </div>
