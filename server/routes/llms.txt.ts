@@ -191,10 +191,8 @@ A ${MARCA.nome} expõe um servidor MCP (Model Context Protocol) remoto oficial. 
 ## ${MARCA.b2b} (escritórios de investimento)
 
 - [${MARCA.b2b}](${ORIGEM_B2B}): o produto da mesma empresa para assessorias, family offices, gestoras e consultorias, em site próprio. Não faz parte deste site.
+- [WEALTH 2030](${ORIGEM_B2B}/estudo/wealth-2030), no site da Redentia: estudo independente da Redentia sobre o futuro das assessorias, family offices e da gestão de patrimônio no Brasil. Descreve o setor a partir de dados públicos e de entrevistas. Não é recomendação de investimento. PDF: ${o}/estudo/wealth-2030.pdf
 
-### Estudo
-
-- [WEALTH 2030](${o}/estudo/wealth-2030): estudo independente da Redentia sobre o futuro das assessorias, family offices e da gestão de patrimônio no Brasil. Descreve o setor a partir de dados públicos e de entrevistas. Não é recomendação de investimento. PDF: ${o}/estudo/wealth-2030.pdf
 
 ### Gráficos
 

@@ -18,6 +18,7 @@
  *   /relatorio/<token>                                       → o mesmo caminho (302)
  *   /entrar (com ou sem ?convite=<token>)                    → o mesmo caminho (302)
  *   /jantar                                                  → /jantar (302)
+ *   /estudo/<algo> (o WEALTH 2030 e o PDF dele)              → o mesmo caminho (301)
  *
  * A query vai junto. 302 onde o destino é um link pessoal que alguém já
  * recebeu (o convite da chave, o convite e o acesso do cliente final: o app
@@ -45,7 +46,9 @@ export interface DestinoB2B {
 // cliente (30 dias) e o convite da equipe, que o backend do B2B monta com B2B_URL. Se um desses PRs for mesclado
 // antes da virada, o link cai aqui enquanto este front ainda responde em www.redentia.com.br, e a rede de
 // segurança do host antigo o mandaria para a Aportou, onde daria 404. Com fronteira, para não pegar /relatorios.
-const PREFIXO_B2B = /^\/(?:business|cliente|jantar|whitelabel|pricing)|^\/(?:relatorio|entrar)(?:[/?]|$)/i
+// /estudo/<algo> (14/11/2026, decisão do dono: o WEALTH 2030 "vem para o B2B"): a página e o PDF moram em
+// redentia.com.br. O hub /estudo, sem nada depois, não é do B2B.
+const PREFIXO_B2B = /^\/(?:business|cliente|jantar|whitelabel|pricing)|^\/(?:relatorio|entrar)(?:[/?]|$)|^\/estudo\/[^/?]/i
 
 /** A saída cedo do middleware: só estes prefixos podem ser do B2B. */
 export function pareceB2B(caminho: string): boolean {
@@ -91,6 +94,7 @@ function caminhoNoB2B(caminho: string): { caminho: string, status: 301 | 302 } |
   if (p === '/cliente' || p.startsWith('/cliente/')) return { caminho, status: 302 }
   if (p === '/relatorio' || p.startsWith('/relatorio/')) return { caminho, status: 302 }
   if (p === '/entrar') return { caminho: '/entrar', status: 302 }
+  if (p.startsWith('/estudo/') && p.length > '/estudo/'.length) return { caminho, status: 301 }
   if (p !== '/business' && !p.startsWith('/business/')) return null
   const resto = p.slice('/business'.length)
   if (resto === '/clientes') return { caminho: '/app/clientes', status: 301 }

@@ -6,7 +6,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { destinoB2B, pareceB2B } from '../server/utils/destino-b2b.ts'
+import { destinoB2B, ehLinkPessoal, pareceB2B } from '../server/utils/destino-b2b.ts'
 
 const APORTOU = 'aportou.com.br'
 const ir = (caminho: string, host = APORTOU) => destinoB2B(caminho, host)
@@ -55,6 +55,16 @@ test('o relatório compartilhado e o convite da equipe vão para o mesmo endere�
   // com fronteira: /relatorios e /entrada não são do B2B
   for (const p of ['/relatorios', '/relatorios/2026', '/entrada', '/entrarx']) assert.equal(pareceB2B(p), false, p)
   for (const p of ['/relatorio', '/relatorio/x', '/entrar', '/entrar?convite=x', '/Entrar/']) assert.equal(pareceB2B(p), true, p)
+})
+
+test('o estudo WEALTH 2030 e o PDF moram no B2B (301, mesmo caminho); o hub /estudo não', () => {
+  // decisão do dono, 14/11/2026: "Vem para o B2B"
+  assert.deepEqual(ir('/estudo/wealth-2030'), { para: 'https://redentia.com.br/estudo/wealth-2030', status: 301 })
+  assert.deepEqual(ir('/estudo/wealth-2030.pdf'), { para: 'https://redentia.com.br/estudo/wealth-2030.pdf', status: 301 })
+  assert.deepEqual(ir('/estudo/wealth-2030?utm_source=x'), { para: 'https://redentia.com.br/estudo/wealth-2030?utm_source=x', status: 301 })
+  for (const p of ['/estudo', '/estudo/', '/estudos', '/estudos/wealth-2030']) assert.equal(pareceB2B(p), false, p)
+  // não é link pessoal: vai com cache, como página que mudou de casa
+  assert.equal(ehLinkPessoal('/estudo/wealth-2030'), false)
 })
 
 test('a query vai junto, como veio', () => {
