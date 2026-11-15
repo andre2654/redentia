@@ -207,15 +207,16 @@ export default defineNuxtConfig({
     // 301s dos paths da Redentia antiga; cobrem 100% do top-30 orgânico real.
     // Só produzem efeito pleno quando o domínio apontar pro Nu, mas ficam
     // prontos desde já (e valem pra quem chegar por link antigo no vercel.app).
-    // /asset/{ticker} voltou a ser a URL canônica (equity de SEO da antiga);
-    // /acao/** só existiu por dias no vercel.app e agora 301a de volta.
-    '/acao/**': { redirect: { to: '/asset/**', statusCode: 301 } },
+    // /asset/{ticker} voltou a ser a URL canônica (equity de SEO da antiga).
+    // /acao/{ticker} e /crypto/{moeda} 301am para /asset/{MAIÚSCULO} num salto
+    // só (server/middleware/atalho-canonico.ts). No routeRules o curinga
+    // preservava a caixa e a página de ativo fazia um segundo 301.
     '/help': { redirect: { to: '/busca', statusCode: 301 } },
     '/search': { redirect: { to: '/busca', statusCode: 301 } },
     '/auth/**': { redirect: { to: '/login', statusCode: 301 } },
-    // Da conferência da virada (14/11/2026): o /crypto/{moeda} do site antigo e o hub /preco-teto davam 404. A
-    // cripto mora na página de ativo (/asset/BTC; o /asset acerta a caixa) e o hub do preço teto é a calculadora.
-    '/crypto/**': { redirect: { to: '/asset/**', statusCode: 301 } },
+    // Da conferência da virada (14/11/2026): o hub /preco-teto dava 404.
+    // O destino é a calculadora, já num salto só. O primeiro salto de
+    // www.redentia.com.br é o app do B2B, fora deste repo.
     '/preco-teto': { redirect: { to: '/calculadora/preco-teto', statusCode: 301 } },
     // /dividendos/{ticker}: página própria em construção (frente paralela) —
     // o wildcard de redirect saiu; ficam só os EXATOS: o hub /dividendos e o
@@ -260,6 +261,11 @@ export default defineNuxtConfig({
     '/legal/terms': { redirect: { to: '/institucional/terms', statusCode: 301 } },
     '/legal/privacy': { redirect: { to: '/institucional/privacy', statusCode: 301 } },
     '/legal/cookies': { redirect: { to: '/institucional/cookies', statusCode: 301 } },
+    // Atalhos que o Google e os links antigos pedem na raiz. As páginas
+    // moram em /institucional/*. O texto jurídico não muda: só o 301.
+    '/privacidade': { redirect: { to: '/institucional/privacy', statusCode: 301 } },
+    '/termos': { redirect: { to: '/institucional/terms', statusCode: 301 } },
+    '/sobre': { redirect: { to: '/institucional/about', statusCode: 301 } },
 
     // ——— Cutover Redentia antiga → Nu, 2ª leva (Search Console 03/08/2026) ———
     // O levantamento do PR-A cobriu o top-30 orgânico da ANTIGA e passou batido

@@ -3,8 +3,8 @@ import type { AtivoDirecaoVM } from '~/composables/useAtivoDirecao'
 import AtivoNoite from '~/components/ativo/AtivoNoite.vue'
 // /asset/[ticker] — página de ativo (PR2, nasceu como /acao/[ticker]).
 // A URL canônica voltou a ser /asset/{ticker} (equity de SEO da Redentia
-// antiga); /acao/** só existiu dias no vercel.app e hoje 301a pra cá
-// (routeRules). SÓ a URL mudou: composables/componentes internos mantêm o
+// antiga). /acao/{ticker} 301a para cá já em caixa alta
+// (server/middleware/atalho-canonico.ts). SÓ a URL mudou: composables/componentes internos mantêm o
 // nome do domínio (useAcao, types/acao, Acao*.vue) — renomear seria churn
 // sem ganho. O layout default já renderiza NuHeader + NuMarketTicker +
 // NuFooter; o miolo é o AtivoNoite (components/ativo/AtivoNoite.vue), na ordem

@@ -12,7 +12,9 @@
 // "Acompanhe o André", as preferências de cookies e a porta para o produto de
 // escritório, que agora diz o nome dele: Redentia. Desde 12/11/2026 ele mora
 // no site dele (redentia.com.br), e a porta é um link externo comum, na mesma
-// aba.
+// aba. A rede do rodapé é o Instagram da Aportou (aportou.app). O LinkedIn
+// da Redentia saiu: a conta é do B2B, e a porta "Para escritórios" já aponta
+// para o site dele.
 //
 // ROBUSTEZ (11/11/2026): na coluna do site (--nu-coluna); as cinco colunas
 // numa linha só no computador, com o título em caixa alta pequena e cinza (a
@@ -63,8 +65,7 @@ const idDoDegrade = useId()
             <span class="nfa__horas">Dias úteis, das 8h às 18h (Brasília)</span>
           </div>
           <div class="nfa__redes" aria-label="Redes sociais">
-            <a href="https://www.instagram.com/redentia.wealth/" target="_blank" rel="noopener noreferrer" class="nfa__rede" aria-label="Instagram"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5" /><circle cx="12" cy="12" r="3.6" /><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" /></svg></a>
-            <a href="https://www.linkedin.com/company/redentia" target="_blank" rel="noopener noreferrer" class="nfa__rede" aria-label="LinkedIn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M7 10v7M7 6.5v.01M11 17v-4a2 2 0 0 1 4 0v4" /></svg></a>
+            <a href="https://www.instagram.com/aportou.app/" target="_blank" rel="noopener noreferrer" class="nfa__rede" aria-label="Instagram"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5" /><circle cx="12" cy="12" r="3.6" /><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" /></svg></a>
           </div>
           <NuAcompanheAndre lugar="rodape" tom="escuro" />
         </div>

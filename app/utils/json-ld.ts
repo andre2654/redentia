@@ -9,8 +9,10 @@
  * sameAs do Person usa a URL canônica do perfil, sem parâmetro de campanha.
  * O repositório não tem perfil da empresa no X nem no Threads.
  *
- * O Instagram oficial é redentia.wealth, o mesmo dos rodapés visíveis
- * (NuFooter e RbFooter). Este arquivo não muda link de página.
+ * O Instagram oficial da Aportou é aportou.app, o mesmo do rodapé.
+ * redentia.wealth e o LinkedIn company/redentia são contas do B2B e não
+ * entram aqui. A porta "Para escritórios" do rodapé já leva ao site da
+ * Redentia. O app da App Store continua no sameAs: é o app publicado.
  *
  * contactPoint só leva o que o site já publica como contato da empresa: o
  * e-mail de suporte (rodapé, /institucional/contact, termos). O wa.me de
@@ -25,8 +27,7 @@ export const EMAIL_SUPORTE = 'relacionamento@redentia.com.br'
 const LOGO_PATH = '/icone-aportou.svg'
 
 const SAME_AS_EMPRESA = [
-  'https://www.instagram.com/redentia.wealth/',
-  'https://www.linkedin.com/company/redentia',
+  'https://www.instagram.com/aportou.app/',
   'https://apps.apple.com/app/id6823992050',
 ] as const
 
