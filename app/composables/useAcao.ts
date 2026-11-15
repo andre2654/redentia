@@ -144,9 +144,9 @@ function tagDy(dy: number, isFii: boolean): AcaoTag {
   if (isFii) return dy >= 11 ? T('Excelente', 'green') : dy >= 8 ? T('Bom', 'green') : dy >= 6 ? T('Moderado', 'amber') : T('Baixo', 'gray')
   return dy >= 6 ? T('Excelente', 'green') : dy >= 4 ? T('Bom', 'green') : dy >= 2 ? T('Moderado', 'amber') : T('Baixo', 'gray')
 }
-/** P/L: ≤0 Negativo · ≤8 Atrativo · ≤15 Justo · >15 Caro. */
+/** P/L: a faixa do múltiplo, em anos de lucro. Sem "atrativo" / "justo" / "caro". */
 function tagPl(pl: number): AcaoTag {
-  return pl <= 0 ? T('Negativo', 'gray') : pl <= 8 ? T('Atrativo', 'green') : pl <= 15 ? T('Justo', 'amber') : T('Caro', 'gray')
+  return pl <= 0 ? T('Negativo', 'gray') : pl <= 8 ? T('Até 8× o lucro', 'gray') : pl <= 15 ? T('Até 15× o lucro', 'gray') : T('Acima de 15× o lucro', 'gray')
 }
 /** P/VP ações: ≤1,5 Atrativo · ≤3 Justo · >3 Caro. FIIs: ≤0,95 Descontado · ≤1,05 Justo. */
 function tagPvp(pvp: number, isFii: boolean): AcaoTag {
@@ -709,11 +709,13 @@ function buildFundCards(f: Fund | null, ticker: string): AcaoFundCard[] {
     })
   }
   if (f.pl != null && f.pl > 0) {
+    const anos = Math.max(1, Math.ceil(f.pl))
+    const anosTxt = `${anos} ${anos === 1 ? 'ano' : 'anos'}`
     const text = f.pl <= 6
-      ? `O P/L de ${nf2.format(f.pl)} está entre os mais baixos ${f.isBdr ? 'do mercado' : 'da bolsa'}: o mercado paga menos de ${Math.ceil(f.pl)} anos de lucro pela empresa.`
+      ? `O P/L está em ${nf2.format(f.pl)}. O preço de hoje equivale a menos de ${anosTxt} do lucro recente. O múltiplo descreve essa relação. Não diz o que fazer com o papel.`
       : f.pl <= 15
-        ? `O P/L de ${nf2.format(f.pl)} está em linha com a média ${f.isBdr ? 'histórica do mercado' : 'da B3'}: o preço acompanha os fundamentos, sem prêmio nem desconto relevante.`
-        : `O P/L de ${nf2.format(f.pl)} embute expectativa alta de crescimento: o mercado paga caro pelos lucros futuros de ${ticker}.`
+        ? `O P/L está em ${nf2.format(f.pl)}, perto da média ${f.isBdr ? 'histórica desse mercado' : 'da B3'}. É a relação entre o preço de hoje e o lucro recente.`
+        : `O P/L de ${ticker} está em ${nf2.format(f.pl)}. O preço de hoje equivale a mais anos de lucro recente do que a média. Um múltiplo nessa faixa costuma vir junto de crescimento já colocado na cotação, e o número sozinho não confirma isso.`
     insights.push({ kind: 'insight', insight: text, cta: 'Perguntar sobre o valuation', href: '/busca' })
   } else if (f.pvp != null) {
     const text = f.pvp <= 0.95
@@ -844,7 +846,10 @@ function buildScore(scoreRows: ScoreRowApi[], ticker: string, f: Fund | null): A
   // régua do pill): 93/100 = melhor que 93% do universo coberto.
   const pctile = (idx + 1) / scoreRows.length
   const score100 = Math.min(99, Math.max(1, Math.round((1 - idx / scoreRows.length) * 100)))
-  const pill: AcaoTag = pctile <= 0.1 ? T('Excelente', 'green') : pctile <= 0.3 ? T('Bom', 'green') : pctile <= 0.6 ? T('Moderado', 'amber') : T('Fraco', 'gray')
+  // Selo de posição na lista, não de qualidade do papel. "Excelente" /
+  // "Moderado" / "Fraco" lia como recomendação (CVM). A cor fica neutra
+  // pelo mesmo motivo: verde no topo parecia selo de compra.
+  const pill: AcaoTag = pctile <= 0.1 ? T('Frente da lista', 'gray') : pctile <= 0.3 ? T('Parte de cima', 'gray') : pctile <= 0.6 ? T('Meio da lista', 'gray') : T('Parte de baixo', 'gray')
   const subScores: { name: string; value: number }[] = []
   if (f) {
     if (f.roe != null) subScores.push({ name: 'Rentabilidade', value: scaleLin(f.roe, 0, 30) })
@@ -1223,7 +1228,7 @@ function petr4Seed(): AcaoPayload {
       { name: 'Rentabilidade', tag: g('Excelente') },
       { name: 'Crescimento', tag: a('Moderado') },
       { name: 'Endividamento', tag: a('Moderado') },
-      { name: 'Valuation', tag: g('Atrativo') },
+      { name: 'Valuation', tag: T('Até 8× o lucro', 'gray') },
       { name: 'Dividendo', tag: g('Excelente') },
     ],
     fundHeading: ['Os números', 'da empresa.'],
@@ -1233,9 +1238,9 @@ function petr4Seed(): AcaoPayload {
     fcards: [
       { kind: 'metric', label: 'ROE', value: '24,2%', tag: g('Excelente') },
       { kind: 'metric', label: 'Dividend Yield', value: '6,95%', tag: g('Excelente') },
-      { kind: 'metric', label: 'P/L', value: '4,55', tag: g('Atrativo') },
+      { kind: 'metric', label: 'P/L', value: '4,55', tag: T('Até 8× o lucro', 'gray') },
       { kind: 'metric', label: 'P/VP', value: '1,10', tag: g('Atrativo') },
-      { kind: 'insight', insight: 'O P/L de 4,55 é quase metade da média histórica de 8,9: o mercado está precificando o petróleo, não os fundamentos.', cta: 'Perguntar sobre o valuation', href: '/busca' },
+      { kind: 'insight', insight: 'O P/L está em 4,55. O preço de hoje equivale a menos de 5 anos do lucro recente. O múltiplo descreve essa relação. Não diz o que fazer com o papel.', cta: 'Perguntar sobre o valuation', href: '/busca' },
       { kind: 'metric', label: 'EV/EBITDA', value: '2,64', tag: g('Baixo') },
       { kind: 'metric', label: 'Margem Líquida', value: '21,6%', tag: g('Saudável') },
       { kind: 'metric', label: 'Receita (12M)', value: 'R$ 487,7B', tag: g('↑ 12,8% a.a.') },
@@ -1271,7 +1276,7 @@ function petr4Seed(): AcaoPayload {
       updatedLabel: 'atualizada hoje',
       score: {
         score100: 93,
-        pill: g('Excelente'),
+        pill: T('Frente da lista', 'gray'),
         subScores: [
           { name: 'Rentabilidade', value: 98 },
           { name: 'Valuation', value: 95 },

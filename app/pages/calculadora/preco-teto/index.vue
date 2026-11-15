@@ -262,12 +262,13 @@ function formatCurrency(value: number): string {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 }
 
-// porte exato dos thresholds de status (0.8 barato / 1.0 justo / acima caro)
+// porte da cotação perante a régua do método. Sem "barato" / "justo" / "caro":
+// ao lado do ticker, isso lia como recomendação (CVM).
 function getStatusText(ratio: number): string {
   if (!ratio) return 'Sem dado'
-  if (ratio <= 0.8) return 'Barato'
-  if (ratio <= 1.0) return 'Justo'
-  return 'Caro'
+  if (ratio <= 0.8) return 'Abaixo da régua'
+  if (ratio <= 1.0) return 'Na régua'
+  return 'Acima da régua'
 }
 
 function getMethodStatus(ratio: number): string {
@@ -500,7 +501,7 @@ const faqItems: NuFaqItem[] = [
 usePageSeo({
   title: 'Calculadora de Preço Teto 2026 - Grátis',
   description:
-    'Calcule o preço teto e preço justo de qualquer ação da B3 por Graham, Bazin, P/L e VPA em 1 clique. Veja margem de segurança e veredito. Grátis.',
+    'Calcule o preço teto de qualquer ação da B3 por Graham, Bazin, P/L e VPA. A página mostra a conta e a distância entre a cotação e a régua de cada método. Grátis.',
   path: '/calculadora/preco-teto',
   breadcrumbs: [
     { name: 'Home', path: '/' },
@@ -716,7 +717,7 @@ usePageSeo({
             { title: 'Escolha o método pelo tipo de empresa', html: 'Pagadora consistente de dividendos (bancos, energia, saneamento) pede <strong>Bazin</strong>. Empresa com lucro estável e patrimônio relevante pede <strong>Graham</strong>. Setor com múltiplo bem definido pede <strong>P/L setorial</strong>. Empresa cíclica ou com lucro negativo pede <strong>valor patrimonial</strong>.' },
             { title: 'Levante os números dos últimos 12 meses', html: 'Bazin precisa do <strong>dividendo por ação</strong> pago em 12 meses. Graham precisa de <strong>LPA</strong> (lucro por ação) e <strong>VPA</strong> (valor patrimonial por ação). Todos vêm do balanço, e a calculadora acima busca sozinha ao digitar o ticker.' },
             { title: 'Aplique a fórmula', html: 'Bazin: <strong>dividendo ÷ 0,06</strong>. Graham: <strong>√(22,5 × LPA × VPA)</strong>. P/L setorial: <strong>LPA × múltiplo do setor</strong>. Valor patrimonial: <strong>VPA × 1,5</strong>.' },
-            { title: 'Compare com o preço de hoje', html: 'Preço de mercado abaixo do teto significa margem de segurança positiva. Acima do teto, o papel está caro <strong>pela régua daquele método</strong> — não em termos absolutos.' },
+            { title: 'Compare com o preço de hoje', html: 'Preço de mercado abaixo do teto significa margem de segurança positiva. Acima do teto, o preço passou <strong>da régua daquele método</strong>. Isso descreve a conta, não o papel em termos absolutos.' },
             { title: 'Cruze os métodos antes de decidir', html: 'Um número sozinho engana. Quando Bazin e Graham apontam para a mesma faixa, a leitura é mais firme. Quando divergem muito, geralmente há um detalhe do balanço (dividendo extraordinário, prejuízo pontual, ativo reavaliado) que merece ser olhado antes de qualquer decisão.' },
           ]"
         />
