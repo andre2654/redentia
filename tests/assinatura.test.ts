@@ -388,6 +388,27 @@ test('o aceite do WhatsApp é o texto registrado no Backend, numa caixa desmarca
   assert.doesNotMatch(quiz, /whatsapp_opt_in: true/)
 })
 
+test('o aceite do WhatsApp é obrigatório, colado ao celular, com a frase ao lado da caixa (15/11/2026)', () => {
+  const quiz = readFileSync(new URL('../app/components/assinatura/AssinaturaQuiz.vue', import.meta.url), 'utf8')
+  // a caixa vem logo depois do campo do celular, no mesmo passo
+  const iCel = quiz.indexOf('id="aqz-cel"')
+  const iCaixa = quiz.indexOf('<label v-if="!semAceiteWhatsapp" class="aqz__aceite">')
+  assert.ok(iCel > 0 && iCaixa > iCel, 'a caixa do aceite fica depois do celular')
+  assert.ok(!quiz.slice(iCel, iCaixa).includes('<input id='), 'nenhum campo entre o celular e o aceite')
+  // desmarcada: segura o passo, mostra a frase e leva o foco à caixa
+  assert.match(quiz, /if \(!semAceiteWhatsapp && !aceiteWhatsapp\.value\) \{\n\s+erroAceite\.value = 'Marque para receber a Aportou no WhatsApp\.'\n\s+caixaAceite\.value\?\.focus\(\)\n\s+return\n\s+\}/)
+  // a checagem vem antes do envio
+  assert.ok(quiz.indexOf("erroAceite.value = 'Marque") < quiz.indexOf('await assinatura.comecar({'))
+  // a frase fica junto da caixa, não no pé do formulário
+  const iErroAceite = quiz.indexOf('<p v-if="erroAceite" id="aqz-aceite-erro"')
+  assert.ok(iErroAceite > iCaixa && iErroAceite < quiz.indexOf('<p v-if="erroDados || erro"'))
+  assert.match(quiz, /<input ref="caixaAceite" v-model="aceiteWhatsapp" type="checkbox"/)
+  // sem o required nativo: o balão do navegador passaria na frente da frase
+  assert.doesNotMatch(quiz, /type="checkbox" class="aqz__aceite-caixa"[^>]* required/)
+  // o botão não fica cinza por causa da caixa: o clique é que explica o que falta
+  assert.doesNotMatch(quiz, /dadosProntos = computed\(\(\) =>[^]*?aceiteWhatsapp[^]*?\n\s*const subDosDados/)
+})
+
 // os precisa_* ficam na raiz do /me/entitlements (o ent() põe o extra na assinatura)
 test('o que falta no titular: e-mail real, celular e CPF (regra do dono, 02/11/2026)', () => {
   // o Backend manda os três

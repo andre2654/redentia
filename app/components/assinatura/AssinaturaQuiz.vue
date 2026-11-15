@@ -39,13 +39,19 @@ const { erro, primeiraAssinatura, abrindo } = assinatura
 // toda assinatura termina com e-mail real, celular e CPF. O passo pede só o que
 // falta: quem entrou pelo celular dá o e-mail; quem entrou pelo e-mail dá o
 // celular; o "Ocultar meu e-mail" da Apple dá um e-mail de verdade. O aceite do
-// WhatsApp continua à parte, numa caixa desmarcada.
+// WhatsApp continua à parte, numa caixa desmarcada. Desde 15/11/2026 a caixa é
+// obrigatória: fica colada ao celular e, desmarcada, segura o "continuar" com a
+// frase ao lado dela (o gesto continua sendo da pessoa; o texto e a versão são os
+// de App\Services\WhatsAppConsent).
 const pedirDados = ref(false)
 const cpf = ref('')
 const celular = ref('')
 const emailReal = ref('')
 // o "sim" do WhatsApp é um gesto: a caixa começa desmarcada (LGPD)
 const aceiteWhatsapp = ref(false)
+const erroAceite = ref<string | null>(null)
+const caixaAceite = ref<HTMLInputElement | null>(null)
+watch(aceiteWhatsapp, (marcado) => { if (marcado) erroAceite.value = null })
 /** no pré-lançamento (aportou.com.br antes da troca) o aceite do WhatsApp não é oferecido: o backend de produção ainda
  *  carimba a versão antiga do texto (nuxt.config, preLancamento) */
 const preLancamento = useRuntimeConfig().public.preLancamento as unknown
@@ -76,6 +82,7 @@ async function irParaPagamento() {
 }
 async function enviarDados() {
   erroDados.value = null
+  erroAceite.value = null
   if (falta.value.cpf && !cpfValido(cpf.value)) {
     erroDados.value = 'Confira o CPF: os números não batem.'
     return
@@ -87,6 +94,12 @@ async function enviarDados() {
   const cel = celular.value.trim() ? normalizarCelular(celular.value) : null
   if ((falta.value.celular || celular.value.trim()) && !cel) {
     erroDados.value = 'Confira o celular, com o DDD: (11) 98765-4321.'
+    return
+  }
+  // o aceite é obrigatório onde a caixa existe: sem ele o passo não segue
+  if (!semAceiteWhatsapp && !aceiteWhatsapp.value) {
+    erroAceite.value = 'Marque para receber a Aportou no WhatsApp.'
+    caixaAceite.value?.focus()
     return
   }
   evento('quiz_dados_enviados', { whatsapp: aceiteWhatsapp.value, email: falta.value.email, celular: falta.value.celular })
@@ -243,6 +256,7 @@ watch(aberto, (open) => {
     cad.trocarContato()
     pedirDados.value = direto.value === 'dados'
     erroDados.value = null
+    erroAceite.value = null
     aceiteWhatsapp.value = false
     indice.value = direto.value === 'dados' ? PASSOS_.value.length - 1 : 0
     respostas.value = {}
@@ -468,10 +482,12 @@ const ICONES: Record<string, string> = {
                     <label class="aqz__rotulo" :class="{ 'aqz__rotulo--depois': falta.cpf || falta.email }" for="aqz-cel">Celular (WhatsApp)</label>
                     <input id="aqz-cel" :value="celular" class="aqz__campo" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(11) 98765-4321" required @input="celular = formatarCelular(($event.target as HTMLInputElement).value)">
                   </template>
+                  <!-- o aceite fica colado ao celular e é obrigatório (15/11/2026) -->
                   <label v-if="!semAceiteWhatsapp" class="aqz__aceite">
-                    <input v-model="aceiteWhatsapp" type="checkbox" class="aqz__aceite-caixa">
+                    <input ref="caixaAceite" v-model="aceiteWhatsapp" type="checkbox" class="aqz__aceite-caixa" :class="{ 'aqz__aceite-caixa--erro': !!erroAceite }" aria-required="true" :aria-invalid="!!erroAceite" :aria-describedby="erroAceite ? 'aqz-aceite-erro' : undefined">
                     <span>{{ TEXTO_ACEITE_WHATSAPP }}</span>
                   </label>
+                  <p v-if="erroAceite" id="aqz-aceite-erro" class="aqz__erro-claro" role="alert"><svg class="aqz__erro-icone" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5h.01" /></svg><span>{{ erroAceite }}</span></p>
                   <p v-if="erroDados || erro" class="aqz__erro-claro" role="alert"><svg class="aqz__erro-icone" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5h.01" /></svg><span>{{ erroDados || erro }}</span></p>
                   <NuBotaoSeta type="submit" largo class="aqz__seguir" :loading="abrindo" :disabled="!dadosProntos">{{ abrindo ? 'Abrindo o pagamento' : primeiraAssinatura ? 'Começar 3 dias grátis' : 'Ir para o pagamento' }}</NuBotaoSeta>
                 </form>
@@ -650,6 +666,7 @@ const ICONES: Record<string, string> = {
 .aqz__miudo--junto { margin-top: 0; }
 .aqz__aceite { display: flex; align-items: flex-start; gap: 12px; margin-top: 8px; color: var(--nu-gray-3); font-size: 15px; font-weight: var(--nu-w-texto); line-height: 1.45; cursor: pointer; }
 .aqz__aceite-caixa { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--nu-blue); cursor: pointer; }
+.aqz__aceite-caixa--erro { outline: 2px solid var(--nu-red); outline-offset: 2px; }
 .aqz__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .aqz__form .aqz__seguir { margin-top: 16px; }
 /* o erro: a frase com o ícone, no vermelho, entrando com fade */
