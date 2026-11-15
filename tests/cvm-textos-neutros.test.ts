@@ -39,7 +39,7 @@ test('o texto do P/L descreve o múltiplo e não chama o papel de barato ou caro
 test('a descrição da calculadora não promete veredito, e o selo não diz barato ou caro', () => {
   const pagina = ler('app/pages/calculadora/preco-teto/index.vue')
   const descricao = entre(pagina, 'description:', 'path:')
-  assert.match(descricao, /distância entre a cotação e a régua de cada método/)
+  assert.match(descricao, /distância até a régua de cada método/)
   assert.doesNotMatch(descricao, /veredito|preço justo|barato|caro/i)
   const status = entre(pagina, 'function getStatusText', 'function getMethodStatus')
   assert.match(status, /Abaixo da régua/)

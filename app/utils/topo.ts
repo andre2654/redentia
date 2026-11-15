@@ -31,6 +31,9 @@ export const NAV_DO_TOPO: NavItem[] = [
     children: [
       { label: 'Simulação', to: '/simulacao', tag: 'novo', authOnly: true, desc: 'Dez anos de cenários na sua carteira, em poder de compra de hoje.', vig: 'simulacao' },
       { label: 'Calculadoras', to: '/calculadoras', desc: 'Juros compostos, renda passiva, primeiro milhão: as contas prontas.', vig: 'calculadoras' },
+      { label: 'Preço teto', to: '/calculadora/preco-teto', desc: 'Cinco métodos para a conta de quanto pagar por uma ação.', vig: 'calc-teto' },
+      { label: 'Juros compostos', to: '/calculadora/juros-compostos', desc: 'Aporte, taxa e prazo, com a fórmula dos juros compostos.', vig: 'calc-juros' },
+      { label: 'Simulador de ações', to: '/calculadora/acoes', desc: 'Dividendos e o histórico de uma ação da B3.', vig: 'calc-acoes' },
       { label: 'Aportou MCP', to: '/mcp', desc: 'Os dados e a leitura da Aportou dentro do seu Claude ou ChatGPT.', vig: 'mcp' },
       // os rankings com demanda medida no Search Console (ver NuHeader)
       { label: 'Maiores dividend yields', to: '/ranking/maiores-dividend-yield', desc: 'As maiores pagadoras da bolsa, ranqueadas por yield.', vig: 'rank-yield' },

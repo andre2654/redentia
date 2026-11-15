@@ -601,7 +601,7 @@ function montarFaq(p: {
   return faq
 }
 
-/** Título visível no Google: o da página mais ` · Redentia`, no teto de 60. */
+/** Título visível no Google: o da página mais ` · Aportou`, no teto de 60. */
 export function tituloVisivel(titulo: string): string {
   return titulo + SUFIXO_MARCA
 }

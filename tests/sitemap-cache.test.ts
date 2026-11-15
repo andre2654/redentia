@@ -16,6 +16,7 @@ import {
   configIsrComFallback,
   copiaServe,
   resolverSitemapEmCache,
+  semPrecoTetoPorTicker,
   xmlNaOrigem,
   type CopiaSitemap,
 } from '../server/utils/sitemap-cache.ts'
@@ -293,6 +294,8 @@ test('a semente do build traz o índice e todos os urlsets canônicos', () => {
   assert.equal(indice.origin, ORIGEM)
   assert.match(indice.xml, /^<\?xml version="1\.0" encoding="UTF-8"\?>\n<sitemapindex /)
   assert.equal(indice.urls, indice.xml.split('<loc>').length - 1)
-  assert.equal(indice.urls, SITEMAP_ORDEM.length)
+  const servido = semPrecoTetoPorTicker(xmlNaOrigem(indice.xml, indice.origin, ORIGEM.replace('www.', '')))
+  assert.equal(servido.split('<loc>').length - 1, SITEMAP_ORDEM.length)
+  assert.doesNotMatch(servido, /preco-teto\.xml/)
   assert.equal(copiaServe({ xml: indice.xml, storedAt: indice.storedAt, completo: true, origin: indice.origin }), true)
 })

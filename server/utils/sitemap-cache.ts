@@ -67,6 +67,16 @@ export function xmlNaOrigem(xml: string, origemGuardada: string, origem: string)
   return xml.replaceAll(`<loc>${origemGuardada}`, `<loc>${origem}`)
 }
 
+/**
+ * /calculadora/preco-teto/{TICKER} é a mesma calculadora repetida. O hub e os
+ * métodos (slug em minúsculas) ficam. Vale também para a semente antiga.
+ */
+export function semPrecoTetoPorTicker(xml: string): string {
+  return xml
+    .replace(/<url><loc>[^<]*\/calculadora\/preco-teto\/[A-Z][A-Z0-9]{3,5}<\/loc>(?:<lastmod>[^<]*<\/lastmod>)?<\/url>\n?/g, '')
+    .replace(/<sitemap><loc>[^<]*\/sitemaps\/preco-teto\.xml<\/loc>(?:<lastmod>[^<]*<\/lastmod>)?<\/sitemap>\n?/g, '')
+}
+
 export interface OpcoesSitemapCache {
   agora: number
   origin: string
@@ -84,7 +94,7 @@ function respostaPronta(
   renovacao: Promise<void> | null,
 ): ResultadoSitemap {
   return {
-    xml: xmlNaOrigem(copia.xml, copia.origin, origin),
+    xml: semPrecoTetoPorTicker(xmlNaOrigem(copia.xml, copia.origin, origin)),
     contentType: SITEMAP_CONTENT_TYPE,
     cacheControl: SITEMAP_CACHE_CONTROL,
     renovacao,
@@ -145,7 +155,7 @@ export async function resolverSitemapEmCache(opts: OpcoesSitemapCache): Promise<
 
   if (!corrida.timeout && corrida.r.ok && xmlPareceSitemap(corrida.r.c.xml)) {
     return {
-      xml: xmlNaOrigem(corrida.r.c.xml, corrida.r.c.origin || opts.origin, opts.origin),
+      xml: semPrecoTetoPorTicker(xmlNaOrigem(corrida.r.c.xml, corrida.r.c.origin || opts.origin, opts.origin)),
       contentType: SITEMAP_CONTENT_TYPE,
       cacheControl: SITEMAP_CACHE_CONTROL_PRIVADO,
       renovacao: null,

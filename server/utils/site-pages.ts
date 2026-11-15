@@ -47,7 +47,6 @@ import {
 import { spISODate } from '../../app/utils/format'
 import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
-import { PRECO_TETO_ELEGIVEIS } from '../data/preco-teto-elegiveis'
 import { GRAFICOS_PAGINA } from '../../app/utils/graficos'
 
 export interface SitePage {
@@ -153,15 +152,6 @@ const CALCULADORA_PAGES: SitePage[] = [
  * (server/data/preco-teto-elegiveis.ts, gerado no build). Ticker sem dado
  * não entra: a rota responde 404 e sitemap com 404 derruba o arquivo.
  */
-function precoTetoTickerPages(): SitePage[] {
-  return PRECO_TETO_ELEGIVEIS.map((t) => ({
-    path: `/calculadora/preco-teto/${t.ticker}`,
-    title: `Preço teto ${t.ticker}`,
-    description: `Preço teto de ${t.ticker} por Bazin, Graham, P/L setorial e valor patrimonial.`,
-    lastmod: t.lastmod,
-  }))
-}
-
 function precoTetoMetodoPages(): SitePage[] {
   return Object.values(PRECO_TETO_METODOS).map((m) => ({
     path: `/calculadora/preco-teto/${m.slug}`,
@@ -912,14 +902,9 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     })
   }
 
-  if (PRECO_TETO_ELEGIVEIS.length > 0) {
-    sections.push({
-      id: 'preco-teto',
-      title: 'Preço teto por ativo',
-      description: 'Preço teto de cada ação e FII com LPA ou dividendo, em /calculadora/preco-teto/{TICKER}.',
-      pages: precoTetoTickerPages(),
-    })
-  }
+  // /calculadora/preco-teto/{TICKER} ficou fora do sitemap em 15/11/2026:
+  // centenas de cópias da mesma calculadora. A página segue no ar, noindex.
+  // Os cinco métodos entram por precoTetoMetodoPages(), na seção calculadoras.
 
   if (ativos.length > 0) {
     sections.push({

@@ -41,6 +41,7 @@ if (data.value) {
     description: v.description,
     path: `/calculadora/preco-teto/${v.ticker}`,
     dateModified: v.dataISO,
+    robots: 'noindex, follow',
     breadcrumbs: [
       { name: 'Home', path: '/' },
       { name: 'Calculadoras', path: '/calculadoras' },

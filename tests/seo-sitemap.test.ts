@@ -14,7 +14,21 @@ import {
   tituloSetor,
 } from '../app/utils/serp.ts'
 import { tickerDePaginaAtivo } from '../app/utils/tickerSitemap.ts'
+import { semPrecoTetoPorTicker } from '../server/utils/sitemap-cache.ts'
 import { tipoDoSitemap } from '../server/utils/sitemap-xml.ts'
+
+test('o sitemap não anuncia a calculadora de preço teto repetida por ticker', () => {
+  const xml = [
+    '<url><loc>https://aportou.com.br/calculadora/preco-teto</loc></url>',
+    '<url><loc>https://aportou.com.br/calculadora/preco-teto/bazin</loc></url>',
+    '<url><loc>https://aportou.com.br/calculadora/preco-teto/PETR4</loc><lastmod>2026-11-13</lastmod></url>',
+    '<sitemap><loc>https://aportou.com.br/sitemaps/preco-teto.xml</loc><lastmod>2026-11-13</lastmod></sitemap>',
+  ].join('\n')
+  const out = semPrecoTetoPorTicker(xml)
+  assert.match(out, /\/calculadora\/preco-teto</)
+  assert.match(out, /\/bazin</)
+  assert.doesNotMatch(out, /PETR4|preco-teto\.xml/)
+})
 
 test('ticker de página 200 entra; alias, símbolo inválido e tipo de fora ficam de fora', () => {
   assert.equal(tickerDePaginaAtivo({ ticker: 'bbdc3', type: 'STOCK' }), 'BBDC3')
@@ -32,7 +46,7 @@ test('ticker de página 200 entra; alias, símbolo inválido e tipo de fora fica
 test('tipo de sitemap aceita o sufixo .xml e rejeita o resto', () => {
   assert.equal(tipoDoSitemap('ativos.xml'), 'ativos')
   assert.equal(tipoDoSitemap('dividendos'), 'dividendos')
-  assert.equal(tipoDoSitemap('preco-teto.xml'), 'preco-teto')
+  assert.equal(tipoDoSitemap('preco-teto.xml'), null)
   assert.equal(tipoDoSitemap('busca.xml'), null)
   assert.equal(tipoDoSitemap(undefined), null)
 })

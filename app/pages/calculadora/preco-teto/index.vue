@@ -501,7 +501,7 @@ const faqItems: NuFaqItem[] = [
 usePageSeo({
   title: 'Calculadora de Preço Teto 2026 - Grátis',
   description:
-    'Calcule o preço teto de qualquer ação da B3 por Graham, Bazin, P/L e VPA. A página mostra a conta e a distância entre a cotação e a régua de cada método. Grátis.',
+    'Calcule o preço teto de uma ação da B3 por Graham, Bazin, P/L e VPA. A conta mostra a distância até a régua de cada método. Grátis.',
   path: '/calculadora/preco-teto',
   breadcrumbs: [
     { name: 'Home', path: '/' },
@@ -976,6 +976,10 @@ usePageSeo({
         <NuxtLink to="/calculadora/acoes" class="pt__card-link">
           <h3 class="pt__card-link-title">Simulador de Ações</h3>
           <p class="pt__card-p">Histórico real de investimentos</p>
+        </NuxtLink>
+        <NuxtLink to="/calculadora/juros-compostos" class="pt__card-link">
+          <h3 class="pt__card-link-title">Juros compostos</h3>
+          <p class="pt__card-p">Aporte, taxa e prazo na mesma conta</p>
         </NuxtLink>
       </div>
 

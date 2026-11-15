@@ -29,7 +29,7 @@ const entidade = String(useRuntimeConfig().public.siteUrl)
 usePageSeo({
   title: 'Sua carteira testada em 2.000 cenários, com IA',
   // só a marca mudou (11/11/2026): o nome vem de MARCA, e o titleTemplate põe " · Aportou" no título
-  description: `A ${MARCA.ia} junta a sua carteira de qualquer banco, testa em 2.000 cenários de cinco anos e vigia todo dia. Mercado de hoje, calculadoras e guias grátis.`,
+  description: `A ${MARCA.ia} junta a carteira de qualquer banco, testa em 2.000 cenários e vigia todo dia. Mercado, calculadoras e guias grátis.`,
   path: '/',
   structuredData: [websiteInicio(siteOrigin, entidade)],
   breadcrumbs: [{ name: 'Início', path: '/' }],
