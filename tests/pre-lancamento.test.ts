@@ -24,6 +24,10 @@ test('o robots do pré-lançamento libera o rastreio (para o Google ler o noinde
   assert.doesNotMatch(pre, /Sitemap:|Disallow|llms/)
   const normal = textoDoRobots('https://aportou.com.br', false)
   assert.match(normal, /Sitemap: https:\/\/aportou\.com\.br\/sitemap\.xml/)
+  for (const bot of ['Googlebot', 'Bingbot', 'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'PerplexityBot', 'Google-Extended', 'Applebot-Extended']) {
+    assert.match(normal, new RegExp(`User-agent: ${bot}\\nAllow: /`), bot)
+  }
+  assert.doesNotMatch(normal, /Disallow/)
   assert.match(normal, /# https:\/\/aportou\.com\.br\/llms\.txt/)
   assert.match(ler('server/routes/robots.txt.ts'), /return textoDoRobots\(origin, preLancamentoLigado\(useRuntimeConfig\(event\)\.public\.preLancamento\)\)/)
 })

@@ -123,7 +123,11 @@ export function usePageSeo(input: PageSeoInput) {
   })
 
   useHead({
-    link: [{ rel: 'canonical', href: canonical }],
+    link: [
+      { rel: 'canonical', href: canonical },
+      { rel: 'alternate', hreflang: 'pt-BR', href: canonical },
+      { rel: 'alternate', hreflang: 'x-default', href: canonical },
+    ],
     script: computed(() => {
       const nodes = [...ld]
       if (dateModified.value) {

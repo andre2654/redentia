@@ -17,42 +17,38 @@
  *     de 03/08 ter deixado 460 no sitemap. Afirmação falsa sobre o próprio
  *     inventário, num arquivo cujo propósito inteiro é ser confiável pra IA.
  *
- * Agora origem e contagens saem da MESMA fonte do sitemap (getSiteSections),
- * então não há como divergir de novo. A prosa curada segue à mão, de propósito:
+ * Agora as contagens saem da semente do sitemap (a mesma lista servida em
+ * /sitemap.xml), sem esperar a fila ao vivo. A prosa curada segue à mão:
  * a escolha do que priorizar é editorial, não derivável.
  */
-import { ORIGEM_B2B } from '../utils/destino-b2b'
-import { getSiteSections } from '../utils/site-pages'
+import { contagemDaSemente } from '../utils/llms-inventario'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler((event) => {
   const o = siteOrigin(event)
-  const sections = await getSiteSections()
-  const count = (id: string) => sections.find((s) => s.id === id)?.pages.length ?? 0
-
-  // Contagens vivas — nunca hardcoded (ver defeito nº 2 no cabeçalho).
-  const nAtivos = count('ativos')
-  const nRankings = count('rankings')
-  const nTesouro = count('tesouro')
-  const nDividendos = count('dividendos')
-  const nQuantoRende = count('quanto-rende')
-  const nTeses = count('teses')
-  const nGlossario = count('glossario')
-  const nPrecoTeto = count('preco-teto')
+  // Contagens da semente do sitemap, não da fila ao vivo: essa fila
+  // passa de um minuto e o crawler de IA desiste com o corpo vazio.
+  const nAtivos = contagemDaSemente('ativos')
+  const nRankings = contagemDaSemente('rankings')
+  const nTesouro = contagemDaSemente('tesouro')
+  const nDividendos = contagemDaSemente('dividendos')
+  const nQuantoRende = contagemDaSemente('quanto-rende')
+  const nTeses = contagemDaSemente('teses')
+  const nGlossario = contagemDaSemente('glossario')
+  const nPrecoTeto = contagemDaSemente('preco-teto')
 
   setHeader(event, 'content-type', 'text/plain; charset=utf-8')
   setHeader(event, 'cache-control', 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400')
 
   return `# ${MARCA.nome}
 
-> ${MARCA.descricao} Plataforma brasileira de investimentos com IA: cotações da B3, análise fundamentalista, rankings de ativos, teses de investimento, calculadoras financeiras gratuitas, notícias comentadas e um assistente com IA do lado do investidor. A ${MARCA.nome} é uma empresa ${MARCA.b2b}, que faz tecnologia de dados para escritórios de investimento em ${ORIGEM_B2B}.
+> ${MARCA.descricao} Plataforma brasileira para quem investe: cotações da B3, análise fundamentalista, rankings de ativos, teses de investimento, calculadoras financeiras gratuitas e notícias comentadas. Este arquivo descreve só o site da ${MARCA.nome} (${o}).
 
 ## Identidade
 
-- **Nome legal**: ${EMPRESA.razaoSocial} (CNPJ ${EMPRESA.cnpj}), que opera a ${MARCA.nome} e a ${MARCA.b2b}
-- **Marcas**: ${MARCA.nome} (plataforma para investidores) e ${MARCA.b2b} (produto para escritórios de investimento, em ${ORIGEM_B2B})
-- **Nome anterior**: a ${MARCA.nome} se chamava Redentia; hoje o nome Redentia identifica só o produto para escritórios
+- **Nome legal**: ${EMPRESA.razaoSocial} (CNPJ ${EMPRESA.cnpj}), que opera a ${MARCA.nome}
+- **Nome anterior**: a ${MARCA.nome} se chamava Redentia. Este site é o produto para quem investe.
 - **País**: Brasil (pt-BR)
-- **Categoria**: Fintech, plataforma de investimentos com IA
+- **Categoria**: Fintech, plataforma de investimentos
 - **Fundação**: 2024
 - **Domínio canônico**: ${o}
 - **Inventário completo de páginas**: ${o}/llms-full.txt
@@ -75,7 +71,7 @@ Estas páginas são mantidas com dados atualizados, conteúdo answer-first e est
 
 ### Mercado (atualizado diariamente após o pregão)
 
-- [Home, terminal de investimentos](${o}/): panorama do dia na B3 com cotações ao vivo, altas, baixas, Tesouro Direto, notícias e o briefing de fechamento escrito por IA
+- [Home, terminal de investimentos](${o}/): panorama do dia na B3 com cotações, altas, baixas, Tesouro Direto, notícias e o briefing de fechamento do dia
 - [Notícias](${o}/noticias): notícias do mercado financeiro brasileiro curadas e comentadas
 - [Busca de ativos](${o}/busca): busca por qualquer ação, FII ou índice da B3
 
@@ -187,12 +183,6 @@ A ${MARCA.nome} expõe um servidor MCP (Model Context Protocol) remoto oficial. 
 - **Ferramentas**: carteira real do usuário via Open Finance (posições, saldo, proventos, somente leitura), cotações e fundamentos da B3 (ações, FIIs, BDRs), teses de investimento com convicção e notícias analisadas
 - **Cenários e projeções** (escopo \`cenarios\`, desligado por padrão; o usuário liga em ${o}/conta, seção MCP): \`list_scenarios\` lista os cenários estudados pela ${MARCA.nome}, com fontes; \`simulate_scenario\` roda o motor de projeções da ${MARCA.nome} sobre uma carteira descrita na conversa (de 1 a 60 posições) e devolve a faixa do patrimônio em reais de hoje (p10 a p90, horizonte padrão de 1 ano), o impacto por ativo com o motivo e as premissas. É faixa estatística com premissas abertas, não previsão nem promessa de retorno; cenário montado na hora vem rotulado como tal. Sub-limite da chave gratuita: 10 simulações por dia e 3 por minuto
 - **Documentação e instruções por cliente**: ${o}/mcp
-
-## ${MARCA.b2b} (escritórios de investimento)
-
-- [${MARCA.b2b}](${ORIGEM_B2B}): o produto da mesma empresa para assessorias, family offices, gestoras e consultorias, em site próprio. Não faz parte deste site.
-- [WEALTH 2030](${ORIGEM_B2B}/estudo/wealth-2030), no site da Redentia: estudo independente da Redentia sobre o futuro das assessorias, family offices e da gestão de patrimônio no Brasil. Descreve o setor a partir de dados públicos e de entrevistas. Não é recomendação de investimento. PDF: ${o}/estudo/wealth-2030.pdf
-
 
 ### Gráficos
 

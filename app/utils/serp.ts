@@ -1,15 +1,14 @@
 /**
  * Orçamento de title e description no Google (pt-BR).
  *
- * O titleTemplate de app/app.vue acrescenta a marca a todo <title>: ` · Aportou`
- * (10 caracteres) no site de investidor e ` · Redentia` (11) nas telas de
- * escritório. O orçamento usa o maior dos dois, para servir aos dois. O número que o usuário vê — e que o Google corta por volta
- * de 60 — é o title da página MAIS esse sufixo. Description corta por volta
- * de 155. Cortar no último espaço, sem reticência: a reticência come
- * caractere e parece title quebrado.
+ * O titleTemplate de app/app.vue acrescenta ` · Aportou` (10 caracteres) a
+ * todo <title>. O número que a pessoa vê, e que o Google corta por volta de
+ * 60, é o title da página mais esse sufixo. Description corta por volta de
+ * 155. Cortar no último espaço, sem reticência: a reticência come caractere
+ * e parece title quebrado.
  */
 
-export const SUFIXO_MARCA = ' · Redentia'
+export const SUFIXO_MARCA = ' · Aportou'
 export const TETO_TITULO = 60
 export const TETO_DESCRICAO = 155
 export const TETO_TITULO_PAGINA = TETO_TITULO - SUFIXO_MARCA.length

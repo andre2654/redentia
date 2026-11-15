@@ -163,6 +163,8 @@ test('a home, o app e o MCP usam o helper, e o rodapé usa o Instagram oficial',
 
   const seo = ler('app/composables/usePageSeo.ts')
   assert.match(seo, /breadcrumbJsonLd\(origin, input\.breadcrumbs\)/)
+  assert.match(seo, /hreflang: 'pt-BR'/)
+  assert.match(seo, /hreflang: 'x-default'/)
   assert.match(seo, /if \(tipo === 'WebSite' \|\| tipo === 'WebPage'\)/)
   assert.match(seo, /normalized\.publisher \?\?= refOrg/)
   assert.match(seo, /tipo === 'SoftwareApplication'/)

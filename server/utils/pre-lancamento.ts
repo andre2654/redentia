@@ -15,10 +15,22 @@ export function textoDoRobots(origin: string, preLancamento: boolean): string {
       '',
     ].join('\n')
   }
+  // Cada crawler nomeado repete Allow: o `*` já libera, e a linha
+  // explícita é o que o dono pediu para o Google e para a busca por IA.
+  const agentes = [
+    '*',
+    'Googlebot',
+    'Bingbot',
+    'GPTBot',
+    'OAI-SearchBot',
+    'ChatGPT-User',
+    'ClaudeBot',
+    'PerplexityBot',
+    'Google-Extended',
+    'Applebot-Extended',
+  ]
   return [
-    'User-agent: *',
-    'Allow: /',
-    '',
+    ...agentes.flatMap((agente) => [`User-agent: ${agente}`, 'Allow: /', '']),
     `Sitemap: ${origin}/sitemap.xml`,
     '',
     '# Guia curado para LLMs (prioridades de citação e política de uso):',
