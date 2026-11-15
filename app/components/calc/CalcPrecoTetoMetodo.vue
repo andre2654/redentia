@@ -63,12 +63,14 @@ const barras = computed(() => {
   ]
 })
 
-const veredito = computed(() => {
+// Posição perante a régua do método. "Barato" / "Caro" ao lado da conta
+// lia como veredito sobre o papel (CVM).
+const posicao = computed(() => {
   const r = resultado.value
   if (!(r.fairPrice > 0) || !(price.value > 0)) return null
-  if (r.ratio < 0.8) return { rotulo: 'Barato', tom: 'ok' as const, texto: `Negocia ${pct(Math.abs(r.margin))} abaixo do preço teto por este método.` }
-  if (r.ratio <= 1) return { rotulo: 'Justo', tom: 'neutro' as const, texto: 'Está próximo do preço teto, sem margem de segurança relevante.' }
-  return { rotulo: 'Caro', tom: 'alerta' as const, texto: `Negocia ${pct(Math.abs(r.margin))} acima do preço teto por este método.` }
+  if (r.ratio < 0.8) return { rotulo: 'Abaixo da régua', tom: 'neutro' as const, texto: `A cotação está ${pct(Math.abs(r.margin))} abaixo do preço teto deste método.` }
+  if (r.ratio <= 1) return { rotulo: 'Na régua', tom: 'neutro' as const, texto: 'A cotação está perto do preço teto deste método.' }
+  return { rotulo: 'Acima da régua', tom: 'neutro' as const, texto: `A cotação está ${pct(Math.abs(r.margin))} acima do preço teto deste método.` }
 })
 
 /** Os outros métodos, pra cross-link (é o que faz o cluster existir como cluster). */
@@ -131,7 +133,7 @@ usePageSeo({
       <template #resultado>
         <CalcNumero
           legenda="Preço teto" :valor="brl(resultado.fairPrice)"
-          :selo="veredito?.rotulo" :tom="veredito ? tomDoSelo[veredito.tom] : 'azul'" :explica="veredito?.texto"
+          :selo="posicao?.rotulo" :tom="posicao ? tomDoSelo[posicao.tom] : 'azul'" :explica="posicao?.texto"
         />
       </template>
       <template #grafico>
