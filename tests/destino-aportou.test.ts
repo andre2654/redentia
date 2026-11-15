@@ -50,3 +50,10 @@ test('o middleware manda 301 sem cache (a borda não pode guardar o redirect) e 
   for (const p of ['app/pages/calculadora/juros-compostos/index.vue', 'app/pages/calculadora/aposentadoria/index.vue', 'app/pages/calculadora/quanto-investir/index.vue', 'app/pages/calculadora/acoes.vue', 'app/pages/calculadora/planejamento.vue'])
     assert.doesNotMatch(ler(p).replace(/\/\/.*$/gm, ''), /https:\/\/redentia\.com\.br\/calculadora/, p)
 })
+
+test('os endereços antigos que davam 404 vão para o equivalente: a cripto na página de ativo e o hub do preço teto', () => {
+  // conferência da virada (14/11/2026): /crypto/sol, /crypto/xrp e /preco-teto tinham clique no Search Console
+  const config = ler('nuxt.config.ts')
+  assert.match(config, /'\/crypto\/\*\*': \{ redirect: \{ to: '\/asset\/\*\*', statusCode: 301 \} \}/)
+  assert.match(config, /'\/preco-teto': \{ redirect: \{ to: '\/calculadora\/preco-teto', statusCode: 301 \} \}/)
+})

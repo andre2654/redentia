@@ -13,21 +13,21 @@ const ir = (caminho: string, host = APORTOU) => destinoB2B(caminho, host)
 
 test('a /business e o que não tem par no app novo vão para a raiz (301)', () => {
   for (const p of ['/business', '/business/', '/business/cadastro', '/business/qualquer-coisa', '/business/clientes/123', '/business/convite', '/business/convite/', '/business/convite/a/b', '/Business'])
-    assert.deepEqual(ir(p), { para: 'https://redentia.com.br', status: 301 }, p)
+    assert.deepEqual(ir(p), { para: 'https://www.redentia.com.br', status: 301 }, p)
 })
 
 test('o painel antigo vai para a tela equivalente do app novo (301)', () => {
-  assert.deepEqual(ir('/business/clientes'), { para: 'https://redentia.com.br/app/clientes', status: 301 })
-  assert.deepEqual(ir('/business/clientes/'), { para: 'https://redentia.com.br/app/clientes', status: 301 })
-  assert.deepEqual(ir('/business/chaves'), { para: 'https://redentia.com.br/app/escritorio', status: 301 })
-  assert.deepEqual(ir('/business/comecar'), { para: 'https://redentia.com.br/app/escritorio', status: 301 })
-  assert.deepEqual(ir('/business/skills'), { para: 'https://redentia.com.br/app', status: 301 })
+  assert.deepEqual(ir('/business/clientes'), { para: 'https://www.redentia.com.br/app/clientes', status: 301 })
+  assert.deepEqual(ir('/business/clientes/'), { para: 'https://www.redentia.com.br/app/clientes', status: 301 })
+  assert.deepEqual(ir('/business/chaves'), { para: 'https://www.redentia.com.br/app/escritorio', status: 301 })
+  assert.deepEqual(ir('/business/comecar'), { para: 'https://www.redentia.com.br/app/escritorio', status: 301 })
+  assert.deepEqual(ir('/business/skills'), { para: 'https://www.redentia.com.br/app', status: 301 })
 })
 
 test('/whitelabel e /pricing vão direto para a raiz, sem passar pela /business (301)', () => {
-  assert.deepEqual(ir('/whitelabel'), { para: 'https://redentia.com.br', status: 301 })
-  assert.deepEqual(ir('/pricing'), { para: 'https://redentia.com.br', status: 301 })
-  assert.deepEqual(ir('/pricing/'), { para: 'https://redentia.com.br', status: 301 })
+  assert.deepEqual(ir('/whitelabel'), { para: 'https://www.redentia.com.br', status: 301 })
+  assert.deepEqual(ir('/pricing'), { para: 'https://www.redentia.com.br', status: 301 })
+  assert.deepEqual(ir('/pricing/'), { para: 'https://www.redentia.com.br', status: 301 })
   const cfg = readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8')
   assert.doesNotMatch(cfg, /'\/(whitelabel|pricing)'\s*:/, 'o routeRules antigo levaria à /business e faria dois saltos')
   assert.doesNotMatch(cfg, /'\/(business|cliente|jantar)[^']*'\s*:/, 'nenhuma regra de rota do B2B fica no nuxt.config')
@@ -35,20 +35,20 @@ test('/whitelabel e /pricing vão direto para a raiz, sem passar pela /business 
 
 test('link pessoal e campanha vão para o mesmo caminho em redentia.com.br (302)', () => {
   const token = 'a'.repeat(48)
-  assert.deepEqual(ir(`/business/convite/${token}`), { para: `https://redentia.com.br/business/convite/${token}`, status: 302 })
-  assert.deepEqual(ir('/business/convite/AbC9/'), { para: 'https://redentia.com.br/business/convite/AbC9', status: 302 })
-  assert.deepEqual(ir(`/cliente/convite/${token}`), { para: `https://redentia.com.br/cliente/convite/${token}`, status: 302 })
-  assert.deepEqual(ir(`/cliente/acesso/${token}`), { para: `https://redentia.com.br/cliente/acesso/${token}`, status: 302 })
-  assert.deepEqual(ir('/cliente'), { para: 'https://redentia.com.br/cliente', status: 302 })
-  assert.deepEqual(ir('/jantar'), { para: 'https://redentia.com.br/jantar', status: 302 })
-  assert.deepEqual(ir('/jantar/'), { para: 'https://redentia.com.br/jantar', status: 302 })
+  assert.deepEqual(ir(`/business/convite/${token}`), { para: `https://www.redentia.com.br/business/convite/${token}`, status: 302 })
+  assert.deepEqual(ir('/business/convite/AbC9/'), { para: 'https://www.redentia.com.br/business/convite/AbC9', status: 302 })
+  assert.deepEqual(ir(`/cliente/convite/${token}`), { para: `https://www.redentia.com.br/cliente/convite/${token}`, status: 302 })
+  assert.deepEqual(ir(`/cliente/acesso/${token}`), { para: `https://www.redentia.com.br/cliente/acesso/${token}`, status: 302 })
+  assert.deepEqual(ir('/cliente'), { para: 'https://www.redentia.com.br/cliente', status: 302 })
+  assert.deepEqual(ir('/jantar'), { para: 'https://www.redentia.com.br/jantar', status: 302 })
+  assert.deepEqual(ir('/jantar/'), { para: 'https://www.redentia.com.br/jantar', status: 302 })
 })
 
 test('o relatório compartilhado e o convite da equipe vão para o mesmo endereço em redentia.com.br (302)', () => {
   // o backend do B2B monta os dois com B2B_URL (sessão do B2B, 13/11/2026)
-  assert.deepEqual(ir('/relatorio/AbC123tok'), { para: 'https://redentia.com.br/relatorio/AbC123tok', status: 302 })
-  assert.deepEqual(ir('/entrar?convite=tok9'), { para: 'https://redentia.com.br/entrar?convite=tok9', status: 302 })
-  assert.deepEqual(ir('/entrar'), { para: 'https://redentia.com.br/entrar', status: 302 })
+  assert.deepEqual(ir('/relatorio/AbC123tok'), { para: 'https://www.redentia.com.br/relatorio/AbC123tok', status: 302 })
+  assert.deepEqual(ir('/entrar?convite=tok9'), { para: 'https://www.redentia.com.br/entrar?convite=tok9', status: 302 })
+  assert.deepEqual(ir('/entrar'), { para: 'https://www.redentia.com.br/entrar', status: 302 })
   // no host antigo, antes da troca, a trava segura (o app do B2B ainda não está lá)
   assert.equal(destinoB2B('/relatorio/AbC123tok', 'www.redentia.com.br'), null)
   assert.equal(destinoB2B('/entrar?convite=tok9', 'www.redentia.com.br'), null)
@@ -59,22 +59,22 @@ test('o relatório compartilhado e o convite da equipe vão para o mesmo endere�
 
 test('o estudo WEALTH 2030 e o PDF moram no B2B (301, mesmo caminho); o hub /estudo não', () => {
   // decisão do dono, 14/11/2026: "Vem para o B2B"
-  assert.deepEqual(ir('/estudo/wealth-2030'), { para: 'https://redentia.com.br/estudo/wealth-2030', status: 301 })
-  assert.deepEqual(ir('/estudo/wealth-2030.pdf'), { para: 'https://redentia.com.br/estudo/wealth-2030.pdf', status: 301 })
-  assert.deepEqual(ir('/estudo/wealth-2030?utm_source=x'), { para: 'https://redentia.com.br/estudo/wealth-2030?utm_source=x', status: 301 })
+  assert.deepEqual(ir('/estudo/wealth-2030'), { para: 'https://www.redentia.com.br/estudo/wealth-2030', status: 301 })
+  assert.deepEqual(ir('/estudo/wealth-2030.pdf'), { para: 'https://www.redentia.com.br/estudo/wealth-2030.pdf', status: 301 })
+  assert.deepEqual(ir('/estudo/wealth-2030?utm_source=x'), { para: 'https://www.redentia.com.br/estudo/wealth-2030?utm_source=x', status: 301 })
   for (const p of ['/estudo', '/estudo/', '/estudos', '/estudos/wealth-2030']) assert.equal(pareceB2B(p), false, p)
   // não é link pessoal: vai com cache, como página que mudou de casa
   assert.equal(ehLinkPessoal('/estudo/wealth-2030'), false)
 })
 
 test('a query vai junto, como veio', () => {
-  assert.deepEqual(ir('/business?utm_source=x'), { para: 'https://redentia.com.br/?utm_source=x', status: 301 })
-  assert.deepEqual(ir('/business/clientes?utm_source=x&utm_medium=email'), { para: 'https://redentia.com.br/app/clientes?utm_source=x&utm_medium=email', status: 301 })
-  assert.deepEqual(ir('/whitelabel?ref=antigo'), { para: 'https://redentia.com.br/?ref=antigo', status: 301 })
-  assert.deepEqual(ir('/cliente/convite/abc?utm_source=whatsapp'), { para: 'https://redentia.com.br/cliente/convite/abc?utm_source=whatsapp', status: 302 })
-  assert.deepEqual(ir('/jantar?utm_campaign=dezembro'), { para: 'https://redentia.com.br/jantar?utm_campaign=dezembro', status: 302 })
+  assert.deepEqual(ir('/business?utm_source=x'), { para: 'https://www.redentia.com.br/?utm_source=x', status: 301 })
+  assert.deepEqual(ir('/business/clientes?utm_source=x&utm_medium=email'), { para: 'https://www.redentia.com.br/app/clientes?utm_source=x&utm_medium=email', status: 301 })
+  assert.deepEqual(ir('/whitelabel?ref=antigo'), { para: 'https://www.redentia.com.br/?ref=antigo', status: 301 })
+  assert.deepEqual(ir('/cliente/convite/abc?utm_source=whatsapp'), { para: 'https://www.redentia.com.br/cliente/convite/abc?utm_source=whatsapp', status: 302 })
+  assert.deepEqual(ir('/jantar?utm_campaign=dezembro'), { para: 'https://www.redentia.com.br/jantar?utm_campaign=dezembro', status: 302 })
   // a interrogação sozinha não vira query
-  assert.deepEqual(ir('/business?'), { para: 'https://redentia.com.br', status: 301 })
+  assert.deepEqual(ir('/business?'), { para: 'https://www.redentia.com.br', status: 301 })
 })
 
 test('caminho parecido que não é do B2B segue para a página dele', () => {
@@ -92,23 +92,23 @@ test('trava contra laço: o destino que é o próprio pedido vira 404, não 30x'
     assert.equal(ir('/business/convite/abc', host), null, host)
     assert.equal(ir('/jantar', host), null, host)
     // o que muda de caminho redireciona mesmo no host do B2B: não há laço
-    assert.deepEqual(ir('/business', host), { para: 'https://redentia.com.br', status: 301 }, host)
-    assert.deepEqual(ir('/business/chaves', host), { para: 'https://redentia.com.br/app/escritorio', status: 301 }, host)
-    assert.deepEqual(ir('/whitelabel', host), { para: 'https://redentia.com.br', status: 301 }, host)
+    assert.deepEqual(ir('/business', host), { para: 'https://www.redentia.com.br', status: 301 }, host)
+    assert.deepEqual(ir('/business/chaves', host), { para: 'https://www.redentia.com.br/app/escritorio', status: 301 }, host)
+    assert.deepEqual(ir('/whitelabel', host), { para: 'https://www.redentia.com.br', status: 301 }, host)
   }
   // em qualquer outro host (aportou.com.br, a prévia da Vercel, o dev) o link pessoal redireciona
   for (const host of ['aportou.com.br', 'www.aportou.com.br', 'localhost:3471', 'frontend-git-x.vercel.app', 'redentia.com.br.evil.com', ''])
-    assert.deepEqual(ir('/cliente/convite/abc', host), { para: 'https://redentia.com.br/cliente/convite/abc', status: 302 }, host)
+    assert.deepEqual(ir('/cliente/convite/abc', host), { para: 'https://www.redentia.com.br/cliente/convite/abc', status: 302 }, host)
   // e o caminho que só difere pela barra no fim chega lá no segundo salto
   const primeiro = ir('/jantar/', 'www.redentia.com.br')
-  assert.deepEqual(primeiro, { para: 'https://redentia.com.br/jantar', status: 302 })
+  assert.deepEqual(primeiro, { para: 'https://www.redentia.com.br/jantar', status: 302 })
   assert.equal(ir(new URL(primeiro!.para).pathname, 'www.redentia.com.br'), null)
 })
 
-test('o destino é sempre redentia.com.br e o Location sai só com ASCII', () => {
-  assert.deepEqual(ir('/cliente/convite/ação'), { para: 'https://redentia.com.br/cliente/convite/a%C3%A7%C3%A3o', status: 302 })
-  assert.equal(new URL(ir('/cliente//evil.com/x')!.para).host, 'redentia.com.br')
-  assert.equal(new URL(ir('/cliente/convite/abc?next=https://evil.com')!.para).host, 'redentia.com.br')
+test('o destino é sempre www.redentia.com.br e o Location sai só com ASCII', () => {
+  assert.deepEqual(ir('/cliente/convite/ação'), { para: 'https://www.redentia.com.br/cliente/convite/a%C3%A7%C3%A3o', status: 302 })
+  assert.equal(new URL(ir('/cliente//evil.com/x')!.para).host, 'www.redentia.com.br')
+  assert.equal(new URL(ir('/cliente/convite/abc?next=https://evil.com')!.para).host, 'www.redentia.com.br')
 })
 
 test('o middleware só aplica o mapa: host do visitante, o destino e o status', () => {
@@ -124,7 +124,7 @@ test('a casca do site não leva ao B2B daqui; a porta "Para escritórios" vai di
     assert.doesNotMatch(ler(f), /["'`]\/(business|cliente|jantar)\b/, f)
   // link externo comum: na mesma aba e sem rel (o NuxtLink externo acrescentaria noreferrer)
   const rodape = ler('components/nu/NuFooterAportou.vue')
-  assert.equal(rodape.match(/<a\b[^>]*class="nfa__b2b"[^>]*>/)?.[0], '<a href="https://redentia.com.br" class="nfa__b2b">')
+  assert.equal(rodape.match(/<a\b[^>]*class="nfa__b2b"[^>]*>/)?.[0], '<a href="https://www.redentia.com.br" class="nfa__b2b">')
   assert.match(rodape, /class="nfa__b2b">Para escritórios: \{\{ MARCA\.b2b \}\}/)
 })
 

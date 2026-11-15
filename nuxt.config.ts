@@ -213,6 +213,10 @@ export default defineNuxtConfig({
     '/help': { redirect: { to: '/busca', statusCode: 301 } },
     '/search': { redirect: { to: '/busca', statusCode: 301 } },
     '/auth/**': { redirect: { to: '/login', statusCode: 301 } },
+    // Da conferência da virada (14/11/2026): o /crypto/{moeda} do site antigo e o hub /preco-teto davam 404. A
+    // cripto mora na página de ativo (/asset/BTC; o /asset acerta a caixa) e o hub do preço teto é a calculadora.
+    '/crypto/**': { redirect: { to: '/asset/**', statusCode: 301 } },
+    '/preco-teto': { redirect: { to: '/calculadora/preco-teto', statusCode: 301 } },
     // /dividendos/{ticker}: página própria em construção (frente paralela) —
     // o wildcard de redirect saiu; ficam só os EXATOS: o hub /dividendos e o
     // /dividendos/calendario (calendário ainda não existe) vão pro ranking
