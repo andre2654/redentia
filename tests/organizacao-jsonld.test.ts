@@ -84,8 +84,7 @@ test('a home emite JSON válido com uma única Organization', () => {
     logo: 'https://aportou.com.br/icone-aportou.svg',
     description: MARCA.descricao,
     sameAs: [
-      'https://www.instagram.com/redentia.wealth/',
-      'https://www.linkedin.com/company/redentia',
+      'https://www.instagram.com/aportou.app/',
       'https://apps.apple.com/app/id6823992050',
     ],
     founder: {
@@ -111,7 +110,9 @@ test('a home emite JSON válido com uma única Organization', () => {
   assert.equal(website['@id'], 'https://aportou.com.br/#website')
   assert.equal(website.name, 'Aportou')
   assert.equal(faqJsonLd(faqsDaHome())['@type'], 'FAQPage')
-  assert.equal(JSON.stringify(nos).includes('redentia.app'), false)
+  assert.equal(JSON.stringify(nos).includes('redentia.wealth'), false)
+  assert.equal(JSON.stringify(nos).includes('linkedin.com/company/redentia'), false)
+  assert.equal(JSON.stringify(nos).includes('instagram.com/aportou.app'), true)
   assert.equal(JSON.stringify(nos).includes('wa.me'), false)
   assert.equal(JSON.stringify(nos).includes('utm_'), false)
 })
@@ -180,8 +181,10 @@ test('a home, o app e o MCP usam o helper, e o rodapé usa o Instagram oficial',
 
   // o rodapé da Aportou (o do B2B saiu com ele para redentia.com.br)
   const rodape = ler('app/components/nu/NuFooterAportou.vue')
-  assert.match(rodape, /https:\/\/www\.instagram\.com\/redentia\.wealth\//)
-  assert.doesNotMatch(rodape, /instagram\.com\/redentia\.app/)
+  assert.match(rodape, /https:\/\/www\.instagram\.com\/aportou\.app\//)
+  assert.doesNotMatch(rodape, /instagram\.com\/redentia\.(wealth|app)/)
+  assert.doesNotMatch(rodape, /linkedin\.com\/company\/redentia/)
+  assert.match(rodape, /href="https:\/\/www\.redentia\.com\.br" class="nfa__b2b"/)
 
   assert.match(ler('nuxt.config.ts'), /siteUrl: process\.env\.NUXT_PUBLIC_SITE_URL \|\| 'https:\/\/aportou\.com\.br'/)
   assert.match(ler('app/composables/useSiteOrigin.ts'), /return useRuntimeConfig\(\)\.public\.siteUrl/)
