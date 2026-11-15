@@ -56,6 +56,11 @@ const DESTINOS = [
         </span>
       </NuxtLink>
     </nav>
+    <p class="hms__direto">
+      <NuxtLink to="/calculadora/juros-compostos">Juros compostos</NuxtLink>
+      <NuxtLink to="/calculadora/acoes">Simulador de ações</NuxtLink>
+      <NuxtLink to="/ranking/mais-baratas-graham">Lista de Graham</NuxtLink>
+    </p>
   </section>
 </template>
 
@@ -76,6 +81,8 @@ const DESTINOS = [
 .hms__nome { display: block; color: var(--nu-ink); font-size: clamp(21px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.15; }
 .hms__desc { display: block; margin-top: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; text-wrap: pretty; }
 .hms__abrir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 16px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
+.hms__direto { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 22px 0 0; }
+.hms__direto a { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; }
 /* o "Abrir" se comporta como o NuLinkSeta: a seta anda 3 px e o sublinhado aparece */
 .hms__abrir-t {
   text-decoration-line: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px;

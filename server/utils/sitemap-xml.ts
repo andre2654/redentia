@@ -26,13 +26,12 @@ export const SITEMAP_GRUPOS: Record<string, Array<SiteSection['id']>> = {
   tesouro: ['tesouro'],
   dividendos: ['dividendos'],
   'quanto-rende': ['quanto-rende'],
-  'preco-teto': ['preco-teto'],
   ativos: ['ativos', 'cripto'],
 }
 
 export const SITEMAP_ORDEM = [
   'paginas', 'calculadoras', 'rankings', 'setores', 'glossario',
-  'teses', 'tesouro', 'dividendos', 'quanto-rende', 'preco-teto', 'ativos',
+  'teses', 'tesouro', 'dividendos', 'quanto-rende', 'ativos',
 ] as const
 
 /** Chave da cópia de /sitemap.xml. Não é um arquivo em /sitemaps/. */

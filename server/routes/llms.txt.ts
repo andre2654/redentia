@@ -34,7 +34,6 @@ export default defineEventHandler((event) => {
   const nQuantoRende = contagemDaSemente('quanto-rende')
   const nTeses = contagemDaSemente('teses')
   const nGlossario = contagemDaSemente('glossario')
-  const nPrecoTeto = contagemDaSemente('preco-teto')
 
   setHeader(event, 'content-type', 'text/plain; charset=utf-8')
   setHeader(event, 'cache-control', 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400')
@@ -165,7 +164,6 @@ Proventos dos últimos 12 meses aplicados a um valor, em /quanto-rende/{TICKER},
 - [Preço teto pelo valor patrimonial](${o}/calculadora/preco-teto/valor-patrimonial): VPA × 1,5
 - [Preço teto projetivo](${o}/calculadora/preco-teto/projetivo): com dividendo futuro estimado
 - [Como calcular preço teto](${o}/guias/como-calcular-preco-teto): as cinco fórmulas, exemplo numérico passo a passo, erros comuns e a diferença entre preço teto e preço justo. Não é recomendação de compra ou venda
-- Preço teto por papel, em /calculadora/preco-teto/{TICKER} (${nPrecoTeto} ações e FIIs com LPA ou dividendo): Bazin, Graham, P/L setorial, VPA e a conta com os números do ticker. Exemplo: [PETR4](${o}/calculadora/preco-teto/PETR4)
 
 ### Conteúdo educacional
 

@@ -977,6 +977,10 @@ usePageSeo({
           <h3 class="pt__card-link-title">Simulador de Ações</h3>
           <p class="pt__card-p">Histórico real de investimentos</p>
         </NuxtLink>
+        <NuxtLink to="/calculadora/juros-compostos" class="pt__card-link">
+          <h3 class="pt__card-link-title">Juros compostos</h3>
+          <p class="pt__card-p">Aporte, taxa e prazo na mesma conta</p>
+        </NuxtLink>
       </div>
 
       <div class="pt__cta">

@@ -37,6 +37,7 @@ function caminhoDe(loc: string, origin: string): string | null {
   if (!loc.startsWith(origin)) return null
   const path = loc.slice(origin.length).split('?')[0] || '/'
   if (!path.startsWith('/') || CAMINHO_B2B.test(path)) return null
+  if (/^\/calculadora\/preco-teto\/[A-Z][A-Z0-9]{3,5}$/.test(path)) return null
   return path
 }
 

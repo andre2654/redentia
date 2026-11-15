@@ -13,6 +13,8 @@ test('visitante não vê destino que pede login', () => {
   assert.deepEqual(nav.map((i) => i.label), ['Início', 'Teses', 'Ferramentas', 'Informações'])
   const ferramentas = nav.find((i) => i.label === 'Ferramentas')!
   assert.equal(ferramentas.children!.some((c) => c.to === '/simulacao'), false)
+  for (const to of ['/calculadora/preco-teto', '/calculadora/juros-compostos', '/calculadora/acoes', '/ranking/mais-baratas-graham'])
+    assert.equal(ferramentas.children!.some((c) => c.to === to), true, to)
   const logado = navDoTopo(true)
   assert.deepEqual(logado.map((i) => i.label), ['Início', 'Carteira', 'Teses', 'Ferramentas', 'Informações'])
   assert.equal(logado.find((i) => i.label === 'Ferramentas')!.children![0]!.to, '/simulacao')
