@@ -269,6 +269,7 @@ test('toda rota de sitemap usa a cópia boa e o xml continua saindo de getSiteSe
   assert.match(fallback, /SITEMAP_ORDEM/)
   assert.match(fallback, /SITEMAP_INDICE/)
   assert.match(fallback, /arquivoDoSitemap/)
+  assert.match(fallback, /semPrecoTetoPorTicker/)
   for (const tipo of [...SITEMAP_ORDEM, SITEMAP_INDICE]) {
     const caminho = caminhoDoSitemap(tipo).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     assert.match(cfg, new RegExp(`'${caminho}': \\{ isr: 3600 \\}`), tipo)

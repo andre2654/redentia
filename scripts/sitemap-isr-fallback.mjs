@@ -50,7 +50,7 @@ async function main() {
     return
   }
   const { SEMENTES_SITEMAP } = await jiti.import('../server/data/sitemap-semente.ts')
-  const { configIsrComFallback } = await jiti.import('../server/utils/sitemap-cache.ts')
+  const { configIsrComFallback, semPrecoTetoPorTicker } = await jiti.import('../server/utils/sitemap-cache.ts')
   for (const configPath of configs) {
     const nome = basename(configPath)
     const tipo = alvos.get(nome)
@@ -62,7 +62,7 @@ async function main() {
     const arquivo = `${xml.arquivoDoSitemap(tipo)}-isr.prerender-fallback.xml`
     // a semente pode ter sido gravada com outra origem (antes da virada para
     // aportou.com.br): a borda serve sempre a origem do site deste build
-    writeFileSync(join(dirname(configPath), arquivo), comOrigemDoSite(semente.xml))
+    writeFileSync(join(dirname(configPath), arquivo), semPrecoTetoPorTicker(comOrigemDoSite(semente.xml)))
     const config = JSON.parse(readFileSync(configPath, 'utf8'))
     writeFileSync(configPath, JSON.stringify(configIsrComFallback(config, arquivo), null, 2) + '\n')
     console.log(`sitemap ISR: fallback ${arquivo} (${semente.urls} urls)`)
