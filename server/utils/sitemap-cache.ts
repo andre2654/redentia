@@ -1,3 +1,5 @@
+import { precoTetoIndexavel } from '../../app/content/seo/preco-teto-indexaveis.ts'
+
 /**
  * Cache da resposta XML de /sitemap.xml e de cada /sitemaps/{tipo}.xml.
  *
@@ -68,13 +70,16 @@ export function xmlNaOrigem(xml: string, origemGuardada: string, origem: string)
 }
 
 /**
- * /calculadora/preco-teto/{TICKER} é a mesma calculadora repetida. O hub e os
- * métodos (slug em minúsculas) ficam. Vale também para a semente antiga.
+ * /calculadora/preco-teto/{TICKER} fora da allowlist do Search Console sai do
+ * XML servido, inclusive da semente antiga (637 tickers) e do fallback da
+ * borda. O hub, os métodos (slug em minúsculas), o arquivo
+ * /sitemaps/preco-teto.xml e o ticker da allowlist ficam.
  */
 export function semPrecoTetoPorTicker(xml: string): string {
-  return xml
-    .replace(/<url><loc>[^<]*\/calculadora\/preco-teto\/[A-Z][A-Z0-9]{3,5}<\/loc>(?:<lastmod>[^<]*<\/lastmod>)?<\/url>\n?/g, '')
-    .replace(/<sitemap><loc>[^<]*\/sitemaps\/preco-teto\.xml<\/loc>(?:<lastmod>[^<]*<\/lastmod>)?<\/sitemap>\n?/g, '')
+  return xml.replace(
+    /<url><loc>[^<]*\/calculadora\/preco-teto\/([A-Z][A-Z0-9]{3,5})<\/loc>(?:<lastmod>[^<]*<\/lastmod>)?<\/url>\n?/g,
+    (cheio, ticker: string) => (precoTetoIndexavel(ticker) ? cheio : ''),
+  )
 }
 
 export interface OpcoesSitemapCache {

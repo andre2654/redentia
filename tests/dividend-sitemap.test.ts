@@ -85,6 +85,7 @@ test('sitemap de dividendos inclui o conjunto inteiro e exclui preço teto por t
   const gerador = readFileSync(new URL('../server/utils/site-pages.ts', import.meta.url), 'utf8')
   assert.match(gerador, /tickersDePaginaDividendos/)
   assert.match(gerador, /site-pages-dividends-v4/)
+  assert.match(gerador, /paginasPrecoTetoIndexaveis\(\)/)
   assert.equal(gerador.includes('precoTetoTickerPages'), false)
 })
 
