@@ -158,7 +158,7 @@ Proventos dos últimos 12 meses aplicados a um valor, em /quanto-rende/{TICKER},
 
 ### Métodos de preço teto (uma página por método)
 
-- [Preço Teto de Bazin](${o}/calculadora/preco-teto/bazin): dividendo anual ÷ 6%
+- [Preço Teto de Bazin](${o}/calculadora/preco-teto/bazin): dividendos por ação dos últimos 12 meses ÷ yield mínimo (clássico 6%). Estimativa educacional, não é recomendação
 - [Fórmula de Graham](${o}/calculadora/preco-teto/graham): √(22,5 × LPA × VPA)
 - [Preço teto por P/L setorial](${o}/calculadora/preco-teto/pl-setorial)
 - [Preço teto pelo valor patrimonial](${o}/calculadora/preco-teto/valor-patrimonial): VPA × 1,5

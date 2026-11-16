@@ -51,7 +51,10 @@ if (props.schema) useFaqSchema(props.items)
       :aberto="open === i" fio :tamanho-mais="36" @update:aberto="toggle(i)"
     >
       <template #titulo><span class="nfa__q-text">{{ f.q }}</span></template>
-      <div class="nfa__a" :class="{ 'nfa__a--open': open === i }">{{ f.a }}</div>
+      <div class="nfa__a" :class="{ 'nfa__a--open': open === i }">
+        <template v-if="f.link && f.a.includes(f.link.texto)">{{ f.a.slice(0, f.a.indexOf(f.link.texto)) }}<NuxtLink :to="f.link.to">{{ f.link.texto }}</NuxtLink>{{ f.a.slice(f.a.indexOf(f.link.texto) + f.link.texto.length) }}</template>
+        <template v-else>{{ f.a }}</template>
+      </div>
     </NuAcordeao>
   </div>
 </template>
@@ -60,6 +63,8 @@ if (props.schema) useFaqSchema(props.items)
 .nfa { display: flex; flex-direction: column; border-top: 1px solid var(--nu-line); }
 .nfa__q-text { display: block; font-size: clamp(19px, 1.7vw, 22px); font-weight: var(--nu-w-medio); letter-spacing: -0.01em; line-height: 1.25; }
 .nfa__a { padding-right: 52px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6; }
+.nfa__a :deep(a) { color: var(--nu-blue-text); font-weight: var(--nu-w-forte); text-decoration: underline; text-underline-offset: 0.15em; }
+.nfa__a :deep(a:hover) { color: var(--nu-blue-text); }
 
 /* variante compact (o FAQ do guia): pergunta um passo menor */
 .nfa--compact :deep(.nac__cab) { padding: 16px 0; }
