@@ -148,10 +148,10 @@ function tagDy(dy: number, isFii: boolean): AcaoTag {
 function tagPl(pl: number): AcaoTag {
   return pl <= 0 ? T('Negativo', 'gray') : pl <= 8 ? T('Até 8× o lucro', 'gray') : pl <= 15 ? T('Até 15× o lucro', 'gray') : T('Acima de 15× o lucro', 'gray')
 }
-/** P/VP ações: ≤1,5 Atrativo · ≤3 Justo · >3 Caro. FIIs: ≤0,95 Descontado · ≤1,05 Justo. */
+/** P/VP: a faixa do múltiplo sobre o patrimônio. Sem "atrativo" / "justo" / "caro" / "descontado". */
 function tagPvp(pvp: number, isFii: boolean): AcaoTag {
-  if (isFii) return pvp <= 0.95 ? T('Descontado', 'green') : pvp <= 1.05 ? T('Justo', 'amber') : T('Caro', 'gray')
-  return pvp <= 1.5 ? T('Atrativo', 'green') : pvp <= 3 ? T('Justo', 'amber') : T('Caro', 'gray')
+  if (isFii) return pvp <= 0.95 ? T('Até 0,95× o patrimônio', 'gray') : pvp <= 1.05 ? T('Até 1,05× o patrimônio', 'gray') : T('Acima de 1,05× o patrimônio', 'gray')
+  return pvp <= 1.5 ? T('Até 1,5× o patrimônio', 'gray') : pvp <= 3 ? T('Até 3× o patrimônio', 'gray') : T('Acima de 3× o patrimônio', 'gray')
 }
 /** EV/EBITDA: ≤6 Baixo · ≤10 Moderado · >10 Alto. */
 function tagEv(ev: number): AcaoTag {
@@ -1239,7 +1239,7 @@ function petr4Seed(): AcaoPayload {
       { kind: 'metric', label: 'ROE', value: '24,2%', tag: g('Excelente') },
       { kind: 'metric', label: 'Dividend Yield', value: '6,95%', tag: g('Excelente') },
       { kind: 'metric', label: 'P/L', value: '4,55', tag: T('Até 8× o lucro', 'gray') },
-      { kind: 'metric', label: 'P/VP', value: '1,10', tag: g('Atrativo') },
+      { kind: 'metric', label: 'P/VP', value: '1,10', tag: T('Até 1,5× o patrimônio', 'gray') },
       { kind: 'insight', insight: 'O P/L está em 4,55. O preço de hoje equivale a menos de 5 anos do lucro recente. O múltiplo descreve essa relação. Não diz o que fazer com o papel.', cta: 'Perguntar sobre o valuation', href: '/busca' },
       { kind: 'metric', label: 'EV/EBITDA', value: '2,64', tag: g('Baixo') },
       { kind: 'metric', label: 'Margem Líquida', value: '21,6%', tag: g('Saudável') },

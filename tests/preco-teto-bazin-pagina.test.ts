@@ -114,7 +114,8 @@ test('os links internos apontam para rotas que existem e o schema não inventa n
   assert.match(pagina, /const dividend = ref\(1\.8\)/)
   assert.match(pagina, /const price = ref\(28\)/)
   assert.match(pagina, /Valores de exemplo/)
-  assert.match(pagina, /Diferença entre a cotação informada e o preço teto calculado/)
+  assert.match(pagina, /linhaDiferencaPrecoTeto/)
+  assert.match(read('app/utils/preco-teto-diferenca.ts'), /Diferença entre a cotação informada e o preço teto calculado/)
   assert.doesNotMatch(pagina, /perto do preço teto|abaixo do preço teto|acima do preço teto/)
 })
 

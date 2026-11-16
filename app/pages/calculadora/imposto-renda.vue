@@ -380,7 +380,7 @@ usePageSeo({
         </NuxtLink>
         <NuxtLink to="/calculadora/preco-teto" class="ir__card-link">
           <h3 class="ir__card-link-title">Preço Teto</h3>
-          <p class="ir__card-p">Descubra se ação está barata</p>
+          <p class="ir__card-p">A diferença entre a cotação e o preço teto</p>
         </NuxtLink>
       </div>
 

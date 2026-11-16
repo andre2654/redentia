@@ -69,8 +69,10 @@ export interface RankingColumnDef {
   format: (row: RankingRowApi) => string
   /** valor numérico cru (semântica de cor no change). */
   raw: (row: RankingRowApi) => number | null
-  /** colore verde/vermelho pelo sinal. */
+  /** colore verde/vermelho pelo sinal. Só variação de preço (alta e queda). */
   signed?: boolean
+  /** com signed, o número leva sinal mas não pinta: não é alta nem queda do dia. */
+  semCor?: boolean
 }
 
 export const RANKING_COLUMNS: Record<RankingColumnKey, RankingColumnDef> = {
@@ -158,6 +160,7 @@ export const RANKING_COLUMNS: Record<RankingColumnKey, RankingColumnDef> = {
       return v == null ? '—' : fmtPct1Signed(v)
     },
     signed: true,
+    semCor: true,
   },
   buyHoldScore: {
     label: 'Score B&H',

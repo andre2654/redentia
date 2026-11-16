@@ -11,6 +11,7 @@
  */
 import { PRECO_TETO_METODOS, PRECO_TETO_METODO_SLUGS } from '~/content/calculadoras/preco-teto-metodos'
 import { priceByMethod, metrics } from '~/utils/preco-teto'
+import { linhaDiferencaPrecoTeto } from '~/utils/preco-teto-diferenca'
 
 const { slug } = defineProps<{ slug: string }>()
 const m = PRECO_TETO_METODOS[slug]!
@@ -48,9 +49,7 @@ const resultado = computed(() => {
 
 const brl = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number.isFinite(v) ? v : 0)
-const pct = (v: number) => `${(v * 100).toFixed(1).replace('.', ',')}%`
 const num = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
-const tomDoSelo = { ok: 'ok', neutro: 'azul', alerta: 'falta' } as const
 
 // o desenho: o preço atual de referência e o preço teto contra ele (a mesma régua da página-mãe)
 const barras = computed(() => {
@@ -65,17 +64,9 @@ const barras = computed(() => {
   ]
 })
 
-// Diferença numérica, sem "acima" / "abaixo" / "perto". O sinal é
-// (cotação − preço teto) ÷ preço teto, o mesmo ratio que a conta já devolve.
-const posicao = computed(() => {
-  const r = resultado.value
-  if (!(r.fairPrice > 0) || !(price.value > 0)) return null
-  return {
-    rotulo: 'Diferença',
-    tom: 'neutro' as const,
-    texto: `Diferença entre a cotação informada e o preço teto calculado: ${pct(r.ratio - 1)}.`,
-  }
-})
+// Diferença numérica. O texto é o de linhaDiferencaPrecoTeto, o mesmo
+// (cotação − preço teto) ÷ preço teto da linha que esta página escrevia na hora.
+const diferenca = computed(() => linhaDiferencaPrecoTeto(price.value, resultado.value.fairPrice))
 
 const valoresDeExemplo = computed(() => slug === 'bazin' && Math.abs(price.value - 28) < 0.001 && Math.abs(dividend.value - 1.8) < 0.001)
 
@@ -141,10 +132,9 @@ usePageSeo({
         <p v-if="valoresDeExemplo" class="ptm__valores-exemplo">Valores de exemplo</p>
       </template>
       <template #resultado>
-        <CalcNumero
-          legenda="Preço teto" :valor="brl(resultado.fairPrice)"
-          :selo="posicao?.rotulo" :tom="posicao ? tomDoSelo[posicao.tom] : 'azul'" :explica="posicao?.texto"
-        />
+        <CalcNumero legenda="Preço teto" :valor="brl(resultado.fairPrice)">
+          <p v-if="diferenca" class="ptm__diff">{{ diferenca }}</p>
+        </CalcNumero>
       </template>
       <template #grafico>
         <CalcBarras :itens="barras" />
@@ -252,6 +242,7 @@ usePageSeo({
   .ptm__dado { display: block; }
   .ptm__dado:not(:last-child)::after { content: none; }
 }
+.ptm__diff { margin: 14px 0 0; max-width: 42ch; color: var(--nu-ink); font-size: 14.5px; font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .ptm__nota {
   margin: 0 auto 14px; max-width: 760px; color: var(--nu-ink);
   font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; text-align: center;
