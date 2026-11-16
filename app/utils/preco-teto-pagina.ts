@@ -13,6 +13,7 @@
  */
 import { SETORES_BY_API } from '../content/setores.ts'
 import { nomeDaEmpresa } from './nomeB3.ts'
+import { linhaDiferencaPrecoTeto } from './preco-teto-diferenca.ts'
 import { bazinPrice, bookValuePrice, computeAll, grahamPrice, plSectorPrice } from './preco-teto.ts'
 import { resolveSiteDy, type ProventoRow } from './proventos.ts'
 import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO, juntaAte, tituloQueCabe } from './serp.ts'
@@ -53,7 +54,6 @@ const SETOR_ALIAS: Record<string, string> = {
 
 const brlFmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 const numFmt = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-const pct1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 
 export interface OverviewPrecoTeto {
   key_statistics?: {
@@ -391,12 +391,7 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
 }
 
 function posicaoConsenso(preco: number, consenso: number): string {
-  if (!(consenso > 0)) return ''
-  const m = (consenso - preco) / preco
-  const p = pct1.format(Math.abs(m * 100))
-  if (m > 0.005) return `A cotação está ${p}% abaixo desse consenso.`
-  if (m < -0.005) return `A cotação está ${p}% acima desse consenso.`
-  return 'A cotação está junto desse consenso.'
+  return linhaDiferencaPrecoTeto(preco, consenso) ?? ''
 }
 
 function montarResposta(p: {

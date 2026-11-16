@@ -10,6 +10,7 @@
  */
 import { PRECO_TETO_METODOS, PRECO_TETO_METODO_SLUGS } from '~/content/calculadoras/preco-teto-metodos'
 import { priceByMethod, metrics } from '~/utils/preco-teto'
+import { linhaDiferencaPrecoTeto } from '~/utils/preco-teto-diferenca'
 
 const { slug } = defineProps<{ slug: string }>()
 const m = PRECO_TETO_METODOS[slug]!
@@ -46,9 +47,7 @@ const resultado = computed(() => {
 
 const brl = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number.isFinite(v) ? v : 0)
-const pct = (v: number) => `${(v * 100).toFixed(1).replace('.', ',')}%`
 const num = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
-const tomDoSelo = { ok: 'ok', neutro: 'azul', alerta: 'falta' } as const
 
 // o desenho: o preço atual de referência e o preço teto contra ele (a mesma régua da página-mãe)
 const barras = computed(() => {
@@ -63,15 +62,9 @@ const barras = computed(() => {
   ]
 })
 
-// Posição perante a régua do método. "Barato" / "Caro" ao lado da conta
-// lia como veredito sobre o papel (CVM).
-const posicao = computed(() => {
-  const r = resultado.value
-  if (!(r.fairPrice > 0) || !(price.value > 0)) return null
-  if (r.ratio < 0.8) return { rotulo: 'Abaixo da régua', tom: 'neutro' as const, texto: `A cotação está ${pct(Math.abs(r.margin))} abaixo do preço teto deste método.` }
-  if (r.ratio <= 1) return { rotulo: 'Na régua', tom: 'neutro' as const, texto: 'A cotação está perto do preço teto deste método.' }
-  return { rotulo: 'Acima da régua', tom: 'neutro' as const, texto: `A cotação está ${pct(Math.abs(r.margin))} acima do preço teto deste método.` }
-})
+// Diferença numérica, sem "acima" / "abaixo" / "perto". O sinal é
+// (cotação − preço teto) ÷ preço teto, o mesmo ratio − 1 da conta.
+const diferenca = computed(() => linhaDiferencaPrecoTeto(price.value, resultado.value.fairPrice))
 
 /** Os outros métodos, pra cross-link (é o que faz o cluster existir como cluster). */
 const outros = PRECO_TETO_METODO_SLUGS.filter((s) => s !== slug).map((s) => PRECO_TETO_METODOS[s]!)
@@ -131,10 +124,9 @@ usePageSeo({
         </CalcPremissas>
       </template>
       <template #resultado>
-        <CalcNumero
-          legenda="Preço teto" :valor="brl(resultado.fairPrice)"
-          :selo="posicao?.rotulo" :tom="posicao ? tomDoSelo[posicao.tom] : 'azul'" :explica="posicao?.texto"
-        />
+        <CalcNumero legenda="Preço teto" :valor="brl(resultado.fairPrice)">
+          <p v-if="diferenca" class="ptm__diff">{{ diferenca }}</p>
+        </CalcNumero>
       </template>
       <template #grafico>
         <CalcBarras :itens="barras" />
@@ -219,6 +211,7 @@ usePageSeo({
   .ptm__dado { display: block; }
   .ptm__dado:not(:last-child)::after { content: none; }
 }
+.ptm__diff { margin: 14px 0 0; max-width: 42ch; color: var(--nu-ink); font-size: 14.5px; font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .ptm__cross { margin: 0 auto; max-width: 760px; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.5; text-align: center; }
 .ptm__cross a { color: var(--nu-blue-text); font-weight: var(--nu-w-forte); }
 

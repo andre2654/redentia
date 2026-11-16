@@ -73,7 +73,7 @@ const calculators = [
     icon: ['M4 20V10M10 20V4M16 20v-7M21 20H3', 'M14 7h7'],
     eyebrow: 'Valuation',
     title: 'Preço Teto',
-    body: 'Calcule o preço justo de ações usando Graham, Bazin, P/L setorial e valor patrimonial. Saiba se está barata ou cara.',
+    body: 'Calcule o preço teto de uma ação da B3 por Graham, Bazin, P/L setorial e valor patrimonial. A página mostra a diferença entre a cotação e o teto.',
     cta: 'Usar calculadora',
   },
   {

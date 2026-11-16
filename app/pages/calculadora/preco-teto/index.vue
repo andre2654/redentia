@@ -18,6 +18,7 @@
 // inclusive os deep-links ?ticker= das ações populares.
 import type { NuFaqItem } from '~/types/market'
 import { PRECO_TETO_METODOS } from '~/content/calculadoras/preco-teto-metodos'
+import { linhaDiferencaPrecoTeto } from '~/utils/preco-teto-diferenca'
 
 const route = useRoute()
 
@@ -262,22 +263,6 @@ function formatCurrency(value: number): string {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 }
 
-// porte da cotação perante a régua do método. Sem "barato" / "justo" / "caro":
-// ao lado do ticker, isso lia como recomendação (CVM).
-function getStatusText(ratio: number): string {
-  if (!ratio) return 'Sem dado'
-  if (ratio <= 0.8) return 'Abaixo da régua'
-  if (ratio <= 1.0) return 'Na régua'
-  return 'Acima da régua'
-}
-
-function getMethodStatus(ratio: number): string {
-  if (!ratio) return ''
-  if (ratio <= 0.8) return 'pt__method--positive'
-  if (ratio <= 1.0) return 'pt__method--neutral'
-  return 'pt__method--negative'
-}
-
 const methods = computed(() => {
   const r = results.value
   if (!r) return []
@@ -286,7 +271,10 @@ const methods = computed(() => {
     { key: 'bazin', title: 'Método Bazin', formula: 'Dividendo ÷ 0.06 (DY mín 6%)', res: r.bazin, ausente: false },
     { key: 'plSector', title: 'P/L setorial', formula: 'LPA × P/L Médio do Setor', res: r.plSector, ausente: !sectorPlConta.value },
     { key: 'bookValue', title: 'Valor patrimonial', formula: 'VPA × 1.5 (margem Graham)', res: r.bookValue, ausente: false },
-  ]
+  ].map((m) => ({
+    ...m,
+    diferenca: m.ausente ? null : linhaDiferencaPrecoTeto(price.value, m.res.fairPrice),
+  }))
 })
 
 // o desenho (CalcBarras): o preço atual e cada método na MESMA escala, a do
@@ -312,15 +300,10 @@ const barras = computed(() => {
   ]
 })
 
-/** percentual no formato brasileiro: 15,8% */
-const pct = (v: number) => `${(v * 100).toFixed(1).replace('.', ',')}%`
-
-// o tom do selo do CalcNumero: abaixo do teto, verde; acima, vermelho; na faixa, azul
-const recoTom = computed<'ok' | 'falta' | 'azul'>(() => {
-  const rec = results.value?.consensus.recommendation
-  if (rec === 'Abaixo do teto') return 'ok'
-  if (rec === 'Acima do teto') return 'falta'
-  return 'azul'
+const linhaConsenso = computed(() => {
+  const medio = results.value?.consensus.averageFairPrice
+  if (!(medio && medio > 0)) return null
+  return linhaDiferencaPrecoTeto(price.value, medio)
 })
 
 /* ————— textos dos sliders + presets ————— */
@@ -435,7 +418,7 @@ const exampleItub = {
     { label: 'Valor patrimonial', value: '18 × 1.5 = R$ 27,00' },
   ],
   resultMain: 'Preço Teto Médio: R$ 31,89',
-  resultSub: 'Preço atual (R$ 28,00) está 12% abaixo do teto médio. Boa margem de segurança!',
+  resultSub: linhaDiferencaPrecoTeto(28, 31.89) ?? '',
 }
 
 const examplePetr = {
@@ -447,7 +430,7 @@ const examplePetr = {
     { label: 'Valor patrimonial', value: '35 × 1.5 = R$ 52,50' },
   ],
   resultMain: 'Preço Teto Médio: R$ 65,80',
-  resultSub: 'Preço atual (R$ 38,00) está 42% abaixo do teto médio. A distância é margem em relação à régua, não uma recomendação.',
+  resultSub: linhaDiferencaPrecoTeto(38, 65.8) ?? '',
 }
 
 const howToSteps = [
@@ -469,7 +452,7 @@ const tipCards = [
   { title: '1. Use como filtro inicial', body: 'Calcule o preço teto de 10-20 ações que você gosta. Descarte as que estão muito acima do teto. Foque análise profunda nas que estão abaixo.' },
   { title: '2. Combine com outros indicadores', body: 'Não use apenas preço teto. Veja também: ROE > 15%, Dívida/EBITDA < 3, Crescimento de receita > 5% a.a., Payout sustentável.' },
   { title: '3. Exija margem de segurança', body: 'Graham tratava a margem como filtro da régua, não como ordem. Uma distância de pelo menos 20% abaixo do teto é a folga que o método pede. Em crise, a distância pode chegar a 40-50%. Continua sendo distância, não recomendação.' },
-  { title: '4. Reavalie periodicamente', body: 'Fundamentos mudam. Uma ação que estava barata pode ficar cara se o lucro cair. Recalcule após cada balanço trimestral.' },
+  { title: '4. Reavalie periodicamente', body: 'Fundamentos mudam. Se o lucro cai, o preço teto calculado muda. Recalcule após cada balanço trimestral.' },
   { title: '5. Entenda o porquê', body: 'Se uma ação está 50% abaixo do preço teto, investigue o porquê. A distância pode ser margem na régua ou um problema que o mercado já colocou no preço.' },
   { title: '6. Seja paciente', body: 'Value investing exige paciência. Pode levar meses ou anos para o mercado reconhecer o valor. Não espere ganhos rápidos.' },
 ]
@@ -577,13 +560,10 @@ usePageSeo({
           v-if="results"
           legenda="Pelas metodologias com número, com os fundamentos ao lado, o preço teto médio é"
           :valor="formatCurrency(results.consensus.averageFairPrice)"
-          :selo="`Posição em relação ao teto: ${results.consensus.recommendation}`"
-          :tom="recoTom"
-          :explica="results.consensus.explanation"
         >
+          <p v-if="linhaConsenso" class="pt__diff">{{ linhaConsenso }}</p>
           <p class="pt__legenda">
             <span><i class="pt__ponto pt__ponto--preco" aria-hidden="true" />Preço atual <b>{{ formatCurrency(price) }}</b></span>
-            <span><i class="pt__ponto" aria-hidden="true" />Margem de segurança <b class="pt__legenda-azul">{{ pct(results.consensus.averageMargin) }}</b></span>
           </p>
         </CalcNumero>
       </template>
@@ -621,13 +601,13 @@ usePageSeo({
       <template v-if="results" #depois>
         <CalcEse :itens="[]">
           <div class="pt__methods">
-            <div v-for="m in methods" :key="m.key" class="pt__method" :class="m.ausente ? '' : getMethodStatus(m.res.ratio)">
+            <div v-for="m in methods" :key="m.key" class="pt__method">
               <div class="pt__method-head">
                 <span class="pt__method-title">{{ m.title }}</span>
-                <span class="pt__method-badge">{{ m.ausente ? 'Indisponível' : getStatusText(m.res.ratio) }}</span>
               </div>
               <p class="pt__method-value">{{ m.ausente ? 'Indisponível' : formatCurrency(m.res.fairPrice) }}</p>
-              <p class="pt__method-margin">{{ m.ausente ? 'Sem P/L médio do setor. Fora do consenso.' : `Margem: ${pct(m.res.margin)}` }}</p>
+              <p v-if="m.ausente" class="pt__method-margin">Sem P/L médio do setor. Fora do consenso.</p>
+              <p v-else-if="m.diferenca" class="pt__diff">{{ m.diferenca }}</p>
               <p class="pt__method-formula">{{ m.formula }}</p>
             </div>
           </div>
@@ -857,8 +837,8 @@ usePageSeo({
                 <p class="pt__ex-value">{{ b.value }}</p>
               </div>
             </div>
-            <div class="pt__result-box pt__result-box--positive">
-              <p class="pt__result-main pt__result-main--positive">{{ examplePetr.resultMain }}</p>
+            <div class="pt__result-box">
+              <p class="pt__result-main">{{ examplePetr.resultMain }}</p>
               <p class="pt__result-sub">{{ examplePetr.resultSub }}</p>
             </div>
           </div>
@@ -1014,7 +994,7 @@ usePageSeo({
 .pt__legenda { display: flex; gap: 8px 24px; flex-wrap: wrap; margin: 16px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; }
 .pt__legenda span { display: inline-flex; align-items: center; gap: 8px; }
 .pt__legenda b { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
-.pt__legenda .pt__legenda-azul { color: var(--nu-blue-text); }
+.pt__diff { margin: 14px 0 0; max-width: 42ch; color: var(--nu-ink); font-size: 14.5px; font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .pt__ponto { width: 11px; height: 11px; border-radius: 50%; background: var(--nu-blue); flex: none; }
 .pt__ponto--preco { background: var(--nu-ink); }
 
@@ -1025,7 +1005,7 @@ usePageSeo({
 .pt__insight { margin-top: 14px; max-width: 900px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
 .pt__insight strong { color: var(--nu-gray-3); font-weight: var(--nu-w-medio); }
 
-/* embaixo do cartão: o que cada método deu (cartão branco sobre o creme, o veredito no selo) */
+/* embaixo do cartão: o que cada método deu (cartão branco sobre o creme) */
 .pt__methods {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 10px; max-width: 1080px; margin: 0 auto;
@@ -1033,13 +1013,7 @@ usePageSeo({
 .pt__method { background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 18px 20px; box-shadow: var(--nu-shadow-quente); }
 .pt__method-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .pt__method-title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); line-height: 1.3; }
-.pt__method-badge {
-  flex: none; background: var(--nu-cream-2); border-radius: var(--nu-r-tag);
-  padding: 3px 8px; color: var(--nu-gray-3); font-size: 13.5px; font-weight: var(--nu-w-medio); white-space: nowrap;
-}
-.pt__method--positive .pt__method-badge { background: var(--nu-green-bg); color: var(--nu-green-text); }
-.pt__method--neutral .pt__method-badge { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
-.pt__method--negative .pt__method-badge { background: var(--nu-red-bg); color: var(--nu-red-text); }
+.pt__method .pt__diff { margin-top: 8px; }
 .pt__method-value {
   margin: 10px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte);
   letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums;
@@ -1053,7 +1027,6 @@ usePageSeo({
   .pt__dado:not(:last-child)::after { content: none; }
   .pt__methods { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pt__method { padding: 14px; }
-  .pt__method-head { flex-direction: column-reverse; gap: 8px; }
   .pt__method-value { font-size: var(--nu-fs-xl); }
 }
 
@@ -1143,10 +1116,8 @@ usePageSeo({
 .pt__ex-label { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .4px; text-transform: uppercase; }
 .pt__ex-value { margin: 6px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .pt__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 16px; }
-.pt__result-box--positive { background: var(--nu-green-tint); }
 .pt__result-main { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
-.pt__result-main--positive { color: var(--nu-green-text); }
-.pt__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
+.pt__result-sub { margin: 4px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— cards-link (rankings / outras ferramentas) ——— */
 .pt__grid-cards {

@@ -26,7 +26,7 @@ const value = computed(() => col.value.format(props.row))
 const label = computed(() => props.metricLabel ?? col.value.label)
 const price = computed(() => rankingPrice(props.row))
 const tone = computed(() => {
-  if (!col.value.signed) return ''
+  if (!col.value.signed || col.value.semCor) return ''
   const v = col.value.raw(props.row) ?? 0
   return v < 0 ? 'rkl__value--down' : 'rkl__value--up'
 })
