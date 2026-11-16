@@ -6,6 +6,7 @@
  *
  * includeSandbox: false — em produção real não mostramos conectores sandbox.
  */
+import { abrirWidgetOpenFinance } from '~/utils/widget-open-finance'
 interface OpenWidgetParams {
   itemId?: string
   /** restringe o widget a conectores específicos (ex.: reconexão de órfã —
@@ -16,19 +17,6 @@ interface OpenWidgetParams {
   onClose?: () => void
 }
 
-// cache do módulo carregado pra não re-importar a cada abertura
-let sdkModule: unknown = null
-
-async function loadSDK(): Promise<unknown> {
-  if (typeof window === 'undefined') return null
-  if (sdkModule) return sdkModule
-  // @ts-expect-error — pluggy-connect-sdk não expõe types pro fluxo de import
-  // dinâmico, mas o named export PluggyConnect existe em runtime.
-  const mod = await import('pluggy-connect-sdk')
-  sdkModule = mod
-  return mod
-}
-
 export function usePluggyWidget() {
   const isLoading = ref(false)
   const pluggy = usePluggy()
@@ -36,24 +24,17 @@ export function usePluggyWidget() {
   async function openWidget(params: OpenWidgetParams): Promise<void> {
     isLoading.value = true
     try {
-      const sdk = await loadSDK() as Record<string, any> | null
-      if (!sdk) throw new Error('Pluggy SDK indisponível (SSR ou ambiente sem window).')
-
-      const PluggyConnect = sdk.PluggyConnect || sdk.default?.PluggyConnect || sdk.default
-      if (!PluggyConnect) throw new Error('Pluggy SDK carregado mas PluggyConnect não encontrado nos exports.')
-
-      const accessToken = await pluggy.getConnectToken(params.itemId)
-
-      const widget = new PluggyConnect({
+      const { accessToken, provider } = await pluggy.getConnectTokenDoAgregador(params.itemId)
+      await abrirWidgetOpenFinance({
         connectToken: accessToken,
-        includeSandbox: false,
-        ...(params.itemId ? { updateItem: params.itemId } : {}),
-        ...(params.connectorIds?.length ? { connectorIds: params.connectorIds } : {}),
-        onSuccess: async ({ item }: { item: { id: string; status: string } }) => {
+        provider,
+        updateItem: params.itemId,
+        connectorIds: params.connectorIds,
+        onSuccess: async (item) => {
           // backend persiste a conexão + dispara sync inicial async
           try {
-            await pluggy.registerConnection(item.id)
-            params.onSuccess({ item })
+            await pluggy.registerConnection(item.id, provider)
+            params.onSuccess({ item: { id: item.id, status: item.status ?? '' } })
           }
           catch (err) {
             params.onError?.(err)
@@ -62,8 +43,6 @@ export function usePluggyWidget() {
         onError: (error: unknown) => params.onError?.(error),
         onClose: () => params.onClose?.(),
       })
-
-      widget.init()
     }
     catch (err) {
       params.onError?.(err)

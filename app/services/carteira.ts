@@ -40,15 +40,15 @@ export function carteiraFetchConnections(base: string, headers: AuthHeaders) {
 /** GET /pluggy/connect-token — token fresco (TTL ~30min) pro widget. */
 export function pluggyFetchConnectToken(base: string, headers: AuthHeaders, itemId?: string) {
   const qs = itemId ? `?item_id=${encodeURIComponent(itemId)}` : ''
-  return $fetch<{ accessToken: string }>(`${base}/pluggy/connect-token${qs}`, { headers })
+  return $fetch<{ accessToken: string; provider?: string }>(`${base}/pluggy/connect-token${qs}`, { headers })
 }
 
 /** POST /pluggy/connections — persiste a conexão criada no widget + sync inicial. */
-export function pluggyRegisterConnection(base: string, headers: AuthHeaders, itemId: string) {
+export function pluggyRegisterConnection(base: string, headers: AuthHeaders, itemId: string, provider?: string) {
   return $fetch<{ data: { id: number; status: string } }>(`${base}/pluggy/connections`, {
     method: 'POST',
     headers,
-    body: { item_id: itemId },
+    body: { item_id: itemId, ...(provider ? { provider } : {}) },
   })
 }
 
