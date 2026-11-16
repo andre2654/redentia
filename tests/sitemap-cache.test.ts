@@ -323,6 +323,6 @@ test('a semente do build traz o índice e todos os urlsets canônicos', () => {
   assert.equal(indice.urls, indice.xml.split('<loc>').length - 1)
   const servido = semPrecoTetoPorTicker(xmlNaOrigem(indice.xml, indice.origin, ORIGEM.replace('www.', '')))
   assert.equal(servido.split('<loc>').length - 1, SITEMAP_ORDEM.length)
-  assert.doesNotMatch(servido, /preco-teto\.xml/)
+  assert.match(servido, /sitemaps\/preco-teto\.xml/)
   assert.equal(copiaServe({ xml: indice.xml, storedAt: indice.storedAt, completo: true, origin: indice.origin }), true)
 })

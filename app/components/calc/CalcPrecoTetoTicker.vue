@@ -1,9 +1,15 @@
 <script setup lang="ts">
 /**
  * /calculadora/preco-teto/{TICKER}. SSR com a cotação, Bazin, Graham, P/L
- * setorial, VPA e o consenso da calculadora. FAQPage sai do NuFaqAccordion.
- * BreadcrumbList sai do usePageSeo. Canonical é o path, sem query.
+ * setorial, VPA e a média da calculadora. FAQPage sai do NuFaqAccordion.
+ * BreadcrumbList sai do usePageSeo. Canonical é o path em maiúsculas, sem
+ * query: https://aportou.com.br/calculadora/preco-teto/{TICKER}.
+ *
+ * Robots: a allowlist do Search Console omite a meta (e não há X-Robots-Tag
+ * nesta URL). O resto segue noindex, follow.
  */
+import { robotsDePrecoTeto } from '~/content/seo/preco-teto-indexaveis'
+
 const route = useRoute()
 const ticker = String(route.params.metodo ?? '').toUpperCase()
 const { data, error } = await usePrecoTetoTicker(ticker)
@@ -41,7 +47,7 @@ if (data.value) {
     description: v.description,
     path: `/calculadora/preco-teto/${v.ticker}`,
     dateModified: v.dataISO,
-    robots: 'noindex, follow',
+    robots: robotsDePrecoTeto(v.ticker),
     breadcrumbs: [
       { name: 'Home', path: '/' },
       { name: 'Calculadoras', path: '/calculadoras' },
@@ -80,7 +86,7 @@ const metodos = computed(() => {
         <p class="ptt__nome">{{ view.nome }}<template v-if="view.setorNome"> · {{ view.setorNome }}</template></p>
       </div>
       <div v-if="view.consenso > 0" class="ptt__hero-num">
-        <div class="ptt__kicker">Consenso</div>
+        <div class="ptt__kicker">Média dos métodos</div>
         <div class="ptt__big">{{ brl(view.consenso) }}</div>
         <p class="ptt__nome">Média de Bazin, Graham, P/L setorial e VPA, quando há número.</p>
       </div>
@@ -91,7 +97,7 @@ const metodos = computed(() => {
           <span class="ptt__method-value">{{ m.valor > 0 ? brl(m.valor) : (m.indisponivel ? 'Indisponível' : 'Não se aplica') }}</span>
         </li>
       </ul>
-      <p class="ptt__aviso">Não é recomendação de compra ou venda. O preço teto é uma régua sobre os números dos últimos 12 meses, não uma previsão e não uma orientação.</p>
+      <p class="ptt__aviso">Estimativa educacional, não é recomendação. O preço teto é a conta dos métodos sobre os números dos últimos 12 meses, não uma previsão.</p>
       <CalcConvitePrecoTeto :ticker="view.ticker" :alvo="view.consenso > 0 ? view.consenso : null" />
     </section>
 
