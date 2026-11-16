@@ -73,7 +73,7 @@ onMounted(() => abrirAncora(window.location.hash))
             v-if="report.opportunityHtml.length" id="rel-oportunidade" v-model:aberto="abertas['rel-oportunidade']"
             class="trp__dobra" como="h3" fio :tamanho-mais="36"
           >
-            <template #titulo><span class="trp__dobra-t">O caso</span></template>
+            <template #titulo><span class="trp__dobra-t">A oportunidade</span></template>
             <div class="trp__dobra-corpo">
               <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
               <p v-for="(p, i) in report.opportunityHtml" :key="i" class="trp__lead" v-html="p" />

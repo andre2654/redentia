@@ -553,7 +553,7 @@ function buildReport(d: ThesisFullApi): TeseReportVM | null {
   if (r.publishedAt) metaParts.push(`Publicado em ${dayMonthYear(r.publishedAt)}`)
 
   const toc: TeseReportTocItemVM[] = []
-  if (opportunityHtml.length) toc.push({ id: 'rel-oportunidade', label: 'O caso' })
+  if (opportunityHtml.length) toc.push({ id: 'rel-oportunidade', label: 'A oportunidade' })
   if (thesisHtml.length) toc.push({ id: 'rel-tese', label: 'A tese em pilares' })
   if (risksHtml.length) toc.push({ id: 'rel-riscos', label: 'Os riscos' })
   for (const p of parts) toc.push({ id: p.id, label: p.heading.replace(/[.]$/, '') })
