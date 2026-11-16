@@ -98,7 +98,7 @@ export const COMO_INVESTIR_EM_ACOES_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'Preço na tela não diz se uma ação está cara ou barata, nem se a empresa é boa. Antes de comprar, passe cada candidata por estes cinco filtros:',
+          html: 'Preço na tela não descreve o múltiplo, nem a qualidade da empresa. Antes de qualquer ordem, passe cada candidata por estes cinco filtros:',
         },
         {
           kind: 'checks',
@@ -106,7 +106,7 @@ export const COMO_INVESTIR_EM_ACOES_GUIDE: GuideDoc = {
             '<strong>Você entende o negócio?</strong> Se não sabe como a empresa ganha dinheiro, não sabe o que está comprando. Comece por setores que você compreende.',
             '<strong>A empresa dá lucro de forma consistente?</strong> Um histórico de lucros ao longo de vários anos vale mais que um trimestre isolado forte.',
             '<strong>A dívida está sob controle?</strong> Empresa muito endividada fica frágil quando os juros sobem. Compare o endividamento com o de outras do mesmo setor.',
-            '<strong>O preço faz sentido?</strong> Indicadores de valuation ajudam a comparar quanto você paga pelo lucro da empresa. Caro ou barato só existe em relação aos pares.',
+            '<strong>O preço faz sentido?</strong> Indicadores de valuation ajudam a comparar quanto a cotação representa do lucro da empresa. O múltiplo só existe em relação aos pares.',
             '<strong>Você está diversificando?</strong> Uma ação só é o começo. Espalhar entre empresas e setores reduz o risco de um erro isolado derrubar a carteira inteira.',
           ],
         },

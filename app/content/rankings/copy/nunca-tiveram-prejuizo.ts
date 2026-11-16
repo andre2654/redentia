@@ -28,7 +28,7 @@ const copy: RankingCopy = {
   crossLinks: [
     {
       title: 'Calculadora de Preço Teto',
-      desc: 'Calcule o preço justo de uma ação por Graham e Bazin.',
+      desc: 'Calcule o preço teto de uma ação pelas fórmulas de Graham e Bazin.',
       href: '/calculadora/preco-teto',
     },
     {
@@ -53,8 +53,8 @@ const copy: RankingCopy = {
       a: 'Geralmente é combinação de: modelo de receita previsível (contratos, recorrência, regulação), baixa alavancagem operacional (custos variáveis em vez de fixos), gestão financeira prudente (caixa alto, dívida baixa), setor com barreiras de entrada (bancos, utilities reguladas). Quando esses pilares estão presentes, a empresa absorve choques sem ficar no vermelho.',
     },
     {
-      q: 'Vale a pena pagar mais caro por empresa que nunca teve prejuízo?',
-      a: 'Sim, e o mercado costuma cobrar premium por isso. Empresas resilientes negociam P/L acima da média do setor justamente por ter risco menor. Pra investidor de buy and hold ou aposentadoria, esse premium se justifica. Pra investidor focado em retorno máximo, o premium reduz upside.',
+      q: 'Empresas que nunca tiveram prejuízo negociam a P/L mais alto?',
+      a: 'O mercado costuma pagar um P/L acima da média do setor por esse histórico. O múltiplo mais alto descreve menos distância até o lucro, não uma instrução de compra. O ranking só ordena quem manteve lucro positivo.',
     },
     {
       q: 'Como combinar este ranking com Buy and Hold?',

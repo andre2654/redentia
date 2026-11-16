@@ -20,7 +20,7 @@ import type { RankingCopy } from '~/types/rankings'
 
 const copy: RankingCopy = {
   answerFirst:
-    'Dividend Yield (DY) é o percentual de dividendos pagos por uma ação ou FII em relação ao seu preço atual: DY = (Dividendos 12 meses ÷ Preço Atual) × 100. Considerado bom: 4-8% para ações maduras, 8-12% para FIIs. DY acima de 12% pode indicar oportunidade ou armadilha de valor (value trap), exige análise do payout, geração de caixa e sustentabilidade. Este ranking lista os 50 ativos com maior DY da B3.',
+    'Dividend Yield (DY) é o percentual de dividendos pagos por uma ação ou FII em relação ao seu preço atual: DY = (Dividendos 12 meses ÷ Preço Atual) × 100. Faixas observadas: 4-8% para ações maduras, 8-12% para FIIs. DY acima de 12% pode coincidir com uma armadilha de valor (value trap) e pede leitura do payout, da geração de caixa e da sustentabilidade. Este ranking lista os 50 ativos com maior DY da B3.',
 
   educationalSections: [
     {
@@ -31,7 +31,7 @@ const copy: RankingCopy = {
         { h3: 'Como o ranking é calculado?' },
         'O ranking considera o dividend yield nos últimos 12 meses (TTM), cruzando os dividendos pagos com o preço atual de cada ativo. Aplicamos filtros de qualidade para evitar distorções: excluímos DY acima de 50% (tipicamente erros de dados) e ativos sem histórico recente de pagamentos. Os dados vêm direto do feed oficial da B3 + filtros internos de saneamento (anti split/subscrição mal classificada).',
         { h3: 'Atenção ao "DY alto demais"' },
-        'Um DY muito elevado pode indicar tanto uma oportunidade quanto uma armadilha de valor (value trap). Quando o preço da ação cai muito por problemas fundamentais, o DY histórico sobe artificialmente, mas dividendos futuros podem ser cortados. Use o ranking como ponto de partida e sempre analise o histórico de 5 anos, payout (acima de 80% pra ações é arriscado), geração de caixa operacional e endividamento.',
+        'Um DY muito elevado pode coincidir com uma armadilha de valor (value trap). Quando o preço da ação cai por problemas fundamentais, o DY histórico sobe na conta, mas dividendos futuros podem ser cortados. Use o ranking como ponto de partida e leia o histórico de 5 anos, o payout (acima de 80% pra ações é arriscado), a geração de caixa operacional e o endividamento.',
       ],
     },
     {
@@ -141,7 +141,7 @@ const copy: RankingCopy = {
     },
     {
       title: 'Maiores Baixas do Mês',
-      desc: 'Ações que mais caíram, possíveis oportunidades de entrada.',
+      desc: 'Ações que mais caíram, ordenadas pela variação do mês.',
       href: '/ranking/maiores-baixas-mes',
     },
     {
@@ -157,7 +157,7 @@ const copy: RankingCopy = {
   faqItems: [
     {
       q: 'Qual é considerado um bom Dividend Yield?',
-      a: 'Para ações maduras (bancos, energia, saneamento) entre 4-8% é considerado bom. Para FIIs entre 8-12% é o padrão de mercado. DY acima de 12% pode ser oportunidade ou armadilha de valor (value trap), exige análise de payout, geração de caixa, dívida líquida e consistência histórica antes de comprar.',
+      a: 'Para ações maduras (bancos, energia, saneamento) a faixa observada fica entre 4-8%. Para FIIs, entre 8-12%. DY acima de 12% pode coincidir com uma armadilha de valor (value trap). A leitura passa por payout, geração de caixa, dívida líquida e consistência histórica.',
     },
     {
       q: 'Quais ações pagam mais dividendos no Brasil?',

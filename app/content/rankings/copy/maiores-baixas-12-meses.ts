@@ -6,7 +6,7 @@ const copy: RankingCopy = {
     {
       h2: 'O que mostra esse ranking?',
       paragraphs: [
-        'Lista as 50 ações com maior queda nos últimos 12 meses na B3. Pode ser visto de duas formas: como lista de empresas em problemas (evitar) ou como pool de oportunidades de turnaround (potencial value). A leitura correta depende de análise individual de cada caso.',
+        'Lista as 50 ações com maior queda nos últimos 12 meses na B3. A queda pode coincidir com um problema no negócio ou com um turnaround em curso. A lista não distingue os dois casos.',
         'Quedas de 50 por cento ou mais em 12 meses geralmente indicam mudança estrutural: perda de market share, problema regulatório, escândalo de governança, virada de ciclo setorial. Algumas dessas vão se recuperar, outras vão continuar caindo. A diferença está na qualidade dos fundamentos remanescentes.',
       ],
     },
@@ -20,13 +20,13 @@ const copy: RankingCopy = {
     {
       h2: 'Atenção',
       paragraphs: [
-        'Pegar facão caindo é o erro clássico. Ação que caiu 50 por cento pode cair mais 50 por cento. Sem catalisador claro de virada (resultados melhorando, novo CEO competente, mudança regulatória favorável), comprar só porque está barato é speculação, não investimento.',
+        'Ação que caiu 50 por cento pode cair mais 50 por cento. Sem catalisador de virada (resultados melhorando, nova gestão, mudança regulatória), a queda sozinha não descreve a distância até uma fórmula. A lista ordena a variação.',
         'Diversificação importa muito em estratégia contrarian. Se você comprar 5 ações em forte queda, é normal que 2-3 continuem caindo e 2-3 se recuperem. O erro é colocar tudo em uma só esperando recuperação certeira. Espalhe risco pra ter chance de capturar os turnarounds que de fato acontecem.',
       ],
     },
   ],
   crossLinks: [
-    { title: 'Calculadora de Preço Teto', desc: 'Calcule o preço justo de uma ação por Graham e Bazin.', href: '/calculadora/preco-teto' },
+    { title: 'Calculadora de Preço Teto', desc: 'Calcule o preço teto de uma ação pelas fórmulas de Graham e Bazin.', href: '/calculadora/preco-teto' },
     { title: 'Calculadora de Dividend Yield', desc: 'Simule o DY real de qualquer ação ou FII.', href: '/calculadora/dividend-yield' },
     { title: 'Simulador de Ações', desc: 'Projete retorno total de uma carteira ao longo do tempo.', href: '/calculadora/acoes' },
     { title: 'Outros rankings', desc: 'Veja todos os rankings disponíveis na Aportou.', href: '/rankings' },
@@ -46,7 +46,7 @@ const copy: RankingCopy = {
     },
     {
       q: 'Vale a pena comprar bancos quando estão em forte queda?',
-      a: 'Bancos brasileiros costumam cair em ciclos de Selic alta (margem cai), aumento de inadimplência (provisões sobem) ou choque macro (Brasil instável). Em geral, são casos clássicos de oportunidade contrarian, dado o histórico de recuperação. Mas exige paciência: ciclos podem durar 2-3 anos antes de virar.',
+      a: 'Bancos brasileiros costumam cair em ciclos de Selic alta (margem cai), aumento de inadimplência (provisões sobem) ou choque macro (Brasil instável). O histórico mostra recuperações depois de ciclos de 2-3 anos, e também mostra ciclos que demoram. A lista só ordena a queda.',
     },
   ],
 }

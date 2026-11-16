@@ -316,8 +316,8 @@ export function rankingDataDate(rows: RankingRowApi[]): string | null {
 export const SCORE_BREAKDOWN_MAP: Record<string, { title: string; url: string }> = {
   'market-cap': { title: 'Maior Valor de Mercado', url: '/ranking/maiores-valor-mercado' },
   'dividend-yield': { title: 'Maior Dividend Yield', url: '/ranking/maiores-dividend-yield' },
-  'graham-discount': { title: 'Mais Barata (Graham)', url: '/ranking/mais-baratas-graham' },
-  'bazin-discount': { title: 'Mais Barata (Bazin)', url: '/ranking/mais-baratas-bazin' },
+  'graham-discount': { title: 'Ranking Graham', url: '/ranking/mais-baratas-graham' },
+  'bazin-discount': { title: 'Ranking Bazin', url: '/ranking/mais-baratas-bazin' },
   'net-margin': { title: 'Maior Margem Líquida', url: '/ranking/maiores-margem-liquida' },
   'buy-and-hold': { title: 'Buy and Hold', url: '/ranking/buy-and-hold' },
   'revenue': { title: 'Maior Receita', url: '/ranking/maiores-receitas' },

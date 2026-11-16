@@ -155,7 +155,7 @@ const selo = computed(() => {
       <NuxtLink to="/rankings" class="hrk__cartao hrk__todos">
         <MarcaCorte class="hrk__todos-corte nu-corte-fundo" :largura="300" cor="var(--nu-white)" />
         <span class="hrk__todos-num">{{ totalDeRankings }}</span>
-        <span class="hrk__todos-txt">rankings da bolsa, de dividendos a preço justo, atualizados todo dia.</span>
+        <span class="hrk__todos-txt">rankings da bolsa, de dividendos a preço teto, atualizados todo dia.</span>
         <!-- o cartão inteiro é o link: o rótulo desenha o NuLinkSeta claro (a seta de 16 px que anda e o sublinhado do hover) -->
         <span class="hrk__todos-ver">
           <span class="hrk__todos-ver-t">Ver todos os rankings</span>

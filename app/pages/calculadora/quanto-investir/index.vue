@@ -98,7 +98,7 @@ const reserveItems = [
 const profileCards = [
   { title: 'Conservador', body: '100% renda fixa pura. Tesouro Selic 2030 (rentabilidade ~Selic, liquidez diária), CDB de bancões com liquidez diária (~CDI), LCI/LCA (isentas de IR, prazo médio 90-720 dias).', note: 'Risco baixo, retorno esperado 10-13% a.a.' },
   { title: 'Moderado', body: '60% renda fixa (Tesouro IPCA+ 2035, CDBs longos, fundos DI) + 30% FIIs (HGLG11, KNCR11) + 10% ações blue chip (ITUB4, ITSA4).', note: 'Risco médio, retorno esperado 10-12% a.a.' },
-  { title: 'Arrojado', body: '70% renda variável (ações, FIIs e ETFs como BOVA11) + 30% renda fixa para a reserva e oportunidades. Foco em horizonte de 10+ anos.', note: 'Risco alto, retorno histórico 12-15% a.a. com volatilidade.' },
+  { title: 'Arrojado', body: '70% renda variável (ações, FIIs e ETFs como BOVA11) + 30% renda fixa para a reserva e a folga de caixa. Foco em horizonte de 10+ anos.', note: 'Risco alto, retorno histórico 12-15% a.a. com volatilidade.' },
 ]
 
 const cdbTesouroRows = [
@@ -324,7 +324,7 @@ usePageSeo({
           tone="cream"
           :columns="['Critério', 'Tesouro Direto', 'CDB']"
           :rows="cdbTesouroRows"
-          note="Conclusão prática: pra reserva de emergência, Tesouro Selic costuma ser a opção mais simples e barata. Pra prazos mais longos, CDB de bancões médios pode pagar 110-120% do CDI, batendo o Tesouro Selic mesmo descontando o IR. Diversificar entre os dois faz sentido em carteiras maiores, e LCI/LCA podem complementar pra aportes específicos por serem isentas de IR pra pessoa física."
+          note="Conclusão prática: pra reserva de emergência, Tesouro Selic costuma ser a opção de resgate diário com menor custo de carregamento. Pra prazos mais longos, CDB de bancões médios pode pagar 110-120% do CDI, batendo o Tesouro Selic mesmo descontando o IR. Diversificar entre os dois faz sentido em carteiras maiores, e LCI/LCA podem complementar pra aportes específicos por serem isentas de IR pra pessoa física."
         />
       </div>
     </CalcBand>

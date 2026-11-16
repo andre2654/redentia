@@ -94,7 +94,7 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: '<strong>3. Uma IA que enxerga o conjunto.</strong> Concentração setorial, sobreposição de fundos e oportunidades aparecem quando os dados estão juntos.',
+          html: '<strong>3. Uma IA que enxerga o conjunto.</strong> Concentração setorial e sobreposição de fundos aparecem quando os dados estão juntos.',
         },
       ],
     },

@@ -50,7 +50,7 @@ const copy: RankingCopy = {
       h2: 'Top Gainers vs Buy and Hold',
       paragraphs: [
         'Top Gainers (Momentum): Estratégia de curto a médio prazo focada em ativos com forte valorização recente. Aposta na continuação da tendência (3-12 meses). Exige acompanhamento ativo, gestão de risco e definição clara de stop loss. Riscos: reversão rápida, entrada tardia, custos de transação.',
-        'Buy and Hold (Longo Prazo): Estratégia clássica de longo prazo, popularizada por Warren Buffett. Foco em qualidade do negócio, vantagem competitiva e preço justo. Holding period de 5+ anos. Tolera quedas de curto prazo desde que a tese fundamental esteja intacta.',
+        'Buy and Hold (Longo Prazo): Estratégia clássica de longo prazo, popularizada por Warren Buffett. Foco em qualidade do negócio, vantagem competitiva e na distância entre a cotação e o preço teto. Holding period de 5+ anos. Tolera quedas de curto prazo desde que a tese fundamental esteja intacta.',
         'Não confunda valorização recente com qualidade. Algumas das maiores altas vêm de empresas em recuperação após queda forte (efeito base), enquanto outras refletem fundamentos sólidos sendo finalmente reconhecidos pelo mercado.',
       ],
     },
@@ -59,10 +59,10 @@ const copy: RankingCopy = {
       paragraphs: [
         'Antes de entrar em uma ação que aparece no topo do ranking, siga este checklist de 5 passos para evitar entrar tarde em movimento já esticado.',
         '1. Verificar o trigger: o que causou a alta? Resultado trimestral, fusão e aquisição (M&A), nova regulação, lançamento de produto, dividendo extraordinário? Sem trigger identificável, desconfie.',
-        '2. Olhar P/L atual vs setor: a ação ficou cara depois da alta? Compare o múltiplo Preço/Lucro (P/L) atual com a média do setor e com o histórico da própria empresa.',
+        '2. Olhar P/L atual vs setor: o múltiplo subiu com a alta? Compare o Preço/Lucro (P/L) atual com a média do setor e com o histórico da própria empresa.',
         '3. Conferir o volume financeiro: alta com volume crescente é movimento real, com participação institucional. Alta sem volume costuma ser especulação ou manipulação de baixa liquidez.',
         '4. Analisar valor relativo: a ação subiu mais que pares do mesmo setor? Mais que o Ibovespa? Pode haver razão estrutural ou simples descolamento temporário.',
-        '5. Decidir: comprar ou esperar: tendência forte com fundamentos = entrada possível em pull-back (correção). Sem fundamentos = melhor passar e procurar próxima oportunidade.',
+        '5. Ler o conjunto: tendência com fundamentos nos números e tendência sem esses números são leituras diferentes. O ranking só ordena a alta.',
       ],
     },
     {

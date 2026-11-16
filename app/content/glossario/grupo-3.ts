@@ -176,7 +176,7 @@ export const GRUPO_3: GlossaryTerm[] = [
     body: [
       'O <strong>EV/EBITDA</strong> relaciona o <a href="/glossario/enterprise-value">Enterprise Value</a>, o valor total da empresa somando ações e dívida líquida, com o <a href="/glossario/ebitda">EBITDA</a>, o resultado operacional antes de juros, impostos e depreciação. É um dos múltiplos favoritos de analistas justamente porque olha a operação isolada da estrutura de capital.',
       'A grande vantagem sobre o <a href="/glossario/p-l">P/L</a> é a neutralidade em relação à dívida. Duas empresas iguais na operação, mas com endividamentos diferentes, teriam P/L distintos; no EV/EBITDA elas ficam mais comparáveis, porque a dívida já está embutida no numerador. Isso torna o indicador útil também para comparar empresas de países e regimes tributários diferentes.',
-      'A leitura é a de um múltiplo: quanto menor, mais barata a empresa tende a estar em relação à sua geração operacional de caixa. Mas o número certo varia muito por setor, então a comparação honesta é sempre contra os pares do mesmo segmento e contra o histórico da própria empresa, nunca um valor mágico universal.',
+      'A leitura é a de um múltiplo: quanto menor, menos anos de geração operacional de caixa o valor da empresa representa. Mas o número certo varia muito por setor, então a comparação honesta é sempre contra os pares do mesmo segmento e contra o histórico da própria empresa, nunca um valor mágico universal.',
       '<strong>Exemplo ilustrativo:</strong> uma empresa com EV de R$ 5 bilhões e EBITDA de R$ 500 milhões tem EV/EBITDA de 10x, ou seja, o mercado paga dez vezes a geração operacional anual. Números redondos apenas para mostrar a conta. Monte comparações de múltiplos no <a href="/rankings">screener de ações</a>.',
     ],
     related: ['ev-ebit', 'ebitda', 'enterprise-value', 'p-ebitda', 'divida-liquida-ebitda'],
@@ -187,15 +187,15 @@ export const GRUPO_3: GlossaryTerm[] = [
     faq: [
       {
         q: 'O que é um bom EV/EBITDA?',
-        a: 'Não existe um número universal: um EV/EBITDA considerado barato em um setor pode ser caro em outro. O certo é comparar a empresa com os pares do mesmo segmento e com o próprio histórico, lembrando que múltiplos baixos às vezes escondem problemas.',
+        a: 'Não existe um número universal: um EV/EBITDA baixo em um setor pode ser o patamar normal de outro. O certo é comparar a empresa com os pares do mesmo segmento e com o próprio histórico, lembrando que múltiplos baixos às vezes escondem problemas.',
       },
       {
         q: 'Por que usar EV/EBITDA em vez de P/L?',
         a: 'Porque o EV/EBITDA neutraliza o efeito do endividamento e da estrutura de capital, comparando as empresas pela operação pura. O P/L é influenciado por juros, impostos e depreciação, o que distorce a comparação entre empresas com dívidas diferentes.',
       },
       {
-        q: 'EV/EBITDA baixo significa ação barata?',
-        a: 'Pode significar, mas não sozinho. Um múltiplo baixo tanto reflete uma boa oportunidade quanto sinaliza risco, baixo crescimento ou problemas na empresa. Ele precisa ser lido junto de endividamento, margens e qualidade do negócio.',
+        q: 'EV/EBITDA baixo descreve o quê?',
+        a: 'Descreve poucos anos de EBITDA no valor da empresa, e só isso. Um múltiplo baixo pode coincidir com risco, baixo crescimento ou problemas na empresa. Ele precisa ser lido junto de endividamento, margens e qualidade do negócio.',
       },
     ],
   },
@@ -208,8 +208,8 @@ export const GRUPO_3: GlossaryTerm[] = [
     body: [
       'O <strong>P/EBITDA</strong> compara o <a href="/glossario/valor-mercado">valor de mercado</a> da empresa (o preço de todas as ações) com o seu <a href="/glossario/ebitda">EBITDA</a>. É, na essência, um primo do <a href="/glossario/p-l">P/L</a>: em vez de dividir o preço pelo lucro líquido, divide pela geração operacional antes de juros, impostos e depreciação.',
       'A diferença crucial em relação ao <a href="/glossario/ev-ebitda">EV/EBITDA</a> é que o P/EBITDA usa apenas o valor das ações, ignorando a dívida. Por isso ele faz mais sentido em empresas com endividamento baixo; onde há muita dívida, o EV/EBITDA descreve melhor a realidade, porque incorpora o que a empresa deve.',
-      'A leitura segue a lógica de qualquer múltiplo: quanto menor, mais barata a empresa em relação ao seu resultado operacional. Como o EBITDA costuma ser mais estável que o lucro líquido (que sofre com itens não recorrentes e efeitos financeiros), o P/EBITDA tende a variar menos que o P/L de um período para outro.',
-      'Ressalva honesta: EBITDA não é caixa. Ele ignora investimentos, juros e a necessidade de capital de giro, então uma empresa pode parecer barata no P/EBITDA e ainda assim consumir caixa. Use o indicador junto de endividamento e margens. Compare ações por múltiplos no <a href="/rankings">screener</a>.',
+      'A leitura segue a lógica de qualquer múltiplo: quanto menor, menos anos de resultado operacional o valor de mercado representa. Como o EBITDA costuma ser mais estável que o lucro líquido (que sofre com itens não recorrentes e efeitos financeiros), o P/EBITDA tende a variar menos que o P/L de um período para outro.',
+      'Ressalva honesta: EBITDA não é caixa. Ele ignora investimentos, juros e a necessidade de capital de giro, então uma empresa pode ter P/EBITDA baixo e ainda assim consumir caixa. Use o indicador junto de endividamento e margens. Compare ações por múltiplos no <a href="/rankings">screener</a>.',
     ],
     related: ['p-l', 'ev-ebitda', 'ebitda', 'valor-mercado'],
     backlink: {
@@ -226,8 +226,8 @@ export const GRUPO_3: GlossaryTerm[] = [
         a: 'Porque o EBITDA exclui itens que oscilam muito no lucro líquido, como despesas financeiras, impostos e efeitos não recorrentes. Isso deixa o múltiplo menos sujeito a distorções de um trimestre para outro.',
       },
       {
-        q: 'P/EBITDA baixo é sinal de oportunidade?',
-        a: 'Nem sempre. Um múltiplo baixo pode indicar preço atrativo ou refletir risco, endividamento e baixo crescimento. Ele deve ser lido no contexto do setor e junto de outros indicadores.',
+        q: 'P/EBITDA baixo descreve o preço em relação ao EBITDA?',
+        a: 'Descreve quantos anos de EBITDA o valor de mercado representa. Um múltiplo baixo pode refletir risco, endividamento e baixo crescimento. Ele deve ser lido no contexto do setor e junto de outros indicadores.',
       },
     ],
   },
@@ -241,7 +241,7 @@ export const GRUPO_3: GlossaryTerm[] = [
       'O <strong>P/EBIT</strong> divide o valor da empresa pelo <a href="/glossario/ebit">EBIT</a>, o lucro operacional, também chamado de lucro antes de juros e impostos. É uma variação do <a href="/glossario/p-l">P/L</a> que troca o lucro líquido pelo resultado da operação, antes de o resultado financeiro e os tributos entrarem na conta.',
       'A vantagem é isolar o desempenho operacional. Ao remover o efeito de juros e impostos, o P/EBIT permite comparar empresas com estruturas de capital diferentes de forma mais justa, algo que o P/L nem sempre consegue quando uma empresa é muito endividada e a outra não.',
       'A diferença para o <a href="/glossario/ev-ebit">EV/EBIT</a> é a mesma que separa o P/EBITDA do EV/EBITDA: o P/EBIT olha só as ações, enquanto o EV/EBIT incorpora a dívida líquida. Quando há endividamento relevante, a versão com Enterprise Value costuma ser a mais informativa.',
-      'Ressalva honesta: diferente do EBITDA, o EBIT já desconta a depreciação, o que o aproxima da realidade de negócios que investem pesado em ativos. Ainda assim, é um múltiplo, e múltiplo se lê contra os pares e o histórico, nunca isolado. Filtre ações baratas por lucro no <a href="/ranking/menores-pl">ranking de menores P/L</a>.',
+      'Ressalva honesta: diferente do EBITDA, o EBIT já desconta a depreciação, o que o aproxima da realidade de negócios que investem pesado em ativos. Ainda assim, é um múltiplo, e múltiplo se lê contra os pares e o histórico, nunca isolado. Veja as ações de menor P/L no <a href="/ranking/menores-pl">ranking de menores P/L</a>.',
     ],
     related: ['p-l', 'ev-ebit', 'ebit', 'p-ebitda'],
     backlink: {
@@ -259,7 +259,7 @@ export const GRUPO_3: GlossaryTerm[] = [
       },
       {
         q: 'O que é um bom P/EBIT?',
-        a: 'Depende do setor e do crescimento esperado. Como qualquer múltiplo, um P/EBIT baixo pode ser oportunidade ou armadilha; ele só faz sentido comparado aos pares do mesmo segmento e ao histórico da empresa.',
+        a: 'Depende do setor e do crescimento esperado. Como qualquer múltiplo, um P/EBIT baixo pode coincidir com uma armadilha; ele só faz sentido comparado aos pares do mesmo segmento e ao histórico da empresa.',
       },
     ],
   },
@@ -286,8 +286,8 @@ export const GRUPO_3: GlossaryTerm[] = [
         a: 'Serve para avaliar empresas pelo faturamento quando o lucro não é um bom termômetro, como em companhias em forte crescimento ou em prejuízo temporário. Ele indica quanto o mercado paga por cada real de receita.',
       },
       {
-        q: 'PSR baixo significa ação barata?',
-        a: 'Não necessariamente. Um PSR baixo pode indicar oportunidade ou refletir margens ruins e prejuízo. Como o indicador ignora a rentabilidade, ele precisa ser lido junto das margens da empresa.',
+        q: 'PSR baixo descreve o preço em relação à receita?',
+        a: 'Descreve quanto o mercado paga por cada real de receita. Um PSR baixo pode refletir margens ruins e prejuízo. Como o indicador ignora a rentabilidade, ele precisa ser lido junto das margens da empresa.',
       },
       {
         q: 'Qual a diferença entre PSR e P/L?',
@@ -319,7 +319,7 @@ export const GRUPO_3: GlossaryTerm[] = [
       },
       {
         q: 'O que significa Dívida Líquida/EBITDA negativo?',
-        a: 'Significa que a empresa tem mais caixa e aplicações do que dívida, ou seja, um caixa líquido. É um sinal de conservadorismo financeiro, embora caixa parado em excesso também possa indicar falta de oportunidades de investimento.',
+        a: 'Significa que a empresa tem mais caixa e aplicações do que dívida, ou seja, um caixa líquido. É um sinal de conservadorismo financeiro, embora caixa parado em excesso também possa indicar falta de projetos em que aplicar o caixa.',
       },
       {
         q: 'Por que esse indicador engana em empresas cíclicas?',

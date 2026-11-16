@@ -6,27 +6,27 @@ const copy: RankingCopy = {
     {
       h2: 'O que é o Upside Teórico?',
       paragraphs: [
-        'Upside é a diferença percentual entre o preço atual de uma ação e o preço justo calculado por uma metodologia (Graham, Bazin, DCF, múltiplos). Um upside de 50 por cento significa que a ação precisaria subir 50 por cento pra atingir o preço considerado justo pelos modelos.',
-        'É a tradução numérica do conceito de "margem de segurança" cunhado por Benjamin Graham. Quanto maior o upside, maior o desconto e maior o potencial de retorno se a ação convergir pro preço justo. É uma forma estruturada de comparar oportunidades em diferentes setores e tamanhos.',
+        'Upside é a diferença percentual entre o preço atual de uma ação e o preço teto calculado por uma metodologia (Graham, Bazin, DCF, múltiplos). Um upside de 50 por cento significa que a cotação precisaria subir 50 por cento pra atingir o número da fórmula.',
+        'É a tradução numérica da distância até o preço teto. Quanto maior o upside, maior essa diferença. É uma forma de comparar a mesma conta em setores e tamanhos diferentes.',
       ],
     },
     {
       h2: 'Como interpretar o ranking',
       paragraphs: [
         'Upside acima de 30 por cento começa a ser interessante. Acima de 50 por cento sinaliza desconto significativo (vale investigação). Acima de 100 por cento é raro fora de momentos de crise extrema ou empresas com problemas reais (cuidado).',
-        'Os números mostrados aqui são teóricos, baseados em fórmulas tradicionais. O mercado pode estar "errado" e dar oportunidade real de comprar barato, ou pode estar precificando algo que as fórmulas não capturam (perda de competitividade, mudança regulatória, problema setorial). Sempre faça leitura crítica dos números.',
+        'Os números mostrados aqui são teóricos, baseados em fórmulas tradicionais. A diferença pode descrever uma distância até a fórmula ou algo que as fórmulas não capturam (perda de competitividade, mudança regulatória, problema setorial). A leitura dos números fica com quem consulta a lista.',
       ],
     },
     {
       h2: 'Limitações',
       paragraphs: [
         'Upside calculado por Graham assume LPA e VPA estáveis no longo prazo. Empresas em prejuízo, em transição ou em setores cíclicos podem ter upside enganoso (lucro caiu temporariamente, vai voltar). Sempre cruze com tendência de lucro dos últimos 5 anos.',
-        'Convergência ao preço justo pode levar muitos anos, ou nunca acontecer se o mercado estiver corretamente precificando deterioração. Use o upside como triagem, não como garantia. A combinação ideal é upside alto + qualidade dos fundamentos (ROE alto, margem estável, payout sustentável).',
+        'A cotação pode levar muitos anos para se aproximar do preço teto, ou nunca se aproximar se o mercado estiver precificando deterioração. Use o upside como triagem, não como garantia. A leitura cruza upside com a qualidade dos fundamentos (ROE, margem, payout).',
       ],
     },
   ],
   crossLinks: [
-    { title: 'Calculadora de Preço Teto', desc: 'Calcule o preço justo de uma ação por Graham e Bazin.', href: '/calculadora/preco-teto' },
+    { title: 'Calculadora de Preço Teto', desc: 'Calcule o preço teto de uma ação pelas fórmulas de Graham e Bazin.', href: '/calculadora/preco-teto' },
     { title: 'Calculadora de Dividend Yield', desc: 'Simule o DY real de qualquer ação ou FII.', href: '/calculadora/dividend-yield' },
     { title: 'Simulador de Ações', desc: 'Projete retorno total de uma carteira ao longo do tempo.', href: '/calculadora/acoes' },
     { title: 'Outros rankings', desc: 'Veja todos os rankings disponíveis na Aportou.', href: '/rankings' },
@@ -34,11 +34,11 @@ const copy: RankingCopy = {
   faqItems: [
     {
       q: 'Como o upside é calculado?',
-      a: 'Combinamos as fórmulas de Graham (raiz de 22,5 × LPA × VPA) e Bazin (dividendo anual ÷ 6 por cento) pra estimar preço justo. Upside é a diferença percentual entre preço justo médio e preço atual. Quanto maior, mais "barata" a ação parece pelas metodologias clássicas de value.',
+      a: 'Combinamos as fórmulas de Graham (raiz de 22,5 × LPA × VPA) e Bazin (dividendo anual ÷ 6 por cento) pra estimar o preço teto. Upside é a diferença percentual entre esse preço teto médio e a cotação. Quanto maior, maior a distância até a fórmula.',
     },
     {
-      q: 'Upside alto sempre é boa oportunidade?',
-      a: 'Não. Upside alto pode indicar desconto real (oportunidade) ou problema fundamental que as fórmulas não capturam (armadilha). Antes de comprar, investigue o motivo do desconto: setor, governança, perda de market share, virada de ciclo. Use o ranking como filtro inicial, não como decisão automática.',
+      q: 'Upside alto sempre descreve distância até a fórmula?',
+      a: 'A diferença é o que a fórmula mede. Ela pode coincidir com um problema que as fórmulas não capturam (armadilha): setor, governança, perda de market share, virada de ciclo. Use o ranking como filtro inicial, não como decisão automática.',
     },
     {
       q: 'Quanto tempo leva pro upside se concretizar?',
@@ -46,7 +46,7 @@ const copy: RankingCopy = {
     },
     {
       q: 'Como combinar este ranking com os outros?',
-      a: 'Cruze o ranking de upside com o de Buy and Hold (qualidade) e Maiores ROEs. Empresas que aparecem com upside alto E qualidade alta são as melhores oportunidades estatisticamente. Empresas com upside alto MAS qualidade baixa devem ser tratadas como apostas, não como investimento de longo prazo.',
+      a: 'Cruze o ranking de upside com o de Buy and Hold (qualidade) e Maiores ROEs. A lista mostra quem tem upside alto e quem também aparece nos rankings de qualidade. Upside alto com qualidade baixa descreve uma distância que a fórmula não explica sozinha.',
     },
   ],
 }
