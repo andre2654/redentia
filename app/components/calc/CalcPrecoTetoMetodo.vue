@@ -6,7 +6,8 @@
  * Aportou, 11/11/2026: a conta entrou no padrão das outras calculadoras
  * (CalcConta + a frase com os valores nos selos, CalcNumero, CalcBarras). Os
  * rótulos de antes são o título do painel de cada selo e seguem no HTML do
- * servidor em "Os dados desta conta". Fórmula, valores padrão e textos iguais.
+ * servidor em "Os dados desta conta". Os valores padrão da conta seguem a
+ * página-mãe. O texto de cada método vive em preco-teto-metodos.ts.
  */
 import { PRECO_TETO_METODOS, PRECO_TETO_METODO_SLUGS } from '~/content/calculadoras/preco-teto-metodos'
 import { priceByMethod, metrics } from '~/utils/preco-teto'
@@ -16,8 +17,9 @@ const { slug } = defineProps<{ slug: string }>()
 const m = PRECO_TETO_METODOS[slug]!
 
 const CONTENT_VERSION = '2026-08-03'
-const lastUpdatedISO = new Date(CONTENT_VERSION).toISOString().slice(0, 10)
-const lastUpdatedText = new Date(CONTENT_VERSION).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
+const lastUpdatedISO = m.atualizado ?? CONTENT_VERSION
+const lastUpdatedText = new Date(`${lastUpdatedISO}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
+const origin = useSiteOrigin()
 
 /* ————— calculadora focada no método ————— */
 // Defaults = o mesmo exemplo ITUB4 da página-mãe, pra os dois números baterem
@@ -62,9 +64,11 @@ const barras = computed(() => {
   ]
 })
 
-// Diferença numérica, sem "acima" / "abaixo" / "perto". O sinal é
-// (cotação − preço teto) ÷ preço teto, o mesmo ratio − 1 da conta.
+// Diferença numérica. O texto é o de linhaDiferencaPrecoTeto, o mesmo
+// (cotação − preço teto) ÷ preço teto da linha que esta página escrevia na hora.
 const diferenca = computed(() => linhaDiferencaPrecoTeto(price.value, resultado.value.fairPrice))
+
+const valoresDeExemplo = computed(() => slug === 'bazin' && Math.abs(price.value - 28) < 0.001 && Math.abs(dividend.value - 1.8) < 0.001)
 
 /** Os outros métodos, pra cross-link (é o que faz o cluster existir como cluster). */
 const outros = PRECO_TETO_METODO_SLUGS.filter((s) => s !== slug).map((s) => PRECO_TETO_METODOS[s]!)
@@ -83,11 +87,14 @@ usePageSeo({
     {
       '@type': 'WebApplication',
       name: m.metaTitle,
+      url: `${origin}/calculadora/preco-teto/${slug}`,
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
       dateModified: lastUpdatedISO,
       description: m.metaDescription,
+      isAccessibleForFree: true,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
     },
   ],
 })
@@ -122,6 +129,7 @@ usePageSeo({
             <span v-if="usa('growth')" class="ptm__dado">Crescimento do dividendo (% a.a.) <b>{{ num(growth) }}%</b></span>
           </template>
         </CalcPremissas>
+        <p v-if="valoresDeExemplo" class="ptm__valores-exemplo">Valores de exemplo</p>
       </template>
       <template #resultado>
         <CalcNumero legenda="Preço teto" :valor="brl(resultado.fairPrice)">
@@ -132,6 +140,7 @@ usePageSeo({
         <CalcBarras :itens="barras" />
       </template>
       <template #depois>
+        <p v-if="m.nota" class="ptm__nota">{{ m.nota }}</p>
         <p class="ptm__cross">
           Quer os quatro métodos lado a lado, com consenso e busca por ticker?
           <NuxtLink to="/calculadora/preco-teto">Use a calculadora completa</NuxtLink>.
@@ -141,13 +150,16 @@ usePageSeo({
       </template>
     </CalcConta>
 
+    <div id="depois-da-calculadora">
     <section class="ptm__body">
-      <article v-for="s in m.sections" :key="s.h2" class="ptm__block">
+      <article v-for="s in m.sections" :id="s.id" :key="s.h2" class="ptm__block">
         <h2 class="ptm__h2">{{ s.h2 }}</h2>
+        <p v-if="s.formula" class="ptm__formula">{{ m.formula }}</p>
         <p v-for="(p, i) in s.body" :key="i" class="ptm__p">{{ p }}</p>
       </article>
 
       <div class="ptm__exemplo">
+        <p v-if="m.exemplo.hipotetico" class="ptm__selo">Exemplo hipotético</p>
         <h2 class="ptm__h2">{{ m.exemplo.titulo }}</h2>
         <ul class="ptm__exemplo-list">
           <li v-for="(l, i) in m.exemplo.linhas" :key="i">{{ l }}</li>
@@ -157,10 +169,21 @@ usePageSeo({
 
     <section class="ptm__faq">
       <h2 class="ptm__h2">Perguntas frequentes</h2>
-      <NuFaqAccordion :items="m.faq.map((f) => ({ q: f.q, a: f.a }))" surface="white" />
+      <NuFaqAccordion :items="m.faq" surface="white" />
     </section>
 
-    <section class="ptm__outros">
+    <section v-if="m.relacionados?.length" class="ptm__links">
+      <h2 class="ptm__h2">Páginas relacionadas</h2>
+      <div class="ptm__outros-grid">
+        <NuxtLink v-for="l in m.relacionados" :key="l.to" :to="l.to" class="ptm__card">
+          <span class="ptm__card-title">{{ l.titulo }}</span>
+          <span class="ptm__card-texto">{{ l.texto }}</span>
+        </NuxtLink>
+      </div>
+    </section>
+    </div>
+
+    <section class="ptm__outros" :class="{ 'ptm__outros--pagina': m.relacionados?.length }">
       <h2 class="ptm__h2">Os outros métodos</h2>
       <div class="ptm__outros-grid">
         <NuxtLink v-for="o in outros" :key="o.slug" :to="`/calculadora/preco-teto/${o.slug}`" class="ptm__card">
@@ -174,7 +197,7 @@ usePageSeo({
 </template>
 
 <style scoped>
-.ptm__hero, .ptm__body, .ptm__faq, .ptm__outros {
+.ptm__hero, .ptm__body, .ptm__faq, .ptm__links, .ptm__outros {
   padding: clamp(48px, 6vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
 }
 /* Aportou (11/11/2026), só cor: sem faixa branca de ponta a ponta. O topo e a
@@ -182,7 +205,9 @@ usePageSeo({
 .ptm__hero { background: var(--nu-page); padding-bottom: 0; }
 .ptm__body { background: var(--nu-band); }
 .ptm__faq { background: var(--nu-page); }
+.ptm__links { background: var(--nu-band); }
 .ptm__outros { background: var(--nu-band); }
+.ptm__outros--pagina { background: var(--nu-page); }
 
 .ptm__back { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
 .ptm__h1 {
@@ -194,16 +219,22 @@ usePageSeo({
   font-weight: 500; line-height: 1.6; max-width: 68ch;
 }
 .ptm__formula {
-  display: inline-block; margin-top: 26px; padding: 14px 20px;
+  display: inline-block; max-width: 100%; margin-top: 26px; padding: 14px 20px;
   background: var(--nu-band); border-radius: var(--nu-r-tile);
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte);
+  line-height: 1.45; overflow-wrap: break-word;
 }
+.ptm__body .ptm__formula { display: block; max-width: 68ch; margin-top: 18px; background: var(--nu-white); }
 .ptm__h2 {
   margin: 0; color: var(--nu-ink); font-size: clamp(24px, 2.8vw, 34px);
   font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1.12;
 }
 /* a linha dos dados: cada dado é um bloco que não se parte */
 .ptm__dados { margin-top: 16px; }
+.ptm__valores-exemplo {
+  margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs);
+  font-weight: var(--nu-w-medio); line-height: 1.4;
+}
 .ptm__dado { display: inline-block; white-space: nowrap; }
 .ptm__dado b { color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .ptm__dado:not(:last-child)::after { content: '·'; margin: 0 9px; color: var(--nu-gray); }
@@ -212,6 +243,10 @@ usePageSeo({
   .ptm__dado:not(:last-child)::after { content: none; }
 }
 .ptm__diff { margin: 14px 0 0; max-width: 42ch; color: var(--nu-ink); font-size: 14.5px; font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.ptm__nota {
+  margin: 0 auto 14px; max-width: 760px; color: var(--nu-ink);
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; text-align: center;
+}
 .ptm__cross { margin: 0 auto; max-width: 760px; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.5; text-align: center; }
 .ptm__cross a { color: var(--nu-blue-text); font-weight: var(--nu-w-forte); }
 
@@ -219,6 +254,12 @@ usePageSeo({
 .ptm__block + .ptm__block { margin-top: clamp(38px, 4.5vw, 60px); }
 .ptm__p { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.65; margin: 16px 0 0; }
 .ptm__exemplo { max-width: 68ch; margin-top: clamp(44px, 5vw, 68px); }
+.ptm__selo {
+  display: inline-block; margin: 0 0 12px; padding: 6px 12px;
+  border-radius: var(--nu-r-pill); background: var(--nu-blue-tint); color: var(--nu-blue-text);
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-forte); letter-spacing: 0.06em; line-height: 1.2;
+  text-transform: uppercase;
+}
 .ptm__exemplo-list {
   margin: 20px 0 0; padding: 22px 26px; list-style: none;
   background: var(--nu-white); border-radius: var(--nu-r-panel);
@@ -226,20 +267,20 @@ usePageSeo({
 }
 .ptm__exemplo-list li {
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums; overflow-wrap: break-word;
 }
 .ptm__faq .ptm__h2 { margin-bottom: 24px; }
 .ptm__outros-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 16px; margin-top: 24px;
 }
 .ptm__card {
-  display: flex; flex-direction: column; gap: 9px; padding: 22px;
+  display: flex; flex-direction: column; gap: 9px; min-width: 0; padding: 22px;
   background: var(--nu-white); border-radius: var(--nu-r-panel);
   transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
 }
 .ptm__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.ptm__card-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); line-height: 1.25; }
-.ptm__card-formula { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.ptm__card-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); line-height: 1.25; overflow-wrap: break-word; }
+.ptm__card-formula, .ptm__card-texto { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; overflow-wrap: break-word; }
 .ptm__updated { margin: clamp(36px, 4vw, 56px) 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; opacity: .8; }
 </style>

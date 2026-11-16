@@ -3,16 +3,9 @@
  *
  * X = (cotação − preço teto) ÷ preço teto. É o mesmo ratio − 1 que
  * metrics() já devolve (preço ÷ teto). A conta dos métodos não muda.
- * O enunciado é o da página de método (PR 162). O percentual é pt-BR,
- * 1 casa, com sinal (+ acima do teto, − abaixo, sem sinal no zero).
+ * O texto é o da linha que a página de método escrevia na hora (PR 162):
+ * uma casa, vírgula decimal, sinal de menos quando a cotação fica abaixo.
  */
-
-const pct = new Intl.NumberFormat('pt-BR', {
-  style: 'percent',
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-  signDisplay: 'exceptZero',
-})
 
 export const FRASE_DIFERENCA_PRECO_TETO = 'Diferença entre a cotação informada e o preço teto calculado'
 
@@ -22,9 +15,9 @@ export function diferencaSobreTeto(cotacao: number, teto: number): number | null
   return (cotacao - teto) / teto
 }
 
-/** "+12,3%" / "-12,3%" / "0,0%". */
+/** "-12,3%" / "25,0%" / "0,0%". O mesmo formato da linha inline do PR 162. */
 export function formatarDiferencaPct(fracao: number): string {
-  return pct.format(fracao)
+  return `${(fracao * 100).toFixed(1).replace('.', ',')}%`
 }
 
 /** A linha neutra, ou null quando a conta não fecha. */

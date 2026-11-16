@@ -25,16 +25,22 @@ test('X é (cotação − preço teto) ÷ preço teto, em pt-BR, com 1 casa e si
   const pelaConta = metrics(35, 28)
   assert.ok(Math.abs((pelaConta.ratio - 1) - diferencaSobreTeto(28, 35)!) < 1e-12)
 
+  const como162 = (v: number) => `${(v * 100).toFixed(1).replace('.', ',')}%`
   assert.equal(formatarDiferencaPct(-0.2), '-20,0%')
-  assert.equal(formatarDiferencaPct(0.25), '+25,0%')
+  assert.equal(formatarDiferencaPct(0.25), '25,0%')
   assert.equal(formatarDiferencaPct(0), '0,0%')
+  const pelaLinha = metrics(30, 28)
+  assert.equal(
+    linhaDiferencaPrecoTeto(28, 30),
+    `Diferença entre a cotação informada e o preço teto calculado: ${como162(pelaLinha.ratio - 1)}.`,
+  )
   assert.equal(
     linhaDiferencaPrecoTeto(28, 35),
     'Diferença entre a cotação informada e o preço teto calculado: -20,0%.',
   )
   assert.equal(
     linhaDiferencaPrecoTeto(40, 32),
-    'Diferença entre a cotação informada e o preço teto calculado: +25,0%.',
+    'Diferença entre a cotação informada e o preço teto calculado: 25,0%.',
   )
   assert.equal(
     linhaDiferencaPrecoTeto(10, 10),
@@ -71,7 +77,7 @@ test('o hub não tem os selos da régua e a linha neutra entra no resultado', ()
   assert.equal(metodo.includes('Acima da régua'), false)
 })
 
-test('a página do ticker usa a mesma linha e o upside do ranking não pinta verde ou vermelho', () => {
+test('a página do ticker fica com a média neutra do PR 163 e o upside do ranking não pinta', () => {
   const view = montarPrecoTeto({
     ticker: 'PETR4',
     nomeBruto: 'PETROBRAS   PN      N2',
@@ -89,11 +95,11 @@ test('a página do ticker usa a mesma linha e o upside do ranking não pinta ver
     temPaginaDividendos: true,
   })
   assert.ok(view)
-  assert.match(view.paragrafo, /Diferença entre a cotação informada e o preço teto calculado: -42,3%\./)
-  assert.equal(view.paragrafo.includes('abaixo desse consenso'), false)
-  assert.equal(view.paragrafo.includes('acima desse consenso'), false)
-  const consenso = view.passos.find((p) => p.titulo === 'Consenso')
-  assert.match(consenso?.linhas.join('\n') ?? '', /Diferença entre a cotação informada e o preço teto calculado: -42,3%\./)
+  assert.match(view.paragrafo, /A cotação está .+% abaixo dessa média\./)
+  assert.match(view.paragrafo, /Estimativa educacional, não é recomendação/)
+  assert.equal(/perto do preço teto|Abaixo da régua|Na régua|Acima da régua/.test(view.paragrafo + view.passos.map((p) => p.linhas.join(' ')).join(' ')), false)
+  const media = view.passos.find((p) => p.titulo === 'Média dos métodos')
+  assert.match(media?.linhas.join('\n') ?? '', /abaixo dessa média/)
 
   assert.equal(RANKING_COLUMNS.upsidePct.semCor, true)
   assert.equal(RANKING_COLUMNS.upsidePct.signed, true)

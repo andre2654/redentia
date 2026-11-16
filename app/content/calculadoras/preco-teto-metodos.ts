@@ -31,66 +31,106 @@ export interface PrecoTetoMetodo {
   formula: string
   /** Insumos que a calculadora desta página realmente usa. */
   inputs: ('price' | 'lpa' | 'vpa' | 'dividend' | 'sectorPL' | 'growth')[]
-  /** Corpo: H2 + parágrafos. */
-  sections: { h2: string; body: string[] }[]
-  faq: { q: string; a: string }[]
+  /** Corpo: H2 + parágrafos. `formula` repete a fórmula neste bloco. */
+  sections: { h2: string; id?: string; formula?: boolean; body: string[] }[]
+  faq: { q: string; a: string; link?: { texto: string; to: string } }[]
   /** Exemplo numérico fechado, com a conta escrita. */
-  exemplo: { titulo: string; linhas: string[] }
+  exemplo: { titulo: string; linhas: string[]; hipotetico?: boolean }
+  /** Frase sob a calculadora: estimativa educacional, não recomendação. */
+  nota?: string
+  /** YYYY-MM-DD do texto desta página. Sem isto, vale a data comum do componente. */
+  atualizado?: string
+  /** Links internos. Só rotas que existem. */
+  relacionados?: { to: string; titulo: string; texto: string }[]
 }
 
 export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
   bazin: {
     slug: 'bazin',
     id: 'bazin',
-    metaTitle: 'Preço Teto de Bazin: calculadora e fórmula (dividendo ÷ 6%)',
-    metaDescription: 'Calcule o preço teto pelo método Décio Bazin: dividendo dos últimos 12 meses dividido por 6%. Fórmula, exemplo numérico com PETR4 e as três regras que Bazin exigia do papel.',
+    metaTitle: 'Preço Teto de Bazin: fórmula (dividendo ÷ 6%)',
+    metaDescription: 'Calcule o preço teto de Bazin: dividendos de 12 meses ÷ yield de 6%. Fórmula, exemplo hipotético e limites. Estimativa educacional, não é recomendação.',
     h1: 'Preço teto de Bazin: a conta do dividendo dividido por 6%',
-    answerFirst: 'O preço teto de Bazin é o dividendo por ação dos últimos 12 meses dividido por 0,06. Uma ação que pagou R$ 3,00 por ação no período tem preço teto de R$ 50,00 (3 ÷ 0,06). Acima disso, pelo critério de Bazin, o dividend yield cai abaixo dos 6% que ele exigia e a ação sai da lista de compra.',
-    formula: 'Preço teto = Dividendo por ação (12 meses) ÷ 0,06',
+    answerFirst: 'O preço teto de Bazin é o dividendo por ação dos últimos 12 meses dividido pelo dividend yield mínimo desejado. Na régua clássica de Décio Bazin, esse rendimento é 6% ao ano. Em um exemplo hipotético, R$ 1,20 de dividendos por ação levam a um preço teto de R$ 20,00, porque 1,20 ÷ 0,06 = 20. O número é uma estimativa educacional, não uma recomendação de compra ou venda.',
+    formula: 'Preço teto = dividendos por ação dos últimos 12 meses ÷ dividend yield mínimo desejado',
     inputs: ['price', 'dividend'],
+    nota: 'O resultado é uma estimativa educacional, não uma recomendação de compra ou venda.',
+    atualizado: '2026-11-16',
     sections: [
       {
-        h2: 'De onde vem o 6%',
+        id: 'como-funciona',
+        h2: 'Como funciona o método Bazin',
+        formula: true,
         body: [
-          'Décio Bazin descreveu o método em "Faça Fortuna com Ações", publicado em 1991. O 6% não é uma constante de mercado nem uma dedução teórica: é o piso de rendimento que ele considerava aceitável para assumir o risco de renda variável em vez de renda fixa, no Brasil, naquele contexto de juros.',
-          'A crítica mais comum ao método ataca exatamente esse ponto. Com a Selic a 15%, exigir 6% de dividend yield para comprar uma ação é aceitar rendimento menor que o do Tesouro Selic com risco muito maior. Com a Selic a 2%, o mesmo 6% vira um filtro severíssimo que quase nenhuma empresa passa.',
-          'Quem usa o método hoje costuma ajustar o yield exigido ao custo de oportunidade do momento, e a calculadora abaixo permite isso. Mas vale registrar: no momento em que você troca o 6% por outro número, deixou de calcular o preço teto de Bazin e passou a calcular o seu.',
+          'Décio Bazin descreveu o método no livro "Faça Fortuna com Ações", publicado em 1992. A conta inverte o dividend yield. Se o rendimento mínimo fica fixo, o preço compatível com esse rendimento é o dividendo dividido por esse rendimento.',
+          'A régua clássica usa 6% ao ano, escrito como 0,06. Não é uma constante de mercado nem uma dedução teórica. É o piso de dividend yield que Bazin adotou naquele livro, no contexto de juros em que escreveu, para comparar renda variável com renda fixa. A calculadora desta página aplica esse 6%. Trocar o percentual produz outra régua: deixa de ser o preço teto de Bazin e passa a ser o critério de quem escolheu o novo número.',
+          'O 6% foi escolhido num contexto de juros. Quando a renda fixa paga bem mais ou bem menos do que esse piso, a mesma régua fica mais folgada ou mais estreita. A calculadora não ajusta o percentual ao juro do dia. Ela mantém os 6% de Bazin.',
         ],
       },
       {
-        h2: 'As três regras que vêm antes da conta',
+        id: 'limitacoes',
+        h2: 'Limitações do método',
         body: [
-          'A fórmula é a parte famosa do método e a menos importante. Bazin filtrava a empresa antes de calcular qualquer coisa, e a conta só valia para o que sobrava do filtro.',
-          'A primeira regra é histórico de dividendos consistente. Bazin queria pelo menos cinco anos de pagamento ininterrupto, porque um dividendo isolado não diz nada sobre capacidade de distribuição e um yield alto costuma ser efeito de preço caindo, não de dividendo subindo.',
-          'A segunda é endividamento sob controle. Empresa que distribui dividendo enquanto rola dívida cara está devolvendo capital que deveria estar amortizando passivo, e isso termina em corte de dividendo ou em emissão de ações.',
-          'A terceira é ausência de "cavalo de pau" na gestão: mudanças bruscas de estratégia, de controlador ou de política de distribuição invalidam a premissa de que o histórico projeta o futuro, que é a base inteira do método.',
-        ],
-      },
-      {
-        h2: 'Onde o método falha',
-        body: [
-          'O método de Bazin é cego para crescimento. Uma empresa que reinveste todo o lucro e não distribui nada tem preço teto zero pela fórmula, o que é obviamente falso como avaliação de valor. Por isso Bazin não serve para avaliar empresa de crescimento, e ele mesmo não usava para isso.',
-          'Ele também é sensível a dividendo extraordinário. Um pagamento único e grande, típico de venda de ativo, infla o dividendo dos últimos 12 meses e projeta um preço teto que não se sustenta no ciclo seguinte. O ajuste honesto é usar o dividendo recorrente, excluindo o evento não repetível.',
-          'E é sensível ao ciclo. Petrobras em 2022 pagou dividendo que gerava yield acima de 50% ao ano: aplicar Bazin ali produzia um preço teto várias vezes acima do preço de mercado, sinalizando compra num topo de ciclo de petróleo.',
+          'A conta depende dos dividendos já pagos. Ela olha para trás, para os últimos 12 meses, e não diz o que a empresa vai distribuir daqui para a frente nem se o pagamento desse ano se repete.',
+          'O método ignora crescimento. Uma empresa que reinveste o lucro e distribui pouco, ou nada, sai com preço teto baixo ou zero. Isso não descreve o valor de um negócio em expansão. A fórmula não foi feita para esse perfil.',
+          'O método ignora dívida. Duas empresas com o mesmo dividendo por ação recebem o mesmo preço teto, ainda que uma carregue um passivo alto e a outra não. Endividamento fica fora da equação.',
+          'Dividendo extraordinário, típico de um evento que não se repete, entra na soma de 12 meses e eleva o preço teto. A fórmula não separa o pagamento recorrente do pagamento único.',
+          'Juros sobre capital próprio não chegam integrais a quem recebe: há retenção na fonte. O dividendo de ação, para a pessoa física, segue outra regra. Somar o JCP bruto no lugar do valor líquido aumenta o numerador. A diferença está no glossário de juros sobre capital próprio.',
+          'A fórmula também não lê mudança de controle, de estratégia ou de política de dividendos. Se o histórico deixa de descrever a empresa, a premissa da conta deixa de valer.',
         ],
       },
     ],
     exemplo: {
-      titulo: 'Exemplo fechado',
+      titulo: 'R$ 1,20 de dividendos viram R$ 20,00',
+      hipotetico: true,
       linhas: [
-        'Dividendo dos últimos 12 meses: R$ 3,00 por ação',
-        'Yield exigido: 6% (0,06)',
-        'Preço teto = 3,00 ÷ 0,06 = R$ 50,00',
-        'Preço de mercado R$ 38,00 → margem de segurança de 31,6%',
-        'Preço de mercado R$ 55,00 → 10% acima do teto, fora da regra',
+        'Números redondos de um exemplo hipotético. Não são dividendos, cotação nem preço-alvo de nenhum ativo.',
+        'Dividendos por ação dos últimos 12 meses: R$ 1,20',
+        'Dividend yield mínimo desejado: 6% ao ano (0,06), a régua clássica',
+        'Preço teto = 1,20 ÷ 0,06 = R$ 20,00',
+        'No mesmo exemplo, R$ 1,20 de dividendos sobre R$ 20,00 equivalem a 6% de dividend yield. A conta só fecha esses números. Não descreve nenhum papel.',
       ],
     },
     faq: [
-      { q: 'Qual a fórmula do preço teto de Bazin?', a: 'Preço teto = dividendo por ação dos últimos 12 meses dividido por 0,06. O 0,06 representa o dividend yield mínimo de 6% ao ano que Décio Bazin exigia para considerar uma ação atrativa.' },
-      { q: 'Posso usar um yield diferente de 6%?', a: 'Pode, e muita gente ajusta ao custo de oportunidade do momento (com Selic alta, exigir mais que 6% faz sentido). Mas ao trocar o percentual você deixa de calcular o preço teto de Bazin e passa a calcular o seu próprio critério. Deixe explícito qual yield usou quando comparar com outras fontes.' },
-      { q: 'Bazin serve para FIIs?', a: 'Serve, e é onde o método envelhece melhor, porque fundo imobiliário distribui no mínimo 95% do lucro semestral por lei e o rendimento é mensal e mais previsível que dividendo de empresa. A régua costuma ser o rendimento dos últimos 12 meses dividido pelo yield desejado.' },
-      { q: 'Devo usar o dividendo bruto ou líquido?', a: 'Dividendo de ação é isento de imposto de renda na pessoa física, então bruto e líquido coincidem. Já JCP (juros sobre capital próprio) tem retenção de 15% na fonte: se a empresa remunera via JCP, use o valor líquido para não superestimar o preço teto.' },
-      { q: 'O preço teto de Bazin é preço-alvo?', a: 'Não. Preço-alvo é projeção de para onde a ação vai. Preço teto é o máximo que você aceita pagar hoje para que o rendimento faça sentido. São conceitos diferentes e não devem ser comparados diretamente.' },
+      {
+        q: 'O que é preço teto?',
+        a: 'Preço teto, neste método, é o preço em que os dividendos por ação dos últimos 12 meses ainda rendem o dividend yield mínimo escolhido. Não é uma previsão de para onde a cotação vai e não é preço-alvo. É o resultado de uma conta. Nesta página, a conta é uma estimativa educacional, não uma recomendação de compra ou venda.',
+      },
+      {
+        q: 'Por que o método Bazin usa 6%?',
+        a: 'O 6% é o dividend yield mínimo que Décio Bazin adotou em "Faça Fortuna com Ações" como piso para a renda variável. Não é uma lei de mercado. A calculadora desta página usa esse 6%. Quem substitui o percentual por outro número deixa de calcular o preço teto de Bazin e passa a usar o próprio critério. O resultado continua sendo uma estimativa, não uma recomendação.',
+      },
+      {
+        q: 'O preço teto de Bazin usa dividendos de quantos anos?',
+        a: 'A fórmula desta página usa os dividendos por ação dos últimos 12 meses, um ano, e não a média de vários anos. Um pagamento extraordinário entra nessa soma. Ver se houve distribuição em anos anteriores ajuda a ler se o número de 12 meses é recorrente, mas essa leitura não entra na divisão: a calculadora não faz média plurianual.',
+      },
+      {
+        q: 'O método de Bazin funciona para FIIs?',
+        a: 'A mesma divisão pode ser feita com o rendimento por cota de um fundo imobiliário nos últimos 12 meses. A Lei 8.668/1993 exige que o fundo distribua no mínimo 95% dos lucros auferidos, apurados pelo regime de caixa, então o fluxo tende a ser mais regular do que o de muitas empresas. O resultado segue sendo uma estimativa educacional, não uma recomendação de nenhuma cota. A fórmula de Graham, que usa lucro e valor patrimonial, não descreve um FII da mesma forma.',
+      },
+      {
+        q: 'Qual a diferença entre o preço teto de Bazin e a fórmula de Graham?',
+        a: 'Bazin divide os dividendos por ação dos últimos 12 meses pelo yield mínimo, clássico de 6%. A fórmula de Graham desta página é a raiz de 22,5 × LPA × VPA: usa lucro por ação e valor patrimonial, e não o dividendo. As duas contas podem divergir porque medem insumos diferentes. Nenhuma das duas é recomendação de compra ou venda. O passo a passo da outra conta está na página do método de Graham.',
+        link: { texto: 'página do método de Graham', to: '/calculadora/preco-teto/graham' },
+      },
+      {
+        q: 'O resultado da calculadora é uma recomendação?',
+        a: 'Não. O número é uma estimativa educacional feita com os dividendos informados e o yield de 6%. Não escolhe ativo e não é preço-alvo.',
+      },
+      {
+        q: 'Dividendo extraordinário muda o preço teto?',
+        a: 'Muda, porque entra na soma dos últimos 12 meses. Um pagamento único, ligado a um evento que não se repete, eleva o numerador e, com ele, o preço teto. A fórmula não identifica sozinha o que é recorrente e o que é pontual. O resultado precisa ser lido junto com o histórico de distribuição, e não como alvo de preço.',
+      },
+    ],
+    relacionados: [
+      { to: '/glossario/dividend-yield', titulo: 'Dividend yield', texto: 'O rendimento que a fórmula de Bazin inverte: proventos de 12 meses divididos pelo preço.' },
+      { to: '/glossario/dividendos', titulo: 'Dividendos', texto: 'O que é o provento em dinheiro que entra no numerador da conta.' },
+      { to: '/glossario/jscp', titulo: 'Juros sobre capital próprio', texto: 'Provento com retenção na fonte, diferente do dividendo de ação.' },
+      { to: '/glossario/fii', titulo: 'Fundo imobiliário', texto: 'O que é um FII, quando a mesma divisão é aplicada ao rendimento da cota.' },
+      { to: '/ranking/maiores-dividend-yield', titulo: 'Ranking de dividend yield', texto: 'Ações e FIIs ordenados pelo dividend yield de 12 meses. O endereço /dividendos leva a este ranking.' },
+      { to: '/calculadora/dividend-yield', titulo: 'Calculadora de dividend yield', texto: 'A conta direta: proventos de 12 meses divididos pelo preço.' },
+      { to: '/calculadora/preco-teto/graham', titulo: 'Fórmula de Graham', texto: 'A outra régua clássica, com lucro por ação e valor patrimonial.' },
+      { to: '/guias/como-calcular-preco-teto', titulo: 'Como calcular preço teto', texto: 'As cinco fórmulas do site, com exemplo numérico e os limites de cada uma.' },
     ],
   },
 

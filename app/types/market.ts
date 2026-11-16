@@ -296,5 +296,10 @@ export interface NuGuideCardItem {
 export interface NuFaqItem {
   q: string
   a: string
+  /**
+   * Trecho de `a` que vira link. O texto visível continua sendo `a`,
+   * na mesma ordem, que é o texto do FAQPage.
+   */
+  link?: { texto: string; to: string }
 }
 

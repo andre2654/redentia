@@ -13,7 +13,6 @@
  */
 import { SETORES_BY_API } from '../content/setores.ts'
 import { nomeDaEmpresa } from './nomeB3.ts'
-import { linhaDiferencaPrecoTeto } from './preco-teto-diferenca.ts'
 import { bazinPrice, bookValuePrice, computeAll, grahamPrice, plSectorPrice } from './preco-teto.ts'
 import { resolveSiteDy, type ProventoRow } from './proventos.ts'
 import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO, juntaAte, tituloQueCabe } from './serp.ts'
@@ -54,6 +53,7 @@ const SETOR_ALIAS: Record<string, string> = {
 
 const brlFmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 const numFmt = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const pct1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 
 export interface OverviewPrecoTeto {
   key_statistics?: {
@@ -260,11 +260,9 @@ export function sectorPlEfetivo(lpa: number, mediaSetor: number | null): {
   return { valor: 0, fonte: 'ausente' }
 }
 
-export function tituloPrecoTeto(ticker: string, temGraham: boolean): string {
-  const titulo = temGraham
-    ? `Preço teto ${ticker} hoje: Bazin, Graham e justo`
-    : `Preço teto ${ticker} hoje: Bazin e rendimento`
-  return tituloQueCabe(titulo)
+export function tituloPrecoTeto(ticker: string, _temGraham: boolean): string {
+  // "e justo" lia como veredito. O título descreve a conta, não o papel.
+  return tituloQueCabe(`Preço-teto calculado pelo método Bazin para ${ticker}`)
 }
 
 export function descricaoPrecoTeto(partes: {
@@ -275,14 +273,13 @@ export function descricaoPrecoTeto(partes: {
   graham: string | null
   consenso: string | null
 }): string {
-  const aviso = 'Não é recomendação.'
+  const aviso = 'Estimativa educacional, não é recomendação.'
   const corpo = juntaAte([
-    `Preço teto de ${partes.ticker} (${partes.nome}) hoje.`,
+    `Preço-teto Bazin de ${partes.ticker} (${partes.nome}).`,
     partes.bazin ? `Bazin ${partes.bazin}.` : null,
     partes.graham ? `Graham ${partes.graham}.` : null,
-    partes.consenso ? `Consenso ${partes.consenso}.` : null,
     `Cotação ${partes.preco}.`,
-    'Conta passo a passo.',
+    partes.consenso ? `Média ${partes.consenso}.` : null,
   ], TETO_DESCRICAO - aviso.length - 1)
   const full = corpo ? `${corpo} ${aviso}` : aviso
   return full.length <= TETO_DESCRICAO ? full : full.slice(0, TETO_DESCRICAO)
@@ -391,7 +388,12 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
 }
 
 function posicaoConsenso(preco: number, consenso: number): string {
-  return linhaDiferencaPrecoTeto(preco, consenso) ?? ''
+  if (!(consenso > 0)) return ''
+  const m = (consenso - preco) / preco
+  const p = pct1.format(Math.abs(m * 100))
+  if (m > 0.005) return `A cotação está ${p}% abaixo dessa média.`
+  if (m < -0.005) return `A cotação está ${p}% acima dessa média.`
+  return 'A cotação está junto dessa média.'
 }
 
 function montarResposta(p: {
@@ -404,10 +406,10 @@ function montarResposta(p: {
 }): string {
   const quando = p.dataTexto ? ` no pregão de ${p.dataTexto}` : ''
   const partes = [`${p.ticker} fechou a ${brl(p.preco)}${quando}.`]
-  if (p.consenso > 0) partes.push(`O consenso dos métodos com número é ${brl(p.consenso)}.`)
+  if (p.consenso > 0) partes.push(`A média dos métodos com número é ${brl(p.consenso)}.`)
   if (p.bazin > 0) partes.push(`Pelo Bazin, o preço teto é ${brl(p.bazin)} (dividendo de 12 meses ÷ 6%).`)
-  if (p.graham > 0) partes.push(`Pela fórmula de Graham, o preço justo é ${brl(p.graham)}.`)
-  partes.push('Não é recomendação de compra ou venda.')
+  if (p.graham > 0) partes.push(`Pela fórmula de Graham, o cálculo dá ${brl(p.graham)}.`)
+  partes.push('Estimativa educacional, não é recomendação.')
   return partes.join(' ')
 }
 
@@ -436,11 +438,11 @@ function montarParagrafo(p: {
     frases.push(`Não houve dividendo de renda com data-com nos últimos 12 meses, então a régua de Bazin não produz preço teto.`)
   }
   if (p.bazin > 0) frases.push(`Dividindo esse valor por 0,06, o preço teto de Bazin fica em ${brl(p.bazin)}.`)
-  if (p.graham > 0) frases.push(`A fórmula de Graham aponta preço justo de ${brl(p.graham)}.`)
+  if (p.graham > 0) frases.push(`A fórmula de Graham calcula ${brl(p.graham)}.`)
   if (p.consenso > 0) {
-    frases.push(`A média dos métodos com número, o mesmo consenso da calculadora, é ${brl(p.consenso)}. ${posicaoConsenso(p.preco, p.consenso)}`)
+    frases.push(`A média dos métodos com número, a mesma média da calculadora, é ${brl(p.consenso)}. ${posicaoConsenso(p.preco, p.consenso)}`)
   }
-  frases.push('Não é recomendação de compra ou venda.')
+  frases.push('Estimativa educacional, não é recomendação.')
   return frases.join(' ')
 }
 
@@ -465,7 +467,7 @@ function montarPassos(p: {
   const quando = p.dataTexto ? ` em ${p.dataTexto}` : ''
   const passos: PassoPrecoTeto[] = [{
     titulo: 'Cotação',
-    linhas: [`Preço de ${p.ticker}${quando}: ${brl(p.preco)}. É o preço do último pregão, não um preço-alvo.`],
+    linhas: [`Cotação de ${p.ticker}${quando}: ${brl(p.preco)}. É o preço do último pregão e entra na conta como está.`],
   }]
 
   if (p.dividendo > 0 && p.bazin > 0) {
@@ -494,7 +496,7 @@ function montarPassos(p: {
       linhas: [
         `LPA ${brl(p.lpa)} e VPA ${brl(p.vpa)}.`,
         `22,5 × ${numBr(p.lpa)} × ${numBr(p.vpa)} = ${numBr(produto)}.`,
-        `Preço justo = √${numBr(produto)} = ${brl(p.graham)}.`,
+        `Preço teto = √${numBr(produto)} = ${brl(p.graham)}.`,
         'O 22,5 é 15 × 1,5: o P/L e o P/VP máximos que Graham usava como filtro do investidor defensivo.',
       ],
     })
@@ -523,7 +525,7 @@ function montarPassos(p: {
       titulo: 'P/L setorial',
       linhas: [
         'Não há P/L médio publicado para o setor.',
-        'Sem esse múltiplo o método fica indisponível e não entra no consenso. O P/L do próprio papel não substitui: LPA vezes esse P/L devolve a cotação.',
+        'Sem esse múltiplo o método fica indisponível e não entra na média. O P/L do próprio papel não substitui: LPA vezes esse P/L devolve a cotação.',
       ],
     })
   }
@@ -538,7 +540,7 @@ function montarPassos(p: {
   const validos = [p.graham, p.bazin, p.plSetorial, p.vpaTeto].filter((n) => n > 0)
   if (validos.length && p.consenso > 0) {
     passos.push({
-      titulo: 'Consenso',
+      titulo: 'Média dos métodos',
       linhas: [
         `Média dos métodos com número: (${validos.map((n) => brl(n)).join(' + ')}) ÷ ${validos.length} = ${brl(p.consenso)}.`,
         'O método projetivo fica de fora: ele repete o Bazin sobre o mesmo dividendo e puxaria a média.',
@@ -564,8 +566,8 @@ function montarFaq(p: {
   const faq: { q: string; a: string }[] = [{
     q: `Qual o preço teto de ${p.ticker} hoje?`,
     a: p.consenso > 0
-      ? `O consenso dos métodos com número para ${p.nome} (${p.ticker}) é ${brl(p.consenso)}, com a cotação a ${brl(p.preco)}. ${p.bazin > 0 ? `Bazin: ${brl(p.bazin)}. ` : ''}${p.graham > 0 ? `Graham: ${brl(p.graham)}. ` : ''}O consenso é a média, a mesma conta da calculadora de preço teto. Não é recomendação de compra ou venda.`
-      : `Não há métodos com número suficiente para um consenso de ${p.ticker} hoje.`,
+      ? `A média dos métodos com número para ${p.nome} (${p.ticker}) é ${brl(p.consenso)}, com a cotação a ${brl(p.preco)}. ${p.bazin > 0 ? `Bazin: ${brl(p.bazin)}. ` : ''}${p.graham > 0 ? `Graham: ${brl(p.graham)}. ` : ''}A média é a mesma conta da calculadora de preço teto. Estimativa educacional, não é recomendação.`
+      : `Não há métodos com número suficiente para uma média de ${p.ticker} hoje.`,
   }]
 
   faq.push({
@@ -576,9 +578,9 @@ function montarFaq(p: {
   })
 
   faq.push({
-    q: `Qual o preço justo de ${p.ticker} pela fórmula de Graham?`,
+    q: `Qual o preço teto de ${p.ticker} pela fórmula de Graham?`,
     a: p.graham > 0
-      ? `O preço justo de ${p.ticker} pela fórmula de Graham é ${brl(p.graham)}, a raiz de 22,5 × LPA × VPA. É um teto de filtro, não uma previsão de para onde a cotação vai.`
+      ? `O preço teto de ${p.ticker} pela fórmula de Graham é ${brl(p.graham)}, a raiz de 22,5 × LPA × VPA. É o resultado da fórmula, não uma previsão de para onde a cotação vai.`
       : `A fórmula de Graham não se aplica a ${p.ticker} com os números atuais: ela exige LPA e VPA positivos. Fundo imobiliário e empresa sem lucro ficam de fora dessa conta.`,
   })
 
@@ -590,8 +592,8 @@ function montarFaq(p: {
   })
 
   faq.push({
-    q: `O preço teto de ${p.ticker} é recomendação de compra?`,
-    a: `Não. O preço teto de ${p.ticker} é a régua de Bazin, Graham, P/L setorial e valor patrimonial sobre os números dos últimos 12 meses. Diz até onde cada método chega. Não diz se a pessoa deve comprar, vender ou manter ${p.ticker}.`,
+    q: `O preço teto de ${p.ticker} é uma recomendação?`,
+    a: `Não. O preço teto de ${p.ticker} é a conta de Bazin, Graham, P/L setorial e valor patrimonial sobre os números dos últimos 12 meses. Diz até onde cada método chega. Estimativa educacional, não é recomendação.`,
   })
   return faq
 }
