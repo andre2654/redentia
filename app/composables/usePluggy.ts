@@ -11,18 +11,24 @@ export function usePluggy() {
   const { authFetch } = useApi()
 
   function getConnectToken(itemId?: string): Promise<string> {
+    return getConnectTokenDoAgregador(itemId).then(r => r.accessToken)
+  }
+
+  /** O token e o agregador (pluggy | malvo) que abre o widget. */
+  function getConnectTokenDoAgregador(itemId?: string): Promise<{ accessToken: string; provider: string }> {
     const q = itemId ? `?item_id=${encodeURIComponent(itemId)}` : ''
-    return authFetch<{ accessToken: string }>(`/pluggy/connect-token${q}`).then(r => r.accessToken)
+    return authFetch<{ accessToken: string; provider?: string }>(`/pluggy/connect-token${q}`)
+      .then(r => ({ accessToken: r.accessToken, provider: r.provider ?? 'pluggy' }))
   }
 
   function listConnections(): Promise<PluggyConnection[]> {
     return authFetch<{ data: PluggyConnection[] }>('/pluggy/connections').then(r => r.data ?? [])
   }
 
-  function registerConnection(itemId: string): Promise<{ id: number; status: string }> {
+  function registerConnection(itemId: string, provider?: string): Promise<{ id: number; status: string }> {
     return authFetch<{ data: { id: number; status: string } }>('/pluggy/connections', {
       method: 'POST',
-      body: { item_id: itemId },
+      body: { item_id: itemId, ...(provider ? { provider } : {}) },
     }).then(r => r.data)
   }
 
@@ -34,5 +40,5 @@ export function usePluggy() {
     return authFetch(`/pluggy/connections/${id}`, { method: 'DELETE' }).then(() => undefined)
   }
 
-  return { getConnectToken, listConnections, registerConnection, syncConnection, deleteConnection }
+  return { getConnectToken, getConnectTokenDoAgregador, listConnections, registerConnection, syncConnection, deleteConnection }
 }

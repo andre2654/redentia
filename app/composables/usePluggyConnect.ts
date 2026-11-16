@@ -15,20 +15,11 @@
  * Pluggy (client_id/secret) vivem SÓ no Laravel. Erro em qualquer etapa →
  * `error` legível pro CarteiraConnect degradar com instrução (nunca botão morto).
  */
+import { abrirWidgetOpenFinance } from '~/utils/widget-open-finance'
 
 interface PluggyItem { id: string; status: string }
 
 // cache do módulo — não re-importa a cada clique
-let sdkModule: unknown = null
-
-async function loadSDK(): Promise<unknown> {
-  if (import.meta.server) return null
-  if (sdkModule) return sdkModule
-  const mod = await import('pluggy-connect-sdk')
-  sdkModule = mod
-  return mod
-}
-
 export function usePluggyConnect() {
   const { token } = useAuthState()
   const opening = ref(false)
@@ -49,25 +40,16 @@ export function usePluggyConnect() {
     error.value = null
     opening.value = true
     try {
-      const sdk = await loadSDK() as { PluggyConnect?: unknown; default?: { PluggyConnect?: unknown } } | null
-      if (!sdk) throw new Error('sdk_ssr')
-      const PluggyConnect = (sdk.PluggyConnect ?? sdk.default?.PluggyConnect ?? sdk.default) as
-        | (new (opts: Record<string, unknown>) => { init: () => void })
-        | undefined
-      if (!PluggyConnect) throw new Error('sdk_export')
+      const { accessToken, provider } = await pluggyFetchConnectToken(base, authHeaders())
 
-      const { accessToken } = await pluggyFetchConnectToken(base, authHeaders())
-
-      const widget = new PluggyConnect({
+      await abrirWidgetOpenFinance({
         connectToken: accessToken,
-        // Produto real: sem conectores sandbox na lista (o Frontend usa true
-        // pra teste; aqui é a superfície de usuário final).
-        includeSandbox: false,
-        onSuccess: async ({ item }: { item: PluggyItem }) => {
+        provider,
+        onSuccess: async (item) => {
           registering.value = true
           try {
-            await pluggyRegisterConnection(base, authHeaders(), item.id)
-            opts.onConnected(item)
+            await pluggyRegisterConnection(base, authHeaders(), item.id, provider)
+            opts.onConnected(item as PluggyItem)
           } catch {
             error.value = 'A conexão foi criada no seu banco, mas não conseguimos registrá-la aqui. Recarregue a página. Se ela não aparecer, tente conectar de novo.'
           } finally {
@@ -79,8 +61,6 @@ export function usePluggyConnect() {
         },
         onClose: () => { opts.onClose?.() },
       })
-
-      widget.init()
     } catch {
       error.value = 'Não conseguimos abrir a conexão segura agora. Verifique sua internet e tente de novo em instantes.'
     } finally {
