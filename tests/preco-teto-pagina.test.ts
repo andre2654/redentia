@@ -113,19 +113,18 @@ test('a página de PETR4 usa a mesma conta da calculadora, a tabela de 4% a 12% 
   const seis = view.tabela.find((l) => l.bazin)
   assert.equal(seis?.pct, 6)
   assert.equal(seis?.teto, view.bazin)
-  assert.equal(view.title, 'Preço teto PETR4 hoje: Bazin, Graham e justo')
+  assert.equal(view.title, 'Preço-teto calculado pelo método Bazin para PETR4')
   assert.equal(tituloCabeNoSerp(view.title), true)
   assert.ok(tituloVisivel(view.title).length <= TETO_TITULO)
   assert.ok(view.description.length <= TETO_DESCRICAO, String(view.description.length))
-  assert.match(view.description, /^Preço teto de PETR4 \(Petrobras\) hoje\. /)
+  assert.match(view.description, /^Preço-teto Bazin de PETR4 \(Petrobras\)\. /)
   assert.match(view.description, /Bazin R\$/)
   assert.match(view.description, /Graham R\$/)
-  assert.match(view.description, /Consenso R\$/)
+  assert.match(view.description, /Média R\$/)
   assert.match(view.description, /Cotação R\$/)
-  assert.match(view.description, /Conta passo a passo\./)
-  assert.match(view.description, /Não é recomendação\.$/)
+  assert.match(view.description, /Estimativa educacional, não é recomendação\.$/)
   assert.match(view.paragrafo, /Petrobras/)
-  assert.match(view.paragrafo, /Não é recomendação de compra ou venda/)
+  assert.match(view.paragrafo, /Estimativa educacional, não é recomendação/)
   assert.equal(/\bcompre\b/i.test(view.paragrafo + view.resposta + view.faq.map((f) => f.a).join(' ')), false)
   assert.equal(view.assetHref, '/asset/PETR4')
   assert.equal(view.dividendosHref, '/dividendos/PETR4')
@@ -153,15 +152,15 @@ test('FII sem LPA não promete Graham no título e ainda tem Bazin e VPA', () =>
   assert.equal(view.graham, 0)
   assert.equal(view.bazin, 1.2 / 0.06)
   assert.equal(view.vpaTeto, 150)
-  assert.equal(view.title, 'Preço teto HGLG11 hoje: Bazin e rendimento')
+  assert.equal(view.title, 'Preço-teto calculado pelo método Bazin para HGLG11')
   assert.equal(view.title, tituloPrecoTeto('HGLG11', false))
   assert.equal(tituloCabeNoSerp(view.title), true)
   assert.match(view.title, /Bazin/)
   assert.equal(view.title.includes('Graham'), false)
-  assert.match(view.description, /^Preço teto de HGLG11 \(Cshg Logística\) hoje\. /)
+  assert.match(view.description, /^Preço-teto Bazin de HGLG11 \(Cshg Logística\)\. /)
   assert.match(view.description, /Bazin R\$/)
   assert.match(view.description, /Cotação R\$/)
-  assert.match(view.description, /Conta passo a passo\./)
+  assert.match(view.description, /Estimativa educacional, não é recomendação\.$/)
   assert.equal(view.description.includes('Graham'), false)
   assert.equal(view.unidade, 'cota')
   assert.equal(view.setorHref, '/setor/imobiliario')
@@ -219,7 +218,7 @@ test('falha de rede no build não tira do sitemap quem já estava', () => {
 
 const CVM20 = /\b(barato|oportunidade|compre|vale a pena)\b/i
 
-test('título e description de preço teto usam o template de antes do PR 140, cabem no SERP e não recomendam', () => {
+test('título e description de preço teto descrevem a conta de Bazin, cabem no SERP e não recomendam', () => {
   const reais = (v: number) => brl(v).replace(/\u00a0/g, ' ')
   const casos: Array<{
     ticker: string
@@ -234,44 +233,44 @@ test('título e description de preço teto usam o template de antes do PR 140, c
     {
       ticker: 'BBAS3', nome: 'Banco do Brasil',
       preco: 16.47, bazin: 11.51, graham: 39.27, consenso: 32.86,
-      titulo: 'Preço teto BBAS3 hoje: Bazin, Graham e justo',
-      description: `Preço teto de BBAS3 (Banco do Brasil) hoje. Bazin ${reais(11.51)}. Graham ${reais(39.27)}. Consenso ${reais(32.86)}. Cotação ${reais(16.47)}. Conta passo a passo. Não é recomendação.`,
+      titulo: 'Preço-teto calculado pelo método Bazin para BBAS3',
+      description: `Preço-teto Bazin de BBAS3 (Banco do Brasil). Bazin ${reais(11.51)}. Graham ${reais(39.27)}. Cotação ${reais(16.47)}. Média ${reais(32.86)}. Estimativa educacional, não é recomendação.`,
     },
     {
       ticker: 'ITUB4', nome: 'Itaú Unibanco',
       preco: 38.69, bazin: 52.47, graham: 43.43, consenso: 41.85,
-      titulo: 'Preço teto ITUB4 hoje: Bazin, Graham e justo',
-      description: `Preço teto de ITUB4 (Itaú Unibanco) hoje. Bazin ${reais(52.47)}. Graham ${reais(43.43)}. Consenso ${reais(41.85)}. Cotação ${reais(38.69)}. Conta passo a passo. Não é recomendação.`,
+      titulo: 'Preço-teto calculado pelo método Bazin para ITUB4',
+      description: `Preço-teto Bazin de ITUB4 (Itaú Unibanco). Bazin ${reais(52.47)}. Graham ${reais(43.43)}. Cotação ${reais(38.69)}. Média ${reais(41.85)}. Estimativa educacional, não é recomendação.`,
     },
     {
       ticker: 'ITSA4', nome: 'Itaúsa',
       preco: 12.45, bazin: 19.06, graham: 17.47, consenso: 16.36,
-      titulo: 'Preço teto ITSA4 hoje: Bazin, Graham e justo',
-      description: `Preço teto de ITSA4 (Itaúsa) hoje. Bazin ${reais(19.06)}. Graham ${reais(17.47)}. Consenso ${reais(16.36)}. Cotação ${reais(12.45)}. Conta passo a passo. Não é recomendação.`,
+      titulo: 'Preço-teto calculado pelo método Bazin para ITSA4',
+      description: `Preço-teto Bazin de ITSA4 (Itaúsa). Bazin ${reais(19.06)}. Graham ${reais(17.47)}. Cotação ${reais(12.45)}. Média ${reais(16.36)}. Estimativa educacional, não é recomendação.`,
     },
     {
       ticker: 'SAPR4', nome: 'Sanepar',
       preco: 6.03, bazin: 1.88, graham: 7.37, consenso: 7.09,
-      titulo: 'Preço teto SAPR4 hoje: Bazin, Graham e justo',
-      description: `Preço teto de SAPR4 (Sanepar) hoje. Bazin ${reais(1.88)}. Graham ${reais(7.37)}. Consenso ${reais(7.09)}. Cotação ${reais(6.03)}. Conta passo a passo. Não é recomendação.`,
+      titulo: 'Preço-teto calculado pelo método Bazin para SAPR4',
+      description: `Preço-teto Bazin de SAPR4 (Sanepar). Bazin ${reais(1.88)}. Graham ${reais(7.37)}. Cotação ${reais(6.03)}. Média ${reais(7.09)}. Estimativa educacional, não é recomendação.`,
     },
     {
       ticker: 'CXSE3', nome: 'Caixa Seguridade',
       preco: 21.38, bazin: 22.54, graham: 12.49, consenso: 13.97,
-      titulo: 'Preço teto CXSE3 hoje: Bazin, Graham e justo',
-      description: `Preço teto de CXSE3 (Caixa Seguridade) hoje. Bazin ${reais(22.54)}. Graham ${reais(12.49)}. Consenso ${reais(13.97)}. Cotação ${reais(21.38)}. Conta passo a passo. Não é recomendação.`,
+      titulo: 'Preço-teto calculado pelo método Bazin para CXSE3',
+      description: `Preço-teto Bazin de CXSE3 (Caixa Seguridade). Bazin ${reais(22.54)}. Graham ${reais(12.49)}. Cotação ${reais(21.38)}. Estimativa educacional, não é recomendação.`,
     },
     {
       ticker: 'POMO4', nome: 'Marcopolo',
       preco: 3.7, bazin: null, graham: null, consenso: null,
-      titulo: 'Preço teto POMO4 hoje: Bazin e rendimento',
-      description: `Preço teto de POMO4 (Marcopolo) hoje. Cotação ${reais(3.7)}. Conta passo a passo. Não é recomendação.`,
+      titulo: 'Preço-teto calculado pelo método Bazin para POMO4',
+      description: `Preço-teto Bazin de POMO4 (Marcopolo). Cotação ${reais(3.7)}. Estimativa educacional, não é recomendação.`,
     },
     {
       ticker: 'UNIP6', nome: 'Unipar',
       preco: 51, bazin: null, graham: null, consenso: null,
-      titulo: 'Preço teto UNIP6 hoje: Bazin e rendimento',
-      description: `Preço teto de UNIP6 (Unipar) hoje. Cotação ${reais(51)}. Conta passo a passo. Não é recomendação.`,
+      titulo: 'Preço-teto calculado pelo método Bazin para UNIP6',
+      description: `Preço-teto Bazin de UNIP6 (Unipar). Cotação ${reais(51)}. Estimativa educacional, não é recomendação.`,
     },
   ]
 
@@ -292,9 +291,9 @@ test('título e description de preço teto usam o template de antes do PR 140, c
     assert.doesNotMatch(`${titulo}\n${description}`, CVM20, c.ticker)
   }
 
-  assert.equal(tituloPrecoTeto('POMO4', true), 'Preço teto POMO4 hoje: Bazin, Graham e justo')
-  assert.equal(tituloPrecoTeto('UNIP6', true), 'Preço teto UNIP6 hoje: Bazin, Graham e justo')
-  assert.equal(tituloPrecoTeto('ITUB4', false), 'Preço teto ITUB4 hoje: Bazin e rendimento')
+  assert.equal(tituloPrecoTeto('POMO4', true), 'Preço-teto calculado pelo método Bazin para POMO4')
+  assert.equal(tituloPrecoTeto('UNIP6', true), 'Preço-teto calculado pelo método Bazin para UNIP6')
+  assert.equal(tituloPrecoTeto('ITUB4', false), 'Preço-teto calculado pelo método Bazin para ITUB4')
   assert.ok(tituloVisivel(tituloPrecoTeto('POMO4', true)).length <= TETO_TITULO)
   assert.ok(tituloVisivel(tituloPrecoTeto('UNIP6', true)).length <= TETO_TITULO)
 })
@@ -304,9 +303,9 @@ test('preço teto sem Bazin, Graham ou consenso não inventa esses números', ()
     ticker: 'BBAS3', nome: 'Banco do Brasil',
     preco: brl(10), bazin: null, graham: null, consenso: null,
   })
-  assert.equal(d, `Preço teto de BBAS3 (Banco do Brasil) hoje. Cotação ${brl(10).replace(/\u00a0/g, ' ')}. Conta passo a passo. Não é recomendação.`)
-  assert.doesNotMatch(d, /Bazin|Graham|Consenso|Brapi|\d{2}\/\d{2}/)
-  assert.match(d, /Não é recomendação\.$/)
+  assert.equal(d, `Preço-teto Bazin de BBAS3 (Banco do Brasil). Cotação ${brl(10).replace(/\u00a0/g, ' ')}. Estimativa educacional, não é recomendação.`)
+  assert.doesNotMatch(d, /Bazin R\$|Graham|Média R\$|Brapi|\d{2}\/\d{2}/)
+  assert.match(d, /Estimativa educacional, não é recomendação\.$/)
   assert.ok(d.length <= TETO_DESCRICAO, String(d.length))
   assert.doesNotMatch(d, CVM20)
 })
@@ -318,11 +317,11 @@ test('nome longo de preço teto cabe no teto da description', () => {
     preco: brl(16.47), bazin: brl(11.51), graham: brl(39.27), consenso: brl(32.86),
   })
   assert.ok(d.length <= TETO_DESCRICAO, `${d.length}: ${d}`)
-  assert.match(d, /^Preço teto de BBAS3 \(/)
-  assert.match(d, /Não é recomendação\.$/)
+  assert.match(d, /^Preço-teto Bazin de BBAS3 \(/)
+  assert.match(d, /Estimativa educacional, não é recomendação\.$/)
   assert.doesNotMatch(d, CVM20)
   const titulo = tituloPrecoTeto('BBAS3', true)
-  assert.equal(titulo, 'Preço teto BBAS3 hoje: Bazin, Graham e justo')
+  assert.equal(titulo, 'Preço-teto calculado pelo método Bazin para BBAS3')
   assert.ok(tituloVisivel(titulo).length <= TETO_TITULO)
 })
 

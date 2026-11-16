@@ -49,6 +49,7 @@ import { spISODate } from '../../app/utils/format'
 import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 import { GRAFICOS_PAGINA } from '../../app/utils/graficos'
+import { paginasPrecoTetoIndexaveis } from './preco-teto-sitemap'
 
 export interface SitePage {
   path: string
@@ -148,11 +149,6 @@ const CALCULADORA_PAGES: SitePage[] = [
 // (app/content/calculadoras/preco-teto-metodos.ts) pra não haver lista duplicada.
 // Demanda medida no Search Console: modificador de MÉTODO vale 2.956 impressões
 // no cluster de preço teto contra 190 do modificador de TICKER (15,6x).
-/**
- * /calculadora/preco-teto/{TICKER}. Só papel com LPA ou dividendo de renda
- * (server/data/preco-teto-elegiveis.ts, gerado no build). Ticker sem dado
- * não entra: a rota responde 404 e sitemap com 404 derruba o arquivo.
- */
 function precoTetoMetodoPages(): SitePage[] {
   return Object.values(PRECO_TETO_METODOS).map((m) => ({
     path: `/calculadora/preco-teto/${m.slug}`,
@@ -954,9 +950,19 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     })
   }
 
-  // /calculadora/preco-teto/{TICKER} ficou fora do sitemap em 15/11/2026:
-  // centenas de cópias da mesma calculadora. A página segue no ar, noindex.
+  // Só a allowlist com clique (>=2 no Search Console, 15/08 a 14/11/2026).
+  // O resto de /calculadora/preco-teto/{TICKER} segue no ar e noindex, e o
+  // filtro semPrecoTetoPorTicker tira URL fora da lista da semente antiga.
   // Os cinco métodos entram por precoTetoMetodoPages(), na seção calculadoras.
+  const precoTeto = paginasPrecoTetoIndexaveis()
+  if (precoTeto.length > 0) {
+    sections.push({
+      id: 'preco-teto',
+      title: 'Preço teto por ativo',
+      description: 'Preço-teto calculado pelo método Bazin para os tickers com clique medido. Estimativa educacional, não é recomendação.',
+      pages: precoTeto,
+    })
+  }
 
   if (ativos.length > 0) {
     sections.push({
