@@ -20,6 +20,7 @@
  * contexto de chat no app).
  */
 
+import { type AtivoDoChat, ativoDoCartao, juntarAtivo } from '~/utils/chat-ativos'
 import type { ContextoDoChat } from '~/composables/useChatPainel'
 import { anexosDoTurno, guardarPerguntaDoGate, MAX_CONTEXTOS, routeContextDaRota } from '~/utils/chat-painel'
 
@@ -44,6 +45,8 @@ export interface NuChatMsg {
   done?: boolean
   /** os pedaços da página que foram junto da pergunta (chips na bolha) */
   contextos?: Array<{ rotulo: string; tipo?: string }>
+  /** os ativos que a IA consultou (asset.card): o chip com o preço e a variação */
+  ativos?: AtivoDoChat[]
 }
 
 /** Opções de um envio vindo do painel (02/11/2026). */
@@ -159,6 +162,9 @@ export function useNuChat() {
         })
         break
       }
+      case 'asset.card':
+        a.ativos = juntarAtivo(a.ativos ?? [], ativoDoCartao(data))
+        break
       case 'followups':
         a.followups = Array.isArray(data.suggestions)
           ? data.suggestions.filter((s: unknown): s is string => typeof s === 'string')
@@ -183,7 +189,7 @@ export function useNuChat() {
         }
         a.error = data.message || 'Erro ao processar a mensagem. Tente de novo.'
         break
-      // form.show / action.propose / asset.card / artifact.* / goal.* /
+      // form.show / action.propose / artifact.* / goal.* /
       // decision.* / research.* / scenario.* / preexec.* / alert.* /
       // portfolio.* / context.probe: ignorados em silêncio (contrato PR9).
     }

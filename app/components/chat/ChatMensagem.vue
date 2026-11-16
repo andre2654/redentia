@@ -12,6 +12,7 @@
 // caixa dentro do balão); fontes e continuações com hover, apertado e foco.
 import type { NuChatCitation, NuChatMsg } from '~/composables/useNuChat'
 import { agendarPalavras, contarPalavras, cortarPalavraIncompleta, envolverPalavras } from '~/utils/revelar-palavras'
+import { marcasDeFonte, rotulosDoAtivo } from '~/utils/chat-ativos'
 
 const props = defineProps<{
   msg: NuChatMsg
@@ -31,7 +32,7 @@ const animar = props.msg.role === 'assistant' && !props.msg.done && !calmo
 
 const html = computed(() => {
   const terminou = !props.aoVivo || !!props.msg.done || !!props.msg.error
-  const base = chatMarkdown(animar ? cortarPalavraIncompleta(props.msg.content, terminou) : props.msg.content)
+  const base = marcasDeFonte(chatMarkdown(animar ? cortarPalavraIncompleta(props.msg.content, terminou) : props.msg.content))
   if (!animar || import.meta.server) return base
   const agora = performance.now()
   const agenda = agendarPalavras(agendaDe(props.msg.id), contarPalavras(base), agora)
@@ -71,6 +72,18 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
         <!-- eslint-disable-next-line vue/no-v-html — chatMarkdown escapa tudo antes -->
         <div v-if="msg.content" class="cms__corpo" v-html="html" />
 
+        <div v-if="msg.ativos?.length && (msg.done || !aoVivo)" class="cms__ativos" aria-label="Ativos citados">
+          <NuxtLink v-for="a in msg.ativos" :key="a.ticker" :to="`/asset/${a.ticker}`" class="cms__ativo" :title="a.nome">
+            <span class="cms__ativo-tk">{{ a.ticker }}</span>
+            <span v-if="rotulosDoAtivo(a).preco" class="cms__ativo-preco">{{ rotulosDoAtivo(a).preco }}</span>
+            <span
+              v-if="rotulosDoAtivo(a).variacao"
+              class="cms__ativo-var"
+              :class="{ 'cms__ativo-var--sobe': rotulosDoAtivo(a).sobe === true, 'cms__ativo-var--cai': rotulosDoAtivo(a).sobe === false }"
+            >{{ rotulosDoAtivo(a).variacao }}</span>
+          </NuxtLink>
+        </div>
+
         <div v-if="msg.error" class="cms__erro" role="alert">
           <svg class="cms__erro-icone" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5h.01" /></svg>
           <span class="cms__erro-txt">{{ msg.error }}</span>
@@ -94,6 +107,23 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
 </template>
 
 <style scoped>
+/* os ativos que a IA consultou: o chip com o preço e a variação, que leva ao ativo */
+.cms__ativos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.cms__ativo {
+  display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 11px; border-radius: var(--nu-r-pill);
+  box-shadow: inset 0 0 0 1px var(--nu-line-2); color: var(--nu-ink); text-decoration: none;
+  font-size: var(--nu-fs-dense); font-variant-numeric: tabular-nums;
+  transition: box-shadow var(--nu-dur-rapida) var(--nu-ease-saida), background var(--nu-dur-rapida) var(--nu-ease-saida);
+}
+.cms__ativo:hover { box-shadow: inset 0 0 0 1px var(--nu-blue); }
+.cms__ativo:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.cms__ativo-tk { font-weight: var(--nu-w-forte); }
+.cms__ativo-preco { color: var(--nu-gray-3); }
+.cms__ativo-var--sobe { color: var(--nu-green); }
+.cms__ativo-var--cai { color: var(--nu-red); }
+/* a marca de fonte [N] do texto */
+.cms__corpo :deep(.cms__ref) { font-size: 0.7em; color: var(--nu-gray-3); margin-left: 1px; }
+
 /* a mensagem entra subindo (nu-fade) */
 .cms { animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; }
 
