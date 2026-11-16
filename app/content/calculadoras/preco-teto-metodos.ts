@@ -62,7 +62,7 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
         h2: 'Como funciona o método Bazin',
         formula: true,
         body: [
-          'Décio Bazin descreveu o método no livro "Faça Fortuna com Ações", publicado em 1991. A conta inverte o dividend yield. Se o rendimento mínimo fica fixo, o preço compatível com esse rendimento é o dividendo dividido por esse rendimento.',
+          'Décio Bazin descreveu o método no livro "Faça Fortuna com Ações", publicado em 1992. A conta inverte o dividend yield. Se o rendimento mínimo fica fixo, o preço compatível com esse rendimento é o dividendo dividido por esse rendimento.',
           'A régua clássica usa 6% ao ano, escrito como 0,06. Não é uma constante de mercado nem uma dedução teórica. É o piso de dividend yield que Bazin adotou naquele livro, no contexto de juros em que escreveu, para comparar renda variável com renda fixa. A calculadora desta página aplica esse 6%. Trocar o percentual produz outra régua: deixa de ser o preço teto de Bazin e passa a ser o critério de quem escolheu o novo número.',
           'O 6% foi escolhido num contexto de juros. Quando a renda fixa paga bem mais ou bem menos do que esse piso, a mesma régua fica mais folgada ou mais estreita. A calculadora não ajusta o percentual ao juro do dia. Ela mantém os 6% de Bazin.',
         ],

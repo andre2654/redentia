@@ -65,15 +65,19 @@ const barras = computed(() => {
   ]
 })
 
-// Posição perante a régua do método. "Barato" / "Caro" ao lado da conta
-// lia como veredito sobre o papel (CVM).
+// Diferença numérica, sem "acima" / "abaixo" / "perto". O sinal é
+// (cotação − preço teto) ÷ preço teto, o mesmo ratio que a conta já devolve.
 const posicao = computed(() => {
   const r = resultado.value
   if (!(r.fairPrice > 0) || !(price.value > 0)) return null
-  if (r.ratio < 0.8) return { rotulo: 'Abaixo da régua', tom: 'neutro' as const, texto: `A cotação está ${pct(Math.abs(r.margin))} abaixo do preço teto deste método.` }
-  if (r.ratio <= 1) return { rotulo: 'Na régua', tom: 'neutro' as const, texto: 'A cotação está perto do preço teto deste método.' }
-  return { rotulo: 'Acima da régua', tom: 'neutro' as const, texto: `A cotação está ${pct(Math.abs(r.margin))} acima do preço teto deste método.` }
+  return {
+    rotulo: 'Diferença',
+    tom: 'neutro' as const,
+    texto: `Diferença entre a cotação informada e o preço teto calculado: ${pct(r.ratio - 1)}.`,
+  }
 })
+
+const valoresDeExemplo = computed(() => slug === 'bazin' && Math.abs(price.value - 28) < 0.001 && Math.abs(dividend.value - 1.8) < 0.001)
 
 /** Os outros métodos, pra cross-link (é o que faz o cluster existir como cluster). */
 const outros = PRECO_TETO_METODO_SLUGS.filter((s) => s !== slug).map((s) => PRECO_TETO_METODOS[s]!)
@@ -134,6 +138,7 @@ usePageSeo({
             <span v-if="usa('growth')" class="ptm__dado">Crescimento do dividendo (% a.a.) <b>{{ num(growth) }}%</b></span>
           </template>
         </CalcPremissas>
+        <p v-if="valoresDeExemplo" class="ptm__valores-exemplo">Valores de exemplo</p>
       </template>
       <template #resultado>
         <CalcNumero
@@ -236,6 +241,10 @@ usePageSeo({
 }
 /* a linha dos dados: cada dado é um bloco que não se parte */
 .ptm__dados { margin-top: 16px; }
+.ptm__valores-exemplo {
+  margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs);
+  font-weight: var(--nu-w-medio); line-height: 1.4;
+}
 .ptm__dado { display: inline-block; white-space: nowrap; }
 .ptm__dado b { color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 .ptm__dado:not(:last-child)::after { content: '·'; margin: 0 9px; color: var(--nu-gray); }

@@ -43,6 +43,8 @@ test('a fórmula, o exemplo hipotético e o livro fecham em R$ 20,00', () => {
   assert.equal(bazin.sections[0]?.id, 'como-funciona')
   assert.equal(bazin.sections[0]?.formula, true)
   assert.match(copia, /Faça Fortuna com Ações/)
+  assert.match(copia, /publicado em 1992/)
+  assert.doesNotMatch(copia, /1991/)
   assert.equal(bazin.exemplo.hipotetico, true)
   assert.match(bazin.exemplo.linhas.join('\n'), /1,20 ÷ 0,06 = R\$ 20,00/)
   assert.match(bazin.exemplo.linhas.join('\n'), /exemplo hipotético/i)
@@ -111,6 +113,9 @@ test('os links internos apontam para rotas que existem e o schema não inventa n
   assert.match(pagina, /priceByMethod\(m\.id/)
   assert.match(pagina, /const dividend = ref\(1\.8\)/)
   assert.match(pagina, /const price = ref\(28\)/)
+  assert.match(pagina, /Valores de exemplo/)
+  assert.match(pagina, /Diferença entre a cotação informada e o preço teto calculado/)
+  assert.doesNotMatch(pagina, /perto do preço teto|abaixo do preço teto|acima do preço teto/)
 })
 
 test('a cópia de Bazin não recomenda ativo, não diz barato ou caro e não cita ticker', () => {
