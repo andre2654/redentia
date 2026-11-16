@@ -52,7 +52,7 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
       {
         h2: 'De onde vem o 6%',
         body: [
-          'Décio Bazin descreveu o método em "Faça Fortuna com Ações", publicado em 1991. O 6% não é uma constante de mercado nem uma dedução teórica: é o piso de rendimento que ele considerava aceitável para assumir o risco de renda variável em vez de renda fixa, no Brasil, naquele contexto de juros.',
+          'Décio Bazin descreveu o método em "Faça Fortuna com Ações", publicado em 1992. O 6% não é uma constante de mercado nem uma dedução teórica: é o piso de rendimento que ele considerava aceitável para assumir o risco de renda variável em vez de renda fixa, no Brasil, naquele contexto de juros.',
           'A crítica mais comum ao método ataca exatamente esse ponto. Com a Selic a 15%, exigir 6% de dividend yield para comprar uma ação é aceitar rendimento menor que o do Tesouro Selic com risco muito maior. Com a Selic a 2%, o mesmo 6% vira um filtro severíssimo que quase nenhuma empresa passa.',
           'Quem usa o método hoje costuma ajustar o yield exigido ao custo de oportunidade do momento, e a calculadora abaixo permite isso. Mas vale registrar: no momento em que você troca o 6% por outro número, deixou de calcular o preço teto de Bazin e passou a calcular o seu.',
         ],

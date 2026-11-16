@@ -117,7 +117,7 @@ export const COMO_CALCULAR_PRECO_TETO_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: '<strong>Preço teto de Bazin = dividendo por ação dos últimos 12 meses ÷ 0,06.</strong> O 0,06 é o dividend yield mínimo de 6% ao ano que Décio Bazin descreveu em "Faça Fortuna com Ações" (1991). Não é uma constante de mercado. É o piso de rendimento que ele usava, naquele contexto de juros, para filtrar renda variável.',
+          html: '<strong>Preço teto de Bazin = dividendo por ação dos últimos 12 meses ÷ 0,06.</strong> O 0,06 é o dividend yield mínimo de 6% ao ano que Décio Bazin descreveu em "Faça Fortuna com Ações" (1992). Não é uma constante de mercado. É o piso de rendimento que ele usava, naquele contexto de juros, para filtrar renda variável.',
         },
         {
           kind: 'p',
