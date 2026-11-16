@@ -151,6 +151,9 @@ export default defineNuxtConfig({
     // Cron do IndexNow (vercel.json). Sem no-store a borda pode guardar o JSON
     // e a função não roda no dia seguinte.
     '/api/cron/indexnow': { headers: { 'cache-control': 'private, no-store' } },
+    // Barra no fim: /caminho/ cai no middleware sem-barra
+    // (server/utils/sem-barra.ts), que manda para o MESMO destino da regra
+    // daqui, num salto. Regra nova tem de entrar lá — tests/sem-barra.test.ts cobra.
     // Home única (dono, 2026-07-13): o MERCADO é a home `/` pros dois casos
     // (anônimo e logado — só variam SEÇÕES); /mercado 301a pra raiz (regra
     // EXATA; '/' já é private/no-store acima). A carteira segue página
