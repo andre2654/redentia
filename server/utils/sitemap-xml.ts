@@ -53,6 +53,22 @@ export function tipoDoSitemap(param: string | undefined): string | null {
   return Object.prototype.hasOwnProperty.call(SITEMAP_GRUPOS, tipo) ? tipo : null
 }
 
+/**
+ * Um urlset só substitui a cópia anterior quando a lista veio do dado certo.
+ * Dividendos: o fallback de clássicos não conta. Quanto rende: fila incompleta
+ * também não.
+ */
+export function grupoEstaCompleto(
+  tipo: string,
+  quantidade: number,
+  sinais: { quantoRende?: boolean; dividendos?: boolean },
+): boolean {
+  if (quantidade <= 0) return false
+  if (tipo === 'quanto-rende' && sinais.quantoRende === false) return false
+  if (tipo === 'dividendos' && sinais.dividendos === false) return false
+  return true
+}
+
 export function paginasDoGrupo(sections: SiteSection[], tipo: string): SitePage[] {
   const ids = SITEMAP_GRUPOS[tipo]
   if (!ids) return []

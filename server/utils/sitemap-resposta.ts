@@ -10,7 +10,7 @@
 import { getCache, waitUntil } from '@vercel/functions'
 import { createError, setHeader, type H3Event } from 'h3'
 import { SEMENTES_SITEMAP } from '../data/sitemap-semente.ts'
-import { getSiteSections, quantoRendeGeracaoCompleta } from './site-pages.ts'
+import { dividendosGeracaoCompleta, getSiteSections, quantoRendeGeracaoCompleta } from './site-pages.ts'
 import {
   SITEMAP_CACHE_FRESCO_MS,
   SITEMAP_CACHE_STALE_MS,
@@ -24,6 +24,7 @@ import {
   SITEMAP_INDICE,
   SITEMAP_ORDEM,
   entradasDoIndice,
+  grupoEstaCompleto,
   paginasDoGrupo,
   sitemapIndexXml,
   urlsetXml,
@@ -149,7 +150,10 @@ function gerarTodos(origin: string): Promise<Map<string, CopiaSitemap>> {
       let todosCompletos = true
       for (const tipo of TIPOS) {
         const pages = paginasDoGrupo(sections, tipo)
-        const completo = pages.length > 0 && (tipo !== 'quanto-rende' || quantoRendeGeracaoCompleta())
+        const completo = grupoEstaCompleto(tipo, pages.length, {
+          quantoRende: quantoRendeGeracaoCompleta(),
+          dividendos: dividendosGeracaoCompleta(),
+        })
         if (!completo) todosCompletos = false
         const copia: CopiaSitemap = {
           xml: urlsetXml(origin, pages),

@@ -95,6 +95,30 @@ test('cópia stale volta na hora e a geração nova grava em segundo plano', asy
   assert.equal(gravada?.xml, nova)
 })
 
+test('cópia vencida não é trocada por geração incompleta', async () => {
+  const velha = xmlDe(ORIGEM, '/dividendos/KNRI11')
+  let gravou = false
+  const resultado = await resolverSitemapEmCache(base({
+    agora: 100_000,
+    frescoMs: 1_000,
+    staleMs: 1_000,
+    copia: copia(velha, 0),
+    gerar: async () => ({
+      xml: xmlDe(ORIGEM, '/dividendos/ITUB4'),
+      storedAt: 100_000,
+      completo: false,
+      origin: ORIGEM,
+    }),
+    gravar: async () => {
+      gravou = true
+    },
+  }))
+  assert.equal(resultado.xml, velha)
+  assert.match(resultado.xml, /KNRI11/)
+  await resultado.renovacao
+  assert.equal(gravou, false)
+})
+
 test('geração incompleta não substitui a cópia boa', async () => {
   const velha = xmlDe(ORIGEM, '/quanto-rende/PETR4')
   let gravou = false
@@ -261,6 +285,8 @@ test('toda rota de sitemap usa a cópia boa e o xml continua saindo de getSiteSe
   assert.match(resposta, /entradasDoIndice\(origin, sections\)/)
   assert.match(resposta, /sitemapIndexXml\(entradas\)/)
   assert.match(resposta, /quantoRendeGeracaoCompleta\(\)/)
+  assert.match(resposta, /dividendosGeracaoCompleta\(\)/)
+  assert.match(semente, /dividendosGeracaoCompleta\(\)/)
   assert.match(resposta, /waitUntil\(seguro\)/)
   assert.match(resposta, /SITEMAP_ORDEM/)
   assert.match(semente, /SITEMAP_ORDEM/)
