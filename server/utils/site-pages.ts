@@ -17,8 +17,9 @@
  *    continua valendo só para os pares do setor (app/utils/paresDoSetor.ts).
  *  - Dividendos /dividendos/{TICKER}: pagadores de GET /dividends/tickers
  *    (STOCK, REIT e BDR, símbolo B3 válido). BDR entra porque a página
- *    responde 200 com histórico. Se o endpoint falhar, volta a lista anterior
- *    (clássicos + demanda medida + top 100 de DY). A guarda anti-404 tira
+ *    responde 200 com histórico. Se o endpoint falhar, a lista curta
+ *    (clássicos + demanda medida + top 100 de DY) só cobre a ausência de
+ *    cópia anterior: não substitui o sitemap cheio. A guarda anti-404 tira
  *    ticker que o /tickers-full não conhece e alias (301).
  *  - Tesouro /tesouro/{slug} e cripto /asset/{SYMBOL} (top 20, símbolo válido)
  *    vêm do backend. O hub /tesouro entra; o hub /dividendos não (é 301).
@@ -499,27 +500,49 @@ async function fetchDividendPagesFallback(): Promise<SitePage[]> {
 }
 
 /**
- * /dividendos/{TICKER}: pagadores de GET /dividends/tickers (STOCK, REIT e
- * BDR). BDR tem página 200 com histórico, então entra. Símbolo inválido
- * (MRSA3B) fica de fora: a rota 404a antes do fetch. Endpoint fora ou vazio
- * cai na lista anterior, pra o sitemap não sumir numa falha.
+ * GET /dividends/tickers. null = falhou ou voltou vazio. 429 (o endpoint
+ * cabe em 60/min) e queda de rede tentam de novo: uma falha única não pode
+ * gravar a lista curta no lugar dos ~1.000 pagadores.
  */
-const fetchDividendPages = defineCachedFunction(
-  async (): Promise<SitePage[]> => {
+async function lerTickersDoEndpoint(): Promise<string[] | null> {
+  const pausas = [0, 5_000, 20_000, 60_000]
+  for (let i = 0; i < pausas.length; i++) {
+    const pausa = pausas[i] ?? 0
+    if (pausa > 0) await new Promise((r) => setTimeout(r, pausa))
     try {
       const res = await $fetch<{ data?: DividendTickerRow[] }>('/dividends/tickers', {
         baseURL: backendBase(),
         timeout: 20_000,
       })
       const tickers = tickersDePaginaDividendos(Array.isArray(res?.data) ? res.data : [])
-      if (tickers.length > 0) return tickers.map(dividendPage)
-    } catch {
-      // endpoint fora → lista anterior
+      if (tickers.length > 0) return tickers
+      return null
+    } catch (e) {
+      const status = statusDaResposta(e)
+      const deNovo = status === 429 || status === null || (status !== null && status >= 500)
+      if (!deNovo || i === pausas.length - 1) return null
     }
-    return fetchDividendPagesFallback()
+  }
+  return null
+}
+
+/**
+ * /dividendos/{TICKER}: pagadores de GET /dividends/tickers (STOCK, REIT e
+ * BDR). BDR tem página 200 com histórico, então entra. Símbolo inválido
+ * (MRSA3B) fica de fora: a rota 404a antes do fetch. Endpoint fora ou vazio
+ * lança: a lista curta não entra neste cache. Ela só existe em
+ * paginasDeDividendos, e com a geração marcada incompleta, pra não apagar
+ * o sitemap cheio (16/11/2026: o fallback de 59 URLs tinha sido gravado
+ * como cópia boa).
+ */
+const fetchDividendPages = defineCachedFunction(
+  async (): Promise<SitePage[]> => {
+    const tickers = await lerTickersDoEndpoint()
+    if (!tickers) throw new Error('GET /dividends/tickers sem lista')
+    return tickers.map(dividendPage)
   },
   {
-    name: 'site-pages-dividends-v3',
+    name: 'site-pages-dividends-v4',
     maxAge: 3600,
     swr: true,
     getKey: () => 'all',
@@ -527,9 +550,37 @@ const fetchDividendPages = defineCachedFunction(
     // sitemap servia a seção inteira ausente por 1 hora. Como as seções são
     // omitidas em silêncio (o catch devolve []), isso derrubava o sitemap de
     // ~1.950 para ~180 URLs sem nenhum erro aparecer em lugar nenhum.
+    // A lista curta (59) também não pode ficar aqui: length > 0 deixava ela
+    // passar. Falha lança, e o nome v4 solta o cache v3 envenenado.
     validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
   },
 )
+
+let geracaoDividendosCompleta = false
+
+/** false = a lista veio do fallback. Não cachear por cima da cópia cheia. */
+export function dividendosGeracaoCompleta(): boolean {
+  return geracaoDividendosCompleta
+}
+
+export function resetDividendosGeracao(): void {
+  geracaoDividendosCompleta = false
+}
+
+/**
+ * Páginas de /dividendos/{TICKER}. Endpoint ok → lista cheia e geração
+ * completa. Endpoint fora → lista curta, geração incompleta.
+ */
+async function paginasDeDividendos(): Promise<SitePage[]> {
+  try {
+    const pages = await fetchDividendPages()
+    geracaoDividendosCompleta = pages.length > 0
+    return pages
+  } catch {
+    geracaoDividendosCompleta = false
+    return fetchDividendPagesFallback()
+  }
+}
 
 function statusDaResposta(e: unknown): number | null {
   const err = e as { statusCode?: number; status?: number; response?: { status?: number } } | null
@@ -746,12 +797,13 @@ function glossarioPages(): SitePage[] {
  */
 export async function getSiteSections(): Promise<SiteSection[]> {
   resetQuantoRendeGeracao()
+  resetDividendosGeracao()
   const [teses, ativos, tesouro, cripto, dividendosCru, universoCru, latestNews, quantoRendePacote, quantoRendeTesouroCru] = await Promise.all([
     fetchThesisPages(),
     fetchAssetPages(),
     fetchTesouroPages(),
     fetchCryptoPages(),
-    fetchDividendPages(),
+    paginasDeDividendos(),
     fetchTickerUniverse(),
     fetchLatestNewsDate(),
     fetchQuantoRendeTickers(),

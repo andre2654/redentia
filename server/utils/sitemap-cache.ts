@@ -153,6 +153,11 @@ export async function resolverSitemapEmCache(opts: OpcoesSitemapCache): Promise<
     if (r.ok && copiaServe(r.c)) await opts.gravar(r.c)
   })
 
+  // Incompleta (fallback de dividendos, fila do quanto-rende) não substitui
+  // a cópia boa, mesmo fora da janela de stale. Sem cópia, devolve o xml
+  // que deu pra montar.
+  if (boa) return respostaPronta(boa, opts.origin, renovacao)
+
   if (!corrida.timeout && corrida.r.ok && xmlPareceSitemap(corrida.r.c.xml)) {
     return {
       xml: semPrecoTetoPorTicker(xmlNaOrigem(corrida.r.c.xml, corrida.r.c.origin || opts.origin, opts.origin)),
@@ -162,7 +167,6 @@ export async function resolverSitemapEmCache(opts: OpcoesSitemapCache): Promise<
     }
   }
 
-  if (boa) return respostaPronta(boa, opts.origin, renovacao)
   throw new SitemapIndisponivel(renovacao)
 }
 

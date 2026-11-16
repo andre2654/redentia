@@ -86,7 +86,10 @@ async function main() {
   let todosCompletos = true
   for (const tipo of xml.SITEMAP_ORDEM) {
     const lista = xml.paginasDoGrupo(sections, tipo)
-    const completo = lista.length > 0 && (tipo !== 'quanto-rende' || pages.quantoRendeGeracaoCompleta())
+    const completo = xml.grupoEstaCompleto(tipo, lista.length, {
+      quantoRende: pages.quantoRendeGeracaoCompleta(),
+      dividendos: pages.dividendosGeracaoCompleta(),
+    })
     if (!completo) {
       todosCompletos = false
       console.warn(`sitemap ${tipo}: geração incompleta (${lista.length} urls); arquivo anterior fica`)
