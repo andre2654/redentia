@@ -13,7 +13,7 @@ const copy: RankingCopy = {
     {
       h2: 'Por que prestar atenção em menções?',
       paragraphs: [
-        'Atenção da mídia muitas vezes precede ou acompanha movimento de preço. Empresa que de repente aparece em todas as manchetes financeiras tende a ter maior volatilidade nos dias seguintes (boa notícia ou má notícia). Pra investidor ativo, isso é oportunidade de identificar catalisadores antes do mercado precificar completamente.',
+        'Atenção da mídia muitas vezes precede ou acompanha movimento de preço. Empresa que de repente aparece em todas as manchetes financeiras tende a ter maior volatilidade nos dias seguintes (boa notícia ou má notícia). O ranking mostra quem está nas manchetes. Ele não diz o que fazer com a cotação.',
         'Buzz alto também sinaliza upcoming catalysts: vésperas de resultado trimestral, reuniões com analistas, conferências de investidores, mudanças regulatórias em discussão. Combinar buzz com fundamentos sólidos pode ajudar a posicionar antes de movimento esperado.',
       ],
     },
@@ -21,7 +21,7 @@ const copy: RankingCopy = {
       h2: 'Riscos do hype trading',
       paragraphs: [
         'Cuidado com o efeito manada. Ticker que aparece em todas as manchetes pode atrair fluxo especulativo de curto prazo (FOMO), causando overshoot do preço acima do valor fundamentado. Comprar pelo buzz isolado é estratégia perigosa, pode ser entrada no topo de movimento de curto prazo.',
-        'Outro risco: notícia ruim também conta como menção. Empresa pode estar nos holofotes por escândalo de governança, problema regulatório ou fraude descoberta. Sempre leia o tipo de notícia antes de associar buzz a oportunidade. Use este ranking como ponto de partida pra investigação, nunca como decisão direta.',
+        'Outro risco: notícia ruim também conta como menção. Empresa pode estar nos holofotes por escândalo de governança, problema regulatório ou fraude descoberta. Leia o tipo de notícia antes de ler o buzz como distância até uma fórmula. Use este ranking como ponto de partida pra investigação, nunca como decisão direta.',
       ],
     },
   ],

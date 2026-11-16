@@ -190,9 +190,9 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
     slug: 'pl-setorial',
     id: 'pl-setorial',
     metaTitle: 'Preço teto por P/L setorial: calculadora e quando usar',
-    metaDescription: 'Calcule o preço teto multiplicando o LPA pelo P/L médio do setor. Método relativo: por que ele corrige o que Graham e Bazin ignoram e onde ele engana em setor inteiro caro.',
+    metaDescription: 'Calcule o preço teto multiplicando o LPA pelo P/L médio do setor. Método relativo: por que ele corrige o que Graham e Bazin ignoram e onde ele engana quando o setor inteiro negocia a múltiplo alto.',
     h1: 'Preço teto por P/L setorial: LPA vezes o múltiplo dos pares',
-    answerFirst: 'O preço teto por P/L setorial é o lucro por ação multiplicado pelo P/L médio do setor. Uma empresa com LPA de R$ 3,50 num setor que negocia a P/L 10 tem preço teto de R$ 35,00. É o único dos métodos clássicos que responde "caro comparado a quem", em vez de comparar com uma constante fixa.',
+    answerFirst: 'O preço teto por P/L setorial é o lucro por ação multiplicado pelo P/L médio do setor. Uma empresa com LPA de R$ 3,50 num setor que negocia a P/L 10 tem preço teto de R$ 35,00. É o único dos métodos clássicos que responde "alto comparado a quem", em vez de comparar com uma constante fixa.',
     formula: 'Preço teto = LPA × P/L médio do setor',
     inputs: ['price', 'lpa', 'sectorPL'],
     sections: [
@@ -200,14 +200,14 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
         h2: 'O que este método corrige nos outros',
         body: [
           'Graham compara com um P/L fixo de 15 e Bazin com um yield fixo de 6%. Os dois foram calibrados em outra economia e não sabem que banco, elétrica e varejo negociam em faixas de múltiplo estruturalmente diferentes, por motivos que não são desconto nem prêmio, e sim natureza do negócio.',
-          'Uma transmissora de energia com receita contratada e indexada tem previsibilidade que um varejista não tem, e o mercado paga por isso. Comparar as duas com o mesmo P/L de referência produz a conclusão errada nas duas direções: a elétrica parece sempre cara, o varejo parece sempre barato.',
-          'O P/L setorial resolve isso trocando a constante por um comparável. A pergunta deixa de ser "está cara em absoluto" e passa a ser "está cara em relação aos pares dela".',
+          'Uma transmissora de energia com receita contratada e indexada tem previsibilidade que um varejista não tem, e o mercado paga por isso. Comparar as duas com o mesmo P/L de referência produz a conclusão errada nas duas direções: a elétrica parece sempre acima da constante, o varejo parece sempre abaixo.',
+          'O P/L setorial resolve isso trocando a constante por um comparável. A pergunta deixa de ser "está acima da constante" e passa a ser "está acima ou abaixo dos pares".',
         ],
       },
       {
         h2: 'A armadilha do método relativo',
         body: [
-          'Método relativo herda o erro da referência. Se o setor inteiro está caro, o P/L médio está inflado e o preço teto sai inflado junto. O método sinaliza "barato" para uma ação que está apenas menos cara que um setor em bolha.',
+          'Método relativo herda o erro da referência. Se o setor inteiro negocia a múltiplo alto, o P/L médio está inflado e o preço teto sai inflado junto. O método mostra distância para uma ação que está apenas com múltiplo menor que o de um setor em bolha.',
           'O caso clássico são ciclos de commodity. No topo do ciclo, o lucro está no pico e o P/L parece baixo, o que faz o múltiplo setorial parecer atrativo justamente quando o risco é maior. É o inverso do que o investidor precisa que o indicador diga.',
           'O antídoto prático é usar o P/L médio histórico do setor em vez do P/L de hoje, e cruzar com um método absoluto. Preço teto por P/L setorial sozinho não é conclusão, é uma das quatro leituras.',
         ],
@@ -217,7 +217,7 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
         body: [
           'A classificação setorial da B3 é um ponto de partida, não uma resposta. Setores como "Consumo Cíclico" agrupam empresas com dinâmicas de margem muito diferentes, e a média do agrupamento inteiro dilui a comparação até perder sentido.',
           'A referência mais útil costuma ser um grupo pequeno de pares diretos: mesmo modelo de receita, mesma exposição regulatória, porte comparável. Três a cinco comparáveis bem escolhidos dizem mais que a média de quarenta empresas do mesmo guarda-chuva.',
-          'Vale também olhar o próprio histórico do papel. Uma ação negociando a P/L 8 num setor a P/L 10 parece barata, mas se ela negociou a P/L 6 nos últimos cinco anos, o desconto para os pares é estrutural e provavelmente tem motivo.',
+          'Vale também olhar o próprio histórico do papel. Uma ação negociando a P/L 8 num setor a P/L 10 está abaixo do múltiplo dos pares, mas se ela negociou a P/L 6 nos últimos cinco anos, a distância para os pares é estrutural e provavelmente tem motivo.',
         ],
       },
     ],
@@ -235,7 +235,7 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
       { q: 'Como calcular o preço teto pelo P/L setorial?', a: 'Multiplique o lucro por ação dos últimos 12 meses pelo P/L médio do setor. Se o LPA é R$ 3,50 e o setor negocia a P/L 10, o preço teto é R$ 35,00.' },
       { q: 'Onde encontro o P/L médio de um setor da B3?', a: 'Você pode calcular a partir das empresas do setor (a Aportou publica isso em /setor) ou usar a média de um grupo pequeno de pares diretos, que costuma ser mais informativa que a média do setor inteiro.' },
       { q: 'Este método serve para FIIs?', a: 'Não bem. Fundo imobiliário não tem lucro por ação no sentido contábil de empresa; a régua equivalente é P/VP e o dividend yield sobre o rendimento mensal distribuído.' },
-      { q: 'O que fazer quando o setor inteiro está caro?', a: 'Use o P/L médio histórico do setor em vez do atual, e cruze com um método absoluto (Graham ou Bazin). Método relativo herda o erro da referência: num setor em bolha, ele sinaliza barato para o que está apenas menos caro.' },
+      { q: 'O que fazer quando o P/L do setor inteiro está alto?', a: 'Use o P/L médio histórico do setor em vez do atual, e cruze com um método absoluto (Graham ou Bazin). Método relativo herda o erro da referência: num setor em bolha, ele mostra distância para o que está apenas com múltiplo menor.' },
     ],
   },
 
@@ -254,13 +254,13 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
         body: [
           'O valor patrimonial por ação é o patrimônio líquido dividido pelo número de ações. Patrimônio líquido é ativo menos passivo pela ótica contábil, o que significa que ele mede o que a empresa registrou nos livros, não o que ela vale se for vendida nem o que ela gera de caixa.',
           'Essa diferença define onde o método funciona. Em banco, seguradora, holding e empresa de ativos tangíveis (imóveis, frotas, plantas industriais), o valor contábil guarda relação razoável com o valor econômico, e o P/VP é um indicador honesto.',
-          'Em empresa de software, serviço ou marca, o ativo principal não está no balanço. Uma companhia com marca dominante e nenhum imobilizado relevante pode ter VPA baixíssimo e valer muito, e o método vai declará-la permanentemente cara.',
+          'Em empresa de software, serviço ou marca, o ativo principal não está no balanço. Uma companhia com marca dominante e nenhum imobilizado relevante pode ter VPA baixíssimo e valer muito, e o método vai colocar o preço teto permanentemente abaixo da cotação.',
         ],
       },
       {
-        h2: 'P/VP abaixo de 1 nem sempre é barato',
+        h2: 'P/VP abaixo de 1 descreve o patrimônio, não um veredito',
         body: [
-          'Uma ação negociando abaixo do valor patrimonial significa que o mercado precifica a empresa por menos do que o patrimônio contábil dela. Isso pode ser oportunidade, mas com frequência é o mercado dizendo que o patrimônio está superavaliado nos livros.',
+          'Uma ação negociando abaixo do valor patrimonial significa que o mercado precifica a empresa por menos do que o patrimônio contábil dela. Com frequência é o mercado dizendo que o patrimônio está superavaliado nos livros.',
           'Os casos típicos: estoque obsoleto ainda registrado a custo, recebível de qualidade duvidosa, ágio de aquisição que não se materializou em resultado, e imobilizado que só vale aquilo enquanto operando (uma planta industrial específica pode valer perto de zero em liquidação).',
           'Empresas que destroem valor de forma consistente, com ROE abaixo do custo de capital ano após ano, negociam abaixo do VPA com razão: cada ano de operação reduz o patrimônio. Tratar o P/VP baixo como desconto, nesse caso, é olhar um ativo que encolhe.',
         ],
@@ -269,7 +269,7 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
         h2: 'Como usar na prática',
         body: [
           'Este é o método mais frágil dos quatro isoladamente e o mais útil como contraprova. Ele funciona bem como piso: se um papel negocia bem abaixo do VPA e a empresa tem ROE consistentemente positivo, há um desconto que merece explicação.',
-          'Cruzar P/VP com ROE é o par mais informativo. ROE alto e P/VP baixo é a combinação que Graham procurava. ROE baixo e P/VP baixo costuma ser armadilha de valor, e ROE alto com P/VP alto é a situação normal de uma boa empresa cara.',
+          'Cruzar P/VP com ROE é o par mais informativo. ROE alto e P/VP baixo é a combinação que Graham procurava. ROE baixo e P/VP baixo costuma ser armadilha de valor, e ROE alto com P/VP alto é a situação comum de uma empresa cujo múltiplo acompanha a rentabilidade.',
         ],
       },
     ],
@@ -286,8 +286,8 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
     faq: [
       { q: 'Como calcular o preço teto pelo valor patrimonial?', a: 'Multiplique o VPA (valor patrimonial por ação) por 1,5. Com VPA de R$ 18,00, o preço teto é R$ 27,00. O 1,5 é o P/VP máximo que Graham aceitava para o investidor defensivo.' },
       { q: 'O que é VPA?', a: 'Valor Patrimonial por Ação: o patrimônio líquido da empresa dividido pelo número total de ações. É uma medida contábil, do que está registrado nos livros, e não do valor de mercado nem da capacidade de gerar caixa.' },
-      { q: 'Ação com P/VP abaixo de 1 está barata?', a: 'Nem sempre. Pode significar que o mercado considera o patrimônio superavaliado nos livros (estoque obsoleto, recebível ruim, ágio que não se realizou) ou que a empresa destrói valor com ROE abaixo do custo de capital. Cruze sempre P/VP com ROE.' },
-      { q: 'Este método serve para empresas de tecnologia?', a: 'Mal. O ativo principal dessas empresas (software, marca, base de usuários) não aparece no balanço, então o VPA é baixo e o método declara a ação permanentemente cara. Para esse perfil, prefira múltiplos de receita ou fluxo de caixa.' },
+      { q: 'Ação com P/VP abaixo de 1 está abaixo do patrimônio?', a: 'O múltiplo diz isso, e só isso. Pode significar que o mercado considera o patrimônio superavaliado nos livros (estoque obsoleto, recebível ruim, ágio que não se realizou) ou que a empresa destrói valor com ROE abaixo do custo de capital. Cruze sempre P/VP com ROE.' },
+      { q: 'Este método serve para empresas de tecnologia?', a: 'Mal. O ativo principal dessas empresas (software, marca, base de usuários) não aparece no balanço, então o VPA é baixo e o método coloca o preço teto permanentemente abaixo da cotação. Para esse perfil, prefira múltiplos de receita ou fluxo de caixa.' },
     ],
   },
 

@@ -14,7 +14,7 @@ const copy: RankingCopy = {
       h2: 'Como interpretar o ranking',
       paragraphs: [
         'Liderança consistente costuma ficar com bancos (Itaú, Bradesco, BB), Petrobras (cíclico ao petróleo) e Vale (cíclico ao minério). Entre as 50 maiores, encontramos seguradoras, energia, varejo, bebidas e indústria, mostrando diversidade setorial.',
-        'Lucro alto sozinho não garante boa ação. Empresa com lucro de R$ 30 bilhões mas market cap de R$ 600 bilhões tem P/L de 20 (caro). Já lucro de R$ 5 bilhões com market cap de R$ 30 bilhões dá P/L de 6 (barato). Sempre cruze com market cap e P/L pra ver se o preço acompanha o tamanho do lucro.',
+        'Lucro alto sozinho não descreve o múltiplo. Empresa com lucro de R$ 30 bilhões e market cap de R$ 600 bilhões tem P/L de 20. Lucro de R$ 5 bilhões com market cap de R$ 30 bilhões dá P/L de 6. Cruze com market cap e P/L pra ver quantos anos de lucro a cotação representa.',
       ],
     },
     {
@@ -27,7 +27,7 @@ const copy: RankingCopy = {
   ],
   crossLinks: [
     { title: 'Simulador de Ações', desc: 'Projete retorno total de uma carteira ao longo do tempo.', href: '/calculadora/acoes' },
-    { title: 'Calculadora de Preço Teto', desc: 'Calcule o preço justo de uma ação por Graham e Bazin.', href: '/calculadora/preco-teto' },
+    { title: 'Calculadora de Preço Teto', desc: 'Calcule o preço teto de uma ação pelas fórmulas de Graham e Bazin.', href: '/calculadora/preco-teto' },
     { title: 'Calculadora de Dividend Yield', desc: 'Simule o DY real de qualquer ação ou FII.', href: '/calculadora/dividend-yield' },
     { title: 'Outros rankings', desc: 'Veja todos os rankings disponíveis na Aportou.', href: '/rankings' },
   ],

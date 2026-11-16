@@ -14,7 +14,7 @@ const copy: RankingCopy = {
       h2: 'Como interpretar o ranking',
       paragraphs: [
         'Estratégia momentum: comprar ações que subiram muito no último ano com aposta de continuidade. Funciona bem em mercados com tendência clara, mas perigoso em viradas de ciclo. Backtests mostram que ações com forte momentum tendem a manter alta por 3-12 meses adicionais antes de retornar à média.',
-        'Estratégia value contrarian: olhar a lista e EVITAR as primeiras posições, assumindo que a alta já precificou todo o bom da empresa e o risco de correção é alto. Mais prudente pra investidor de longo prazo, mas perde algumas das melhores oportunidades de continuação de alta.',
+        'Estratégia value contrarian: olhar a lista e deixar as primeiras posições de lado, assumindo que a alta já entrou no preço e o risco de correção é alto. É uma leitura de longo prazo. A lista em si só ordena a variação de 12 meses.',
       ],
     },
     {
@@ -26,7 +26,7 @@ const copy: RankingCopy = {
     },
   ],
   crossLinks: [
-    { title: 'Calculadora de Preço Teto', desc: 'Calcule o preço justo de uma ação por Graham e Bazin.', href: '/calculadora/preco-teto' },
+    { title: 'Calculadora de Preço Teto', desc: 'Calcule o preço teto de uma ação pelas fórmulas de Graham e Bazin.', href: '/calculadora/preco-teto' },
     { title: 'Calculadora de Dividend Yield', desc: 'Simule o DY real de qualquer ação ou FII.', href: '/calculadora/dividend-yield' },
     { title: 'Simulador de Ações', desc: 'Projete retorno total de uma carteira ao longo do tempo.', href: '/calculadora/acoes' },
     { title: 'Outros rankings', desc: 'Veja todos os rankings disponíveis na Aportou.', href: '/rankings' },

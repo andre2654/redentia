@@ -337,7 +337,7 @@ function olhados(cenario: CenarioVisao): CarteiraVisao['avisos']['olhados'] {
     { rotulo: 'Imposto dos meses anteriores', resultado: cenario === 'calmo' ? 'Nenhum mês acima do limite' : '3 meses acima do limite', ok: cenario === 'calmo' },
     { rotulo: 'Proventos de novembro', resultado: 'R$ 1.096 marcados, nenhum cortado', ok: true },
     { rotulo: 'Concentração', resultado: 'O maior ativo é Tesouro Selic, risco de crédito baixo', ok: true },
-    { rotulo: 'Taxas dos ETFs', resultado: 'AUPO11 e GOLD11 já são os mais baratos de cada tipo', ok: true },
+    { rotulo: 'Taxas dos ETFs', resultado: 'AUPO11 e GOLD11 têm a menor taxa de administração de cada tipo', ok: true },
     { rotulo: 'Quedas de hoje', resultado: 'Nenhum ativo caiu mais de 5%', ok: true },
   ]
 }

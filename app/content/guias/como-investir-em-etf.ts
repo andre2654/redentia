@@ -77,7 +77,7 @@ export const COMO_INVESTIR_EM_ETF_GUIDE: GuideDoc = {
             '<strong>O índice de referência.</strong> É a regra que define o que entra na carteira, com que peso e quando isso muda. Um índice amplo de mercado, um índice de <a href="/glossario/small-caps">small caps</a> e um índice setorial produzem fundos com comportamentos completamente diferentes, mesmo que os três se chamem ETF. Ler a metodologia do índice é ler o produto.',
             '<strong>A taxa de administração.</strong> Cobrada sobre o patrimônio e descontada diariamente do valor da cota, sem boleto. Ela não aparece no extrato como despesa, aparece como rendimento um pouco menor. Por isso a comparação entre dois fundos que seguem o mesmo índice quase sempre se resolve pela taxa.',
             '<strong>A aderência ao índice.</strong> Nenhum fundo replica o benchmark com exatidão perfeita: taxas, custos de negociação e o momento de recompor a carteira criam uma diferença. Um fundo bem gerido mantém essa diferença pequena e estável, e é isso que se acompanha, não o retorno isolado de um mês.',
-            '<strong>A <a href="/glossario/liquidez">liquidez</a> das cotas.</strong> Volume negociado e diferença entre a melhor oferta de compra e a de venda determinam quanto você perde só de entrar e sair. Fundo pouco negociado pode custar caro na hora de vender, mesmo que a carteira dele seja excelente.',
+            '<strong>A <a href="/glossario/liquidez">liquidez</a> das cotas.</strong> Volume negociado e diferença entre a melhor oferta de compra e a de venda determinam quanto você perde só de entrar e sair. Fundo pouco negociado pode sair com diferença grande entre compra e venda, mesmo que a carteira dele seja excelente.',
           ],
         },
         {
@@ -160,7 +160,7 @@ export const COMO_INVESTIR_EM_ETF_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Nada disso torna o ETF caro, apenas diferente. O ponto prático é que quem vende ETF com lucro precisa lembrar do DARF mesmo em valores baixos, algo que o investidor de ações acostumado à isenção esquece com facilidade. O guia de <a href="/guias/como-declarar-investimentos-no-ir">como declarar investimentos no IR</a> cobre a apuração e a declaração anual em detalhe.',
+          html: 'Nada disso muda a conta do ETF, apenas a diferença tributária. O ponto prático é que quem vende ETF com lucro precisa lembrar do DARF mesmo em valores baixos, algo que o investidor de ações acostumado à isenção esquece com facilidade. O guia de <a href="/guias/como-declarar-investimentos-no-ir">como declarar investimentos no IR</a> cobre a apuração e a declaração anual em detalhe.',
         },
       ],
     },
@@ -177,7 +177,7 @@ export const COMO_INVESTIR_EM_ETF_GUIDE: GuideDoc = {
           items: [
             'Defina o papel que esse fundo terá na carteira. Base ampla de renda variável, exposição ao exterior, um recorte específico. Sem essa definição, qualquer ETF parece razoável e nenhum tem função clara.',
             'Escolha o índice antes de escolher o fundo. O índice é o produto; o fundo é só o veículo que o replica. Leia o que compõe o índice e como ele é recomposto.',
-            'Compare os fundos que seguem esse mesmo índice por taxa de administração, aderência e volume negociado. Entre dois iguais no papel, o mais barato e mais líquido vence.',
+            'Compare os fundos que seguem esse mesmo índice por taxa de administração, aderência e volume negociado. Entre dois iguais no papel, a menor taxa e a maior liquidez pesam na comparação.',
             'Confira a política de proventos. Distribui ou reinveste? Isso define se o fundo serve, ou não, para o seu objetivo de renda.',
             'Compre pelo home broker da sua <a href="/glossario/corretora">corretora</a> como faria com uma ação, informando o código e a quantidade de cotas. Use ordem limitada se a liquidez for baixa, para não pagar um preço pior que o pretendido.',
             'Programe os aportes e o rebalanceamento. Aporte periódico dilui o preço médio ao longo do tempo, e a revisão de pesos é o que impede que uma parte da carteira cresça sozinha até virar risco concentrado.',
@@ -209,7 +209,7 @@ export const COMO_INVESTIR_EM_ETF_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Com esses limites claros, o ETF vira o que ele é de melhor: uma forma barata, simples e transparente de ter mercado na carteira sem depender de acertar empresas. Para se aprofundar, o <a href="/glossario">glossário</a> destrincha cada termo citado aqui, a <a href="/metodologia">metodologia</a> explica como a Aportou calcula os indicadores das páginas de ativo, e o guia de <a href="/guias/como-investir-em-acoes">como investir em ações</a> cobre a abertura de conta e a primeira ordem, que é exatamente o mesmo caminho usado para comprar uma cota de ETF.',
+          html: 'Com esses limites claros, o ETF vira o que ele é de melhor: uma forma de baixo custo, simples e transparente de ter mercado na carteira sem depender de acertar empresas. Para se aprofundar, o <a href="/glossario">glossário</a> destrincha cada termo citado aqui, a <a href="/metodologia">metodologia</a> explica como a Aportou calcula os indicadores das páginas de ativo, e o guia de <a href="/guias/como-investir-em-acoes">como investir em ações</a> cobre a abertura de conta e a primeira ordem, que é exatamente o mesmo caminho usado para comprar uma cota de ETF.',
         },
       ],
     },

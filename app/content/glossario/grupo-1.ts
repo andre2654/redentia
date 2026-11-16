@@ -66,9 +66,9 @@ export const GRUPO_1: GlossaryTerm[] = [
       'P/L (Preço sobre Lucro) mostra quantos anos de lucro atual seriam necessários pra recuperar o preço pago pela ação, o múltiplo de valuation mais usado da bolsa.',
     body: [
       'O <strong>P/L</strong>, de Preço sobre Lucro, divide o preço da ação pelo <a href="/glossario/lpa">lucro por ação (LPA)</a> dos últimos 12 meses. Ele responde a uma pergunta simples: mantido o ritmo de lucro de hoje, em quantos anos a empresa devolveria, em lucro, o valor que você pagou pela ação. É o múltiplo de <a href="/glossario/analise-fundamentalista">análise fundamentalista</a> mais popular justamente por resumir preço e resultado em um número só.',
-      'A conta é <strong>P/L = preço da ação ÷ LPA</strong>. Quanto menor o P/L, mais barata a ação parece em relação ao lucro que gera. Mas barato e caro aqui são sempre relativos: um P/L baixo pode indicar desconto real ou pode refletir um mercado que espera queda de lucro à frente. Por isso o P/L nunca se lê sozinho, ele se lê contra o histórico da própria empresa e contra os pares do mesmo setor.',
+      'A conta é <strong>P/L = preço da ação ÷ LPA</strong>. Quanto menor o P/L, menos anos de lucro a cotação representa. O múltiplo é sempre relativo: um P/L baixo pode descrever distância em relação ao histórico ou um mercado que espera queda de lucro à frente. Por isso o P/L nunca se lê sozinho, ele se lê contra o histórico da própria empresa e contra os pares do mesmo setor.',
       '<strong>Exemplo ilustrativo:</strong> uma ação a R$ 30,00 cujo LPA foi R$ 3,00 nos últimos 12 meses tem P/L de 10 (30 ÷ 3), ou seja, dez anos de lucro ao ritmo atual. São números redondos só pra mostrar a fórmula, não a cotação real de nenhuma empresa.',
-      'Ressalva honesta: <strong>P/L negativo significa prejuízo</strong> (LPA negativo), e aí o múltiplo perde sentido. Setores diferentes convivem com patamares diferentes: bancos costumam negociar a P/L mais baixo que empresas de tecnologia em crescimento, sem que um esteja certo e o outro errado. Combine sempre com <a href="/glossario/p-vp">P/VP</a>, <a href="/glossario/roe">ROE</a> e endividamento antes de concluir que algo está barato.',
+      'Ressalva honesta: <strong>P/L negativo significa prejuízo</strong> (LPA negativo), e aí o múltiplo perde sentido. Setores diferentes convivem com patamares diferentes: bancos costumam negociar a P/L mais baixo que empresas de tecnologia em crescimento, sem que um esteja certo e o outro errado. Combine sempre com <a href="/glossario/p-vp">P/VP</a>, <a href="/glossario/roe">ROE</a> e endividamento antes de ler o múltiplo como veredito.',
     ],
     related: ['lpa', 'p-vp', 'roe', 'ev-ebit', 'dividend-yield'],
     backlink: {
@@ -78,10 +78,10 @@ export const GRUPO_1: GlossaryTerm[] = [
     faq: [
       {
         q: 'O que é um P/L bom?',
-        a: 'Não existe número universal. Um P/L considerado baixo em um setor pode ser normal em outro. O caminho honesto é comparar o P/L da ação com o próprio histórico dela e com as concorrentes diretas, e entender por que o mercado paga aquele múltiplo antes de chamar de barato.',
+        a: 'Não existe número universal. Um P/L considerado baixo em um setor pode ser normal em outro. O caminho honesto é comparar o P/L da ação com o próprio histórico dela e com as concorrentes diretas, e entender por que o mercado paga aquele múltiplo.',
       },
       {
-        q: 'P/L baixo significa que a ação está barata?',
+        q: 'P/L baixo descreve o quê em relação ao lucro?',
         a: 'Nem sempre. Um P/L baixo pode ser desconto real ou pode ser o mercado antecipando queda de lucro, mais dívida ou algum risco no negócio. É um ponto de partida pra investigar, não uma conclusão de compra.',
       },
       {
@@ -132,7 +132,7 @@ export const GRUPO_1: GlossaryTerm[] = [
       'O <strong>EV/EBIT</strong> relaciona o <a href="/glossario/enterprise-value">Enterprise Value</a>, o valor total da empresa somando dívida e descontando caixa, com o <a href="/glossario/ebit">EBIT</a>, o lucro operacional antes de juros e impostos. Muitos analistas o consideram mais completo que o <a href="/glossario/p-l">P/L</a>, porque leva a dívida em conta e usa o resultado da operação, que não sofre com a forma como cada empresa se financia.',
       'A conta é <strong>EV/EBIT = Enterprise Value ÷ EBIT</strong> e o resultado se lê como um múltiplo: quantos anos de lucro operacional seriam necessários pra pagar o valor total do negócio. Por neutralizar o efeito do endividamento, ele permite comparar na mesma régua uma empresa cheia de dívida com outra sem dívida nenhuma, algo que o P/L não faz bem.',
       '<strong>Exemplo ilustrativo:</strong> uma empresa com Enterprise Value de R$ 1 bilhão e EBIT de R$ 100 milhões negocia a EV/EBIT de 10x (1.000 ÷ 100). Números redondos só pra ilustrar a mecânica do múltiplo.',
-      'Ressalva honesta: <strong>empresas cíclicas distorcem o múltiplo</strong>. No pico do ciclo o EBIT infla e o EV/EBIT parece baixo (falsamente barato); no fundo acontece o contrário. Negócios em crescimento acelerado também podem justificar múltiplos altos. Leia sempre contra a média histórica da própria empresa e do setor.',
+      'Ressalva honesta: <strong>empresas cíclicas distorcem o múltiplo</strong>. No pico do ciclo o EBIT infla e o EV/EBIT parece baixo; no fundo acontece o contrário. Negócios em crescimento acelerado também podem conviver com múltiplos altos. Leia sempre contra a média histórica da própria empresa e do setor.',
     ],
     related: ['ebit', 'enterprise-value', 'ev-ebitda', 'p-l', 'ebitda'],
     backlink: {
@@ -190,19 +190,19 @@ export const GRUPO_1: GlossaryTerm[] = [
       'P/VP (Preço sobre Valor Patrimonial) compara o preço da ação com o patrimônio contábil por ação, mostrando se o mercado paga acima ou abaixo do valor de balanço.',
     body: [
       'O <strong>P/VP</strong>, de Preço sobre Valor Patrimonial, divide o preço da ação pelo <a href="/glossario/vpa">Valor Patrimonial por Ação (VPA)</a>. O VPA é o quanto cada ação representaria em patrimônio líquido se a empresa fosse avaliada só pelo balanço. O P/VP, então, diz se o mercado está pagando um prêmio ou um desconto sobre esse valor contábil.',
-      'A conta é <strong>P/VP = preço da ação ÷ VPA</strong>. Abaixo de 1, a ação negocia por menos que o patrimônio contábil, o que pode ser oportunidade ou sinal de que o mercado duvida da qualidade dos ativos. Acima de 1, o mercado paga um prêmio, em geral por esperar crescimento ou por enxergar valor em ativos intangíveis, como marca e tecnologia, que o balanço não captura por inteiro.',
+      'A conta é <strong>P/VP = preço da ação ÷ VPA</strong>. Abaixo de 1, a ação negocia por menos que o patrimônio contábil, o que pode descrever distância até o balanço ou dúvida do mercado sobre a qualidade dos ativos. Acima de 1, o mercado paga um prêmio, em geral por esperar crescimento ou por enxergar valor em ativos intangíveis, como marca e tecnologia, que o balanço não captura por inteiro.',
       '<strong>Exemplo ilustrativo:</strong> uma ação a R$ 45,00 com VPA de R$ 30,00 tem P/VP de 1,5 (45 ÷ 30), ou seja, o mercado paga 50% acima do valor patrimonial. Números redondos apenas pra ilustrar.',
-      'Ressalva honesta: <strong>o P/VP funciona melhor em uns setores do que em outros</strong>. É bastante útil pra bancos, seguradoras e holdings, onde o patrimônio reflete bem o valor dos ativos. Já em tecnologia e serviços, onde o valor está em intangíveis, ele engana. Leia sempre junto do <a href="/glossario/roe">ROE</a>: patrimônio barato só compensa se render bem.',
+      'Ressalva honesta: <strong>o P/VP funciona melhor em uns setores do que em outros</strong>. É bastante útil pra bancos, seguradoras e holdings, onde o patrimônio reflete bem o valor dos ativos. Já em tecnologia e serviços, onde o valor está em intangíveis, ele engana. Leia sempre junto do <a href="/glossario/roe">ROE</a>: P/VP baixo só descreve o múltiplo, e o rendimento do patrimônio é outra conta.',
     ],
     related: ['vpa', 'p-l', 'roe', 'patrimonio-liquido', 'valor-mercado'],
     backlink: {
-      label: 'Ver o ranking das ações mais baratas pela fórmula de Graham',
+      label: 'Ver o ranking Graham, pela fórmula',
       to: '/ranking/mais-baratas-graham',
     },
     faq: [
       {
         q: 'O que significa P/VP menor que 1?',
-        a: 'Significa que a ação está sendo negociada por menos do que o patrimônio contábil por ação. Pode ser uma oportunidade de compra com desconto, ou um aviso de que o mercado desconfia da qualidade dos ativos ou espera prejuízos. Sozinho, não decide nada.',
+        a: 'Significa que a ação está sendo negociada por menos do que o patrimônio contábil por ação. Pode descrever distância até o balanço, ou um aviso de que o mercado desconfia da qualidade dos ativos ou espera prejuízos. Sozinho, não decide nada.',
       },
       {
         q: 'Para que tipo de empresa o P/VP é mais útil?',
@@ -364,7 +364,7 @@ export const GRUPO_1: GlossaryTerm[] = [
       'O <strong>Ibovespa</strong>, Índice Bovespa, é a principal referência do mercado de ações brasileiro, calculado pela <a href="/glossario/b3">B3</a> desde 1968. Ele reúne, numa carteira teórica, as ações mais negociadas da bolsa, ponderadas pela relevância de cada uma, e representa a maior parte do volume que gira no pregão. Quando alguém fala que a bolsa subiu ou caiu, quase sempre está falando do Ibovespa.',
       'As empresas entram no índice por critérios de liquidez e presença em pregão, e o peso de cada uma acompanha seu tamanho e negociabilidade. A cada poucos meses a B3 revisa a composição, incluindo e excluindo papéis. Por concentrar as maiores companhias, o Ibovespa acaba sendo o <a href="/glossario/benchmark">benchmark</a> mais usado por fundos e investidores pra comparar desempenho.',
       '<strong>Exemplo ilustrativo:</strong> se o índice vai de 100.000 para 110.000 pontos ao longo do ano, houve valorização de 10% no período, ou seja, na média as principais ações subiram 10%. Números usados só pra mostrar como se lê a variação.',
-      'Ressalva honesta: <strong>o número de pontos, sozinho, não diz se está caro ou barato</strong>. O que importa é a variação ao longo do tempo, e o índice reflete sobretudo as gigantes: uma carteira concentrada em empresas menores pode se comportar de forma bem diferente do Ibovespa.',
+      'Ressalva honesta: <strong>o número de pontos, sozinho, não descreve o múltiplo do índice</strong>. O que importa é a variação ao longo do tempo, e o índice reflete sobretudo as gigantes: uma carteira concentrada em empresas menores pode se comportar de forma bem diferente do Ibovespa.',
     ],
     related: ['b3', 'ifix', 'etf', 'benchmark', 'blue-chips'],
     backlink: {
@@ -452,7 +452,7 @@ export const GRUPO_1: GlossaryTerm[] = [
       'A <strong>volatilidade</strong> descreve o quanto o preço de um ativo balança ao longo do tempo. Ativos de alta volatilidade sobem e caem com força; os de baixa volatilidade variam pouco. Estatisticamente, costuma ser calculada pelo desvio padrão dos retornos, e é uma das medidas de risco mais usadas, sobretudo pra quem tem horizonte curto.',
       'Vale separar dois conceitos que muita gente confunde: <strong>volatilidade</strong> é oscilação de preço, muitas vezes temporária; <a href="/glossario/risco">risco</a> é a chance de perda permanente de capital. Uma boa empresa pode ter ação volátil e, ainda assim, ser um investimento seguro no longo prazo. O <a href="/glossario/beta">beta</a> é um primo próximo: mede a volatilidade de uma ação em relação ao mercado.',
       '<strong>Exemplo ilustrativo:</strong> uma ação que passeia entre R$ 90 e R$ 110 num mês é mais volátil que outra que fica entre R$ 98 e R$ 102 no mesmo período. Mais volátil não quer dizer pior, depende do seu prazo e do seu estômago. Números só pra ilustrar.',
-      'Ressalva honesta: <strong>a volatilidade muda de cara conforme o horizonte</strong>. Pra quem investe no longo prazo e faz aportes constantes, ela pode ser aliada, permitindo comprar barato nas quedas. Pra quem opera no curto prazo, é fonte de estresse e de stop. Ajuste a dose de ativos voláteis ao seu perfil e ao tempo que pode deixar o dinheiro investido.',
+      'Ressalva honesta: <strong>a volatilidade muda de cara conforme o horizonte</strong>. Pra quem investe no longo prazo e faz aportes constantes, a oscilação entra na média dos preços de compra. Pra quem opera no curto prazo, é fonte de estresse e de stop. Ajuste a dose de ativos voláteis ao seu perfil e ao tempo que pode deixar o dinheiro investido.',
     ],
     related: ['risco', 'beta', 'diversificacao', 'liquidez', 'small-caps'],
     backlink: {
@@ -466,7 +466,7 @@ export const GRUPO_1: GlossaryTerm[] = [
       },
       {
         q: 'Alta volatilidade é ruim?',
-        a: 'Depende do horizonte. Para quem investe no longo prazo e aporta com regularidade, a volatilidade pode ser oportunidade de comprar barato nas quedas. Para quem opera no curto prazo, ela é fonte de risco e estresse. O que vale é alinhar ao seu perfil.',
+        a: 'Depende do horizonte. Para quem investe no longo prazo e aporta com regularidade, a oscilação entra na média dos preços de compra. Para quem opera no curto prazo, ela é fonte de risco e estresse. O que vale é alinhar ao seu perfil.',
       },
     ],
   },
@@ -596,7 +596,7 @@ export const GRUPO_1: GlossaryTerm[] = [
     ],
     related: ['p-vp', 'patrimonio-liquido', 'lpa', 'valor-mercado', 'roe'],
     backlink: {
-      label: 'Ver o ranking das ações mais baratas pela fórmula de Graham',
+      label: 'Ver o ranking Graham, pela fórmula',
       to: '/ranking/mais-baratas-graham',
     },
     faq: [
@@ -605,7 +605,7 @@ export const GRUPO_1: GlossaryTerm[] = [
         a: 'O VPA é o valor patrimonial contábil por ação, tirado do balanço. O preço é quanto o mercado está disposto a pagar. A relação entre os dois é o P/VP: quando o preço fica abaixo do VPA, diz-se que a ação negocia com desconto sobre o patrimônio.',
       },
       {
-        q: 'VPA alto significa ação barata?',
+        q: 'VPA alto descreve o preço da ação?',
         a: 'Não por si só. O que importa é comparar o VPA com o preço, pelo P/VP, e considerar a qualidade dos ativos. Empresas ricas em intangíveis podem ter VPA baixo e ainda assim valer muito, porque marca e tecnologia nem sempre aparecem no balanço.',
       },
     ],

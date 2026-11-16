@@ -20,7 +20,7 @@ const copy: RankingCopy = {
     {
       h2: 'Limitações: alto crescimento nem sempre vira lucro',
       paragraphs: [
-        'Crescimento de receita não garante criação de valor. Empresa pode crescer 30 por cento ao ano queimando caixa, oferecendo descontos agressivos ou expandindo via aquisições caras sem sinergia. Sempre cruze CAGR de receita com margem líquida e ROE: o ideal é receita E margem subindo juntas.',
+        'Crescimento de receita não garante criação de valor. Empresa pode crescer 30 por cento ao ano queimando caixa, oferecendo descontos agressivos ou expandindo via aquisições a múltiplos altos, sem sinergia. Sempre cruze CAGR de receita com margem líquida e ROE: a leitura junta receita e margem.',
         'Outro ponto: empresas em fase inicial (small caps, tech) costumam crescer rapidamente da base baixa, mas desaceleram conforme amadurecem. CAGR de 30 por cento por 5 anos seguidos é raríssimo e geralmente envolve setores cíclicos, fusões ou efeito base. Use o ranking pra triagem, depois investigue qualidade do crescimento.',
       ],
     },
@@ -28,7 +28,7 @@ const copy: RankingCopy = {
   crossLinks: [
     {
       title: 'Calculadora de Preço Teto',
-      desc: 'Calcule o preço justo de uma ação por Graham e Bazin.',
+      desc: 'Calcule o preço teto de uma ação pelas fórmulas de Graham e Bazin.',
       href: '/calculadora/preco-teto',
     },
     {
@@ -58,7 +58,7 @@ const copy: RankingCopy = {
     },
     {
       q: 'Crescimento alto sempre é positivo?',
-      a: 'Não automaticamente. Crescimento via aquisições caras pode destruir valor mesmo aumentando receita. Crescimento via descontos agressivos comprime margem e pode levar a prejuízo. Sempre cruze CAGR de receita com margem líquida estável ou crescente. O ideal é receita E rentabilidade subindo juntas, sinal de modelo escalável.',
+      a: 'Não automaticamente. Crescimento via aquisições a múltiplos altos pode destruir valor mesmo aumentando receita. Crescimento via descontos agressivos comprime margem e pode levar a prejuízo. Sempre cruze CAGR de receita com margem líquida estável ou crescente. O ideal é receita E rentabilidade subindo juntas, sinal de modelo escalável.',
     },
     {
       q: 'Como comparar empresas de setores diferentes?',

@@ -16,7 +16,7 @@ export interface MethodResult {
   fairPrice: number
   /** (teto - preço) / preço. Positivo = há margem de segurança. */
   margin: number
-  /** preço / teto. Abaixo de 0,8 = barato; até 1,0 = justo; acima = caro. */
+  /** preço / teto. Abaixo de 1 a cotação está abaixo do teto; acima, passou do teto. */
   ratio: number
 }
 

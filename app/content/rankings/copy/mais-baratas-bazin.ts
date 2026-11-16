@@ -2,20 +2,20 @@ import type { RankingCopy } from '~/types/rankings'
 
 const copy: RankingCopy = {
   answerFirst:
-    'Preço Bazin é a fórmula brasileira de Décio Bazin baseada em dividendos: preço justo = dividendos dos últimos 12 meses ÷ 0,06, assumindo dividend yield mínimo aceitável de 6%. Ações cotadas abaixo do Bazin oferecem DY esperado acima de 6% no preço atual. Este ranking lista as 50 ações com maior desconto pelo método Bazin na B3, ideal para quem busca renda passiva consistente.',
+    'O preço teto de Bazin é a fórmula de Décio Bazin baseada em dividendos: dividendos dos últimos 12 meses ÷ 0,06, com yield de 6% na régua clássica. Este ranking lista as 50 ações com maior margem entre a cotação e esse preço teto na B3.',
   educationalSections: [
     {
       h2: 'O que é a Fórmula de Bazin?',
       paragraphs: [
-        'A Fórmula de Bazin, criada por Décio Bazin no clássico "Faça Fortuna com Ações, Antes que Seja Tarde", calcula o preço justo de uma ação como o dividendo médio dos últimos 5 anos dividido por 6 por cento (a taxa mínima de retorno em dividendos que ele considerava razoável).',
-        'A lógica é direta: se você quer pelo menos 6 por cento ao ano em dividendos sobre o capital investido, basta dividir o dividendo pago pelo retorno desejado pra saber o preço máximo que você pode pagar. Empresa que paga R$ 3 ao ano em dividendos vale no máximo R$ 50 (3 dividido por 0,06).',
+        'A Fórmula de Bazin, criada por Décio Bazin no clássico "Faça Fortuna com Ações, Antes que Seja Tarde", calcula o preço teto de uma ação como o dividendo médio dos últimos 5 anos dividido por 6 por cento (a taxa mínima de retorno em dividendos que ele considerava razoável).',
+        'A lógica é direta: se a régua pede pelo menos 6 por cento ao ano em dividendos sobre o capital, basta dividir o dividendo pago por 0,06 pra saber o preço teto dessa conta. Empresa que paga R$ 3 ao ano em dividendos chega a R$ 50 (3 dividido por 0,06).',
       ],
     },
     {
       h2: 'Como interpretar o ranking',
       paragraphs: [
-        'As ações no topo do ranking pagam dividendos altos em relação ao preço de mercado, sinalizando potencial atratividade pra investidor focado em renda. Quanto maior o upside calculado, mais espaço pra valorização (assumindo que os dividendos vão se manter no patamar histórico).',
-        'Bazin é especialmente útil pra montar carteira de geração de renda mensal ou trimestral. Bancos (ITUB4, BBAS3, BBDC4), seguradoras (BBSE3) e utilities (TAEE11, TRPL4) costumam aparecer com frequência por terem fluxo de caixa estável e payout alto.',
+        'As ações no topo do ranking são as que têm maior margem entre a cotação e o preço teto de Bazin. A margem descreve a distância até a fórmula. Ela assume que os dividendos se mantêm no patamar usado na conta.',
+        'Bazin usa o dividendo como insumo. Bancos (ITUB4, BBAS3, BBDC4), seguradoras (BBSE3) e utilities (TAEE11, TRPL4) costumam aparecer com frequência por terem fluxo de caixa estável e payout alto. A presença na lista descreve a fórmula, não uma indicação de compra.',
       ],
     },
     {
@@ -29,7 +29,7 @@ const copy: RankingCopy = {
   crossLinks: [
     {
       title: 'Calculadora de Preço Teto',
-      desc: 'Calcule o preço justo de uma ação por Graham e Bazin.',
+      desc: 'Calcule o preço teto de uma ação pelas fórmulas de Graham e Bazin.',
       href: '/calculadora/preco-teto',
     },
     {
@@ -63,7 +63,7 @@ const copy: RankingCopy = {
     },
     {
       q: 'O que fazer quando a fórmula dá um valor muito acima do preço atual?',
-      a: 'Investigue por que o mercado está pagando tão pouco. Possíveis razões: dividendo alto vai ser cortado (queda de lucro), risco regulatório (energia, bancos estatais), problemas governança. Se nada disso aparecer, pode ser uma boa oportunidade de value. Use a calculadora de preço teto pra refinar.',
+      a: 'A distância grande entre a cotação e o preço teto pede a leitura do porquê. Possíveis razões: o dividendo alto pode ser cortado, há risco regulatório, ou a governança pesa. A fórmula não identifica sozinha o motivo. A calculadora de preço teto refaz a conta.',
     },
   ],
 }

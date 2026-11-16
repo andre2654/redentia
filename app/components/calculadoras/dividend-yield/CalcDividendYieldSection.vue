@@ -377,7 +377,7 @@ const analysisText = computed(() => {
     return `Reserve uma margem de 15-20% acima disso: dividendo não é contratual, e corte de payout numa pagadora derruba a renda sem aviso. Diversificar em 10-15 pagadoras reduz esse risco específico.`
   }
   const dy = heroDy.value
-  if (dy < 3) return 'DY abaixo de 3% é considerado baixo. Pode indicar empresa de crescimento ou ação cara.'
+  if (dy < 3) return 'DY abaixo de 3% descreve pouco provento em relação à cotação. Pode indicar empresa que reinveste o lucro ou uma cotação alta em relação aos proventos.'
   if (dy < 6) return 'DY entre 3-6% é considerado bom para ações. Equilibra dividendos e crescimento.'
   if (dy < 10) return 'DY entre 6-10% é excelente! Típico de boas pagadoras de dividendos ou FIIs.'
   return 'DY muito alto (>10%) pode indicar: ação em queda, dividendo extraordinário ou risco elevado. Investigue!'

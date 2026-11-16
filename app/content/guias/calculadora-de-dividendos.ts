@@ -72,7 +72,7 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Existe ainda o <strong>yield on cost</strong>, que é o DY calculado sobre o preço que <strong>você</strong> pagou, não sobre o preço atual. Quem comprou barato há anos e viu os proventos crescerem costuma ter um yield on cost bem acima do DY que aparece na tela hoje. A <a href="/calculadora/dividend-yield">calculadora de dividend yield da Aportou</a> tem um modo dedicado a essa conta.',
+          html: 'Existe ainda o <strong>yield on cost</strong>, que é o DY calculado sobre o preço que <strong>você</strong> pagou, não sobre o preço atual. Quem comprou a um preço menor há anos e viu os proventos crescerem costuma ter um yield on cost bem acima do DY que aparece na tela hoje. A <a href="/calculadora/dividend-yield">calculadora de dividend yield da Aportou</a> tem um modo dedicado a essa conta.',
         },
       ],
     },
@@ -177,7 +177,7 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
     },
     {
       q: 'Qual a diferença entre dividend yield e yield on cost?',
-      a: 'O dividend yield usa o preço atual da cota; o yield on cost usa o preço que você pagou quando comprou. Quem comprou barato e viu os proventos crescerem costuma ter um yield on cost maior que o DY exibido hoje. A calculadora da Aportou tem um modo específico para essa conta.',
+      a: 'O dividend yield usa o preço atual da cota; o yield on cost usa o preço que você pagou quando comprou. Quem comprou a um preço menor e viu os proventos crescerem costuma ter um yield on cost maior que o DY exibido hoje. A calculadora da Aportou tem um modo específico para essa conta.',
     },
     {
       q: 'Um dividend yield alto é sempre bom?',

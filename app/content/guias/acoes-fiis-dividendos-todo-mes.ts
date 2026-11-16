@@ -108,7 +108,7 @@ export const ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'A armadilha é olhar só o DY. Um yield altíssimo pode ser um sinal de perigo, e não de oportunidade, quando vem de um preço que despencou por um problema real na empresa ou no fundo. Dividendo do passado não é promessa de dividendo do futuro. Antes de se encantar com o número, passe o ativo por estes filtros:',
+          html: 'A armadilha é olhar só o DY. Um yield altíssimo pode ser um sinal de perigo, e não uma leitura de compra, quando vem de um preço que despencou por um problema real na empresa ou no fundo. Dividendo do passado não é promessa de dividendo do futuro. Antes de se encantar com o número, passe o ativo por estes filtros:',
         },
         {
           kind: 'checks',
