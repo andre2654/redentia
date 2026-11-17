@@ -28,6 +28,7 @@
  *    12 h, e /quanto-rende/tesouro/{slug} quando a conta da taxa fecha. Sem
  *    fallback: lista vazia ou endpoint fora omite a seção.
  */
+import { FIIS_DESCRIPTION, FIIS_PATH, FIIS_TITLE } from '../../app/content/seo/fiis-hub'
 import { RANKINGS } from '../../app/content/rankings/registry'
 import {
   ACOES_BARATAS_DESCRIPTION,
@@ -112,6 +113,7 @@ const CORE_PAGES: SitePage[] = [
   // A página do plano único (31/10/2026): R$ 19,99 por mês, 3 dias grátis.
   { path: '/assinar', title: 'Assinatura Aportou', description: 'Sua carteira de qualquer banco pelo Open Finance, testada em 2.000 cenários, com a IA que responde com os seus números.', lastmod: '2026-10-31' },
   { path: '/rankings', title: 'Hub de rankings', description: '22 rankings de ações, FIIs, BDRs e Tesouro Direto atualizados diariamente.' },
+  { path: FIIS_PATH, title: FIIS_TITLE, description: FIIS_DESCRIPTION },
   // O hub do Tesouro estava fora do sitemap (só os títulos entravam) e teve
   // 2.446 impressões de 19/07 a 18/10/2026. lastmod = o preço mais novo dos títulos.
   { path: '/tesouro', title: 'Tesouro Direto hoje', description: 'As taxas de todos os títulos do Tesouro Direto, com preço e vencimento.' },

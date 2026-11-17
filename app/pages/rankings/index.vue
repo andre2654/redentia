@@ -9,6 +9,18 @@
 // cascata e o fecho é o painel azul com o corte (MercadoFecho).
 import type { RankingClasse, RankingMeta, RankingRowApi } from '~/types/rankings'
 import { RANKINGS, RANKING_TEMAS } from '~/content/rankings/registry'
+import {
+  FIIS_DESCRIPTION,
+  FIIS_H1,
+  FIIS_PATH,
+  FIIS_SUBTITLE,
+  FIIS_TITLE,
+  canonicalDeRankings,
+} from '~/content/seo/fiis-hub'
+
+definePageMeta({
+  alias: ['/fiis'],
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -27,6 +39,7 @@ const pillItems = Object.keys(CLASSE_LABELS)
 const opcoesDoTrilho = pillItems.map((l) => ({ valor: l, rotulo: l }))
 
 const activeClasse = computed<RankingClasse | null>(() => {
+  if (route.path === FIIS_PATH) return 'fiis'
   const q = String(route.query.classe ?? '')
   return (['acoes', 'fiis', 'bdrs', 'renda-fixa'] as const).includes(q as RankingClasse)
     ? (q as RankingClasse)
@@ -37,6 +50,10 @@ const activePill = computed(
 )
 function setPill(label: string) {
   const classe = CLASSE_LABELS[label]
+  if (route.path === FIIS_PATH) {
+    if (classe === 'fiis') return
+    return navigateTo(classe ? { path: '/rankings', query: { classe } } : '/rankings')
+  }
   const query = { ...route.query }
   if (classe) query.classe = classe
   else delete query.classe
@@ -141,28 +158,39 @@ watch(grupos, () => nextTick(observeCards))
 onBeforeUnmount(() => observer?.disconnect())
 
 // ————— SEO —————
+// /fiis e /rankings?classe=fiis mostram o mesmo filtro. O canonical é /fiis
+// nos dois, para a URL curta ser a indexável e a query continuar funcionando.
+const paginaFiis = computed(() => canonicalDeRankings(route.path, activeClasse.value) === FIIS_PATH)
+const listasDoSeo = computed(() => (paginaFiis.value ? ALL.filter((m) => m.classe.includes('fiis')) : ALL))
 usePageSeo({
-  title: 'Rankings da B3 2026: Top Ações, FIIs, BDRs e Tesouro',
-  description:
-    'Todos os rankings da bolsa brasileira em um lugar: dividend yield, valor de mercado, Graham, Bazin, ROE, crescimento, Aportou Score e Tesouro Direto. Atualizados diariamente.',
-  path: '/rankings',
-  breadcrumbs: [
-    { name: 'Início', path: '/' },
-    { name: 'Rankings', path: '/rankings' },
-  ],
-  structuredData: [
+  title: computed(() => (paginaFiis.value ? FIIS_TITLE : 'Rankings da B3 2026: Top Ações, FIIs, BDRs e Tesouro')),
+  description: computed(() => (paginaFiis.value
+    ? FIIS_DESCRIPTION
+    : 'Todos os rankings da bolsa brasileira em um lugar: dividend yield, valor de mercado, Graham, Bazin, ROE, crescimento, Aportou Score e Tesouro Direto. Atualizados diariamente.')),
+  path: computed(() => (paginaFiis.value ? FIIS_PATH : '/rankings')),
+  breadcrumbs: computed(() => (paginaFiis.value
+    ? [
+        { name: 'Início', path: '/' },
+        { name: 'Rankings', path: '/rankings' },
+        { name: 'FIIs', path: FIIS_PATH },
+      ]
+    : [
+        { name: 'Início', path: '/' },
+        { name: 'Rankings', path: '/rankings' },
+      ])),
+  structuredData: computed(() => [
     {
       '@type': 'ItemList',
-      name: `Rankings da B3 - ${MARCA.nome}`,
-      numberOfItems: ALL.length,
-      itemListElement: ALL.map((m, i) => ({
+      name: paginaFiis.value ? FIIS_TITLE : `Rankings da B3 - ${MARCA.nome}`,
+      numberOfItems: listasDoSeo.value.length,
+      itemListElement: listasDoSeo.value.map((m, i) => ({
         '@type': 'ListItem',
         position: i + 1,
         name: m.title,
         url: `/ranking/${m.slug}`,
       })),
     },
-  ],
+  ]),
 })
 
 function cardTypes(meta: RankingMeta): string[] {
@@ -179,14 +207,14 @@ function contagemDoGrupo(g: { tema: string; items: RankingMeta[] }): number {
     <!-- ============ Hero ============ -->
     <NuPageHero
       size="lg" eyebrow="Ferramentas"
-      subtitle="A B3 inteira ranqueada do maior pro menor: dividendos, tamanho, valuation, crescimento e o Aportou Score. Atualizado diariamente após o pregão."
+      :subtitle="paginaFiis ? FIIS_SUBTITLE : 'A B3 inteira ranqueada do maior pro menor: dividendos, tamanho, valuation, crescimento e o Aportou Score. Atualizado diariamente após o pregão.'"
     >
-      <template #title>Rankings da B3.</template>
+      <template #title>{{ paginaFiis ? FIIS_H1 : 'Rankings da B3.' }}</template>
       <NuTrilho :opcoes="opcoesDoTrilho" :model-value="activePill" rotulo="Filtrar rankings por classe" @update:model-value="setPill" />
     </NuPageHero>
 
     <!-- ============ Destaque: Redentia Score top 5 (SSR real) ============ -->
-    <section v-if="scoreTop.length" class="rkh__spot-wrap">
+    <section v-if="scoreTop.length && !paginaFiis" class="rkh__spot-wrap">
       <NuxtLink v-contexto-chat="{ id: 'ranking:redentia-score', tipo: 'ranking', rotulo: 'Ranking · Aportou Score' }" to="/ranking/redentia-score" class="rkh__spot">
         <NuFaixaMarca rotulo="Exclusivo Aportou" como="span" :altura="52" class="rkh__spot-card">
           <div class="rkh__spot-in">

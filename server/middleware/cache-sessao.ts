@@ -54,6 +54,7 @@ const EXATAS: Record<string, string> = {
   '/graficos': 'public, s-maxage=86400',
   // Rankings e setores: o backend cacheia 15 min → s-maxage=900.
   '/rankings': QUINZE_MIN,
+  '/fiis': QUINZE_MIN,
   '/setor': QUINZE_MIN,
   // Legais/editoriais que quase nunca mudam.
   '/metodologia': DIA,

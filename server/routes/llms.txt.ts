@@ -88,6 +88,7 @@ Cada ticker tem página própria em /asset/{TICKER} com cotação, gráfico, fun
 ### Rankings (${nRankings} rankings, atualizados diariamente)
 
 - [Hub de rankings](${o}/rankings): todos os rankings agrupados por tema
+- [FIIs](${o}/fiis): rankings de fundos imobiliários por dividend yield e P/VP. A query /rankings?classe=fiis abre o mesmo filtro e aponta o canonical para esta URL
 - [${MARCA.nome} Score](${o}/ranking/redentia-score): score proprietário 0 a 100 que cruza 15 rankings fundamentalistas
 - [Maiores Dividend Yields](${o}/ranking/maiores-dividend-yield): ações e FIIs com maior DY dos últimos 12 meses
 - [Mais Baratas pela Fórmula de Graham](${o}/ranking/mais-baratas-graham)
