@@ -15,7 +15,7 @@ import { SETORES_BY_API } from '../content/setores.ts'
 import { nomeDaEmpresa } from './nomeB3.ts'
 import { bazinPrice, bookValuePrice, computeAll, grahamPrice, plSectorPrice } from './preco-teto.ts'
 import { resolveSiteDy, type ProventoRow } from './proventos.ts'
-import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO, juntaAte, tituloQueCabe } from './serp.ts'
+import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO, TETO_TITULO_PAGINA, juntaAte, tituloQueCabe } from './serp.ts'
 import { symbolShape } from './tickerClass.ts'
 
 export const TIPOS_PRECO_TETO = new Set(['STOCK', 'REIT', 'FUND'])
@@ -260,9 +260,29 @@ export function sectorPlEfetivo(lpa: number, mediaSetor: number | null): {
   return { valor: 0, fonte: 'ausente' }
 }
 
-export function tituloPrecoTeto(ticker: string, _temGraham: boolean): string {
-  // "e justo" lia como veredito. O título descreve a conta, não o papel.
-  return tituloQueCabe(`Preço-teto calculado pelo método Bazin para ${ticker}`)
+/**
+ * Título da página por ticker. A frase do H1 ("Preço teto {TICKER} hoje")
+ * entra inteira, e os métodos que a página calcula vêm em seguida. O nome
+ * da empresa entra quando ainda cabe nos 50 caracteres antes de " · Aportou".
+ * Sem Graham no número, o título não promete Graham.
+ */
+export function tituloPrecoTeto(
+  ticker: string,
+  temGraham: boolean,
+  nome?: string | null,
+  temBazin = true,
+): string {
+  const metodos = [temBazin ? 'Bazin' : null, temGraham ? 'Graham' : null].filter((m): m is string => !!m)
+  const cauda = metodos.length ? `: ${metodos.join(', ')} e média` : ''
+  const base = `Preço Teto ${ticker} hoje${cauda}`
+  const empresa = String(nome ?? '').replace(/\s+/g, ' ').trim()
+  if (empresa && empresa.toUpperCase() !== ticker.toUpperCase()) {
+    const comNome = metodos.length
+      ? `Preço Teto ${ticker} hoje: ${empresa}, ${metodos.join(', ')} e média`
+      : `Preço Teto ${ticker} hoje: ${empresa}`
+    if (comNome.length <= TETO_TITULO_PAGINA) return comNome
+  }
+  return base.length <= TETO_TITULO_PAGINA ? base : tituloQueCabe(base)
 }
 
 export function descricaoPrecoTeto(partes: {
@@ -274,8 +294,13 @@ export function descricaoPrecoTeto(partes: {
   consenso: string | null
 }): string {
   const aviso = 'Estimativa educacional, não é recomendação.'
+  const metodos = [
+    partes.bazin ? 'Bazin' : null,
+    partes.graham ? 'Graham' : null,
+  ].filter((m): m is string => !!m)
+  const cauda = metodos.length ? `: ${metodos.join(', ')} e média` : ''
   const corpo = juntaAte([
-    `Preço-teto Bazin de ${partes.ticker} (${partes.nome}).`,
+    `Preço teto ${partes.ticker} hoje${cauda} (${partes.nome}).`,
     partes.bazin ? `Bazin ${partes.bazin}.` : null,
     partes.graham ? `Graham ${partes.graham}.` : null,
     `Cotação ${partes.preco}.`,
@@ -330,7 +355,6 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
     ? String(i.priceDate).slice(0, 10)
     : null
   const dataTexto = dataLonga(dataISO)
-  const temGraham = graham > 0
 
   const tabela: LinhaDy[] = i.dividendo > 0
     ? YIELDS_TABELA.map((y) => ({ pct: Math.round(y * 100), teto: i.dividendo / y, bazin: y === 0.06 }))
@@ -343,7 +367,7 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
   })
   const resposta = montarResposta({ ticker, preco: i.preco, bazin, graham, consenso, dataTexto })
 
-  const title = tituloPrecoTeto(ticker, temGraham)
+  const title = tituloPrecoTeto(ticker, graham > 0, nome, bazin > 0)
   const description = descricaoPrecoTeto({
     ticker,
     nome,

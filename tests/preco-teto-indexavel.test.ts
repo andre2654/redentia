@@ -76,6 +76,8 @@ test('ticker da allowlist é indexável; HGLG11 e PETR3 seguem noindex', () => {
   const vue = readFileSync(new URL('../app/components/calc/CalcPrecoTetoTicker.vue', import.meta.url), 'utf8')
   assert.match(vue, /robots:\s*robotsDePrecoTeto\(v\.ticker\)/)
   assert.match(vue, /path:\s*`\/calculadora\/preco-teto\/\$\{v\.ticker\}`/)
+  assert.match(vue, /breadcrumbs:\s*\[/)
+  assert.match(vue, /name: 'Preço Teto', path: '\/calculadora\/preco-teto'/)
   assert.doesNotMatch(vue, /robots:\s*'noindex, follow'/)
   const config = readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8')
   assert.match(config, /siteUrl: process\.env\.NUXT_PUBLIC_SITE_URL \|\| 'https:\/\/aportou\.com\.br'/)

@@ -23,7 +23,7 @@ export function paginasPrecoTetoIndexaveis(): PaginaPrecoTetoIndexavel[] {
       const data = lastmod.get(ticker)
       return {
         path: `/calculadora/preco-teto/${ticker}`,
-        title: `Preço-teto calculado pelo método Bazin para ${ticker}`,
+        title: `Preço Teto ${ticker} hoje`,
         description: 'Estimativa educacional, não é recomendação.',
         ...(data ? { lastmod: data } : {}),
       }
