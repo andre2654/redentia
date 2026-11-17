@@ -5,8 +5,8 @@
  * BreadcrumbList sai do usePageSeo. Canonical é o path em maiúsculas, sem
  * query: https://aportou.com.br/calculadora/preco-teto/{TICKER}.
  *
- * Robots: a allowlist do Search Console omite a meta (e não há X-Robots-Tag
- * nesta URL). O resto segue noindex, follow.
+ * Robots: o conjunto indexável (cliques + lotes abertos) omite a meta.
+ * O resto segue noindex, follow. Estas URLs não têm X-Robots-Tag próprio.
  */
 import { robotsDePrecoTeto } from '~/content/seo/preco-teto-indexaveis'
 
@@ -146,6 +146,12 @@ const metodos = computed(() => {
         <NuxtLink to="/calculadora/preco-teto/bazin">Método de Bazin</NuxtLink>
         <NuxtLink to="/calculadora/preco-teto/graham">Fórmula de Graham</NuxtLink>
       </nav>
+      <nav v-if="view.relacionados.length" class="ptt__rel" aria-label="Preço teto de outros papéis do mesmo setor">
+        <h2 class="ptt__h2">Preço teto no mesmo setor</h2>
+        <div class="ptt__links">
+          <NuxtLink v-for="r in view.relacionados" :key="r.ticker" :to="r.href">Preço teto {{ r.ticker }}</NuxtLink>
+        </div>
+      </nav>
     </section>
 
     <section class="ptt__faq">
@@ -231,4 +237,6 @@ const metodos = computed(() => {
 
 .ptt__links { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 22px; }
 .ptt__links a { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
+.ptt__rel { margin-top: 36px; }
+.ptt__rel .ptt__links { margin-top: 16px; }
 </style>

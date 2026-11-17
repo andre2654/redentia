@@ -92,11 +92,11 @@ test('a página do ticker fica com a média do PR 163 e o upside do ranking pint
     temPaginaDividendos: true,
   })
   assert.ok(view)
-  assert.match(view.paragrafo, /A cotação está .+% abaixo dessa média\./)
+  assert.match(view.paragrafo, /A cotação está 42,3% abaixo da média, o que deixa a ação barata e subvalorizada em relação a esse preço teto\./)
   assert.match(view.paragrafo, /Estimativa educacional, não é recomendação/)
   assert.equal(/perto do preço teto|Abaixo da régua|Na régua|Acima da régua/.test(view.paragrafo + view.passos.map((p) => p.linhas.join(' ')).join(' ')), false)
   const media = view.passos.find((p) => p.titulo === 'Média dos métodos')
-  assert.match(media?.linhas.join('\n') ?? '', /abaixo dessa média/)
+  assert.match(media?.linhas.join('\n') ?? '', /A cotação está 42,3% abaixo da média/)
 
   assert.equal(RANKING_COLUMNS.upsidePct.signed, true)
   assert.equal('semCor' in RANKING_COLUMNS.upsidePct, false)
@@ -108,4 +108,49 @@ test('a página do ticker fica com a média do PR 163 e o upside do ranking pint
   assert.match(lider, /if \(!col\.value\.signed\) return ''/)
   assert.match(lider, /rkl__value--up/)
   assert.match(lider, /rkl__value--down/)
+})
+
+test('XPML11 e PRIO3 medem a distância sobre a média, e acima da média não chama de barata', () => {
+  const entradas = JSON.parse(ler('tests/fixtures/preco-teto-indexaveis.json')) as Array<Parameters<typeof montarPrecoTeto>[0]>
+  const pct = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+  const distancia = (preco: number, media: number) => pct.format(Math.abs((preco - media) / media * 100))
+
+  const xpml = montarPrecoTeto(entradas.find((e) => e.ticker === 'XPML11')!)
+  const prio = montarPrecoTeto(entradas.find((e) => e.ticker === 'PRIO3')!)
+  assert.ok(xpml && prio)
+  assert.equal(distancia(89.52, 162.25), '44,8')
+  assert.equal(distancia(64.49, 70.23), '8,2')
+  assert.equal(distancia(xpml.preco, xpml.consenso), '44,8')
+  assert.equal(distancia(prio.preco, prio.consenso), '8,2')
+  assert.equal(diferencaSobreTeto(xpml.preco, xpml.consenso), (xpml.preco - xpml.consenso) / xpml.consenso)
+  for (const [view, p] of [[xpml, '44,8'], [prio, '8,2']] as const) {
+    assert.match(view.paragrafo, new RegExp(`A cotação está ${p}% abaixo da média, o que deixa a (ação|cota) barata e subvalorizada em relação a esse preço teto\\.`))
+    assert.match(view.description, new RegExp(`${p}% abaixo da média`))
+    assert.match(view.passos.find((passo) => passo.titulo === 'Média dos métodos')?.linhas.join(' ') ?? '', new RegExp(`${p}% abaixo da média`))
+    assert.doesNotMatch(`${view.paragrafo}\n${view.description}`, /\bcara\b|compre|venda/)
+  }
+  assert.equal(xpml.nome, 'XP Malls')
+
+  const acima = montarPrecoTeto({
+    ticker: 'HGLG11',
+    nomeBruto: 'CSHG LOG',
+    fiiTradingName: 'CSHG Logística',
+    tipo: 'REIT',
+    preco: 160,
+    priceDate: '2026-10-23',
+    setorBruto: 'Real Estate',
+    lpa: 0,
+    vpa: 100,
+    dividendo: 1.2,
+    dividendoFonte: 'soma',
+    dyPct: 10,
+    sectorPL: 0,
+    sectorPLFonte: 'sem-lpa',
+    temPaginaDividendos: true,
+  })
+  assert.ok(acima)
+  assert.equal(distancia(acima.preco, acima.consenso), '88,2')
+  assert.match(acima.paragrafo, /A cotação está 88,2% acima da média, acima do preço teto calculado\./)
+  assert.match(acima.description, /88,2% acima da média/)
+  assert.doesNotMatch(`${acima.paragrafo}\n${acima.description}`, /barata|subvalorizada|\bcara\b|compre|venda/)
 })

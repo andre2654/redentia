@@ -37,6 +37,7 @@ test('nome de verdade não é cortado', () => {
 
 test('FII usa o trading_name', () => {
   assert.equal(nomeDaEmpresa('CSHG LOG    CI', 'CSHG LOGÍSTICA'), 'Cshg Logística')
+  assert.equal(nomeDaEmpresa('FII XPML', 'XP Malls'), 'XP Malls')
 })
 
 test('nome que a coluna da B3 abrevia', () => {

@@ -124,7 +124,13 @@ function titulo(s: string): string {
  * FII com trading_name usa o trading_name (vem MAIÚSCULO do scraper).
  */
 export function nomeDaEmpresa(bruto: string, fiiTradingName?: string | null): string {
-  if (fiiTradingName) return titulo(fiiTradingName)
+  if (fiiTradingName) {
+    const limpo = fiiTradingName.replace(/\s+/g, ' ').trim()
+    // Já veio com caixa ('XP Malls'): não rebaixar a sigla. Tudo maiúsculo
+    // ainda passa pelo título, como o scraper manda.
+    if (limpo && limpo !== limpo.toUpperCase()) return limpo
+    return titulo(limpo)
+  }
   let cabeca = bruto.split(/\s{2,}/)[0] ?? bruto
   if (cabeca.length > 12 && cabeca === cabeca.toUpperCase() && CLASSE_GRUDADA.test(cabeca.slice(12).trim())) {
     cabeca = cabeca.slice(0, 12)

@@ -70,10 +70,10 @@ export function xmlNaOrigem(xml: string, origemGuardada: string, origem: string)
 }
 
 /**
- * /calculadora/preco-teto/{TICKER} fora da allowlist do Search Console sai do
- * XML servido, inclusive da semente antiga (637 tickers) e do fallback da
- * borda. O hub, os métodos (slug em minúsculas), o arquivo
- * /sitemaps/preco-teto.xml e o ticker da allowlist ficam.
+ * /calculadora/preco-teto/{TICKER} fora do conjunto indexável (cliques +
+ * lotes abertos) sai do XML servido, inclusive da semente antiga e do
+ * fallback da borda. O hub, os métodos (slug em minúsculas), o arquivo
+ * /sitemaps/preco-teto.xml e o ticker indexável ficam.
  */
 export function semPrecoTetoPorTicker(xml: string): string {
   return xml.replace(
