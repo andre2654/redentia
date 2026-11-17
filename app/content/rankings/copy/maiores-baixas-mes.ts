@@ -14,13 +14,13 @@ import type { RankingCopy } from '~/types/rankings'
 
 const copy: RankingCopy = {
   answerFirst:
-    'As ações que mais caíram no mês podem coincidir com dois cenários: a queda foi maior que a dos pares, com fundamentos ainda nos números, ou a queda acompanha deterioração dos fundamentos. Este ranking lista as 50 maiores quedas dos últimos 30 dias. A lista ordena a variação e não explica o porquê.',
+    'As ações que mais caíram no mês podem representar 2 cenários: oportunidade (mercado exagerou na queda, fundamentos intactos = compra com desconto) ou armadilha de valor (queda reflete deterioração real dos fundamentos = continuará caindo). Este ranking lista as 50 maiores quedas dos últimos 30 dias. Sempre investigue O PORQUÊ da queda antes de comprar.',
 
   educationalSections: [
     {
-      h2: 'Queda ou armadilha?',
+      h2: 'Oportunidade ou armadilha?',
       paragraphs: [
-        'Ativos em baixa podem ter cotação mais baixa que a dos pares, e também podem estar refletindo deterioração de fundamentos. O motivo da queda pode ser setorial, macroeconômico ou específico da empresa. A lista não distingue.',
+        'Ativos em baixa podem representar entradas a preços descontados, mas também podem estar refletindo deterioração de fundamentos. Antes de qualquer decisão, analise o motivo da queda: é setorial, macroeconômico ou específico da empresa?',
         { h3: 'Como usar este ranking' },
         {
           ul: [
@@ -45,11 +45,11 @@ const copy: RankingCopy = {
       ],
     },
     {
-      h2: 'Queda de curto prazo e armadilha de valor (value trap)',
+      h2: 'Oportunidades de Compra vs Armadilhas de Valor (Value Traps)',
       paragraphs: [
-        'Uma queda com P/L baixo pode coincidir com um evento curto ou com uma armadilha de valor (value trap). Na superfície os dois parecem iguais. O que separa é o que os balanços seguintes mostram.',
-        'Queda com fundamentos nos números: evento de curto prazo (notícia ruim, crise setorial passageira, ciclo macro adverso), P/L baixo versus histórico, receita estável ou crescente, margens preservadas. A lista não transforma isso em instrução de compra.',
-        'Value Trap (Armadilha de Valor): Queda reflete deterioração real e estrutural (perda de market share, problema regulatório, mudança de hábito do consumidor, disrupção tecnológica). Sinais: receita caindo de forma consistente, margem comprimida, dívida crescente, payout caindo, gestão sem credibilidade. P/L baixo, nesse caso, descreve o sintoma. A lista não separa os dois casos.',
+        'Distinguir uma oportunidade real de uma armadilha de valor (value trap) é a habilidade mais importante do investidor de longo prazo. Os dois cenários parecem iguais na superfície (ação caiu, P/L baixo), mas o desfecho é diametralmente oposto: oportunidade vira retorno, armadilha vira prejuízo permanente.',
+        'Oportunidade: Empresa boa, queda exagerada por evento de curto prazo (notícia ruim, crise setorial passageira, ciclo macro adverso). Sinais: P/L baixo versus histórico, fundamentos intactos (receita estável ou crescente, margens preservadas), gestão competente, vantagem competitiva preservada. Estratégia: comprar gradualmente em níveis técnicos (preço médio), com horizonte de 2-5 anos.',
+        'Value Trap (Armadilha de Valor): Queda reflete deterioração real e estrutural (perda de market share, problema regulatório, mudança de hábito do consumidor, disrupção tecnológica). Sinais: receita caindo de forma consistente, margem comprimida, dívida crescente, payout caindo, gestão sem credibilidade. Estratégia: evitar mesmo que o P/L pareça atrativo. P/L baixo é sintoma, não solução.',
       ],
     },
     {
@@ -72,7 +72,7 @@ const copy: RankingCopy = {
     {
       h2: 'Glossário Rápido',
       paragraphs: [
-        'Value Trap (armadilha de valor): Ação com P/L baixo que continua caindo porque os fundamentos estão se deteriorando.',
+        'Value Trap (armadilha de valor): Ação que parece barata pelo múltiplo (P/L baixo), mas continua caindo porque os fundamentos estão se deteriorando.',
         'Stop Loss: Ordem automática de venda para limitar perdas, geralmente posicionada 5-10% abaixo do preço de entrada.',
         'Suporte / Resistência: Suporte é zona onde aparecem compradores (preço para de cair); resistência é onde aparecem vendedores (preço para de subir).',
         'Correção de mercado: Queda entre 10% e 20% no índice principal (Ibovespa). Acontece historicamente 1-2 vezes por ano e é considerada parte normal do ciclo.',
@@ -106,15 +106,15 @@ const copy: RankingCopy = {
   faqItems: [
     {
       q: 'O que é uma armadilha de valor (value trap)?',
-      a: 'É uma ação com múltiplo baixo (P/L baixo, dividend yield alto) que continua caindo porque os fundamentos estão se deteriorando estruturalmente. O preço segue a deterioração do negócio. Comum em setores em disrupção ou empresas com problemas de gestão.',
+      a: 'É uma ação que parece barata pelo múltiplo (P/L baixo, dividend yield alto), mas continua caindo porque os fundamentos estão se deteriorando estruturalmente. O investidor entra atraído pelo "preço barato", mas o preço continua caindo porque a empresa está perdendo valor de verdade. Comum em setores em disrupção ou empresas com problemas de gestão.',
     },
     {
-      q: 'Como diferenciar queda de curto prazo de armadilha de valor?',
-      a: 'A queda de curto prazo convive com fundamentos ainda nos números (receita estável ou crescente, margens preservadas) e com um evento recente (notícia, ciclo macro). A armadilha tem deterioração real (receita caindo de forma consistente, margens comprimidas, perda de market share, dívida crescente). Os 4-8 últimos trimestres são a leitura.',
+      q: 'Como diferenciar oportunidade de armadilha de valor?',
+      a: 'Oportunidade tem fundamentos intactos (receita estável ou crescente, margens preservadas, gestão competente) e queda causada por evento de curto prazo (notícia ruim, ciclo macro). Armadilha tem deterioração real (receita caindo de forma consistente, margens comprimidas, perda de market share, dívida crescente). Olhe os 4-8 últimos trimestres antes de decidir.',
     },
     {
       q: 'Devo comprar a ação que mais caiu?',
-      a: 'A lista não responde. Evento curto com fundamentos nos números e deterioração estrutural aparecem iguais na ordenação. Comprar só porque caiu não é o que o ranking descreve. Use a lista como filtro da variação, não como sinal de compra.',
+      a: 'Só após investigar profundamente o porquê da queda. Se for evento curto e fundamentos intactos, sim, é oportunidade. Se for deterioração estrutural, não, é armadilha. Comprar simplesmente porque caiu (estratégia "catch a falling knife") é receita de prejuízo. Use o ranking como filtro inicial, não como sinal de compra.',
     },
     {
       q: 'O que é stop loss e como definir?',

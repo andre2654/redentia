@@ -168,7 +168,7 @@ export const RESERVA_DE_EMERGENCIA_GUIDE: GuideDoc = {
           items: [
             '<strong>Use quando for imprevisto e urgente.</strong> Perda de renda, saúde, um bem essencial que quebrou. Nesses casos, usar a reserva é o plano dando certo, não uma falha.',
             '<strong>Não use para o que dá para planejar.</strong> Viagem, troca de carro, festa e sonhos com data marcada são objetivos de médio prazo e pedem uma reserva própria, separada.',
-            '<strong>Não use para comprar na queda da bolsa.</strong> Queda de bolsa não é emergência. Sacar o colchão para comprar na baixa deixa você sem colchão exatamente na fase mais instável.',
+            '<strong>Não use para aproveitar oportunidade de mercado.</strong> Queda de bolsa não é emergência. Sacar o colchão para comprar na baixa deixa você sem colchão exatamente na fase mais instável.',
             '<strong>Reponha assim que a poeira baixar.</strong> Volte a aportar até restaurar o valor original, e revise a meta se seu custo de vida mudou desde o cálculo.',
           ],
         },
@@ -212,7 +212,7 @@ export const RESERVA_DE_EMERGENCIA_GUIDE: GuideDoc = {
     },
     {
       q: 'Posso usar a reserva para aproveitar uma queda da bolsa?',
-      a: 'Não é recomendado. Queda de mercado não é emergência, e usar o colchão para comprar na baixa deixa você sem proteção justamente no período de maior instabilidade. Compra na queda se financia com aporte novo ou com a parte da carteira destinada a risco, nunca com a reserva.',
+      a: 'Não é recomendado. Queda de mercado não é emergência, e usar o colchão para comprar na baixa deixa você sem proteção justamente no período de maior instabilidade. Oportunidade de mercado se financia com aporte novo ou com a parte da carteira destinada a risco, nunca com a reserva.',
     },
   ],
   related: ['Tesouro Direto para iniciantes', 'Como montar uma carteira de investimentos', 'Como investir em ações'],

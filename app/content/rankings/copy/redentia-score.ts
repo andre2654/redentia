@@ -50,7 +50,7 @@ const copy: RankingCopy = {
       h2: 'Como usar o score',
       paragraphs: [
         'Use o Aportou Score como filtro inicial pra estudo. Pegue as 10-20 ações com score mais alto e leia o demonstrativo, entenda o setor, veja o histórico de dividendos e a tese de longo prazo. Score alto é sinal pra investigar mais fundo, nunca pra comprar no automático sem entender o negócio. Combine sempre com sua análise pessoal e seu objetivo de carteira.',
-        'Revisite o ranking trimestralmente, alinhado com a divulgação de balanços. Empresas que estavam no top 10 podem cair para o top 30 quando margem comprime ou crescimento desacelera. O movimento entre faixas descreve o cruzamento dos rankings: queda persistente acompanha deterioração nos números, queda pontual pode ser um trimestre isolado. O ranking se atualiza diariamente conforme os dados de balanço e cotação.',
+        'Revisite o ranking trimestralmente, alinhado com a divulgação de balanços. Empresas que estavam no top 10 podem cair para o top 30 quando margem comprime ou crescimento desacelera. O movimento entre faixas é informação relevante: queda persistente sugere deterioração estrutural, queda pontual após resultado fraco pode ser oportunidade. O ranking se atualiza diariamente conforme os dados de balanço e cotação.',
       ],
     },
   ],

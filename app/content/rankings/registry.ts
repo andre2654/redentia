@@ -5,11 +5,9 @@
  * h1/lead/chips/metaTitle/metaDescription = VERBATIM das páginas antigas
  * (Frontend/app/pages/ranking/*) — contrato de SEO, não reescrever.
  * Exceções documentadas: redentia-score adaptado da escala 0-10 pra /100
- * (decisão PR2 — mesma régua do /asset), tesouro-direto (ranking novo),
- * em 26/10/2026 só o metaTitle/metaDescription de maiores-lucros e
- * maiores-baixas-mes (CTR no Search Console; o h1 visível não mudou) e,
- * em 16/11/2026, o texto visível de Graham e Bazin (e os julgamentos
- * barato/caro/oportunidade dos outros rankings). Os slugs não mudam.
+ * (decisão PR2 — mesma régua do /asset), tesouro-direto (ranking novo) e,
+ * em 26/10/2026, só o metaTitle/metaDescription de maiores-lucros e
+ * maiores-baixas-mes (CTR no Search Console; o h1 visível não mudou).
  *
  * Endpoints validados ao vivo (19 GET /rankings/* + derivação /tesouro):
  * mapeamento tirado do service antigo (Frontend/app/services/assets.ts).
@@ -144,43 +142,42 @@ export const RANKINGS: Record<string, RankingMeta> = {
   },
 
   // ============================================================
-  // Valuation e preço teto
+  // Valuation e preço justo
   // ============================================================
   'mais-baratas-graham': {
     slug: 'mais-baratas-graham',
-    title: 'Ranking Graham',
+    title: 'Mais Baratas (Graham)',
     endpoint: 'graham-discount',
-    // O titleTemplate de app.vue acrescenta " · Aportou".
-    metaTitle: 'Ranking Graham 2026: ações com maior margem até o preço teto de Graham',
+    metaTitle: 'Ações Mais Baratas pela Fórmula de Graham 2026',
     metaDescription:
-      'As 50 ações com maior margem entre a cotação e o preço teto de Graham, pela fórmula √(22,5 × LPA × VPA). Estimativa educacional, não é recomendação de investimento.',
-    h1: 'Ranking Graham: ações com maior margem até o preço teto de Graham',
+      'Top 50 ações com maior desconto pela Fórmula de Graham (raiz de 22.5 × LPA × VPA). Estratégia value clássica de Benjamin Graham aplicada à B3.',
+    h1: 'Ações Mais Baratas pela Fórmula de Graham',
     lead:
-      'As 50 ações da B3 ordenadas pela maior margem entre a cotação e o preço teto de Graham. A conta é a raiz quadrada de 22,5 vezes o LPA vezes o VPA.',
+      'As 50 ações brasileiras com maior desconto em relação ao preço justo calculado pela Fórmula de Graham, raiz quadrada de 22,5 vezes o LPA vezes o VPA. Estratégia clássica de value investing de Benjamin Graham.',
     chips: ['Atualizado diariamente', 'Dados B3', 'Top 50', 'Fórmula Graham'],
     columns: ['grahamPrice', 'upsidePct', 'change', 'marketCap'],
     primaryMetric: 'upsidePct',
     types: SO_ACOES,
     classe: ['acoes'],
-    tema: 'Valuation e preço teto',
+    tema: 'Valuation e preço justo',
   },
 
   'mais-baratas-bazin': {
     slug: 'mais-baratas-bazin',
-    title: 'Ranking Bazin',
+    title: 'Mais Baratas (Bazin)',
     endpoint: 'bazin-discount',
-    metaTitle: 'Ranking Bazin 2026: ações com maior margem até o preço teto',
+    metaTitle: 'Ações Mais Baratas pela Fórmula de Bazin 2026',
     metaDescription:
-      'As 50 ações com maior margem entre a cotação e o preço teto de Bazin, pela fórmula do dividendo anual ÷ 6%. Estimativa educacional, não é recomendação de investimento.',
-    h1: 'Ranking Bazin: ações com maior margem até o preço teto',
+      'Top 50 ações descontadas pela Fórmula de Bazin (dividendo anual ÷ 6%). Estratégia de Décio Bazin para investidor de renda passiva e dividendos.',
+    h1: 'Ações Mais Baratas pela Fórmula de Bazin',
     lead:
-      'As 50 ações da B3 ordenadas pela maior margem entre a cotação e o preço teto de Bazin. A conta é o dividendo médio anual dividido por 6 por cento.',
+      'As 50 ações brasileiras com maior desconto pela Fórmula de Bazin, dividendo médio anual dividido por 6 por cento. Foco em quem busca renda passiva por dividendos consistentes.',
     chips: ['Atualizado diariamente', 'Dados B3', 'Top 50', 'Fórmula Bazin'],
     columns: ['bazinPrice', 'upsidePct', 'dy', 'marketCap'],
     primaryMetric: 'upsidePct',
     types: SO_ACOES,
     classe: ['acoes'],
-    tema: 'Valuation e preço teto',
+    tema: 'Valuation e preço justo',
   },
 
   'menores-pl': {
@@ -189,16 +186,16 @@ export const RANKINGS: Record<string, RankingMeta> = {
     endpoint: 'low-pe',
     metaTitle: 'Menores P/Ls da Bolsa Brasileira 2026',
     metaDescription:
-      'Top 50 ações com menor P/L (preço sobre lucro) da B3. O múltiplo descreve quanto a cotação representa do lucro. P/L baixo pode ser value trap.',
+      'Top 50 ações com menor P/L (preço sobre lucro) da B3. Empresas potencialmente baratas em relação ao lucro. Atenção: P/L baixo pode ser value trap.',
     h1: 'Menores P/Ls da Bolsa Brasileira',
     lead:
-      'As 50 ações da B3 com menor P/L (preço sobre lucro), o múltiplo de quanto o mercado paga pra cada real de lucro da empresa. A lista descreve o múltiplo e também pode incluir armadilhas.',
+      'As 50 ações da B3 com menor P/L (preço sobre lucro), indicador clássico de quanto o mercado paga pra cada real de lucro da empresa. Pode revelar oportunidades de value, mas também armadilhas.',
     chips: ['Atualizado diariamente', 'Dados B3', 'Top 50', 'Value trap?'],
     columns: ['pe', 'dy', 'marketCap', 'change'],
     primaryMetric: 'pe',
     types: SO_ACOES,
     classe: ['acoes'],
-    tema: 'Valuation e preço teto',
+    tema: 'Valuation e preço justo',
   },
 
   'maior-potencial-upside': {
@@ -207,16 +204,16 @@ export const RANKINGS: Record<string, RankingMeta> = {
     endpoint: 'upside-potential',
     metaTitle: 'Maior Potencial de Upside da Bolsa B3 2026',
     metaDescription:
-      'Top 50 ações com maior diferença percentual entre a cotação e o preço teto. Combina as fórmulas de Graham e Bazin.',
+      'Top 50 ações com maior upside em relação ao preço justo. Combina Fórmula de Graham e Bazin pra mostrar maiores oportunidades de valorização teórica.',
     h1: 'Maior Potencial de Upside',
     lead:
-      'As 50 ações com maior diferença percentual entre a cotação e o preço teto, combinando as fórmulas de Graham e Bazin. A lista ordena essa margem no momento.',
-    chips: ['Atualizado diariamente', 'Dados B3', 'Top 50', 'Diferença até o teto'],
+      'As 50 ações com maior potencial de valorização teórica em relação ao preço justo, combinando Fórmulas de Graham e Bazin. Lista as oportunidades de maior margem de segurança no momento.',
+    chips: ['Atualizado diariamente', 'Dados B3', 'Top 50', 'Margem de segurança'],
     columns: ['upsidePct', 'grahamPrice', 'bazinPrice', 'marketCap'],
     primaryMetric: 'upsidePct',
     types: SO_ACOES,
     classe: ['acoes'],
-    tema: 'Valuation e preço teto',
+    tema: 'Valuation e preço justo',
   },
 
   // ============================================================
@@ -366,8 +363,8 @@ export const RANKINGS: Record<string, RankingMeta> = {
       'As 50 ações e FIIs que mais caíram em 30 dias na B3, com a variação e o valor de mercado. Atualizado após o pregão.',
     h1: 'Maiores Baixas do Mês: Ações que Mais Caíram na Bolsa B3 2026',
     lead:
-      'As 50 ações e FIIs que mais caíram nos últimos 30 dias na B3, ordenadas por queda percentual. A queda pode coincidir com um múltiplo mais baixo ou com uma armadilha de valor (value trap). Inclui blue chips em correção (VALE3, BBDC4, ITUB4, ABEV3), FIIs com cotação mais baixa (HGLG11, MXRF11, KNIP11) e ativos com problemas específicos. Atualizado diariamente após pregão.',
-    chips: ['Atualizado diário', 'Variação 30 dias', 'Dados oficiais B3', 'Queda ou armadilha'],
+      'As 50 ações e FIIs que mais caíram nos últimos 30 dias na B3, ordenadas por queda percentual. Lista pode revelar oportunidades de compra (ações baratas, value plays) OU armadilhas de valor (value traps). Inclui blue chips em correção (VALE3, BBDC4, ITUB4, ABEV3), FIIs em desconto (HGLG11, MXRF11, KNIP11) e ativos com problemas específicos. Atualizado diariamente após pregão.',
+    chips: ['Atualizado diário', 'Variação 30 dias', 'Dados oficiais B3', 'Oportunidade ou armadilha'],
     columns: ['change', 'marketCap'],
     primaryMetric: 'change',
     changeLabel: '30d',
@@ -383,7 +380,7 @@ export const RANKINGS: Record<string, RankingMeta> = {
     extraParams: { side: 'top' },
     metaTitle: 'Maiores Altas em 12 Meses da Bolsa B3 2026',
     metaDescription:
-      'Top 50 ações que mais subiram nos últimos 12 meses na B3. Performance anualizada e ações em momentum.',
+      'Top 50 ações que mais subiram nos últimos 12 meses na B3. Performance anualizada, ações em momentum e oportunidades de continuação de alta.',
     h1: 'Maiores Altas em 12 Meses',
     lead:
       'As 50 ações e FIIs que mais subiram nos últimos 12 meses na B3. Indica quem está em momentum forte e pode entregar continuação ou virar. Atualizado diariamente após pregão.',
@@ -405,10 +402,10 @@ export const RANKINGS: Record<string, RankingMeta> = {
     extraParams: { side: 'bottom' },
     metaTitle: 'Maiores Baixas em 12 Meses da Bolsa B3 2026',
     metaDescription:
-      'Top 50 ações que mais caíram nos últimos 12 meses na B3. A lista ordena a queda e não distingue sozinha turnaround de armadilha.',
+      'Top 50 ações que mais caíram nos últimos 12 meses na B3. Possíveis oportunidades de turnaround, mas exige análise fundamentalista cuidadosa antes.',
     h1: 'Maiores Baixas em 12 Meses',
     lead:
-      'As 50 ações e FIIs que mais caíram nos últimos 12 meses na B3. A queda pode coincidir com um turnaround em curso ou com uma armadilha de valor. Atualizado diariamente após pregão.',
+      'As 50 ações e FIIs que mais caíram nos últimos 12 meses na B3. Pode revelar oportunidades de turnaround ou armadilhas de valor. Atualizado diariamente após pregão.',
     chips: ['Atualizado diariamente', 'Dados B3', 'Top 50', 'Turnaround?'],
     // P/L saiu (23/09/2026): FII não tem P/L, e a página lista ações E FIIs —
     // com a coluna, todo FII virava "—" ou sumia da tabela.
@@ -468,7 +465,7 @@ export const RANKINGS: Record<string, RankingMeta> = {
 export const RANKING_TEMAS = [
   'Qualidade e consistência',
   'Renda e dividendos',
-  'Valuation e preço teto',
+  'Valuation e preço justo',
   'Tamanho e resultado',
   'Crescimento',
   'Momentum e mercado',

@@ -87,11 +87,11 @@ defineProps<{ name: string }>()
     </div>
   </div>
 
-  <!-- Graham: preço teto vs preço de tela, com a margem até o teto no vão -->
+  <!-- Graham: preço justo vs preço de tela, com a margem de segurança no vão -->
   <div v-else-if="name === 'rank-graham'" class="nuv nuv--graham">
     <div class="nuv__card nuv__card--pad">
       <div class="nuv__gbar-group">
-        <span class="nuv__chip nuv__chip--blue">preço teto</span>
+        <span class="nuv__chip nuv__chip--blue">preço justo</span>
         <span class="nuv__gbar nuv__gbar--justo" />
       </div>
       <div class="nuv__gbar-group">
@@ -100,7 +100,7 @@ defineProps<{ name: string }>()
       </div>
       <div class="nuv__ggap" aria-hidden="true">
         <span class="nuv__ggap-line" />
-        <span class="nuv__chip nuv__chip--green">margem até o teto</span>
+        <span class="nuv__chip nuv__chip--green">margem de segurança</span>
       </div>
     </div>
   </div>

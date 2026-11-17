@@ -116,7 +116,7 @@ export const DATA_COM_E_DATA_EX_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'Na abertura da data ex, a cotação costuma abrir menor, no valor do provento que saiu do preço. Quem não sabe o motivo abre o home broker, vê vermelho e acha que aconteceu alguma coisa ruim com a empresa. Não aconteceu nada. É aritmética.',
+          html: 'Na abertura da data ex, o ativo costuma aparecer mais barato. Quem não sabe o motivo abre o home broker, vê vermelho e acha que aconteceu alguma coisa ruim com a empresa. Não aconteceu nada. É aritmética.',
         },
         {
           kind: 'p',

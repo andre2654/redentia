@@ -46,11 +46,6 @@ const {
 } = useRanking(meta)
 
 const isScore = slug === 'redentia-score'
-// Graham e Bazin: a conta é educacional. Não há componente compartilhado de aviso;
-// o parágrafo segue o mesmo papel do aviso da calculadora de preço teto.
-const notaDaFormula = slug === 'mais-baratas-graham' || slug === 'mais-baratas-bazin'
-  ? 'Estimativa educacional pela fórmula, não é recomendação de investimento.'
-  : ''
 // o cartão do nº 1 senta à direita do topo; sem líder (carregando, fora do ar) o topo é uma coluna só
 const temLider = computed(() => (isTesouro ? !!tesouroLeader.value : !!leader.value))
 const primaryLabel = computed(() => {
@@ -148,7 +143,6 @@ function tentarDeNovo() { void refreshNuxtData(`ranking-${slug}`) }
             <span><NuxtLink to="/rankings" class="rks__volta">Rankings</NuxtLink><span aria-hidden="true"> · </span>{{ meta.tema }}</span>
           </p>
           <h1 class="rks__h1">{{ meta.h1 }}</h1>
-          <p v-if="notaDaFormula" class="rks__nota" role="note">{{ notaDaFormula }}</p>
           <p class="rks__lead">{{ meta.lead }}</p>
           <div v-if="meta.chips.length" class="rks__chips">
             <NuSelo v-for="c in meta.chips" :key="c">{{ c }}</NuSelo>
@@ -328,7 +322,6 @@ function tentarDeNovo() { void refreshNuxtData(`ranking-${slug}`) }
 }
 .rks__volta:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
 .rks__h1 { margin: 16px 0 0; font-size: clamp(40px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance; }
-.rks__nota { margin: 16px 0 0; max-width: 62ch; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; }
 .rks__lead { margin: 20px 0 0; max-width: 62ch; color: var(--nu-gray-3); font-size: clamp(17px, 1.4vw, 19px); font-weight: var(--nu-w-texto); line-height: 1.5; text-wrap: pretty; }
 .rks__chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
 @media (min-width: 1080px) {

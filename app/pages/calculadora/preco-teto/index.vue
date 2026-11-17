@@ -460,8 +460,8 @@ const tipCards = [
 // Rankings relacionados — listas atualizadas que ampliam a analise do
 // preco teto (Graham, Bazin, upside potencial).
 const relatedRankings = [
-  { to: '/ranking/mais-baratas-graham', title: 'Ranking Graham', sub: 'Maior margem até o preço teto de Graham, pela fórmula' },
-  { to: '/ranking/mais-baratas-bazin', title: 'Ranking Bazin', sub: 'Maior margem até o preço teto de Bazin, pela fórmula' },
+  { to: '/ranking/mais-baratas-graham', title: 'Ações mais baratas pelo Graham', sub: 'Maior desconto em relação ao preço justo de Graham' },
+  { to: '/ranking/mais-baratas-bazin', title: 'Ações mais baratas pelo Bazin', sub: 'Top desconto pelo método de Décio Bazin' },
   { to: '/ranking/maior-potencial-upside', title: 'Maior potencial de upside', sub: 'Consenso de analistas vs preço atual' },
 ]
 
@@ -469,7 +469,7 @@ const relatedRankings = [
 // NuFaqAccordion — fonte única, mesmo padrão do app antigo.
 const faqItems: NuFaqItem[] = [
   { q: 'O que é preço teto e por que calcular?', a: 'Preço teto é o valor máximo que a régua de um método aceita para uma ação, a partir dos fundamentos e de uma margem de segurança. Cotação abaixo do teto significa margem em relação a essa régua; cotação acima significa que o preço passou do teto. Não é recomendação de compra ou venda.' },
-  { q: 'Qual a diferença entre preço teto e preço justo?', a: 'São praticamente sinônimos. "Preço teto" é o limite que a fórmula aceita; "preço justo" é o nome que o mercado dá ao mesmo resultado. As 4 metodologias (Graham, Bazin, P/L Setorial, VPA) calculam esse número, e por convenção ele é o preço teto: a cotação acima dele passou da régua daquele método. Isso descreve a conta, não uma recomendação.' },
+  { q: 'Qual a diferença entre preço teto e preço justo?', a: 'São praticamente sinônimos. "Preço teto" enfatiza o limite máximo aceitável de compra (com margem de segurança); "preço justo" enfatiza o valor intrínseco da empresa pelos fundamentos. As 4 metodologias (Graham, Bazin, P/L Setorial, VPA) calculam o preço justo, e por convenção esse valor é tratado como o preço teto, ou seja, o limite acima do qual a ação fica cara.' },
   { q: 'Qual a melhor metodologia: Graham ou Bazin?', a: 'Depende do perfil. Bazin é ideal para quem busca renda passiva com dividendos e exige DY mínimo de 6% ao ano. Graham é mais conservador e equilibra lucro e patrimônio líquido, sendo ideal para empresas maduras e rentáveis. Na prática, use as duas e compare com P/L setorial e VPA para ter uma visão completa.' },
   { q: 'Se a ação está abaixo do preço teto, é garantia de boa compra?', a: 'Não. O preço teto é um filtro inicial, não uma garantia e não uma recomendação. A cotação pode estar abaixo do teto porque o mercado antecipa problemas: queda de lucro, concorrência, setor em declínio ou mudança regulatória. Investigar o porquê evita ler um desconto como margem quando o problema está no balanço.' },
   { q: 'Como calcular a margem de segurança?', a: 'Margem de Segurança = (Preço Teto − Preço Atual) ÷ Preço Teto × 100. Se o teto é R$ 40 e a ação está R$ 30, a margem é de 25%. Benjamin Graham sugeria no mínimo 20% a 30% de margem como folga da régua. Quanto maior a margem, maior a distância até o teto. Não é recomendação de compra ou venda.' },

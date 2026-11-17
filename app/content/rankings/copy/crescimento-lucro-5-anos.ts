@@ -28,7 +28,7 @@ const copy: RankingCopy = {
   crossLinks: [
     {
       title: 'Calculadora de Preço Teto',
-      desc: 'Calcule o preço teto de uma ação pelas fórmulas de Graham e Bazin.',
+      desc: 'Calcule o preço justo de uma ação por Graham e Bazin.',
       href: '/calculadora/preco-teto',
     },
     {

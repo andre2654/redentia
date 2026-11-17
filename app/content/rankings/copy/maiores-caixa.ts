@@ -27,7 +27,7 @@ const copy: RankingCopy = {
   ],
   crossLinks: [
     { title: 'Simulador de Ações', desc: 'Projete retorno total de uma carteira ao longo do tempo.', href: '/calculadora/acoes' },
-    { title: 'Calculadora de Preço Teto', desc: 'Calcule o preço teto de uma ação pelas fórmulas de Graham e Bazin.', href: '/calculadora/preco-teto' },
+    { title: 'Calculadora de Preço Teto', desc: 'Calcule o preço justo de uma ação por Graham e Bazin.', href: '/calculadora/preco-teto' },
     { title: 'Calculadora de Dividend Yield', desc: 'Simule o DY real de qualquer ação ou FII.', href: '/calculadora/dividend-yield' },
     { title: 'Outros rankings', desc: 'Veja todos os rankings disponíveis na Aportou.', href: '/rankings' },
   ],
@@ -46,7 +46,7 @@ const copy: RankingCopy = {
     },
     {
       q: 'Vale buscar empresas com muito caixa em crise?',
-      a: 'Empresas com caixa alto e dívida baixa atravessam crise sem precisar emitir ações ou tomar dívida a juro alto. Em momentos de estresse, esses balanços caem menos e se recuperam mais rápido em estudos acadêmicos. O ranking ordena o caixa. Ele não escolhe o papel.',
+      a: 'Sim, porque tem mais chance de atravessar crise sem problema, sem precisar emitir ações ou tomar dívida cara. Em momentos de pânico de mercado, empresas com balanço sólido (caixa alto, dívida baixa) caem menos e se recuperam mais rápido. Pesquisa acadêmica confirma esse efeito de "flight to quality".',
     },
   ],
 }
