@@ -47,13 +47,16 @@ function breakdownEntries(row: RankingRowApi): [string, number][] {
   return Object.entries(row.ranking_breakdown ?? {})
 }
 
-const defs = computed(() =>
-  props.columns.map((key) => ({
+const defs = computed(() => {
+  // Coluna que não é array (ref aninhada que o template não desempacotou)
+  // não derruba a página: a tabela segue só com ativo e cotação.
+  const cols = Array.isArray(props.columns) ? props.columns : []
+  return cols.map((key) => ({
     key,
     def: RANKING_COLUMNS[key],
     label: key === 'change' && props.changeLabel ? props.changeLabel : RANKING_COLUMNS[key].label,
-  })),
-)
+  }))
+})
 // a coluna principal (quando está entre as colunas) e as demais, na ordem de sempre
 const principal = computed(() => defs.value.find((c) => c.key === props.primary) ?? null)
 const demais = computed(() => defs.value.filter((c) => c.key !== principal.value?.key))

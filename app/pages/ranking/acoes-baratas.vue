@@ -15,13 +15,15 @@ import {
   ACOES_BARATAS_PATH,
   ACOES_BARATAS_TITLE,
 } from '~/content/seo/acoes-baratas'
+import { topoDaLista } from '~/utils/topoDaLista'
 
 const grahamMeta = RANKINGS['mais-baratas-graham']!
 const bazinMeta = RANKINGS['mais-baratas-bazin']!
-const graham = useRanking(grahamMeta)
-const bazin = useRanking(bazinMeta)
-const topoGraham = computed(() => graham.rows.value.slice(0, 5))
-const topoBazin = computed(() => bazin.rows.value.slice(0, 5))
+// Bindings de topo: ref dentro de objeto comum não desempacota no template.
+const { rows: grahamRows, columns: grahamColumns } = useRanking(grahamMeta)
+const { rows: bazinRows, columns: bazinColumns } = useRanking(bazinMeta)
+const topoGraham = computed(() => topoDaLista(grahamRows.value, grahamColumns.value))
+const topoBazin = computed(() => topoDaLista(bazinRows.value, bazinColumns.value))
 
 usePageSeo({
   title: ACOES_BARATAS_TITLE,
@@ -54,17 +56,17 @@ usePageSeo({
         </li>
       </ul>
 
-      <div v-if="topoGraham.length" class="abh__lista">
+      <div v-if="topoGraham" class="abh__lista">
         <h2 class="abh__h2">Topo da lista de Graham</h2>
         <p class="abh__dek">As cinco primeiras linhas da lista de Graham, com os números que a API já devolve. A lista inteira está na página do ranking.</p>
-        <RankTable :rows="topoGraham" :columns="graham.columns" :primary="grahamMeta.primaryMetric" />
+        <RankTable :rows="topoGraham.rows" :columns="topoGraham.columns" :primary="grahamMeta.primaryMetric" />
         <p class="abh__mais"><NuxtLink to="/ranking/mais-baratas-graham">Ver a lista de Graham</NuxtLink></p>
       </div>
 
-      <div v-if="topoBazin.length" class="abh__lista">
+      <div v-if="topoBazin" class="abh__lista">
         <h2 class="abh__h2">Topo da lista de Bazin</h2>
         <p class="abh__dek">As cinco primeiras linhas da lista de Bazin, com os números que a API já devolve. A lista inteira está na página do ranking.</p>
-        <RankTable :rows="topoBazin" :columns="bazin.columns" :primary="bazinMeta.primaryMetric" />
+        <RankTable :rows="topoBazin.rows" :columns="topoBazin.columns" :primary="bazinMeta.primaryMetric" />
         <p class="abh__mais"><NuxtLink to="/ranking/mais-baratas-bazin">Ver a lista de Bazin</NuxtLink></p>
       </div>
     </section>
