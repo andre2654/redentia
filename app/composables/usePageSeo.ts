@@ -13,14 +13,14 @@ import { breadcrumbJsonLd, referenciaOrganizacao } from '../utils/json-ld.ts'
 interface Breadcrumb { name: string; path: string }
 
 interface PageSeoInput {
-  title: string
-  description: string
+  title: MaybeRefOrGetter<string>
+  description: MaybeRefOrGetter<string>
   /** path canônico (ex.: /asset/petr4). Default: rota atual. */
-  path?: string
+  path?: MaybeRefOrGetter<string>
   image?: string
   /** JSON-LD adicionais (Article, FAQPage…) — Organization é global no app. */
-  structuredData?: Record<string, unknown>[]
-  breadcrumbs?: Breadcrumb[]
+  structuredData?: MaybeRefOrGetter<Record<string, unknown>[] | undefined>
+  breadcrumbs?: MaybeRefOrGetter<Breadcrumb[] | undefined>
   noindex?: boolean
   /**
    * Override completo da meta robots (ex.: 'noindex, follow' em telas de
@@ -60,18 +60,20 @@ interface PageSeoInput {
 export function usePageSeo(input: PageSeoInput) {
   const route = useRoute()
   const origin = useSiteOrigin()
-  const path = input.path ?? route.path
-  const canonical = `${origin}${path}`
+  const path = computed(() => toValue(input.path) ?? route.path)
+  const canonical = computed(() => `${origin}${path.value}`)
+  const title = computed(() => toValue(input.title))
+  const description = computed(() => toValue(input.description))
   // a marca que assina a página (as telas de escritório, que assinavam Redentia, saíram em 12/11/2026)
   const marca = MARCA.nome
   const image = input.image ?? `${origin}/og-aportou.png`
   const logoDaMarca = `${origin}/icone-aportou.svg`
 
   useSeoMeta({
-    title: input.title,
-    description: input.description,
-    ogTitle: input.title,
-    ogDescription: input.description,
+    title,
+    description,
+    ogTitle: title,
+    ogDescription: description,
     ogUrl: canonical,
     ogImage: image,
     // a imagem padrão tem tamanho conhecido: sem as dimensões, a prévia do WhatsApp e do LinkedIn às vezes não monta
@@ -80,8 +82,8 @@ export function usePageSeo(input: PageSeoInput) {
     ogLocale: 'pt_BR',
     ogSiteName: marca,
     twitterCard: 'summary_large_image',
-    twitterTitle: input.title,
-    twitterDescription: input.description,
+    twitterTitle: title,
+    twitterDescription: description,
     twitterImage: image,
     ...(input.robots
       ? { robots: input.robots }
@@ -90,29 +92,29 @@ export function usePageSeo(input: PageSeoInput) {
         : {}),
   })
 
-  const ld: Record<string, unknown>[] = []
-  const trailing: Record<string, unknown>[] = []
   // Mesma origem do nó global em app.vue, para o @id resolver na página.
   const refOrg = referenciaOrganizacao(String(useRuntimeConfig().public.siteUrl))
 
-  for (const item of input.structuredData ?? []) {
-    const normalized: Record<string, unknown> = { '@context': 'https://schema.org', ...item }
-    const tipo = normalized['@type']
-    if (tipo === 'Article' || tipo === 'NewsArticle') {
-      normalized.image ??= image
-      normalized.mainEntityOfPage ??= canonical
-      normalized.publisher ??= { '@type': 'Organization', name: marca, logo: { '@type': 'ImageObject', url: logoDaMarca } }
+  function nosEstruturados(): Record<string, unknown>[] {
+    const ld: Record<string, unknown>[] = []
+    for (const item of toValue(input.structuredData) ?? []) {
+      const normalized: Record<string, unknown> = { '@context': 'https://schema.org', ...item }
+      const tipo = normalized['@type']
+      if (tipo === 'Article' || tipo === 'NewsArticle') {
+        normalized.image ??= image
+        normalized.mainEntityOfPage ??= canonical.value
+        normalized.publisher ??= { '@type': 'Organization', name: marca, logo: { '@type': 'ImageObject', url: logoDaMarca } }
+      }
+      if (tipo === 'WebSite' || tipo === 'WebPage') {
+        normalized.publisher ??= refOrg
+      } else if (tipo === 'SoftwareApplication') {
+        normalized.provider ??= refOrg
+      }
+      ld.push(normalized)
     }
-    if (tipo === 'WebSite' || tipo === 'WebPage') {
-      normalized.publisher ??= refOrg
-    } else if (tipo === 'SoftwareApplication') {
-      normalized.provider ??= refOrg
-    }
-    ld.push(normalized)
-  }
-
-  if (input.breadcrumbs?.length) {
-    trailing.push(breadcrumbJsonLd(origin, input.breadcrumbs))
+    const crumbs = toValue(input.breadcrumbs)
+    if (crumbs?.length) ld.push(breadcrumbJsonLd(origin, crumbs))
+    return ld
   }
 
   /** 'YYYY-MM-DD' válido ou nada: data inventada é pior que data ausente. */
@@ -123,27 +125,26 @@ export function usePageSeo(input: PageSeoInput) {
   })
 
   useHead({
-    link: [
-      { rel: 'canonical', href: canonical },
-      { rel: 'alternate', hreflang: 'pt-BR', href: canonical },
-      { rel: 'alternate', hreflang: 'x-default', href: canonical },
-    ],
+    link: computed(() => [
+      { rel: 'canonical', href: canonical.value },
+      { rel: 'alternate', hreflang: 'pt-BR', href: canonical.value },
+      { rel: 'alternate', hreflang: 'x-default', href: canonical.value },
+    ]),
     script: computed(() => {
-      const nodes = [...ld]
+      const nodes = nosEstruturados()
       if (dateModified.value) {
         nodes.push({
           '@context': 'https://schema.org',
           '@type': 'WebPage',
-          '@id': canonical,
-          url: canonical,
-          name: input.title,
+          '@id': canonical.value,
+          url: canonical.value,
+          name: title.value,
           dateModified: dateModified.value,
           inLanguage: 'pt-BR',
           isPartOf: { '@type': 'WebSite', name: marca, url: origin },
           publisher: refOrg,
         })
       }
-      nodes.push(...trailing)
       return nodes.map((data) => ({ type: 'application/ld+json', innerHTML: JSON.stringify(data) }))
     }),
   })

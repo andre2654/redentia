@@ -47,7 +47,7 @@ const REDIRECT_EXATO: Record<string, string> = {
   '/dividendos': '/ranking/maiores-dividend-yield',
   '/guias/open-finance-carteira-espalhada': '/guias/open-finance',
   '/acoes': '/rankings?classe=acoes',
-  '/fiis': '/rankings?classe=fiis',
+  // /fiis é página. A barra cai em /fiis, não no filtro, senão o 301 volta.
   '/etfs': '/rankings',
   '/small-caps': '/rankings',
   '/tesouro/tesouro-renda-aposentadoria-extra-2033': '/tesouro/tesouro-renda-aposentadoria-extra-2030',
