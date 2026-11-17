@@ -1,7 +1,7 @@
 /**
- * A calculadora de preço teto descreve a conta com um percentual assinado.
- * Sem selo "Abaixo da régua" / "Na régua" / "Acima da régua" e sem verde ou
- * vermelho nessa comparação. A matemática dos métodos não entra aqui.
+ * A página de método descreve a conta com o percentual assinado do PR 162.
+ * O hub volta a pintar Abaixo / Na / Acima da régua. A matemática dos métodos
+ * não entra aqui. O ticker do PR 163 fica com a média "abaixo dessa média".
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -48,36 +48,33 @@ test('X é (cotação − preço teto) ÷ preço teto, em pt-BR, com 1 casa e si
   )
 })
 
-test('o hub não tem os selos da régua e a linha neutra entra no resultado', () => {
+test('o hub pinta os selos da régua e o título indexável fica', () => {
   const pagina = ler('app/pages/calculadora/preco-teto/index.vue')
   assert.match(pagina, /title: 'Calculadora de Preço Teto 2026 - Grátis'/)
   assert.match(pagina, /A conta mostra a distância até a régua de cada método/)
-  for (const selo of ['Abaixo da régua', 'Na régua', 'Acima da régua', 'getStatusText', 'getMethodStatus', 'pt__method--positive', 'pt__method--negative', 'pt__result-box--positive', 'pt__result-main--positive']) {
-    assert.equal(pagina.includes(selo), false, selo)
-  }
-  assert.match(pagina, /class="pt__diff"/)
-  assert.match(pagina, /\{\{ linhaConsenso \}\}/)
-  assert.match(pagina, /\{\{ m\.diferenca \}\}/)
-  assert.equal(
-    linhaDiferencaPrecoTeto(28, 31.89),
-    'Diferença entre a cotação informada e o preço teto calculado: -12,2%.',
-  )
-  assert.equal(
-    linhaDiferencaPrecoTeto(38, 65.8),
-    'Diferença entre a cotação informada e o preço teto calculado: -42,2%.',
-  )
-  assert.match(pagina, /linhaDiferencaPrecoTeto\(28, 31\.89\)/)
-  assert.match(pagina, /linhaDiferencaPrecoTeto\(38, 65\.8\)/)
-  assert.match(pagina, /color: var\(--nu-ink\)/)
+  assert.equal(pagina.includes('robots'), false)
+  assert.match(pagina, /if \(ratio <= 0\.8\) return 'Abaixo da régua'/)
+  assert.match(pagina, /if \(ratio <= 1\.0\) return 'Na régua'/)
+  assert.match(pagina, /return 'Acima da régua'/)
+  assert.match(pagina, /pt__method--positive/)
+  assert.match(pagina, /pt__method--neutral/)
+  assert.match(pagina, /pt__method--negative/)
+  assert.match(pagina, /pt__method--positive \.pt__method-badge \{ background: var\(--nu-green-bg\)/)
+  assert.match(pagina, /pt__method--negative \.pt__method-badge \{ background: var\(--nu-red-bg\)/)
+  assert.match(pagina, /:selo="`Posição em relação ao teto: \$\{results\.consensus\.recommendation\}`"/)
+  assert.match(pagina, /está 12% abaixo do teto médio/)
+  assert.match(pagina, /pt__result-box--positive/)
+  assert.equal(pagina.includes('linhaDiferencaPrecoTeto'), false)
+  assert.equal(pagina.includes('class="pt__diff"'), false)
   const metodo = ler('app/components/calc/CalcPrecoTetoMetodo.vue')
   assert.match(metodo, /linhaDiferencaPrecoTeto\(price\.value, resultado\.value\.fairPrice\)/)
-  assert.match(metodo, /class="ptm__diff"/)
+  assert.match(metodo, /rotulo: 'Diferença'/)
+  assert.match(metodo, /:explica="posicao\?\.texto"/)
+  assert.equal(metodo.includes('class="ptm__diff"'), false)
   assert.equal(metodo.includes('Abaixo da régua'), false)
-  assert.equal(metodo.includes('Na régua'), false)
-  assert.equal(metodo.includes('Acima da régua'), false)
 })
 
-test('a página do ticker fica com a média neutra do PR 163 e o upside do ranking não pinta', () => {
+test('a página do ticker fica com a média do PR 163 e o upside do ranking pinta', () => {
   const view = montarPrecoTeto({
     ticker: 'PETR4',
     nomeBruto: 'PETROBRAS   PN      N2',
@@ -101,14 +98,14 @@ test('a página do ticker fica com a média neutra do PR 163 e o upside do ranki
   const media = view.passos.find((p) => p.titulo === 'Média dos métodos')
   assert.match(media?.linhas.join('\n') ?? '', /abaixo dessa média/)
 
-  assert.equal(RANKING_COLUMNS.upsidePct.semCor, true)
   assert.equal(RANKING_COLUMNS.upsidePct.signed, true)
+  assert.equal('semCor' in RANKING_COLUMNS.upsidePct, false)
   assert.equal(RANKING_COLUMNS.change.signed, true)
-  assert.equal(RANKING_COLUMNS.change.semCor, undefined)
   const tabela = ler('app/components/ranking/RankTable.vue')
-  assert.match(tabela, /if \(!def\.signed \|\| def\.semCor\) return null/)
+  assert.match(tabela, /if \(!def\.signed\) return null/)
+  assert.equal(tabela.includes('semCor'), false)
   const lider = ler('app/components/ranking/RankLeader.vue')
-  assert.match(lider, /if \(!col\.value\.signed \|\| col\.value\.semCor\) return ''/)
+  assert.match(lider, /if \(!col\.value\.signed\) return ''/)
   assert.match(lider, /rkl__value--up/)
   assert.match(lider, /rkl__value--down/)
 })
