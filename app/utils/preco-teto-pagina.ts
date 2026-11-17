@@ -14,6 +14,7 @@
 import { relacionadosPrecoTeto } from '../content/seo/preco-teto-indexaveis.ts'
 import { SETORES_BY_API } from '../content/setores.ts'
 import { nomeDaEmpresa } from './nomeB3.ts'
+import { diferencaSobreTeto } from './preco-teto-diferenca.ts'
 import { bazinPrice, bookValuePrice, computeAll, grahamPrice, plSectorPrice } from './preco-teto.ts'
 import { resolveSiteDy, type ProventoRow } from './proventos.ts'
 import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO, TETO_TITULO_PAGINA, juntaAte, tituloQueCabe } from './serp.ts'
@@ -527,38 +528,51 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
   }
 }
 
+/**
+ * (cotação − média) ÷ média. É a fração da régua (diferencaSobreTeto) e dos
+ * exemplos do hub ("28 está 12% abaixo de 31,89"). Negativo: a cotação está
+ * |X| abaixo da média. Positivo: |X| acima. Não é o upside média/cotação − 1.
+ */
+function fracaoSobreMedia(preco: number, media: number): number | null {
+  return diferencaSobreTeto(preco, media)
+}
+
+function pctDaFracao(fracao: number): string {
+  return pct1.format(Math.abs(fracao * 100))
+}
+
 function posicaoConsenso(preco: number, consenso: number): string {
-  if (!(consenso > 0)) return ''
-  const m = (consenso - preco) / preco
-  const p = pct1.format(Math.abs(m * 100))
-  if (m > 0.005) return `A cotação está ${p}% abaixo dessa média.`
-  if (m < -0.005) return `A cotação está ${p}% acima dessa média.`
-  return 'A cotação está junto dessa média.'
+  const x = fracaoSobreMedia(preco, consenso)
+  if (x == null) return ''
+  const p = pctDaFracao(x)
+  if (x < -0.005) return `A cotação está ${p}% abaixo da média.`
+  if (x > 0.005) return `A cotação está ${p}% acima da média.`
+  return 'A cotação está junto da média.'
 }
 
 /** Frase curta da meta description. Sem veredito de compra. */
 function textoDaDiferenca(preco: number, consenso: number): string | null {
-  if (!(consenso > 0) || !(preco > 0)) return null
-  const m = (consenso - preco) / preco
-  const p = pct1.format(Math.abs(m * 100))
-  if (m > 0.005) return `${p}% abaixo da média`
-  if (m < -0.005) return `${p}% acima da média`
+  const x = fracaoSobreMedia(preco, consenso)
+  if (x == null) return null
+  const p = pctDaFracao(x)
+  if (x < -0.005) return `${p}% abaixo da média`
+  if (x > 0.005) return `${p}% acima da média`
   return 'junto da média'
 }
 
 /**
  * No parágrafo, cotação abaixo da média pode dizer barata e subvalorizada.
- * Não é ordem de compra nem previsão.
+ * Acima, a frase fica na conta. Não é ordem de compra nem previsão.
  */
 function fraseDaDiferenca(preco: number, consenso: number, unidade: 'ação' | 'cota'): string {
-  if (!(consenso > 0) || !(preco > 0)) return ''
-  const m = (consenso - preco) / preco
-  const p = pct1.format(Math.abs(m * 100))
-  if (m > 0.005) {
-    return `A cotação está ${p}% abaixo dessa média, o que deixa a ${unidade} barata e subvalorizada em relação a esse preço teto.`
+  const x = fracaoSobreMedia(preco, consenso)
+  if (x == null) return ''
+  const p = pctDaFracao(x)
+  if (x < -0.005) {
+    return `A cotação está ${p}% abaixo da média, o que deixa a ${unidade} barata e subvalorizada em relação a esse preço teto.`
   }
-  if (m < -0.005) return `A cotação está ${p}% acima dessa média.`
-  return 'A cotação está junto dessa média.'
+  if (x > 0.005) return `A cotação está ${p}% acima da média, acima do preço teto calculado.`
+  return 'A cotação está junto da média.'
 }
 
 function montarResposta(p: {
