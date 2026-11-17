@@ -17,6 +17,9 @@ import {
   acoesBaratasCabeNoSerp,
 } from '../app/content/seo/acoes-baratas.ts'
 import { SUFIXO_MARCA, TETO_TITULO } from '../app/utils/serp.ts'
+import { topoDaLista } from '../app/utils/topoDaLista.ts'
+import { computed, createSSRApp, h } from 'vue'
+import { renderToString } from 'vue/server-renderer'
 
 const ler = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8')
 const TICKER = /\b[A-Z]{4}\d{1,2}\b/
@@ -47,6 +50,43 @@ test('os links são as listas que existem, e o FAQ não recomenda ticker', () =>
   assert.match(texto, /subvalorizad/)
 })
 
+test('a lista compacta omite ref aninhada e API vazia, e o SSR da tabela não estoura', async () => {
+  const linhas = [{ ticker: 'PETR4' }, { ticker: 'VALE3' }, { ticker: 'ITUB4' }, { ticker: 'BBAS3' }, { ticker: 'WEGE3' }, { ticker: 'BBDC4' }]
+  const colunas = computed(() => ['upsidePct', 'change'])
+  // O 500 de produção: o template passava o ComputedRef, e RankTable chamava .map nele.
+  assert.equal(topoDaLista(linhas, colunas), null)
+  assert.equal(topoDaLista(undefined, colunas.value), null)
+  assert.equal(topoDaLista([], colunas.value), null)
+  const topo = topoDaLista<{ ticker: string }, string>(linhas, colunas.value)
+  assert.ok(topo)
+  assert.equal(topo.rows.length, 5)
+  assert.deepEqual(topo.columns, ['upsidePct', 'change'])
+
+  const Tabela = {
+    props: { columns: { type: Array, default: () => [] } },
+    setup(props: { columns: string[] }) {
+      const defs = computed(() => (Array.isArray(props.columns) ? props.columns : []).map((key) => key))
+      return () => h('ul', defs.value.map((key) => h('li', key)))
+    },
+  }
+  const app = createSSRApp({
+    setup() {
+      const lista = computed(() => topoDaLista(linhas, colunas.value))
+      const semApi = computed(() => topoDaLista(null, null))
+      return () => h('div', [
+        h('h1', ACOES_BARATAS_H1),
+        lista.value ? h(Tabela, { columns: lista.value.columns }) : null,
+        semApi.value ? h('p', 'não devia') : h('p', 'sem lista'),
+      ])
+    },
+  })
+  const html = await renderToString(app)
+  assert.match(html, /Ações baratas pelas fórmulas/)
+  assert.match(html, /upsidePct/)
+  assert.match(html, /sem lista/)
+  assert.doesNotMatch(html, /não devia/)
+})
+
 test('a página é indexável, tem FAQ e BreadcrumbList, e entra no sitemap e no menu', () => {
   const vue = ler('app/pages/ranking/acoes-baratas.vue')
   assert.match(vue, /usePageSeo\(/)
@@ -55,7 +95,9 @@ test('a página é indexável, tem FAQ e BreadcrumbList, e entra no sitemap e no
   assert.match(vue, /NuFaqAccordion/)
   assert.match(vue, /useRanking\(grahamMeta\)/)
   assert.match(vue, /useRanking\(bazinMeta\)/)
-  assert.match(vue, /v-if="topoGraham.length"/)
+  assert.match(vue, /topoDaLista\(grahamRows\.value, grahamColumns\.value\)/)
+  assert.match(vue, /v-if="topoGraham"/)
+  assert.doesNotMatch(vue, /:columns="graham\.columns"|:columns="bazin\.columns"/)
   assert.doesNotMatch(vue, /noindex/)
   assert.match(ler('server/utils/site-pages.ts'), /ACOES_BARATAS_PATH/)
   assert.match(ler('server/routes/llms.txt.ts'), /\/ranking\/acoes-baratas/)
