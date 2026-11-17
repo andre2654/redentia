@@ -37,8 +37,8 @@ export const NAV_DO_TOPO: NavItem[] = [
       { label: 'Aportou MCP', to: '/mcp', desc: 'Os dados e a leitura da Aportou dentro do seu Claude ou ChatGPT.', vig: 'mcp' },
       // os rankings com demanda medida no Search Console (ver NuHeader)
       { label: 'Maiores dividend yields', to: '/ranking/maiores-dividend-yield', desc: 'As maiores pagadoras da bolsa, ranqueadas por yield.', vig: 'rank-yield' },
-      { label: 'Ranking Graham', to: '/ranking/mais-baratas-graham', desc: 'A fórmula de Graham contra o preço de tela.', vig: 'rank-graham' },
-      { label: 'Ranking Bazin', to: '/ranking/mais-baratas-bazin', desc: 'A fórmula de Bazin contra o preço de tela.', vig: 'rank-bazin' },
+      { label: 'Mais baratas por Graham', to: '/ranking/mais-baratas-graham', desc: 'O preço justo clássico contra o preço de tela.', vig: 'rank-graham' },
+      { label: 'Mais baratas por Bazin', to: '/ranking/mais-baratas-bazin', desc: 'O filtro de renda do método Bazin.', vig: 'rank-bazin' },
       { label: 'Todos os rankings', to: '/rankings', desc: 'Todos os cortes, por classe e por critério.', vig: 'rank-todos' },
     ],
   },

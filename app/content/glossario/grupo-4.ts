@@ -42,7 +42,7 @@ export const GRUPO_4: GlossaryTerm[] = [
       'Rebalanceamento é o ajuste periódico da carteira de volta à alocação-alvo, reduzindo o que subiu demais e reforçando o que ficou defasado, para manter o nível de risco planejado.',
     body: [
       'O <strong>rebalanceamento</strong> é a disciplina de trazer a carteira de volta à <a href="/glossario/alocacao-carteira">alocação</a> que você definiu. Com o tempo, as classes que sobem passam a pesar mais do que o planejado, e a carteira vai ficando mais arriscada (ou mais conservadora) do que você queria. Rebalancear é corrigir esse desvio.',
-      'A mecânica força um comportamento de alocação: você reduz o que se valorizou muito e reforça o que ficou para trás, sem depender de palpite. É uma ferramenta de controle de <a href="/glossario/risco">risco</a> e de disciplina emocional, não de previsão de mercado.',
+      'A mecânica força um comportamento saudável: você reduz o que se valorizou muito e reforça o que ficou para trás, ou seja, vende relativamente caro e compra relativamente barato, sem depender de palpite. É uma ferramenta de controle de <a href="/glossario/risco">risco</a> e de disciplina emocional, não de previsão de mercado.',
       '<strong>Exemplo ilustrativo:</strong> uma carteira montada em 50% ações e 50% renda fixa, depois de um ano de alta das ações, pode chegar a 57% em ações. Rebalancear é vender parte das ações e reforçar a renda fixa até voltar aos 50/50. Os números são redondos apenas para ilustrar a ideia.',
       'Há três gatilhos comuns: por tempo (a cada semestre ou ano), por desvio (quando uma classe sai alguns pontos percentuais do alvo) ou por aporte. Esta última costuma ser a mais eficiente: direcionar os novos aportes para a classe defasada evita vender com lucro e, com isso, adiar o imposto. Combina bem com uma estratégia de <a href="/glossario/buy-and-hold">buy and hold</a>.',
     ],
@@ -207,16 +207,16 @@ export const GRUPO_4: GlossaryTerm[] = [
     term: 'Análise Fundamentalista',
     letter: 'A',
     short:
-      'Análise fundamentalista avalia os números e a qualidade de uma empresa para estimar um preço de referência e comparar com a cotação. É a base do investimento de longo prazo.',
+      'Análise fundamentalista avalia os números e a qualidade de uma empresa para estimar seu valor justo e decidir se a ação está cara ou barata. É a base do investimento de longo prazo.',
     body: [
-      'A <strong>análise fundamentalista</strong> busca estimar um preço de referência para a empresa e comparar com a cotação. A diferença descreve a distância entre o preço de tela e essa estimativa. É a base do investimento de longo prazo e do <a href="/glossario/buy-and-hold">buy and hold</a>.',
+      'A <strong>análise fundamentalista</strong> busca estimar o valor justo de uma empresa para comparar com o preço de mercado e responder a uma pergunta simples: a ação está cara ou barata em relação ao que o negócio realmente vale? É a base do investimento de longo prazo e do <a href="/glossario/buy-and-hold">buy and hold</a>.',
       'A parte quantitativa olha indicadores como <a href="/glossario/p-l">P/L</a>, P/VP, <a href="/glossario/roe">ROE</a>, <a href="/glossario/margem-liquida">margem líquida</a>, endividamento e crescimento de receita e lucro. A parte qualitativa avalia a qualidade da gestão, as vantagens competitivas, a governança e o setor. O pano de fundo macroeconômico (juros, câmbio, ciclo) completa a leitura.',
       'O objetivo é encontrar empresas de qualidade negociadas abaixo do seu valor justo, criando uma margem de segurança entre o preço pago e o valor estimado. É a filosofia associada a investidores como Benjamin Graham, Warren Buffett e, no Brasil, Luiz Barsi. Uma forma de transformar lucro, patrimônio e dividendo em um teto de preço é a conta de preço teto (Bazin, Graham, P/L setorial, valor patrimonial e projetivo). O passo a passo está no <a href="/guias/como-calcular-preco-teto">guia de como calcular preço teto</a>. O número é uma régua, não uma recomendação de compra ou venda.',
       'A ressalva honesta é que o valor justo é uma estimativa, sensível às premissas de quem calcula, e o mercado pode levar tempo para reconhecer uma tese. Por isso a análise fundamentalista combina bem com paciência e com diversificação, e costuma ser usada junto de uma leitura de preço via <a href="/glossario/analise-tecnica">análise técnica</a> para o momento da compra.',
     ],
     related: ['analise-tecnica', 'buy-and-hold', 'roe', 'p-l', 'margem-liquida'],
     backlink: {
-      label: 'Ver o ranking Graham, pela fórmula',
+      label: 'Ver as ações mais baratas pela fórmula de Graham',
       to: '/ranking/mais-baratas-graham',
     },
     faq: [
@@ -356,7 +356,7 @@ export const GRUPO_4: GlossaryTerm[] = [
     ],
     related: ['desdobramento', 'bonificacao', 'small-caps'],
     backlink: {
-      label: 'Entender riscos e limites das small caps',
+      label: 'Entender riscos e oportunidades das small caps',
       to: '/guias/small-caps-guia-completo',
     },
     faq: [

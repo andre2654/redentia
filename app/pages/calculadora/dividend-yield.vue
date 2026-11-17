@@ -113,7 +113,7 @@ const howToSteps = [
 const relatedRankings = [
   { to: '/ranking/maiores-dividend-yield', title: 'Maiores DY da B3', sub: 'Top 50 ações e FIIs por dividend yield' },
   { to: '/ranking/buy-and-hold', title: 'Buy and Hold (score 10)', sub: 'Carteira otimizada pra longo prazo' },
-  { to: '/ranking/mais-baratas-bazin', title: 'Ranking Bazin', sub: 'Margem até o preço teto pela fórmula de Décio Bazin' },
+  { to: '/ranking/mais-baratas-bazin', title: 'Mais baratas pelo Bazin', sub: 'Desconto pelo método de Décio Bazin' },
 ]
 
 // FAQs verbatim da página antiga (12). O FAQPage JSON-LD é emitido pelo
@@ -414,7 +414,7 @@ usePageSeo({
         </NuxtLink>
         <NuxtLink to="/calculadora/preco-teto" class="dy__card-link">
           <h3 class="dy__card-link-title">Preço Teto</h3>
-          <p class="dy__card-p">A diferença entre a cotação e o preço teto</p>
+          <p class="dy__card-p">Veja se a ação está barata</p>
         </NuxtLink>
       </div>
 

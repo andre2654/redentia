@@ -173,7 +173,7 @@ export const COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE: GuideDoc = {
           items: [
             '<strong>Revise em intervalos fixos, não a cada notícia.</strong> Uma ou duas vezes por ano costuma bastar. Olhar a carteira todo dia gera decisões emocionais, não melhores resultados.',
             '<strong>Use os aportes novos para corrigir os pesos.</strong> Direcionar o dinheiro que entra para a classe defasada reequilibra sem precisar vender nada.',
-            '<strong>Rebalancear reduz o que subiu e reforça o que ficou para trás.</strong> A mecânica realiza parte do que subiu e reforça o que ficou defasado, disciplina que a emoção sozinha não entrega.',
+            '<strong>Rebalancear é vender caro e comprar barato no automático.</strong> A mecânica te obriga a realizar parte do que subiu e reforçar o que ficou para trás, disciplina que a emoção sozinha não entrega.',
           ],
         },
         {

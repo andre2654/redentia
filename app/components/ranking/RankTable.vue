@@ -72,11 +72,10 @@ function clicarLinha(e: MouseEvent, ticker: string) {
   void navigateTo(`/asset/${ticker}`)
 }
 
-/** o tom do selo das colunas com sinal (null = número sem selo; sem dado, sem selo).
- *  Upside de preço teto leva sinal e fica sem cor: não é alta nem queda do dia. */
+/** o tom do selo das colunas com sinal (null = número sem selo; sem dado, sem selo) */
 function seloDe(key: RankingColumnKey, row: RankingRowApi): 'verde' | 'vermelho' | 'neutro' | null {
   const def = RANKING_COLUMNS[key]
-  if (!def.signed || def.semCor) return null
+  if (!def.signed) return null
   const v = def.raw(row)
   if (v == null) return null
   // o que arredonda para zero fica no selo neutro

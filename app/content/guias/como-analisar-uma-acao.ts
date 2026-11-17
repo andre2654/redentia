@@ -27,9 +27,9 @@ export const COMO_ANALISAR_UMA_ACAO_GUIDE: GuideDoc = {
   title: 'Como analisar uma ação: os indicadores que importam',
   dek: 'O que olhar antes de comprar, em que ordem e por que nenhum indicador sozinho responde se a ação vale a pena.',
   description:
-    'Como analisar uma ação na prática: o que significam P/L, P/VP, ROE, ROIC, margens, endividamento e dividend yield, em que ordem ler cada um e os erros que fazem um múltiplo baixo parecer conclusão. Guia claro e honesto da Aportou.',
+    'Como analisar uma ação na prática: o que significam P/L, P/VP, ROE, ROIC, margens, endividamento e dividend yield, em que ordem ler cada um e os erros que fazem um indicador barato parecer oportunidade. Guia claro e honesto da Aportou.',
   summary:
-    'Preço na tela não descreve o múltiplo. Veja o que cada indicador mede de verdade, como comparar empresas sem se enganar e o roteiro de análise que separa um múltiplo baixo de uma armadilha de valor.',
+    'Preço na tela não diz se a ação está cara. Veja o que cada indicador mede de verdade, como comparar empresas sem se enganar e o roteiro de análise que separa uma ação descontada de uma armadilha de valor.',
   minutes: 11,
   author: 'Equipe Aportou',
   datePublished: '2026-07-29',
@@ -43,7 +43,7 @@ export const COMO_ANALISAR_UMA_ACAO_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'Uma ação que custa poucos reais não tem, por isso, múltiplo baixo, e uma que custa centenas não tem, por isso, múltiplo alto. O preço isolado só diz quanto custa uma fração da empresa, e essa fração depende de quantas ações existem. <strong>O múltiplo é uma relação, nunca um valor absoluto</strong>: preço comparado com lucro, com patrimônio, com geração de caixa.',
+          html: 'Uma ação que custa poucos reais não é barata, e uma que custa centenas não é cara. O preço isolado só diz quanto custa uma fração da empresa, e essa fração depende de quantas ações existem. <strong>Caro e barato são relações, nunca valores absolutos</strong>: preço comparado com lucro, com patrimônio, com geração de caixa.',
         },
         {
           kind: 'p',
@@ -146,12 +146,12 @@ export const COMO_ANALISAR_UMA_ACAO_GUIDE: GuideDoc = {
             '<strong><a href="/glossario/p-l">P/L</a> (preço sobre lucro).</strong> Quantos anos de lucro atual seriam necessários para pagar o preço da ação. Um P/L de 10 significa dez anos de lucro no ritmo de hoje. P/L alto embute expectativa de crescimento; P/L baixo embute desconfiança do mercado. O indicador não distingue as duas coisas, quem distingue é você.',
             '<strong><a href="/glossario/p-vp">P/VP</a> (preço sobre valor patrimonial).</strong> Quanto o mercado cobra por real de patrimônio contábil. Faz mais sentido em bancos e seguradoras, onde o balanço é o próprio negócio, e quase nenhum em empresas cujo valor está em marca, software ou contrato, coisas que o balanço mal registra.',
             '<strong><a href="/glossario/ev-ebitda">EV/EBITDA</a>.</strong> Compara o valor da empresa incluindo dívida com a geração operacional de caixa. É o múltiplo preferido para comparar empresas com estruturas de capital diferentes, porque não se deixa distorcer por quem tem muita ou pouca dívida.',
-            '<strong>Múltiplos são relativos.</strong> Não existe número universalmente bom. O mesmo múltiplo pode ficar acima do histórico em um setor cíclico e abaixo do histórico em um setor previsível. A comparação válida é contra os pares do setor e contra o próprio histórico da empresa.',
+            '<strong>Múltiplos são relativos.</strong> Não existe número universalmente bom. O mesmo múltiplo pode ser caro em um setor cíclico e barato em um setor previsível. A comparação válida é contra os pares do setor e contra o próprio histórico da empresa.',
           ],
         },
         {
           kind: 'p',
-          html: 'Métodos clássicos como a fórmula de Graham e o preço teto de Bazin nada mais são do que atalhos para transformar múltiplos em um preço de referência. Eles ajudam a colocar disciplina no processo, desde que sejam tratados como termômetro e não como veredito. A <a href="/calculadora/preco-teto">calculadora de preço teto</a> faz essa conta, e os rankings <a href="/ranking/mais-baratas-graham">Graham</a> e de <a href="/ranking/menores-pl">menores P/L</a> mostram quem aparece no topo dessas listas hoje.',
+          html: 'Métodos clássicos como a fórmula de Graham e o preço teto de Bazin nada mais são do que atalhos para transformar múltiplos em um preço de referência. Eles ajudam a colocar disciplina no processo, desde que sejam tratados como termômetro e não como veredito. A <a href="/calculadora/preco-teto">calculadora de preço teto</a> faz essa conta, e os rankings de <a href="/ranking/mais-baratas-graham">mais baratas por Graham</a> e <a href="/ranking/menores-pl">menores P/L</a> mostram quem aparece no topo dessas listas hoje.',
         },
       ],
     },
@@ -199,7 +199,7 @@ export const COMO_ANALISAR_UMA_ACAO_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Três erros aparecem repetidamente, e todos são evitados pelo roteiro. O primeiro é a <strong>armadilha de valor</strong>: tratar o múltiplo baixo como conclusão sem investigar por que ele é baixo. O segundo é <strong>comparar setores diferentes</strong>, o que sempre faz um deles parecer abaixo do outro por motivos puramente estruturais. O terceiro é <strong>confundir empresa boa com investimento bom</strong>, ignorando que o preço pago define o retorno tanto quanto a qualidade do negócio.',
+          html: 'Três erros aparecem repetidamente, e todos são evitados pelo roteiro. O primeiro é a <strong>armadilha de valor</strong>: comprar porque o múltiplo é baixo sem investigar por que ele é baixo. O segundo é <strong>comparar setores diferentes</strong>, o que sempre faz um deles parecer barato por motivos puramente estruturais. O terceiro é <strong>confundir empresa boa com investimento bom</strong>, ignorando que o preço pago define o retorno tanto quanto a qualidade do negócio.',
         },
         {
           kind: 'p',
@@ -232,12 +232,12 @@ export const COMO_ANALISAR_UMA_ACAO_GUIDE: GuideDoc = {
       a: 'ROE mede o lucro sobre o patrimônio dos sócios, enquanto ROIC mede o retorno sobre todo o capital investido no negócio, próprio e de terceiros. A diferença importa porque endividamento eleva o ROE sem melhorar a operação. Quando o ROE é muito maior que o ROIC, boa parte da rentabilidade vem de alavancagem, não de eficiência.',
     },
     {
-      q: 'P/VP abaixo de 1 descreve o preço em relação ao patrimônio?',
+      q: 'P/VP abaixo de 1 significa que a ação está barata?',
       a: 'Não necessariamente. P/VP abaixo de 1 significa que o mercado está pagando menos que o valor contábil do patrimônio, o que pode indicar desconto ou pode indicar que o mercado não acredita que aquele patrimônio gere retorno. Além disso, o indicador é pouco informativo em empresas cujo valor está em marca, tecnologia ou contratos, ativos que o balanço registra mal.',
     },
     {
       q: 'O que é armadilha de valor?',
-      a: 'É a ação com múltiplo baixo que continua com múltiplo baixo, ou fica com múltiplo ainda menor, porque a distância refletia um problema real: perda de mercado, dívida pesada, setor em declínio ou lucro que não se repete. O jeito de evitar é sempre investigar a causa do múltiplo baixo antes de tratá-lo como conclusão.',
+      a: 'É a ação que parece barata pelos múltiplos e continua barata, ou fica mais barata ainda, porque o desconto refletia um problema real: perda de mercado, dívida pesada, setor em declínio ou lucro que não se repete. O jeito de evitar é sempre investigar a causa do múltiplo baixo antes de tratá-lo como oportunidade.',
     },
     {
       q: 'Análise fundamentalista ou análise técnica?',

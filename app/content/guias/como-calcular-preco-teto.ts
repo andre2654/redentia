@@ -157,7 +157,7 @@ export const COMO_CALCULAR_PRECO_TETO_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: '<strong>Preço teto por P/L setorial = LPA × P/L médio do setor.</strong> Graham compara com um P/L fixo de 15. Bazin compara com um yield fixo de 6%. Nenhum dos dois sabe que banco, transmissora e varejo convivem com faixas de múltiplo diferentes. O P/L setorial troca a constante por um comparável. A pergunta deixa de ser "acima da constante" e passa a ser "acima ou abaixo dos pares".',
+          html: '<strong>Preço teto por P/L setorial = LPA × P/L médio do setor.</strong> Graham compara com um P/L fixo de 15. Bazin compara com um yield fixo de 6%. Nenhum dos dois sabe que banco, transmissora e varejo convivem com faixas de múltiplo diferentes. O P/L setorial troca a constante por um comparável. A pergunta deixa de ser "caro em absoluto" e passa a ser "caro em relação aos pares".',
         },
         {
           kind: 'p',
@@ -289,7 +289,7 @@ export const COMO_CALCULAR_PRECO_TETO_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'Bazin é cego para empresa que reinveste o lucro e distribui pouco. O teto sai baixo, ou zero, e isso não descreve o negócio. Graham e valor patrimonial são cegos para intangível e para dívida. P/L setorial acompanha o setor: setor a múltiplo alto produz teto alto. Projetivo amplifica a premissa. Nenhum dos cinco olha governança, concessão que vence, ou um lucro que depende de um preço de commodity no pico.',
+          html: 'Bazin é cego para empresa que reinveste o lucro e distribui pouco. O teto sai baixo, ou zero, e isso não descreve o negócio. Graham e valor patrimonial são cegos para intangível e para dívida. P/L setorial acompanha o setor: setor caro produz teto caro. Projetivo amplifica a premissa. Nenhum dos cinco olha governança, concessão que vence, ou um lucro que depende de um preço de commodity no pico.',
         },
         {
           kind: 'p',

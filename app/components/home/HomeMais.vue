@@ -59,7 +59,7 @@ const DESTINOS = [
     <p class="hms__direto">
       <NuxtLink to="/calculadora/juros-compostos">Juros compostos</NuxtLink>
       <NuxtLink to="/calculadora/acoes">Simulador de ações</NuxtLink>
-      <NuxtLink to="/ranking/mais-baratas-graham">Ranking Graham</NuxtLink>
+      <NuxtLink to="/ranking/mais-baratas-graham">Lista de Graham</NuxtLink>
     </p>
   </section>
 </template>

@@ -90,8 +90,8 @@ Cada ticker tem página própria em /asset/{TICKER} com cotação, gráfico, fun
 - [Hub de rankings](${o}/rankings): todos os rankings agrupados por tema
 - [${MARCA.nome} Score](${o}/ranking/redentia-score): score proprietário 0 a 100 que cruza 15 rankings fundamentalistas
 - [Maiores Dividend Yields](${o}/ranking/maiores-dividend-yield): ações e FIIs com maior DY dos últimos 12 meses
-- [Ranking Graham](${o}/ranking/mais-baratas-graham): ações com maior margem até o preço teto de Graham, pela fórmula
-- [Ranking Bazin](${o}/ranking/mais-baratas-bazin): ações com maior margem até o preço teto, pela fórmula
+- [Mais Baratas pela Fórmula de Graham](${o}/ranking/mais-baratas-graham)
+- [Mais Baratas pela Fórmula de Bazin](${o}/ranking/mais-baratas-bazin)
 - [Maiores Altas do Mês](${o}/ranking/maiores-altas-mes)
 - [Maiores Baixas do Mês](${o}/ranking/maiores-baixas-mes)
 - [Ranking do Tesouro Direto](${o}/ranking/tesouro-direto): melhores taxas do dia (IPCA+, Prefixado, Selic)
