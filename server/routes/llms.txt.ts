@@ -93,6 +93,7 @@ Cada ticker tem página própria em /asset/{TICKER} com cotação, gráfico, fun
 - [Maiores Dividend Yields](${o}/ranking/maiores-dividend-yield): ações e FIIs com maior DY dos últimos 12 meses
 - [Mais Baratas pela Fórmula de Graham](${o}/ranking/mais-baratas-graham)
 - [Mais Baratas pela Fórmula de Bazin](${o}/ranking/mais-baratas-bazin)
+- [Ações baratas](${o}/ranking/acoes-baratas): hub das listas em que a cotação está abaixo da fórmula de Graham ou de Bazin, ou o P/VP está baixo. Estimativa educacional, não é recomendação
 - [Maiores Altas do Mês](${o}/ranking/maiores-altas-mes)
 - [Maiores Baixas do Mês](${o}/ranking/maiores-baixas-mes)
 - [Ranking do Tesouro Direto](${o}/ranking/tesouro-direto): melhores taxas do dia (IPCA+, Prefixado, Selic)

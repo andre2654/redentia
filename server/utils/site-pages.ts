@@ -30,6 +30,11 @@
  */
 import { FIIS_DESCRIPTION, FIIS_PATH, FIIS_TITLE } from '../../app/content/seo/fiis-hub'
 import { RANKINGS } from '../../app/content/rankings/registry'
+import {
+  ACOES_BARATAS_DESCRIPTION,
+  ACOES_BARATAS_PATH,
+  ACOES_BARATAS_TITLE,
+} from '../../app/content/seo/acoes-baratas'
 import { SETORES } from '../../app/content/setores'
 import { GUIDE_DOCS } from '../../app/content/guias'
 import { allTerms as glossaryTerms } from '../../app/content/glossario'
@@ -763,12 +768,19 @@ function guideDocPages(): SitePage[] {
 }
 
 function rankingPages(marketDate: string | undefined): SitePage[] {
-  return Object.values(RANKINGS).map((r) => ({
+  const listas = Object.values(RANKINGS).map((r) => ({
     path: `/ranking/${r.slug}`,
     title: r.title,
     description: r.metaDescription,
     lastmod: marketDate, // o pregão mais recente com preço: é dele que os rankings saem
   }))
+  listas.push({
+    path: ACOES_BARATAS_PATH,
+    title: ACOES_BARATAS_TITLE,
+    description: ACOES_BARATAS_DESCRIPTION,
+    lastmod: marketDate,
+  })
+  return listas
 }
 
 /** Setores → /setor/{ptSlug}, derivados do registry (fonte única do hub). */

@@ -39,6 +39,7 @@ export const NAV_DO_TOPO: NavItem[] = [
       { label: 'Maiores dividend yields', to: '/ranking/maiores-dividend-yield', desc: 'As maiores pagadoras da bolsa, ranqueadas por yield.', vig: 'rank-yield' },
       { label: 'Mais baratas por Graham', to: '/ranking/mais-baratas-graham', desc: 'O preço justo clássico contra o preço de tela.', vig: 'rank-graham' },
       { label: 'Mais baratas por Bazin', to: '/ranking/mais-baratas-bazin', desc: 'O filtro de renda do método Bazin.', vig: 'rank-bazin' },
+      { label: 'Ações baratas', to: '/ranking/acoes-baratas', desc: 'Listas por Graham, Bazin e P/VP, pela fórmula.', vig: 'rank-baratas' },
       { label: 'Todos os rankings', to: '/rankings', desc: 'Todos os cortes, por classe e por critério.', vig: 'rank-todos' },
     ],
   },
