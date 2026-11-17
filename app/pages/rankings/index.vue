@@ -168,6 +168,10 @@ usePageSeo({
 function cardTypes(meta: RankingMeta): string[] {
   return meta.classe.map((c) => CHIP_LABEL[c])
 }
+
+function contagemDoGrupo(g: { tema: string; items: RankingMeta[] }): number {
+  return g.items.length + (g.tema === 'Valuation e preço justo' ? 1 : 0)
+}
 </script>
 
 <template>
@@ -213,7 +217,7 @@ function cardTypes(meta: RankingMeta): string[] {
       <div v-for="g in grupos" :key="g.tema" v-contexto-chat="{ id: `rankings:${g.tema}`, tipo: 'ranking', rotulo: rotuloCurto(`Rankings · ${g.tema}`) }" class="rkh__group">
         <div v-revelar class="rkh__group-head">
           <h2 class="rkh__group-title">{{ g.tema }}</h2>
-          <NuSelo tom="contorno" class="rkh__group-n">{{ g.items.length }} {{ g.items.length === 1 ? 'ranking' : 'rankings' }}</NuSelo>
+          <NuSelo tom="contorno" class="rkh__group-n">{{ contagemDoGrupo(g) }} {{ contagemDoGrupo(g) === 1 ? 'ranking' : 'rankings' }}</NuSelo>
         </div>
         <!-- os cartões entram em cascata ao rolar (60ms de um para o outro) -->
         <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="rkh__grid">
@@ -244,6 +248,14 @@ function cardTypes(meta: RankingMeta): string[] {
               </li>
             </ol>
             <span class="rkh__card-cta"><span class="rkh__cta-txt">Ver ranking</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
+          </NuxtLink>
+          <NuxtLink v-if="g.tema === 'Valuation e preço justo'" to="/ranking/acoes-baratas" class="rkh__card">
+            <div class="rkh__card-chips">
+              <NuSelo tom="contorno" tamanho="p">Ações</NuSelo>
+            </div>
+            <h3 class="rkh__card-title">Ações baratas</h3>
+            <p class="rkh__card-desc">Cotação abaixo da fórmula de Graham ou de Bazin, ou P/VP baixo. Estimativa educacional, não é recomendação de investimento.</p>
+            <span class="rkh__card-cta"><span class="rkh__cta-txt">Ver as listas</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
           </NuxtLink>
         </div>
       </div>
