@@ -92,7 +92,7 @@ test('a página do ticker fica com a média do PR 163 e o upside do ranking pint
     temPaginaDividendos: true,
   })
   assert.ok(view)
-  assert.match(view.paragrafo, /A cotação está .+% abaixo dessa média\./)
+  assert.match(view.paragrafo, /A cotação está .+% abaixo dessa média, o que deixa a ação barata e subvalorizada em relação a esse preço teto\./)
   assert.match(view.paragrafo, /Estimativa educacional, não é recomendação/)
   assert.equal(/perto do preço teto|Abaixo da régua|Na régua|Acima da régua/.test(view.paragrafo + view.passos.map((p) => p.linhas.join(' ')).join(' ')), false)
   const media = view.passos.find((p) => p.titulo === 'Média dos métodos')

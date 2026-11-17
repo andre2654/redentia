@@ -964,9 +964,9 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     })
   }
 
-  // Só a allowlist com clique (>=2 no Search Console, 15/08 a 14/11/2026).
-  // O resto de /calculadora/preco-teto/{TICKER} segue no ar e noindex, e o
-  // filtro semPrecoTetoPorTicker tira URL fora da lista da semente antiga.
+  // Allowlist de cliques mais os lotes de liquidez já abertos. O resto de
+  // /calculadora/preco-teto/{TICKER} segue no ar e noindex, e o filtro
+  // semPrecoTetoPorTicker tira URL fora desse conjunto da semente antiga.
   // Os cinco métodos entram por precoTetoMetodoPages(), na seção calculadoras.
   const precoTeto = paginasPrecoTetoIndexaveis()
   if (precoTeto.length > 0) {

@@ -1,17 +1,27 @@
 /**
- * /calculadora/preco-teto/{TICKER} volta ao índice só na allowlist do
- * Search Console (15/08 a 14/11/2026, pelo menos 2 cliques). O resto segue
- * noindex e fora de todo sitemap, inclusive da semente que a borda serve.
+ * /calculadora/preco-teto/{TICKER} indexa a allowlist de cliques mais os
+ * lotes de liquidez abertos. Com 1 lote, são 137. O lote 2 e HGLG11, PETR3
+ * e KNRI11 seguem noindex e fora do sitemap.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { montarPrecoTeto } from '../app/utils/preco-teto-pagina.ts'
 import {
+  PRECO_TETO_COM_CLIQUE,
   PRECO_TETO_INDEXAVEIS,
   precoTetoIndexavel,
+  relacionadosPrecoTeto,
   robotsDePrecoTeto,
 } from '../app/content/seo/preco-teto-indexaveis.ts'
+import {
+  PRECO_TETO_FORA_DO_LOTE,
+  PRECO_TETO_FICHA,
+  PRECO_TETO_LOTES_ABERTOS,
+  PRECO_TETO_LOTE_LASTMOD,
+  PRECO_TETO_ORDEM,
+  lotesPrecoTeto,
+} from '../server/data/preco-teto-lotes.ts'
 import { paginasPrecoTetoIndexaveis } from '../server/utils/preco-teto-sitemap.ts'
 import { semPrecoTetoPorTicker } from '../server/utils/sitemap-cache.ts'
 import { SEMENTES_SITEMAP } from '../server/data/sitemap-semente.ts'
@@ -25,7 +35,7 @@ const ALLOW = [
   'GRND3', 'CURY3', 'TASA4', 'EMBJ3', 'PRSN11',
 ]
 
-const PROIBIDO = /\b(barato|caro|subvalorizad[oa]|sobrevalorizad[oa]|oportunidade|compre|venda|preço-alvo|preco-alvo)\b|preço justo|\bjusto\b|margem de segurança/i
+const PROIBIDO = /\b(barato|caro|sobrevalorizad[oa]|oportunidade|compre|venda|preço-alvo|preco-alvo)\b|preço justo|\bjusto\b|margem de segurança|retorno garantido|\bcompre\b|\bvender\b/i
 
 function textoDaPagina(ticker: string) {
   const view = montarPrecoTeto({
@@ -55,24 +65,47 @@ function textoDaPagina(ticker: string) {
   ].join('\n')
 }
 
-test('a allowlist é a lista fixa do Search Console, com casamento sem caixa', () => {
-  assert.deepEqual([...PRECO_TETO_INDEXAVEIS], ALLOW)
+test('um lote aberto soma os 100 mais líquidos à allowlist de 37', () => {
+  assert.deepEqual([...PRECO_TETO_COM_CLIQUE], ALLOW)
   assert.equal(new Set(ALLOW).size, 37)
+  assert.equal(PRECO_TETO_LOTES_ABERTOS, 1)
+  assert.equal(PRECO_TETO_ORDEM.length, 597)
+  const lote1 = lotesPrecoTeto(1)[0]!
+  const lote2 = lotesPrecoTeto(2)[1]!
+  assert.equal(lote1.length, 100)
+  assert.equal(lote2.length, 100)
+  assert.equal(PRECO_TETO_INDEXAVEIS.length, 137)
+  assert.equal(new Set(PRECO_TETO_INDEXAVEIS).size, 137)
+  for (const ticker of ALLOW) assert.equal(precoTetoIndexavel(ticker), true, ticker)
+  assert.equal(precoTetoIndexavel(lote1[0]!), true)
   assert.equal(precoTetoIndexavel('petr4'), true)
   assert.equal(precoTetoIndexavel('Petr4'), true)
   assert.equal(precoTetoIndexavel(' PETR4 '), true)
-  assert.equal(precoTetoIndexavel('hglg11'), false)
-  assert.equal(precoTetoIndexavel('PETR3'), false)
+  assert.equal(precoTetoIndexavel(lote2[0]!), false, lote2[0])
+  assert.equal(robotsDePrecoTeto(lote2[0]!), 'noindex, follow')
+  for (const ticker of PRECO_TETO_FORA_DO_LOTE) {
+    assert.equal(precoTetoIndexavel(ticker), false, ticker)
+    assert.equal((PRECO_TETO_ORDEM as readonly string[]).includes(ticker), false, ticker)
+  }
   assert.equal(precoTetoIndexavel('bazin'), false)
+  assert.equal(lotesPrecoTeto(2).flat().length, 200)
+  for (let i = 1; i < PRECO_TETO_ORDEM.length; i++) {
+    const antes = PRECO_TETO_FICHA[PRECO_TETO_ORDEM[i - 1]!]!.volume
+    const agora = PRECO_TETO_FICHA[PRECO_TETO_ORDEM[i]!]!.volume
+    assert.ok(antes >= agora, `${PRECO_TETO_ORDEM[i - 1]} ${antes} < ${PRECO_TETO_ORDEM[i]} ${agora}`)
+  }
 })
 
-test('ticker da allowlist é indexável; HGLG11 e PETR3 seguem noindex', () => {
+test('ticker da allowlist é indexável; HGLG11, PETR3 e KNRI11 seguem noindex', () => {
   assert.equal(robotsDePrecoTeto('PETR4'), undefined)
   assert.equal(robotsDePrecoTeto('petr4'), undefined)
   assert.equal(robotsDePrecoTeto('BBAS3'), undefined)
+  assert.equal(robotsDePrecoTeto(lotesPrecoTeto(1)[0]![0]!), undefined)
   assert.equal(robotsDePrecoTeto('HGLG11'), 'noindex, follow')
   assert.equal(robotsDePrecoTeto('hglg11'), 'noindex, follow')
   assert.equal(robotsDePrecoTeto('PETR3'), 'noindex, follow')
+  assert.equal(robotsDePrecoTeto('KNRI11'), 'noindex, follow')
+  assert.equal(robotsDePrecoTeto('knri11'), 'noindex, follow')
   const vue = readFileSync(new URL('../app/components/calc/CalcPrecoTetoTicker.vue', import.meta.url), 'utf8')
   assert.match(vue, /robots:\s*robotsDePrecoTeto\(v\.ticker\)/)
   assert.match(vue, /path:\s*`\/calculadora\/preco-teto\/\$\{v\.ticker\}`/)
@@ -83,28 +116,45 @@ test('ticker da allowlist é indexável; HGLG11 e PETR3 seguem noindex', () => {
   assert.match(config, /siteUrl: process\.env\.NUXT_PUBLIC_SITE_URL \|\| 'https:\/\/aportou\.com\.br'/)
 })
 
-test('o sitemap de preço teto traz a allowlist e deixa HGLG11 e PETR3 de fora', () => {
+test('o sitemap de preço teto traz 137 URLs e deixa o lote 2, HGLG11, PETR3 e KNRI11 de fora', () => {
   const pages = paginasPrecoTetoIndexaveis()
   const tickers = pages.map((p) => p.path.split('/').pop())
-  assert.deepEqual([...tickers].sort(), [...ALLOW].sort())
-  assert.equal(pages.length, 37)
+  const lote1 = lotesPrecoTeto(1)[0]!
+  const lote2 = lotesPrecoTeto(2)[1]!
+  assert.equal(pages.length, 137)
+  assert.deepEqual([...tickers].sort(), [...PRECO_TETO_INDEXAVEIS].sort())
   assert.ok(pages.some((p) => p.path === '/calculadora/preco-teto/PETR4'))
+  assert.ok(pages.some((p) => p.path === `/calculadora/preco-teto/${lote1[0]}`))
+  assert.equal(pages.some((p) => p.path === `/calculadora/preco-teto/${lote2[0]}`), false)
   assert.equal(pages.some((p) => p.path === '/calculadora/preco-teto/HGLG11'), false)
   assert.equal(pages.some((p) => p.path === '/calculadora/preco-teto/PETR3'), false)
+  assert.equal(pages.some((p) => p.path === '/calculadora/preco-teto/KNRI11'), false)
+  const petr4 = pages.find((p) => p.path === '/calculadora/preco-teto/PETR4')
+  assert.equal(petr4?.lastmod, '2026-10-23')
+  for (const ticker of lote1) {
+    const page = pages.find((p) => p.path === `/calculadora/preco-teto/${ticker}`)
+    assert.ok(page, ticker)
+    assert.equal(page!.lastmod, PRECO_TETO_LOTE_LASTMOD, ticker)
+  }
   for (const page of pages) {
     assert.match(page.path, /^\/calculadora\/preco-teto\/[A-Z][A-Z0-9]{3,5}$/)
     const ticker = page.path.split('/').pop()!
     assert.equal(ticker, ticker.toUpperCase())
   }
+  const foraDoLote = lotesPrecoTeto(2)[1]![0]!
   const xml = semPrecoTetoPorTicker(urlsetXml('https://aportou.com.br', [
     ...pages,
     { path: '/calculadora/preco-teto/HGLG11', title: 'HGLG11' },
     { path: '/calculadora/preco-teto/PETR3', title: 'PETR3' },
+    { path: '/calculadora/preco-teto/KNRI11', title: 'KNRI11' },
+    { path: `/calculadora/preco-teto/${foraDoLote}`, title: foraDoLote },
     { path: '/calculadora/preco-teto/bazin', title: 'Bazin' },
   ]))
   assert.match(xml, /\/calculadora\/preco-teto\/PETR4</)
+  assert.match(xml, new RegExp(`/calculadora/preco-teto/${lote1[0]}<`))
   assert.match(xml, /\/calculadora\/preco-teto\/bazin</)
-  assert.doesNotMatch(xml, /HGLG11|PETR3/)
+  assert.doesNotMatch(xml, /HGLG11|PETR3|KNRI11/)
+  assert.doesNotMatch(xml, new RegExp(`/calculadora/preco-teto/${foraDoLote}<`))
   const locs = [...xml.matchAll(/\/calculadora\/preco-teto\/([A-Za-z0-9-]+)</g)].map((m) => m[1])
   for (const slug of locs) {
     if (slug === slug.toLowerCase()) continue
@@ -117,11 +167,14 @@ test('a semente e o índice não publicam preço teto fora da allowlist', () => 
   assert.ok(cru)
   const servido = semPrecoTetoPorTicker(cru.xml)
   const tickers = [...servido.matchAll(/\/calculadora\/preco-teto\/([A-Z][A-Z0-9]{3,5})</g)].map((m) => m[1])
-  assert.deepEqual([...tickers].sort(), [...ALLOW].sort())
+  for (const ticker of tickers) assert.equal(precoTetoIndexavel(ticker!), true, ticker)
+  assert.equal(tickers.length, 37)
   assert.equal(servido.includes('HGLG11'), false)
   assert.equal(servido.includes('PETR3'), false)
+  assert.equal(servido.includes('KNRI11'), false)
   assert.equal(cru.xml.includes('HGLG11'), false)
   assert.equal(cru.xml.includes('PETR3'), false)
+  assert.equal(cru.xml.includes('KNRI11'), false)
   assert.equal(cru.urls, 37)
   const indice = semPrecoTetoPorTicker(SEMENTES_SITEMAP.index!.xml)
   assert.match(indice, /sitemaps\/preco-teto\.xml/)
@@ -138,7 +191,21 @@ test('a semente e o índice não publicam preço teto fora da allowlist', () => 
     },
   ], 'preco-teto')
   assert.equal(grupo.some((p) => p.path.endsWith('/HGLG11')), false)
-  assert.equal(grupo.length, 37)
+  assert.equal(grupo.length, 137)
+})
+
+test('os links do mesmo setor só apontam para páginas indexáveis', () => {
+  const links = relacionadosPrecoTeto('PETR4', 'Energy')
+  assert.ok(links.length >= 3 && links.length <= 6, String(links.length))
+  assert.equal(links.some((l) => l.ticker === 'PETR4'), false)
+  assert.equal(links.some((l) => l.ticker === 'PETR3'), false)
+  for (const link of links) {
+    assert.equal(precoTetoIndexavel(link.ticker), true, link.ticker)
+    assert.equal(link.href, `/calculadora/preco-teto/${link.ticker}`)
+    assert.equal(PRECO_TETO_FICHA[link.ticker]?.setor, 'Energy')
+  }
+  assert.equal(relacionadosPrecoTeto('HGLG11', 'Real Estate').some((l) => l.ticker === 'HGLG11'), false)
+  assert.equal(relacionadosPrecoTeto('ZZZZ3', '').length, 0)
 })
 
 test('o texto visível da página por ticker descreve a conta e não um veredito', () => {

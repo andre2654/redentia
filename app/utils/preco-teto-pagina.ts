@@ -11,6 +11,7 @@
  * resultado seria um único VPA×1,5 ou uma tabela de zeros. Isso é 404, e o
  * sitemap usa a mesma régua.
  */
+import { relacionadosPrecoTeto } from '../content/seo/preco-teto-indexaveis.ts'
 import { SETORES_BY_API } from '../content/setores.ts'
 import { nomeDaEmpresa } from './nomeB3.ts'
 import { bazinPrice, bookValuePrice, computeAll, grahamPrice, plSectorPrice } from './preco-teto.ts'
@@ -120,6 +121,9 @@ export interface PrecoTetoView {
   faq: { q: string; a: string }[]
   title: string
   description: string
+  /** Segmento em português, quando o perfil traz industry_category conhecido. */
+  segmento: string | null
+  relacionados: { ticker: string; href: string }[]
   assetHref: string
   dividendosHref: string | null
 }
@@ -292,6 +296,9 @@ export function descricaoPrecoTeto(partes: {
   bazin: string | null
   graham: string | null
   consenso: string | null
+  setor?: string | null
+  dividendo?: string | null
+  diferenca?: string | null
 }): string {
   const aviso = 'Estimativa educacional, não é recomendação.'
   const metodos = [
@@ -299,15 +306,116 @@ export function descricaoPrecoTeto(partes: {
     partes.graham ? 'Graham' : null,
   ].filter((m): m is string => !!m)
   const cauda = metodos.length ? `: ${metodos.join(', ')} e média` : ''
-  const corpo = juntaAte([
-    `Preço teto ${partes.ticker} hoje${cauda} (${partes.nome}).`,
-    partes.bazin ? `Bazin ${partes.bazin}.` : null,
-    partes.graham ? `Graham ${partes.graham}.` : null,
-    `Cotação ${partes.preco}.`,
-    partes.consenso ? `Média ${partes.consenso}.` : null,
-  ], TETO_DESCRICAO - aviso.length - 1)
+  const onde = [partes.nome, partes.setor].filter((s): s is string => !!s && s.trim() !== '').join(', ')
+  const comDados = !!(partes.setor || partes.dividendo || partes.diferenca)
+  const media = partes.consenso ? `Média ${partes.consenso}.` : null
+  const corpo = comDados
+    ? descricaoCurta({
+        cabeca: `Preço teto ${partes.ticker} (${onde}): ${partes.preco}`,
+        extras: [
+          partes.bazin ? `Bazin ${partes.bazin}` : null,
+          partes.diferenca,
+          partes.dividendo ? `dividendos ${partes.dividendo}` : null,
+          partes.graham ? `Graham ${partes.graham}` : null,
+          partes.diferenca ? null : partes.consenso ? `média ${partes.consenso}` : null,
+        ],
+        teto: TETO_DESCRICAO - aviso.length - 1,
+      })
+    : juntaAte([
+        `Preço teto ${partes.ticker} hoje${cauda} (${onde}).`,
+        partes.bazin ? `Bazin ${partes.bazin}.` : null,
+        partes.graham ? `Graham ${partes.graham}.` : null,
+        `Cotação ${partes.preco}.`,
+        media,
+      ], TETO_DESCRICAO - aviso.length - 1)
   const full = corpo ? `${corpo} ${aviso}` : aviso
   return full.length <= TETO_DESCRICAO ? full : full.slice(0, TETO_DESCRICAO)
+}
+
+/**
+ * industry_category vem em inglês. Sem tradução certa, o texto não publica
+ * o inglês: o setor em português já identifica a página.
+ */
+const SEGMENTO_PT: Record<string, string> = {
+  'aerospace & defense': 'aeroespacial e defesa',
+  'agricultural inputs': 'insumos agrícolas',
+  'asset management': 'gestão de recursos',
+  'auto parts': 'autopeças',
+  'banks - regional': 'bancos',
+  'beverages - brewers': 'bebidas',
+  'capital markets': 'mercado de capitais',
+  'chemicals': 'química',
+  'communication equipment': 'equipamentos de comunicação',
+  'conglomerates': 'conglomerados',
+  'department stores': 'lojas de departamento',
+  'diagnostics & research': 'diagnósticos',
+  'drug manufacturers - specialty & generic': 'farmacêutico',
+  'education & training services': 'educação',
+  'entertainment': 'entretenimento',
+  'farm & heavy construction machinery': 'máquinas agrícolas e de construção',
+  'farm products': 'agronegócio',
+  'financial data & stock exchanges': 'bolsas',
+  'footwear & accessories': 'calçados',
+  'gold': 'ouro',
+  'grocery stores': 'supermercados',
+  'infrastructure operations': 'infraestrutura',
+  'insurance - diversified': 'seguros',
+  'insurance - reinsurance': 'resseguros',
+  'insurance brokers': 'corretoras de seguros',
+  'leisure': 'lazer',
+  'luxury goods': 'bens de luxo',
+  'medical care facilities': 'serviços de saúde',
+  'oil & gas e&p': 'petróleo e gás',
+  'oil & gas integrated': 'petróleo e gás integrado',
+  'oil & gas refining & marketing': 'refino e distribuição',
+  'other industrial metals & mining': 'mineração',
+  'paper & paper products': 'papel e celulose',
+  'pharmaceutical retailers': 'varejo farmacêutico',
+  'railroads': 'ferrovias',
+  'real estate - development': 'incorporação',
+  'real estate - diversified': 'imobiliário',
+  'real estate services': 'serviços imobiliários',
+  'reit - diversified': 'fundos imobiliários diversificados',
+  'reit - industrial': 'galpões logísticos',
+  'reit - mortgage': 'fundos de papel',
+  'reit - office': 'lajes corporativas',
+  'reit - residential': 'fundos residenciais',
+  'reit - retail': 'shoppings',
+  'reit - specialty': 'fundos imobiliários',
+  'rental & leasing services': 'aluguel de bens',
+  'residential construction': 'construção residencial',
+  'software - application': 'software',
+  'specialty business services': 'serviços empresariais',
+  'specialty industrial machinery': 'máquinas',
+  'specialty retail': 'varejo',
+  'steel': 'siderurgia',
+  'telecom services': 'telecomunicações',
+  'utilities - diversified': 'utilidades',
+  'utilities - regulated electric': 'energia elétrica',
+  'utilities - regulated water': 'saneamento',
+  'utilities - renewable': 'energia renovável',
+  'waste management': 'resíduos',
+}
+
+/** Junta a cabeça e os extras que ainda cabem, nesta ordem, e fecha com ponto. */
+function descricaoCurta(partes: {
+  cabeca: string
+  extras: Array<string | null | undefined | false>
+  teto: number
+}): string {
+  let corpo = partes.cabeca
+  for (const extra of partes.extras) {
+    if (!extra) continue
+    const prox = `${corpo}, ${extra}`
+    if (`${prox}.`.length <= partes.teto) corpo = prox
+  }
+  return `${corpo}.`
+}
+
+export function segmentoEmPortugues(industry: string | null | undefined): string | null {
+  const chave = String(industry ?? '').trim().toLowerCase()
+  if (!chave || chave === 'n/a') return null
+  return SEGMENTO_PT[chave] ?? null
 }
 
 export interface MontarPrecoTetoInput {
@@ -318,6 +426,7 @@ export interface MontarPrecoTetoInput {
   preco: number
   priceDate?: string | null
   setorBruto?: string | null
+  segmentoBruto?: string | null
   lpa: number
   vpa: number
   dividendo: number
@@ -335,6 +444,7 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
   const unidade: 'ação' | 'cota' = fii ? 'cota' : 'ação'
   const nome = nomeDaEmpresa(i.nomeBruto, i.fiiTradingName) || ticker
   const setor = setorDoPapel(i.setorBruto)
+  const segmento = segmentoEmPortugues(i.segmentoBruto)
   // Só a média publicada do setor entra. P/L próprio devolveria a cotação.
   const sectorPL = i.sectorPLFonte === 'setor' ? i.sectorPL : 0
   const calc = computeAll({
@@ -362,19 +472,23 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
 
   const passos = montarPassos({ ...i, ticker, unidade, graham, bazin, plSetorial, vpaTeto, consenso, dataTexto })
   const paragrafo = montarParagrafo({
-    nome, ticker, fii, unidade, setorNome: setor?.nome ?? null, preco: i.preco, dataTexto,
-    dyPct: i.dyPct, dividendo: i.dividendo, bazin, graham, consenso,
+    nome, ticker, fii, unidade, setorNome: setor?.nome ?? null, segmento, preco: i.preco, dataTexto,
+    dyPct: i.dyPct, dividendo: i.dividendo, bazin, graham, plSetorial, vpaTeto, consenso,
   })
   const resposta = montarResposta({ ticker, preco: i.preco, bazin, graham, consenso, dataTexto })
+  const diferenca = textoDaDiferenca(i.preco, consenso)
 
   const title = tituloPrecoTeto(ticker, graham > 0, nome, bazin > 0)
   const description = descricaoPrecoTeto({
     ticker,
     nome,
+    setor: setor?.nome ?? null,
     preco: brl(i.preco),
+    dividendo: i.dividendo > 0 ? brl(i.dividendo) : null,
     bazin: bazin > 0 ? brl(bazin) : null,
     graham: graham > 0 ? brl(graham) : null,
     consenso: consenso > 0 ? brl(consenso) : null,
+    diferenca,
   })
 
   return {
@@ -406,6 +520,8 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
     faq: montarFaq({ ticker, nome, unidade, preco: i.preco, bazin, graham, consenso, dividendo: i.dividendo, tabela }),
     title,
     description,
+    segmento,
+    relacionados: relacionadosPrecoTeto(ticker, i.setorBruto),
     assetHref: `/asset/${ticker}`,
     dividendosHref: i.temPaginaDividendos ? `/dividendos/${ticker}` : null,
   }
@@ -416,6 +532,31 @@ function posicaoConsenso(preco: number, consenso: number): string {
   const m = (consenso - preco) / preco
   const p = pct1.format(Math.abs(m * 100))
   if (m > 0.005) return `A cotação está ${p}% abaixo dessa média.`
+  if (m < -0.005) return `A cotação está ${p}% acima dessa média.`
+  return 'A cotação está junto dessa média.'
+}
+
+/** Frase curta da meta description. Sem veredito de compra. */
+function textoDaDiferenca(preco: number, consenso: number): string | null {
+  if (!(consenso > 0) || !(preco > 0)) return null
+  const m = (consenso - preco) / preco
+  const p = pct1.format(Math.abs(m * 100))
+  if (m > 0.005) return `${p}% abaixo da média`
+  if (m < -0.005) return `${p}% acima da média`
+  return 'junto da média'
+}
+
+/**
+ * No parágrafo, cotação abaixo da média pode dizer barata e subvalorizada.
+ * Não é ordem de compra nem previsão.
+ */
+function fraseDaDiferenca(preco: number, consenso: number, unidade: 'ação' | 'cota'): string {
+  if (!(consenso > 0) || !(preco > 0)) return ''
+  const m = (consenso - preco) / preco
+  const p = pct1.format(Math.abs(m * 100))
+  if (m > 0.005) {
+    return `A cotação está ${p}% abaixo dessa média, o que deixa a ${unidade} barata e subvalorizada em relação a esse preço teto.`
+  }
   if (m < -0.005) return `A cotação está ${p}% acima dessa média.`
   return 'A cotação está junto dessa média.'
 }
@@ -443,31 +584,46 @@ function montarParagrafo(p: {
   fii: boolean
   unidade: 'ação' | 'cota'
   setorNome: string | null
+  segmento: string | null
   preco: number
   dataTexto: string | null
   dyPct: number | null
   dividendo: number
   bazin: number
   graham: number
+  plSetorial: number
+  vpaTeto: number
   consenso: number
 }): string {
   const papel = p.fii ? 'O fundo' : 'A empresa'
   const setor = p.setorNome ? `, no setor ${p.setorNome}` : ''
+  const segmento = p.segmento ? `, segmento ${p.segmento}` : ''
   const quando = p.dataTexto ? ` no pregão de ${p.dataTexto}` : ''
-  const frases = [`${papel} ${p.nome} (${p.ticker})${setor} fechou a ${brl(p.preco)}${quando}.`]
+  const frases = [`${papel} ${p.nome} (${p.ticker})${setor}${segmento} fechou a ${brl(p.preco)}${quando}.`]
   if (p.dividendo > 0) {
     const dy = p.dyPct != null ? `, dividend yield de ${numBr(p.dyPct)}%` : ''
     frases.push(`O dividendo de renda dos últimos 12 meses foi ${brl(p.dividendo)} por ${p.unidade}${dy}.`)
   } else {
-    frases.push(`Não houve dividendo de renda com data-com nos últimos 12 meses, então a régua de Bazin não produz preço teto.`)
+    frases.push('Não houve dividendo de renda com data-com nos últimos 12 meses, então a régua de Bazin não produz preço teto.')
   }
-  if (p.bazin > 0) frases.push(`Dividindo esse valor por 0,06, o preço teto de Bazin fica em ${brl(p.bazin)}.`)
-  if (p.graham > 0) frases.push(`A fórmula de Graham calcula ${brl(p.graham)}.`)
+  const metodos = [
+    p.bazin > 0 ? `Bazin ${brl(p.bazin)}` : null,
+    p.graham > 0 ? `Graham ${brl(p.graham)}` : null,
+    p.plSetorial > 0 ? `P/L setorial ${brl(p.plSetorial)}` : null,
+    p.vpaTeto > 0 ? `valor patrimonial ${brl(p.vpaTeto)}` : null,
+  ].filter((m): m is string => !!m)
+  if (metodos.length) frases.push(`Os métodos com número são ${listaPt(metodos)}.`)
   if (p.consenso > 0) {
-    frases.push(`A média dos métodos com número, a mesma média da calculadora, é ${brl(p.consenso)}. ${posicaoConsenso(p.preco, p.consenso)}`)
+    const diff = fraseDaDiferenca(p.preco, p.consenso, p.unidade)
+    frases.push(`A média desses métodos, a mesma média da calculadora, é ${brl(p.consenso)}. ${diff}`.trim())
   }
   frases.push('Estimativa educacional, não é recomendação.')
   return frases.join(' ')
+}
+
+function listaPt(itens: string[]): string {
+  if (itens.length <= 1) return itens[0] ?? ''
+  return `${itens.slice(0, -1).join(', ')} e ${itens[itens.length - 1]}`
 }
 
 function montarPassos(p: {

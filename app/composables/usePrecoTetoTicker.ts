@@ -139,6 +139,7 @@ async function loadPrecoTeto(base: string, ticker: string): Promise<PrecoTetoVie
     preco,
     priceDate: profile.price_date,
     setorBruto: profile.sector,
+    segmentoBruto: profile.industry_category,
     lpa,
     vpa: vpaDeOverview(overview),
     dividendo: div.valor,
