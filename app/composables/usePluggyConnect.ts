@@ -6,7 +6,7 @@
  *  1. import dinâmico do SDK npm `pluggy-connect-sdk` (o Pluggy NÃO publica
  *     UMD em CDN — lição documentada no Frontend; o chunk só baixa no clique)
  *  2. GET /pluggy/connect-token (auth) → accessToken fresco (TTL ~30min)
- *  3. new PluggyConnect({ connectToken, onSuccess }) → widget modal
+ *  3. abrirWidgetOpenFinance({ connectToken, provider, onSuccess }) → widget modal
  *  4. onSuccess({ item }) → POST /pluggy/connections { item_id } (o backend
  *     persiste e dispara o sync inicial async) → onConnected() do chamador
  *     (refresh da página; as posições chegam quando o sync termina)

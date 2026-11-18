@@ -1,8 +1,8 @@
 /**
- * Monta o fixture dos 137 textos indexáveis a partir da API.
+ * Monta o fixture dos 237 textos indexáveis a partir da API.
  *   node scripts/gerar-preco-teto-textos.ts
  * O teste tests/preco-teto-unicos.test.ts relê o JSON e confere que título,
- * description e parágrafo são strings únicas.
+ * description e intro (parágrafo) são strings únicas.
  */
 import { writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
