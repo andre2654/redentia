@@ -149,6 +149,11 @@ const copy: RankingCopy = {
       desc: 'Veja todos os rankings e filtros disponíveis.',
       href: '/rankings',
     },
+    {
+      title: 'Agenda de dividendos',
+      desc: 'Pagamentos do mês na B3, com data com e data de pagamento. Não é recomendação.',
+      href: '/dividendos/agenda',
+    },
   ],
 
   // h2 keyword-bearing da página antiga (não o genérico do template).

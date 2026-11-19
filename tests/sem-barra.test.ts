@@ -90,6 +90,8 @@ test('atalho, slug minúsculo e regra estática terminam na URL final', () => {
   assert.equal(destinoSemBarra('/preco-teto/?x=1'), '/calculadora/preco-teto?x=1')
   assert.equal(destinoSemBarra('/dividendos/'), '/ranking/maiores-dividend-yield')
   assert.equal(destinoSemBarra('/dividendos/calendario/'), '/ranking/maiores-dividend-yield')
+  assert.equal(destinoSemBarra('/dividendos/agenda/'), '/dividendos/agenda')
+  assert.equal(destinoSemBarra('/dividendos/agenda/dezembro-2026/'), '/dividendos/agenda/dezembro-2026')
   assert.equal(destinoSemBarra('/mercado-completo/'), '/')
   assert.equal(destinoSemBarra('/tesouro/tesouro-ipca-com-juros-semestrais-2028/'), '/tesouro/tesouro-ipca-com-juros-semestrais-2030')
   assert.equal(destinoSemBarra('/tesouro/TESOURO-IPCA-COM-JUROS-SEMESTRAIS-2028/'), '/tesouro/tesouro-ipca-com-juros-semestrais-2030')

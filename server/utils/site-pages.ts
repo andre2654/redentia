@@ -56,6 +56,8 @@ import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 import { GRAFICOS_PAGINA } from '../../app/utils/graficos'
 import { paginasPrecoTetoIndexaveis } from './preco-teto-sitemap'
+import { entradasAgenda } from '../../app/utils/agendaDividendos.ts'
+import { carregarFontesAgenda } from './agenda-dividendos.ts'
 
 export interface SitePage {
   path: string
@@ -808,7 +810,7 @@ function glossarioPages(): SitePage[] {
 export async function getSiteSections(): Promise<SiteSection[]> {
   resetQuantoRendeGeracao()
   resetDividendosGeracao()
-  const [teses, ativos, tesouro, cripto, dividendosCru, universoCru, latestNews, quantoRendePacote, quantoRendeTesouroCru] = await Promise.all([
+  const [teses, ativos, tesouro, cripto, dividendosCru, universoCru, latestNews, quantoRendePacote, quantoRendeTesouroCru, agendaFontes] = await Promise.all([
     fetchThesisPages(),
     fetchAssetPages(),
     fetchTesouroPages(),
@@ -818,6 +820,8 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     fetchLatestNewsDate(),
     fetchQuantoRendeTickers(),
     fetchQuantoRendeTesouroRows(),
+    // null = os feeds caíram. As três URLs da agenda entram mesmo assim.
+    carregarFontesAgenda().catch(() => null),
   ])
   const quantoRendeCru = quantoRendePacote.tickers
 
@@ -937,12 +941,16 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     })
   }
 
-  if (dividendos.length > 0) {
+  // A agenda entra na frente, no sitemap de dividendos. As três URLs pedidas
+  // (hub, novembro e dezembro de 2026) ficam mesmo se o calendário falhar.
+  // Mês extra só quando a lista daquele mês está inteira na base.
+  const dividendosComAgenda = [...entradasAgenda(agendaFontes), ...dividendos]
+  if (dividendosComAgenda.length > 0) {
     sections.push({
       id: 'dividendos',
       title: 'Dividendos por ativo',
-      description: 'Histórico de proventos e dividend yield por ticker em /dividendos/{TICKER}.',
-      pages: dividendos,
+      description: 'Agenda de dividendos por mês e histórico de proventos por ticker em /dividendos/{TICKER}.',
+      pages: dividendosComAgenda,
     })
   }
 

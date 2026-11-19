@@ -255,6 +255,11 @@ const painel = useChatPainel()
           <p class="dvt__card-p">Ranking diário das ações e FIIs que mais pagam proventos</p>
           <span class="dvt__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
+        <NuxtLink to="/dividendos/agenda" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
+          <h3 class="dvt__card-link-title">Agenda de dividendos</h3>
+          <p class="dvt__card-p">Pagamentos do mês na B3, com data com e data de pagamento</p>
+          <span class="dvt__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+        </NuxtLink>
       </div>
       <div v-revelar class="dvt__cta">
         <NuCtaBanner
