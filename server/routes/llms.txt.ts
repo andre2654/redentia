@@ -116,6 +116,14 @@ Cada pagadora relevante tem página própria em /dividendos/{TICKER} com histór
 - [Dividendos de TAEE11](${o}/dividendos/TAEE11)
 - [Dividendos de MXRF11](${o}/dividendos/MXRF11)
 
+### Agenda de dividendos
+
+Pagamentos com data no mês, a partir dos avisos de proventos da B3. Não é recomendação de compra ou venda.
+
+- [Agenda de dividendos](${o}/dividendos/agenda): hub dos meses com lista publicada
+- [Agenda de dividendos novembro 2026](${o}/dividendos/agenda/novembro-2026)
+- [Agenda de dividendos dezembro 2026](${o}/dividendos/agenda/dezembro-2026)
+
 ### Quanto rende (${nQuantoRende} páginas)
 
 Proventos dos últimos 12 meses aplicados a um valor, em /quanto-rende/{TICKER}, e a taxa de hoje de cada título do Tesouro em /quanto-rende/tesouro/{slug}. Rentabilidade passada não garante rentabilidade futura. Não é recomendação.
