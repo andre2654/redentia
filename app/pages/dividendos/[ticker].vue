@@ -96,9 +96,10 @@ const renamedFrom = data.value ? await useRenamedFrom(ticker) : computed(() => n
 // existe; sem resumo, o histórico encosta no hero (creme) e inverte o ciclo.
 const histTone = computed<'cream' | 'white'>(() => (div.value?.resumo ? 'cream' : 'white'))
 const flip = (t: 'cream' | 'white'): 'cream' | 'white' => (t === 'cream' ? 'white' : 'cream')
+const blocosTone = computed<'cream' | 'white'>(() => flip(histTone.value))
 const eduTones = computed(() => {
   const tones: ('cream' | 'white')[] = []
-  let t = histTone.value
+  let t = (div.value?.blocos.length ?? 0) > 0 ? blocosTone.value : histTone.value
   for (let i = 0; i < (div.value?.edu.length ?? 0); i++) {
     t = flip(t)
     tones.push(t)
@@ -209,7 +210,35 @@ const painel = useChatPainel()
           {{ div.historyNotice }}
         </div>
       </div>
+      <p v-if="!div.blocos.length" class="dvt__cvm">{{ div.notaCvm }}</p>
     </CalcBand>
+
+    <!-- H2s da demanda: data com, pagamento, valor, último, JCP 2026, 2027 e DY.
+         Cada bloco sai do mesmo histórico. Sem campo, o bloco não inventa número. -->
+    <section
+      v-if="div.blocos.length"
+      class="dvt__blocos"
+      :class="blocosTone === 'cream' ? 'dvt__blocos--cream' : 'dvt__blocos--page'"
+    >
+      <article v-for="b in div.blocos" :key="b.id" v-revelar class="dvt__bloco">
+        <h2 :id="`bloco-${b.id}`" class="dvt__bloco-h2">{{ b.h2 }}</h2>
+        <div
+          v-if="b.linhas.length"
+          class="dvt__next-grid"
+          :class="{ 'dvt__next-grid--white': blocosTone === 'cream' }"
+        >
+          <div v-for="(linha, i) in b.linhas" :key="`${b.id}-${i}`" class="dvt__next-card">
+            <span class="dvt__next-label">{{ linha.rotulo }}</span>
+            <span class="dvt__next-value">{{ linha.valor }}</span>
+          </div>
+        </div>
+        <div class="dvt__prose">
+          <p v-for="(p, i) in b.paragrafos" :key="`${b.id}-p-${i}`">{{ p }}</p>
+        </div>
+        <p class="dvt__fonte">{{ b.fonte }}</p>
+      </article>
+      <p class="dvt__cvm">{{ div.notaCvm }}</p>
+    </section>
 
     <!-- ============ Seções educacionais (adaptadas por tipo, dados reais) ============ -->
     <CalcSplit v-for="(s, i) in div.edu" :key="s.title" :tone="eduTones[i]">
@@ -309,7 +338,7 @@ const painel = useChatPainel()
   padding: 20px 24px; margin: -1px 0 0 -1px;
   border-top: 1px solid var(--nu-line-2); border-left: 1px solid var(--nu-line-2);
 }
-.dvt__next-label { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.35; }
+.dvt__next-label { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.35; overflow-wrap: anywhere; }
 .dvt__next-value {
   color: var(--nu-ink); font-size: clamp(17px, 2vw, 22px); font-weight: var(--nu-w-forte);
   letter-spacing: var(--nu-ls-titulo); line-height: 1.25; overflow-wrap: anywhere;
@@ -318,6 +347,25 @@ const painel = useChatPainel()
 .dvt__fonte {
   margin: 16px 0 0; color: var(--nu-gray); font-size: 13px;
   font-weight: var(--nu-w-texto); line-height: 1.5; max-width: 72ch;
+}
+
+.dvt__blocos {
+  padding: clamp(48px, 6vw, 88px) var(--nu-coluna);
+}
+.dvt__blocos--cream { background: var(--nu-band); }
+.dvt__blocos--page { background: var(--nu-page); }
+.dvt__bloco { max-width: 1080px; margin: 0 auto; min-width: 0; }
+.dvt__bloco + .dvt__bloco { margin-top: clamp(40px, 5vw, 64px); }
+.dvt__bloco-h2 {
+  margin: 0 0 16px; color: var(--nu-ink);
+  font-size: clamp(28px, 3.2vw, 40px); font-weight: var(--nu-w-display);
+  letter-spacing: var(--nu-ls-display); line-height: 1.15; text-wrap: balance;
+}
+.dvt__bloco .dvt__next-grid { margin-top: 0; }
+.dvt__bloco .dvt__prose { margin-top: 16px; }
+.dvt__cvm {
+  max-width: 1080px; margin: clamp(28px, 3vw, 40px) auto 0;
+  color: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-texto); line-height: 1.5;
 }
 @media (max-width: 480px) {
   .dvt__next-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -30,6 +30,7 @@
  */
 import type { AcaoDividendBar, AcaoStatRow, TickerProfileApi } from '~/types/acao'
 import type { NuFaqItem } from '~/types/market'
+import type { BlocoDividendos } from '~/utils/dividendosBlocos'
 import type { ProventoRow } from '~/utils/proventos'
 import type { RenamedRota } from '~/utils/delisted'
 
@@ -91,6 +92,14 @@ export interface DividendosPayload {
   historyNotice: string | null
   edu: DivEduSection[]
   faq: NuFaqItem[]
+  /**
+   * H2s de data com, pagamento, valor, último provento, JCP 2026,
+   * anunciados de 2027 e dividend yield. Vazio quando o histórico falhou
+   * e não há DY: aí não há número honesto para um bloco novo.
+   */
+  blocos: BlocoDividendos[]
+  /** Aviso CVM já usado na agenda. A página mostra uma vez. */
+  notaCvm: string
   /** simulador de /calculadora/acoes com o ativo preenchido; null se o tipo não é coberto (utils/simulador.ts) */
   simuladorHref: string | null
   /** /quanto-rende/{TICKER} só com renda em 12 meses; sem isso a página é 404 */
@@ -181,6 +190,8 @@ interface Core {
   hist: 'ok' | 'vazio' | 'indisponivel'
   /** linhas da tabela — null = fetch do histórico falhou (indisponível) */
   historyRows: string[][] | null
+  /** null = fetch do histórico falhou. [] = a API respondeu sem provento. */
+  rows: ProventoRow[] | null
 }
 
 function coreFromApi(
@@ -297,6 +308,7 @@ function coreFromApi(
     strongest,
     hist: rows === null ? 'indisponivel' : rows.length ? 'ok' : 'vazio',
     historyRows,
+    rows,
     type: profile.type ?? null,
   }
 }
@@ -432,7 +444,7 @@ function buildPayload(c: Core): DividendosPayload {
         ? `Valores brutos por cota informados pelo fundo à B3. Rendimentos de FIIs são isentos de IR pra pessoa física dentro das regras do segmento. ${notaEx} ${fonteProventos}`
         : isBdr
           ? `Valores por BDR informados à B3. BDR não paga JCP, e o dividendo dele não tem a isenção do dividendo de ação brasileira. ${notaEx} ${fonteProventos}`
-          : `Valores brutos por ação informados à B3. JCP tem 17,5% de IR retido na fonte; dividendos são isentos pra pessoa física até R$ 50 mil por mês de cada empresa. ${notaEx} ${fonteProventos}`,
+          : `Valores brutos por ação informados à B3. JCP tem 17,5% de IR retido na fonte desde 1º de janeiro de 2026, pelo art. 8º da Lei Complementar 224/2025; dividendos são isentos pra pessoa física até R$ 50 mil por mês de cada empresa. ${notaEx} ${fonteProventos}`,
     }
   } else if (c.historyRows) {
     historyNotice = `Ainda não temos os pagamentos de ${c.ticker} na nossa base de proventos. ${dyFmt ? `O dividend yield de ${dyFmt} acima vem dos dados consolidados de mercado.${fonteDy ? ` ${fonteDy}` : ''}` : 'Assim que houver anúncio novo, ele aparece aqui.'}`
@@ -506,7 +518,7 @@ function buildPayload(c: Core): DividendosPayload {
         : {
             title: 'Dividendos, JCP e imposto de renda',
             paragraphs: [
-              `Desde 2026 (Lei 15.270/2025), dividendos de ações seguem isentos de IR pra pessoa física até R$ 50 mil por mês pagos pela mesma empresa. Acima disso, a empresa retém 10% sobre o total do mês. JCP nunca foi isento: são 17,5% retidos na fonte desde 2026, sem esse limite, mas no agregado costuma compensar, porque a empresa abate o pagamento como despesa e paga menos imposto corporativo.`,
+              `Desde 2026 (Lei 15.270/2025), dividendos de ações seguem isentos de IR pra pessoa física até R$ 50 mil por mês pagos pela mesma empresa. Acima disso, a empresa retém 10% sobre o total do mês. JCP nunca foi isento: são 17,5% retidos na fonte desde 1º de janeiro de 2026, pelo art. 8º da Lei Complementar 224/2025, sem esse limite, mas no agregado costuma compensar, porque a empresa abate o pagamento como despesa e paga menos imposto corporativo.`,
               `Pra maioria dos investidores, nada muda: R$ 50 mil por mês de uma só empresa fica muito acima do que a carteira típica recebe. Quem soma mais de R$ 600 mil de renda no ano entra também na tributação mínima, apurada na declaração anual.`,
             ],
           },
@@ -550,6 +562,19 @@ function buildPayload(c: Core): DividendosPayload {
     fonteProventos,
   )
 
+  const blocosPack = montarBlocosDividendos({
+    ticker: c.ticker,
+    isFii: c.isFii,
+    isBdr,
+    rows: c.rows,
+    dy: c.dy,
+    dyBasis: c.dyBasis,
+    dyMatchesSum: c.dyMatchesSum,
+    price: c.price,
+    priceDate: c.priceDate,
+    hoje: c.hoje,
+  })
+
   const faq: NuFaqItem[] = [
     { q: `Quando o ${c.ticker} paga ${kind}?`, a: whenA },
     { q: `Qual o dividend yield de ${c.ticker}?`, a: dyA },
@@ -563,8 +588,9 @@ function buildPayload(c: Core): DividendosPayload {
           q: `Os dividendos de ${c.ticker} pagam imposto de renda?`,
           a: isBdr
             ? `Sim. O dividendo de BDR não tem a isenção do dividendo de ação brasileira: chega depois do imposto retido no país de origem e entra como rendimento do exterior, com regra própria de tributação e de declaração no Brasil. BDR não paga JCP.`
-            : `Até R$ 50 mil por mês pagos pela mesma empresa, não: o dividendo segue isento pra pessoa física. Acima disso, desde 2026 (Lei 15.270/2025), a empresa retém 10% sobre o total do mês. JCP tem 17,5% retidos na fonte, sem limite de isenção.`,
+            : `Até R$ 50 mil por mês pagos pela mesma empresa, não: o dividendo segue isento pra pessoa física. Acima disso, desde 2026 (Lei 15.270/2025), a empresa retém 10% sobre o total do mês. JCP tem 17,5% retidos na fonte desde 1º de janeiro de 2026, pelo art. 8º da Lei Complementar 224/2025, sem limite de isenção.`,
         },
+    ...blocosPack.faq,
     {
       q: `Onde acompanhar os próximos pagamentos de ${c.ticker}?`,
       a: `Os anúncios oficiais saem como fato relevante no site de RI e no sistema da CVM. Esta página consolida o histórico com dados da B3, e a página do ativo na Aportou traz cotação, fundamentos, notícias e a leitura da IA da Aportou sobre ${c.ticker}.`,
@@ -593,6 +619,8 @@ function buildPayload(c: Core): DividendosPayload {
     historyNotice,
     edu,
     faq,
+    blocos: blocosPack.blocos,
+    notaCvm: blocosPack.notaCvm,
     simuladorHref: simuladorAcoesHref(c.ticker, c.type),
     quantoRendeHref: c.sum12 > 0 ? `/quanto-rende/${c.ticker}` : null,
     seo: {
@@ -647,6 +675,7 @@ function petr4Seed(): DividendosPayload {
     ],
     strongest: { year: '2022', valFmt: 'R$ 6,84' },
     historyRows: null, // sem histórico inventado: aviso honesto no lugar da tabela
+    rows: null,
   })
 }
 
