@@ -175,6 +175,9 @@ export default defineNuxtConfig({
     // Configurações: pessoal e atrás de login → private/no-store (a página já é
     // noindex). Página única com seções ancoradas (sem sub-rotas).
     '/conta': { headers: { 'cache-control': 'private, no-store' } },
+    // Os avisos (a tela do "Escolher avisos" do WhatsApp): pessoal, noindex,
+    // e o link assinado vem no fragmento, que nunca chega ao servidor.
+    '/avisos': { headers: { 'cache-control': 'private, no-store' } },
     // /noticias, /asset/**, /tesouro(/**), /dividendos/**, /guias(/**),
     // /glossario(/**), /tese/**, /teses, /calculadoras e /mcp: cache público
     // por request em server/middleware/cache-sessao.ts.
