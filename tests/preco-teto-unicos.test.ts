@@ -1,5 +1,5 @@
 /**
- * Título, description e intro (parágrafo) dos 337 indexáveis são strings únicas.
+ * Título, description e intro (parágrafo) dos 437 indexáveis são strings únicas.
  * O fixture sai de scripts/gerar-preco-teto-textos.ts (API em 17/11/2026).
  */
 import { test } from 'node:test'
@@ -24,8 +24,8 @@ function repetidos(valores: string[]): string[] {
   return dup
 }
 
-test('título, description e intro dos 337 indexáveis são únicos', () => {
-  assert.equal(entradas.length, 337)
+test('título, description e intro dos 437 indexáveis são únicos', () => {
+  assert.equal(entradas.length, 437)
   assert.deepEqual(entradas.map((e) => e.ticker).sort(), [...PRECO_TETO_INDEXAVEIS].sort())
   const views = entradas.map((entrada) => {
     const view = montarPrecoTeto(entrada)

@@ -20,7 +20,7 @@
  *
  * Para abrir o próximo lote, incremente PRECO_TETO_LOTES_ABERTOS.
  */
-export const PRECO_TETO_LOTES_ABERTOS = 3
+export const PRECO_TETO_LOTES_ABERTOS = 4
 
 /** lastmod das URLs que entram por lote, não pela allowlist de cliques. */
 export const PRECO_TETO_LOTE_LASTMOD = '2026-11-17'
