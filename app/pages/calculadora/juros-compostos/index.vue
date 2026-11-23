@@ -150,9 +150,9 @@ const faqItems = [
 ]
 
 usePageSeo({
-  title: 'Calculadora de Juros Compostos 2026 - Grátis',
+  title: 'Calculadora de juros compostos com aporte mensal',
   description:
-    'Calcule juros compostos com aportes mensais. Poupança vs Tesouro Selic vs CDB, regra de 72, simulação 5 a 30 anos. Gráfico interativo. Grátis.',
+    'Simule quanto você junta guardando R$ 500 ou outro valor por mês, de 5 a 30 anos. Compare poupança, Tesouro Selic e CDB na tabela. Grátis.',
   path: '/calculadora/juros-compostos',
   breadcrumbs: [
     { name: 'Home', path: '/' },

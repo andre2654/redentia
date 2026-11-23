@@ -104,9 +104,9 @@ const faqItems = [
 ]
 
 usePageSeo({
-  title: 'IR sobre ações: calcule o DARF 2026',
+  title: 'IR swing trade e day trade: calcule o DARF 2026',
   description:
-    'Swing trade a 15%, day trade a 20% e isenção de R$ 20 mil. Calcule o DARF 6015 do mês. Grátis.',
+    'Swing trade paga 15% de IR e day trade 20%, com isenção de R$ 20 mil em vendas de ações no mês no swing trade. Calcule o DARF 6015. Grátis.',
   path: '/calculadora/imposto-renda',
   breadcrumbs: [
     { name: 'Home', path: '/' },
