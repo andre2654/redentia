@@ -29,7 +29,7 @@ import type { CarteiraVisao as Visao } from '~/types/carteiraVisao'
 import { brl2, marcaNaResposta } from '~/utils/carteiraVisao'
 import { marcaNoTexto } from '~/utils/marcaNoTexto'
 import VisaoOndeEsta from './VisaoOndeEsta.vue'
-import CarteiraHeroi from './CarteiraHeroi.vue'
+import CarteiraAgora from '~/components/carteira/CarteiraAgora.vue'
 import VisaoRenda from './VisaoRenda.vue'
 import CarteiraFuturo from '~/components/carteira/CarteiraFuturo.vue'
 import VisaoImposto from './VisaoImposto.vue'
@@ -64,6 +64,14 @@ if (!mock.value) proverCarteiraFuturo()
 
 // o ganho e o dia de cada ativo (24/11): do /portfolio de verdade; no mock, o de exemplo
 const resultado = computed(() => props.payload.resultado ?? (mock.value ? resultadoMock() : null))
+// os números da fileira do topo: os do /portfolio; sem o "Retorno total" de lá (falta preço médio em algum ativo), o
+// ganho dos ativos que têm preço médio, dito como parcial
+const statsDoTopo = computed(() => {
+  const st = props.payload.hero?.stats ?? []
+  const r = resultado.value
+  if (st.some((x) => x.label === 'Retorno total') || !r || r.ganho == null || r.ganhoPct == null) return st
+  return [{ label: `Retorno (${r.comCusto} de ${r.linhas.length} ativos)`, value: `${reaisComSinal(r.ganho)} (${pctComSinal(r.ganhoPct)})`, tone: r.ganho >= 0 ? 'green' as const : 'red' as const }, ...st]
+})
 /* ————— o topo ————— */
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const agora = computed<CarteiraAgoraVM>(() => {
@@ -100,11 +108,13 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
 
 <template>
   <div class="cvi">
-    <CarteiraHeroi
-      :resultado="resultado"
-      :proventos12m="payload.proventos12mValor ?? null"
-      id="hoje" :agora="agora" :avisos="visao.avisos" :conexoes="visao.conexoes" :ativos="visao.posicoes.length"
-      :renda="visao.renda" :dados-de="visao.dadosDe" :mock="mock" @connected="emit('connected')"
+    <!-- o herói (24/11, pedido do dono): o topo escuro "a carteira no bolso" (CarteiraAgora), o mesmo de quem ainda não
+         tinha a tela nova. O patrimônio grande, o dia, o retorno em R$ e o gráfico contra a bolsa vêm antes de tudo; o topo
+         "A frase" (CarteiraHeroi) dizia o % do CDI e deixava o dinheiro em cartões ao lado. -->
+    <CarteiraAgora
+      id="hoje" aberto :agora="agora" :chart="payload.chart" :stats="statsDoTopo"
+      :visao="{ avisos: visao.avisos, conexoes: visao.conexoes, ativos: visao.posicoes.length, dadosDe: visao.dadosDe, mock }"
+      @connected="emit('connected')"
     />
     <!-- o "Reconectar" mora uma linha acima, no pé do topo, junto da conexão parada (e no cartão de atenção):
          a mesma ação num lugar só (robustez 11/11; antes eram três "Reconectar" em 300px) -->

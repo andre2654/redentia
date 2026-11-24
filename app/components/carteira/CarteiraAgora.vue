@@ -48,7 +48,7 @@ interface AchadosDoTopo {
 }
 /** a /carteira nova (06/11/2026): os avisos do motor e o frescor de cada conexão; `mock` (só no dev) não grava nada */
 interface VisaoDoTopo { avisos: AvisosVisao; conexoes: ConexaoVisao[]; ativos: number; dadosDe: string | null; mock?: boolean }
-const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null }>()
+const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null; /** 24/11: a tela nova entra com o topo já aberto (o patrimônio, a fileira e o gráfico), como na tela antiga */ aberto?: boolean }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
 // os onMounted dos composables vêm antes do await
@@ -125,7 +125,10 @@ const avisosRef = ref<InstanceType<typeof CarteiraAvisos> | null>(null)
 // dia quando houver; o gráfico fica baixo, e o topo inteiro cabe numa tela.
 // A tela antiga (sem `visao`) segue com o gráfico alto; o losango saiu dela em
 // 11/11 (é a logo da marca antiga), e a linha do dia ganhou o provento.
-const enxuto = computed(() => !!props.visao)
+// 24/11 (o dono, vendo a tela nova: "pode fazer essa carteira virar o hero, igual quando não tem o env marcado"): com
+// `aberto`, a tela nova usa o topo inteiro da antiga (a fileira com o retorno em R$, o gráfico alto, as perguntas) e
+// mantém o que é dela: os avisos e o frescor das conexões.
+const enxuto = computed(() => !!props.visao && !props.aberto)
 /** ' Provento: R$ 48,20 de ITSA4 hoje.' quando caiu algum no dia; senão, nada */
 const proventoNaLinha = computed(() => (props.agora.provento ? ` Provento: ${subDoProvento(props.agora, quando.value ?? 'hoje', revelado.value)}.` : ''))
 /** 'Caiu menos que a bolsa (−0,52%). R$ 48,20 de ITSA4 hoje.' */
@@ -317,7 +320,7 @@ onMounted(desenharGrafico)
    do dia e o que pede atenção, cada item abrindo o aviso. "Ver detalhes" monta
    o patrimônio e o gráfico (montado só ao abrir: o gráfico mede a largura) ——— */
 type FaseTopo = 'recolhido' | 'abrindo' | 'aberto'
-const fase = ref<FaseTopo>('recolhido')
+const fase = ref<FaseTopo>(props.aberto ? 'aberto' : 'recolhido')
 const detalhes = computed(() => fase.value !== 'recolhido')
 const recolhido = computed(() => enxuto.value && fase.value === 'recolhido')
 /* A abertura em onda (06/11; o dono: "uma animação foda no formato da logo",
