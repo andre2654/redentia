@@ -28,14 +28,17 @@ const TOPO = Object.entries(PRECO_TETO_FICHA)
   .slice(0, 50)
   .map(([ticker]) => ticker)
 
-test('os 50 são o topo de liquidez de PRECO_TETO_FICHA', () => {
+test('os 50 seguem a liquidez de PRECO_TETO_FICHA e pulam RZZI11, que não tem perfil', () => {
   assert.equal(TICKERS_IMPOSTO_RENDA.length, 50)
-  assert.deepEqual([...TICKERS_IMPOSTO_RENDA], TOPO)
+  const esperados = [...TOPO.filter((t) => t !== 'RZZI11'), 'XPML11']
+  assert.deepEqual([...TICKERS_IMPOSTO_RENDA], esperados)
   assert.equal(TICKERS_IMPOSTO_RENDA[0], 'VALE3')
   assert.equal(tickerNaListaImpostoRenda('petr4'), true)
+  assert.equal(tickerNaListaImpostoRenda('RZZI11'), false)
+  assert.equal(tickerNaListaImpostoRenda('XPML11'), true)
   assert.equal(tickerNaListaImpostoRenda('HGLG11'), false)
-  assert.deepEqual(pathsImpostoRenda(), TOPO.map((t) => `/imposto-de-renda/${t}`))
-  const universo = new Map(TOPO.map((t) => [t, { aliasOf: t === 'PETR3' ? 'PETR4' : null }]))
+  assert.deepEqual(pathsImpostoRenda(), TICKERS_IMPOSTO_RENDA.map((t) => `/imposto-de-renda/${t}`))
+  const universo = new Map(TICKERS_IMPOSTO_RENDA.map((t) => [t, { aliasOf: t === 'PETR3' ? 'PETR4' : null }]))
   const paths = pathsImpostoRenda(universo)
   assert.equal(paths.includes('/imposto-de-renda/PETR3'), false)
   assert.equal(paths.length, 49)
