@@ -127,6 +127,80 @@ function pagamentoTexto(rows: readonly ProventoRow[]): string {
   return datas.map(dataCurtaAgenda).join(', ')
 }
 
+function definicaoDataCom(unit: string): string {
+  return `A data com é o último pregão em que a ${unit} precisa estar na carteira para o investidor ter direito ao provento daquele anúncio. A data ex é o pregão seguinte e não vem como dia separado nesta base.`
+}
+
+function faqQuandoPaga(
+  e: EntradaBlocosDividendos,
+  unit: string,
+  proximos: ProventoRow[],
+  pendentes: ProventoRow[],
+  fonte: string,
+): NuFaqItem {
+  const q = e.isFii ? `Rendimentos de ${e.ticker}: quando paga?` : `Dividendos ${e.ticker} quando paga?`
+  if (proximos.length) {
+    const assunto = e.isFii ? 'rendimentos' : 'dividendos'
+    return {
+      q,
+      a: `O próximo pagamento anunciado de ${assunto} de ${e.ticker} é ${pagamentoTexto(proximos)}. ${proximos.map((r) => fraseEvento(r, unit)).join(' ')} Anúncio pode ser atualizado. Não é promessa de pagamento futuro. ${fonte}`,
+    }
+  }
+  if (pendentes.length) {
+    return {
+      q,
+      a: `Há provento anunciado de ${e.ticker} com pagamento ainda a definir. ${pendentes.slice(0, 4).map((r) => fraseEvento(r, unit)).join(' ')} ${fonte}`,
+    }
+  }
+  return {
+    q,
+    a: `Não há pagamento futuro de ${e.ticker} anunciado nesta base. ${fonte}`,
+  }
+}
+
+function faqOQueEDataCom(
+  e: EntradaBlocosDividendos,
+  unit: string,
+  grupo: ProventoRow[],
+  fonte: string,
+): NuFaqItem {
+  const q = e.isFii
+    ? `O que é a data com de dividendos de um FII como ${e.ticker}?`
+    : `O que é a data com de dividendos de ${e.ticker}?`
+  if (!grupo.length) {
+    return {
+      q,
+      a: `${definicaoDataCom(unit)} Nenhum aviso de ${e.ticker} nesta base traz data com. ${fonte}`,
+    }
+  }
+  const data = dataCurtaAgenda(grupo[0]!.date)
+  return {
+    q,
+    a: `${definicaoDataCom(unit)} Nesta página, a data com deste recorte de ${e.ticker} é ${data}. ${grupo.map((r) => fraseEvento(r, unit)).join(' ')} Quem tem ${e.ticker} nessa data tem direito ao que foi anunciado. ${fonte}`,
+  }
+}
+
+function faqDataComNoAno(
+  e: EntradaBlocosDividendos,
+  unit: string,
+  rows: readonly ProventoRow[],
+  fonte: string,
+): NuFaqItem {
+  const eventos = ordenar(rows.filter((r) => r.hasExDate && r.date.startsWith(ANO_JCP) && (e.isFii ? r.income : ehDividendo(r.label))))
+  const q = `Qual a data com de dividendos de ${e.ticker} em ${ANO_JCP}?`
+  const tipo = e.isFii ? 'rendimento' : 'dividendo'
+  if (!eventos.length) {
+    return {
+      q,
+      a: `Não há data com de ${tipo} de ${e.ticker} em ${ANO_JCP} nesta base de avisos da B3. ${fonte}`,
+    }
+  }
+  return {
+    q,
+    a: `As datas com de ${tipo} de ${e.ticker} em ${ANO_JCP} nesta base são: ${eventos.map((r) => fraseEvento(r, unit)).join(' ')} Isso é o que está anunciado, não uma previsão. ${fonte}`,
+  }
+}
+
 export function montarBlocosDividendos(e: EntradaBlocosDividendos): BlocosDividendos {
   const unit = e.isFii ? 'cota' : e.isBdr ? 'BDR' : 'ação'
   const kind = e.isFii ? 'rendimentos' : 'dividendos'
@@ -155,6 +229,13 @@ export function montarBlocosDividendos(e: EntradaBlocosDividendos): BlocosDivide
         a: `A data com de ${e.ticker} neste recorte é ${data}. ${grupoCom.map((r) => fraseEvento(r, unit)).join(' ')} Quem tem ${e.ticker} nessa data tem direito ao que foi anunciado. A data ex é o pregão seguinte e não vem como dia separado nesta base. ${fonte}`,
       })
     }
+    // Busca real (autocomplete Google, 24 nov 2026, 10:03 UTC): "dividendos
+    // {ticker} quando paga", "data com dividendos", "data com dividendos
+    // {ticker}" e "data com dividendos ... 2026". Valor só se o aviso já
+    // está nesta página, e a fonte traz a data da consulta.
+    faq.push(faqQuandoPaga(e, unit, proximos, pendentes, fonte))
+    faq.push(faqOQueEDataCom(e, unit, grupoCom, fonte))
+    faq.push(faqDataComNoAno(e, unit, rows, fonte))
 
     const futuros = ordenar(rows.filter((r) => r.payDate && r.payDate > e.hoje))
     blocos.push(blocoPagamento(e, kind, unit, proximos, futuros, pendentes, ultimoRenda, freq, w.events12, fonte))

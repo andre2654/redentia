@@ -46,6 +46,7 @@ import {
   SMALL_CAPS_TITLE,
 } from '../../app/content/seo/rankings-small-caps'
 import { SETORES } from '../../app/content/setores'
+import { paginasSitemapSetoresLista } from '../../app/utils/setoresLista'
 import { GUIDE_DOCS } from '../../app/content/guias'
 import { allTerms as glossaryTerms } from '../../app/content/glossario'
 import { INDEXABLE_DIVIDENDS } from '../../app/content/seo/indexable-dividends'
@@ -807,13 +808,16 @@ function rankingPages(marketDate: string | undefined): SitePage[] {
   return listas
 }
 
-/** Setores → /setor/{ptSlug}, derivados do registry (fonte única do hub). */
+/** Setores amplos (/setor) e segmentos do cadastro (/setores). */
 function setorPages(): SitePage[] {
-  return SETORES.map((s) => ({
-    path: `/setor/${s.ptSlug}`,
-    title: `Setor ${s.name} na B3`,
-    description: s.blurb,
-  }))
+  return [
+    ...SETORES.map((s) => ({
+      path: `/setor/${s.ptSlug}`,
+      title: `Setor ${s.name} na B3`,
+      description: s.blurb,
+    })),
+    ...paginasSitemapSetoresLista(),
+  ]
 }
 
 /** Glossário → /glossario/{slug}, derivados do registry (fonte única A-Z). */
@@ -929,7 +933,7 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     {
       id: 'setores',
       title: 'Setores da B3',
-      description: 'Cada setor da bolsa tem página própria em /setor/{slug} com empresas, valor de mercado somado e variação do dia.',
+      description: 'O setor amplo fica em /setor/{slug}. O segmento do cadastro, com pelo menos cinco ativos, fica em /setores/{slug}.',
       pages: setorPages(),
     },
     {

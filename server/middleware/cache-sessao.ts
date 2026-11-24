@@ -58,6 +58,7 @@ const EXATAS: Record<string, string> = {
   '/rankings/small-caps': QUINZE_MIN,
   '/fiis': QUINZE_MIN,
   '/setor': QUINZE_MIN,
+  '/setores': QUINZE_MIN,
   // Legais/editoriais que quase nunca mudam.
   '/metodologia': DIA,
 }
@@ -74,6 +75,7 @@ const PREFIXOS: Array<[string, string]> = [
   ['/calculadora/', HORA],
   ['/ranking/', QUINZE_MIN],
   ['/setor/', QUINZE_MIN],
+  ['/setores/', QUINZE_MIN],
   ['/institucional/', DIA],
 ]
 
