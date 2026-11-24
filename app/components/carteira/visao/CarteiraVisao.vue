@@ -26,9 +26,16 @@
 import type { CarteiraPayload, CarteiraAgoraVM } from '~/types/carteira'
 import { CENARIOS as CENARIOS_MOCK, resultadoMock, visaoMock, type CenarioVisao } from '~/dev/carteiraVisaoMock'
 import type { CarteiraVisao as Visao } from '~/types/carteiraVisao'
-import { brl2, marcaNaResposta } from '~/utils/carteiraVisao'
+import { brl2, marcaNaResposta, nomeCurto } from '~/utils/carteiraVisao'
 import { marcaNoTexto } from '~/utils/marcaNoTexto'
-import VisaoOndeEsta from './VisaoOndeEsta.vue'
+import VisaoMexeu from './VisaoMexeu.vue'
+import VisaoClasses from './VisaoClasses.vue'
+import VisaoNota from './VisaoNota.vue'
+import VisaoLenteRiscos from './VisaoLenteRiscos.vue'
+import DocSecao from '~/components/carteira/doc/DocSecao.vue'
+import DocMais from '~/components/carteira/doc/DocMais.vue'
+import type { PosicaoVisao } from '~/types/carteiraVisao'
+import type { CarteiraPosicaoMundo } from '~/types/carteira'
 import CarteiraAgora from '~/components/carteira/CarteiraAgora.vue'
 import CarteiraMoldura from '~/components/carteira/CarteiraMoldura.vue'
 import CarteiraTrilho from '~/components/carteira/CarteiraTrilho.vue'
@@ -100,12 +107,40 @@ const parada = computed(() => {
 const railSections = computed<RailSection[]>(() => [
   { id: 'hoje', label: 'Hoje' },
   { id: 'onde', label: 'Onde está' },
-  ...(visao.value.renda ? [{ id: 'renda', label: 'Quanto paga' }] : []),
+  { id: 'mundo', label: 'No mundo' },
+  ...(visao.value.renda ? [{ id: 'renda', label: 'Renda' }] : []),
   ...(mock.value ? [] : [{ id: 'futuro', label: '5 anos' }]),
+  { id: 'relatorio', label: 'Desempenho' },
   ...(visao.value.imposto ? [{ id: 'imposto', label: 'Imposto' }] : []),
-  { id: 'relatorio', label: 'Relatório' },
 ])
 useSectionRail(railSections, { pageLabel: 'Carteira' })
+
+/* ————— o documento como no canvas (24/11): as seções e o que abre sob pedido —————
+   "Onde está" tinha quatro lentes em abas (Ativos, No mundo, Na cadeia, Riscos). No documento, as classes e o mundo são
+   seções à vista; os riscos e a cadeia abrem numa linha "ver em detalhe". O `carteira:lente` continua valendo para quem
+   manda a pessoa a uma delas (um aviso com "Ver nos riscos"): abre e rola até lá. */
+const RENDA_FIXA = new Set(['selic', 'juros'])
+// as posições para No mundo e Na cadeia: o ETF que mora no fator Selic ou juros é renda fixa do Brasil; o Tesouro vai pelo nome curto
+function paraOMundo(p: PosicaoVisao): CarteiraPosicaoMundo {
+  if (p.classe === 'ETF' && RENDA_FIXA.has(p.fator)) return { ticker: p.ticker, classe: 'FIXED_INCOME', valor: p.valor, nome: p.ticker }
+  return { ticker: p.ticker, classe: p.classe, valor: p.valor, nome: p.classe === 'TREASURY' ? nomeCurto(p.nome) : p.nome }
+}
+const posicoesMundo = computed<CarteiraPosicaoMundo[]>(() => visao.value.posicoes.map(paraOMundo))
+const temMexeu = computed(() => !!resultado.value && resultado.value.sobem.length + resultado.value.caem.length > 0)
+const riscosAberto = ref(false)
+const cadeiaAberta = ref(false)
+function irPara(id: string) {
+  if (!import.meta.client) return
+  nextTick(() => document.getElementById(id)?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }))
+}
+function abrirRiscos() { riscosAberto.value = true; irPara('riscos') }
+const lente = useState<string>('carteira:lente', () => 'ativos')
+watch(lente, (l) => {
+  if (l === 'riscos') abrirRiscos()
+  else if (l === 'cadeia') { cadeiaAberta.value = true; irPara('cadeia') }
+  else if (l === 'mundo') irPara('mundo')
+  else if (l === 'ativos') irPara('onde')
+})
 
 /* ————— o meio-termo (24/11): o trilho e a abertura do documento ————— */
 const { visiveis } = useValoresVisiveis()
@@ -172,13 +207,28 @@ const abertura = computed(() => {
       <span class="cvi__parcial-p" aria-hidden="true" />
       O que está abaixo é de {{ visao.dadosDe }}, a última vez que {{ parada }} atualizou. Os números de imposto e risco esperam a reconexão.
     </p>
-    <VisaoOndeEsta id="onde" :visao="visao" :resultado="resultado" />
+    <VisaoMexeu v-if="temMexeu" :resultado="resultado!" :visao="visao" @riscos="abrirRiscos" />
+    <VisaoClasses id="onde" :visao="visao" :resultado="resultado" @riscos="abrirRiscos" />
+    <!-- no mundo: a seção de 05/11 por inteiro (as mesmas buscas e contas), agora à vista e não numa aba -->
+    <DocSecao id="mundo" titulo="No mundo" id-titulo="cvi-mundo-t" class="cvi__mundo">
+      <CarteiraMundo :posicoes="posicoesMundo" />
+    </DocSecao>
+    <div class="cvi__mais">
+      <DocMais id="riscos" v-model="riscosAberto" titulo="Riscos e proteções" sub="O que mexe com a carteira, o que anda junto e o que segura numa queda.">
+        <VisaoLenteRiscos :visao="visao" />
+      </DocMais>
+      <DocMais id="cadeia" v-model="cadeiaAberta" titulo="Na cadeia" sub="De quem as suas empresas compram e para quem vendem.">
+        <CarteiraCadeia :posicoes="posicoesMundo" />
+      </DocMais>
+    </div>
     <VisaoRenda v-if="visao.renda" id="renda" :visao="visao" />
     <!-- e daqui a 5 anos? os 2.000 caminhos do motor (GET /me/carteira/futuro; no mock não há motor) -->
     <ClientOnly><CarteiraFuturo v-if="!mock" id="futuro" /></ClientOnly>
+    <!-- o desempenho: a nota e os pilares à vista; o relatório completo abre logo abaixo -->
+    <VisaoNota :mock="mock" />
+    <VisaoRelatorio id="relatorio" :payload="payload" :historico="visao.imposto?.historico ?? []" :mock="mock" />
     <!-- o imposto vem null quando o bloco quebra no servidor (e o cenário real antigo do dev vinha sem) -->
     <VisaoImposto v-if="visao.imposto" id="imposto" :imposto="visao.imposto" :dados-de="visao.dadosDe" :posicoes="visao.posicoes" />
-    <VisaoRelatorio id="relatorio" :payload="payload" :historico="visao.imposto?.historico ?? []" :mock="mock" />
 
     <!-- só no dev: o caso que a tela está mostrando -->
     <div v-if="mock" class="cvi__dev" role="group" aria-label="Cenário do mock">
@@ -236,9 +286,33 @@ const abertura = computed(() => {
 .cvi :deep(:is(.voe, .vrd, .cfu, .vim, .vrl, .can)) { background: transparent; }
 .cvi :deep(:is(.voe, .vrd, .vim, .vrl)) { position: relative; }
 .cvi :deep(:is(.voe, .vrd, .vim, .vrl))::before { content: ''; position: absolute; top: 0; left: var(--cvi-g); right: var(--cvi-g); height: 1px; background: var(--nu-line-2); }
-/* a pergunta em cinza, a resposta em tinta: o mesmo par da saudação do Início */
-.cvi :deep(.nu-eyebrow) { color: var(--nu-gray); font-size: 15px; font-weight: 400; letter-spacing: 0; text-transform: none; }
-.cvi :deep([class$='__frase']) { line-height: 1.25; }
+/* o título e a frase de documento (o canvas): o nome da seção em 26px e a frase "no seu caso" como parágrafo.
+   Vale para as seções que já existiam (renda, imposto, relatório); as novas usam DocSecao, com os mesmos números */
+.cvi :deep(.nu-eyebrow) { color: var(--nu-ink); font-size: 26px; line-height: 1.2; font-weight: var(--nu-w-display); letter-spacing: -0.02em; text-transform: none; }
+.cvi :deep(.nu-eyebrow .mkc) { display: none; }
+.cvi :deep(:is(.vrd__frase, .vim__frase, .vrl__frase, .vla__frase)) { margin-top: 14px; max-width: 820px; font-size: 17.5px; font-weight: 400; letter-spacing: 0; line-height: 1.7; text-wrap: wrap; }
+.cvi :deep(:is(.vrd__frase, .vim__frase, .vrl__frase, .vla__frase) .cfr) { color: inherit; font-weight: var(--nu-w-forte); }
+/* no mundo: a seção antiga sem a moldura dela; a frase como parágrafo e o globo com a lista num painel quente */
+.cvi__mundo :deep(.cmu) { padding: 0; background: transparent; overflow: visible; }
+.cvi__mundo :deep(.dsc__corpo) { margin-top: 0; }
+.cvi__mundo :deep(.cmu__eyebrow) { display: none; }
+.cvi__mundo :deep(.cmu__frase) { margin: 14px 0 0; max-width: 820px; color: var(--nu-ink); font-size: 17.5px; font-weight: 400; letter-spacing: 0; line-height: 1.7; text-wrap: wrap; }
+.cvi__mundo :deep(.cmu__realce) { color: inherit; font-weight: var(--nu-w-forte); }
+.cvi__mundo :deep(.cmu__corpo) { margin-top: 24px; padding: 24px clamp(18px, 4cqi, 30px); border-radius: 14px; background: var(--nu-band); }
+.cvi__mundo :deep(.cmu__lado) { padding: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.cvi__mundo :deep(.cmu__pct) { font-size: 16px; font-weight: var(--nu-w-display); letter-spacing: 0; }
+.cvi__mundo :deep(.cmu__nome-txt) { font-size: 16px; font-weight: 400; }
+.cvi__mundo :deep(:is(.cmu__cobertura, .cmu__nota)) { max-width: 820px; color: var(--nu-gray); font-size: 15px; font-weight: 400; line-height: 1.6; }
+/* o que abre sob pedido (riscos, cadeia): na coluna do documento, logo depois do mundo */
+.cvi__mais { padding: 0 var(--cvi-g) var(--cvi-v); }
+.cvi__mais :deep(:is(.cca__eyebrow, .cmu__eyebrow)) { display: none; }
+.cvi__mais :deep(:is(.cca__frase, .vlr__frase)) { max-width: 820px; font-size: 17.5px; font-weight: 400; letter-spacing: 0; line-height: 1.7; text-wrap: wrap; }
+/* a coluna estreita (celular, ou o painel do chat aberto ao lado): o que era duas colunas pela largura da janela
+   passa a uma pela largura da coluna, e nada vaza para fora dos painéis */
+@container doc (max-width: 860px) {
+  .cvi :deep(:is(.vim__grade, .cmu__corpo, .vla__grupos)) { grid-template-columns: minmax(0, 1fr); }
+}
+.cvi__mais :deep(:is(.vlr, .cca)) { padding-left: 0; padding-right: 0; background: transparent; }
 /* as barras de composição afinam: 10px, cantos de 5 */
 .cvi :deep(.vla__barra) { height: 10px; gap: 3px; }
 .cvi :deep(.vrd__trilho) { height: 12px; gap: 3px; }
