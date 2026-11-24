@@ -1335,6 +1335,7 @@ function linksRelacionados(
   dividends: AcaoDividendsVM | null,
   ticker: string,
   precoTetoHref: string | null,
+  industry: string | null,
 ): AcaoPayload['relacionados'] {
   const links: AcaoPayload['relacionados'] = []
   if (setor) {
@@ -1343,6 +1344,8 @@ function linksRelacionados(
   else if (kind === 'fii') {
     links.push({ href: '/setor/imobiliario', label: 'Ranking do setor imobiliário' })
   }
+  const outras = linkOutrasEmpresasDoSetor(industry)
+  if (outras) links.push(outras)
   if (dividends && dividends.bars.length > 0) {
     links.push({ href: `/dividendos/${ticker}`, label: `Dividendos de ${ticker}` })
   }
@@ -1801,7 +1804,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     editorial: editorialVm,
     cadeia: kind === 'stock' ? buildCadeia(ok(cadeiaR), name) : null,
     pares: paresVm,
-    relacionados: linksRelacionados(setorDoLink, kind, dividends, ticker, precoTetoHref),
+    relacionados: linksRelacionados(setorDoLink, kind, dividends, ticker, precoTetoHref, profile.industry_category),
     simuladorHref: simuladorAcoesHref(ticker, profile.type),
     resumo,
     seo: resumo
