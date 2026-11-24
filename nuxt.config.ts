@@ -349,6 +349,7 @@ export default defineNuxtConfig({
     '/sitemaps/teses.xml': { isr: 3600 },
     '/sitemaps/tesouro.xml': { isr: 3600 },
     '/sitemaps/dividendos.xml': { isr: 3600 },
+    '/sitemaps/imposto-de-renda.xml': { isr: 3600 },
     '/sitemaps/quanto-rende.xml': { isr: 3600 },
     '/sitemaps/preco-teto.xml': { isr: 3600 },
     '/sitemaps/ativos.xml': { isr: 3600 },

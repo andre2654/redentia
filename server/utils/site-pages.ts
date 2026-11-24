@@ -57,6 +57,8 @@ import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 import { GRAFICOS_PAGINA } from '../../app/utils/graficos'
 import { paginasPrecoTetoIndexaveis } from './preco-teto-sitemap'
+import { pathsImpostoRenda } from '../../app/utils/impostoRendaLiquidos.ts'
+import { tituloImpostoRenda } from '../../app/utils/impostoRendaPagina.ts'
 import { entradasAgenda } from '../../app/utils/agendaDividendos.ts'
 import { carregarFontesAgenda } from './agenda-dividendos.ts'
 
@@ -92,7 +94,7 @@ export interface SitePage {
 
 
 export interface SiteSection {
-  id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'setores' | 'glossario' | 'institucional' | 'teses' | 'ativos' | 'tesouro' | 'cripto' | 'dividendos' | 'quanto-rende' | 'preco-teto'
+  id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'setores' | 'glossario' | 'institucional' | 'teses' | 'ativos' | 'tesouro' | 'cripto' | 'dividendos' | 'imposto-de-renda' | 'quanto-rende' | 'preco-teto'
   title: string
   description?: string
   pages: SitePage[]
@@ -955,6 +957,25 @@ export async function getSiteSections(): Promise<SiteSection[]> {
       title: 'Dividendos por ativo',
       description: 'Agenda de dividendos por mês e histórico de proventos por ticker em /dividendos/{TICKER}.',
       pages: dividendosComAgenda,
+    })
+  }
+
+  const universoPorTicker = new Map(universoCru.map((e) => [e.ticker, e]))
+  const impostoRenda = pathsImpostoRenda(universoPorTicker).map((path) => {
+    const papel = path.split('/').pop()!
+    return {
+      path,
+      title: tituloImpostoRenda(papel),
+      description: `Como declarar ${papel} no IR: ficha, rendimentos e ganho de capital. Conteúdo educativo, não é consultoria tributária.`,
+      lastmod: priceDates.get(papel),
+    }
+  })
+  if (impostoRenda.length > 0) {
+    sections.push({
+      id: 'imposto-de-renda',
+      title: 'Como declarar no Imposto de Renda',
+      description: 'Como declarar cada um dos 50 tickers mais líquidos no IR. Conteúdo educativo, não é consultoria tributária.',
+      pages: impostoRenda,
     })
   }
 
