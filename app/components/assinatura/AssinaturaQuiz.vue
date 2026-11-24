@@ -517,7 +517,8 @@ const ICONES: Record<string, string> = {
                   </div>
                   <p class="aqz__oferta-letra">
                     <template v-if="primeiraAssinatura">
-                      {{ DIAS_GRATIS }} dias grátis para testar. A primeira cobrança é no dia {{ primeira }}.
+                      {{ DIAS_GRATIS }} dias grátis para testar. A primeira cobrança é no dia {{ primeira }},
+                      e a gente avisa por e-mail um dia antes.
                       Cancele quando quiser, em Configurações: cancelou antes, não paga nada.
                     </template>
                     <template v-else>Cobrança hoje, no cartão, e depois uma vez por mês. Cancele quando quiser.</template>

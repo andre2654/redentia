@@ -64,7 +64,7 @@ const rel = useCarteiraRelatorio({ mock: props.visao?.mock })
 /* ——— as contas e o Pluggy ——— */
 const RECONECTAR = new Set(['LOGIN_ERROR', 'WAITING_USER_INPUT', 'ERROR', 'ITEM_NOT_FOUND'])
 const Link = resolveComponent('NuxtLink')
-const { openWidget, opening, registering, error: erroConexao } = usePluggyConnect()
+const { openWidget, opening, registering, error: erroConexao, falha: falhaConexao, pedirContato } = usePluggyConnect()
 const conectou = ref(false)
 function adicionarConta() {
   if (opening.value || registering.value) return
@@ -712,6 +712,7 @@ const olhouLinha = computed(() => {
         </template>
         <span v-if="conectou" class="cto__aviso" role="status">Conta conectada. As posições dela chegam aqui em alguns minutos.</span>
         <span v-else-if="erroConexao" class="cto__aviso cto__aviso--erro" role="alert">{{ erroConexao }}</span>
+        <CarteiraAjudaConexao v-if="!conectou" :falha="falhaConexao" :pedir="pedirContato" />
       </div>
     </div>
   </section>
