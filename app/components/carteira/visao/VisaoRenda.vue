@@ -74,13 +74,16 @@ const porClasseMarcado = computed<RendaPorClasse | undefined>(() => {
 const empilhado = computed(() => r.value.meses.some((m) => m.porClasse))
 const meses = computed(() => {
   const ms = r.value.meses
-  const valores = ms.map((m) => (m.gasto ? (m.renda / m.gasto) * 100 : m.renda))
+  // uma unidade só para todas as barras (24/11): % do gasto só quando TODO mês tem gasto; faltando em algum, tudo em R$
+  // (misturado, 'ago' saía "2.085" ao lado de 'set' "37%", e as barras de % ficavam no chão)
+  const emPct = ms.length > 0 && ms.every((m) => !!m.gasto)
+  const valores = ms.map((m) => (emPct ? (m.renda / m.gasto!) * 100 : m.renda))
   const max = Math.max(...valores, futuro.value ?? 0) * 1.15
   const linhas = ms.map((m, i) => {
     const h = (valores[i]! / max) * 100
     return {
       mes: m.mes, nomeLongo: MES_LONGO[m.mes] ?? m.mes, gasto: m.gasto, futuro: false, h, total: m.renda, porClasse: m.porClasse,
-      pagamentos: m.pagamentos ?? null, pedacos: pedacos(m.renda, h, m.porClasse), txt: m.gasto ? pctTxt(valores[i]!) : mask(brl0(m.renda)),
+      pagamentos: m.pagamentos ?? null, pedacos: pedacos(m.renda, h, m.porClasse), txt: emPct ? pctTxt(valores[i]!) : mask(brl0(m.renda)),
     }
   })
   if (futuro.value != null) {
