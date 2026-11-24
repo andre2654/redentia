@@ -190,7 +190,6 @@ export default defineNuxtConfig({
     // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo
     // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.
     '/calculadora': { redirect: { to: '/calculadoras', statusCode: 301 } },
-    '/jcp': { redirect: { to: '/glossario/jscp', statusCode: 301 } },
     // '/calculadora/**': cache público por request (server/middleware/cache-sessao.ts).
     // Rankings (kit PLANO-RANKINGS.md): hub novo /rankings + detalhe nos
     // slugs ANTIGOS /ranking/<slug> (equity de SEO). O 301 do hub antigo é

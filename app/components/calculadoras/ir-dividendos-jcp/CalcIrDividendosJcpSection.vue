@@ -321,7 +321,7 @@ function linhaQuando(l: { pagamento: string; dataCom: string }): string {
       <p v-else-if="estado === 'formato'" class="irj__nota irj__nota--solta">Esse código não tem o formato de um ticker da B3.</p>
 
       <div class="irj__links">
-        <NuxtLink to="/jcp" class="irj__link">
+        <NuxtLink to="/glossario/jscp" class="irj__link">
           <span class="irj__link-titulo">JCP</span>
           <span class="irj__link-texto">O que são os juros sobre capital próprio e por que o imposto já sai na fonte.</span>
         </NuxtLink>

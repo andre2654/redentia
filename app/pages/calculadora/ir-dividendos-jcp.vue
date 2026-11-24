@@ -128,7 +128,7 @@ usePageSeo({
 
     <CalcBand v-revelar tone="white" title="Continue a leitura">
       <div class="irj-page__links">
-        <NuxtLink to="/jcp" class="irj-page__link">
+        <NuxtLink to="/glossario/jscp" class="irj-page__link">
           <h3>JCP</h3>
           <p>Juros sobre capital próprio, a retenção na fonte e a diferença para o dividendo.</p>
         </NuxtLink>
