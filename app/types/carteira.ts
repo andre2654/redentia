@@ -10,6 +10,7 @@
  * de estado (cheio | parcial | vazio); `null` = seção some. Nunca número
  * inventado, nunca card quebrado.
  */
+import type { ResultadoDaCarteira } from '~/utils/resultadoDaCarteira'
 import type { NuDir } from '~/types/market'
 import type { HomeChartVM } from '~/types/home'
 import type { ResumoDoDia } from '~/utils/diaDaCarteira'
@@ -271,6 +272,12 @@ export interface CarteiraResumoVM {
   atencao: number | null
   /** o dia da carteira para o topo da home (utils/diaDaCarteira.ts) — null sem carteira */
   dia?: ResumoDoDia | null
+  /** o ganho em R$ e quem subiu ou caiu no dia (utils/resultadoDaCarteira.ts, 24/11/2026) */
+  resultado?: ResultadoDaCarteira | null
+  /** proventos recebidos em 12 meses, em R$ */
+  proventos12mValor?: number | null
+  /** o topo escuro da /carteira no Início (24/11/2026): o mesmo `agora`, a curva e a fileira de lá; null sem carteira */
+  topo?: { agora: CarteiraAgoraVM | null; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; /** a barra de classes do trilho (24/11) */ alocacao?: CarteiraAllocationVM[] } | null
 }
 
 /** Payload único do useAsyncData da /carteira. */
@@ -295,6 +302,10 @@ export interface CarteiraPayload {
   posicoesMundo?: CarteiraPosicaoMundo[]
   /** quando a carteira foi carregada (ISO): a hora em que a Redentia "olhou" */
   olhadaEm?: string
+  /** o ganho em R$ e o dia de cada ativo (utils/resultadoDaCarteira.ts, 24/11/2026); null sem carteira */
+  resultado?: ResultadoDaCarteira | null
+  /** proventos recebidos em 12 meses, em R$ (do /portfolio/income); null sem o dado */
+  proventos12mValor?: number | null
 }
 
 /**

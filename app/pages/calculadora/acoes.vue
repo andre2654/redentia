@@ -178,16 +178,19 @@ const faqItems = [
 // 10 cliques/semana (base 23/09: posição 22–26, 0 clique; referência: 6,1 e
 // 34/semana). Se o grupo SIM piorar mais de 3 posições, volte este title e o
 // H1, mantendo as âncoras. Sem efeito não reverte a dividend-yield.
+const trilha = [
+  { name: 'Home', path: '/' },
+  { name: 'Calculadoras', path: '/calculadoras' },
+  { name: 'Simulador de Ações e Dividendos', path: '/calculadora/acoes' },
+]
+const veja = linksVejaTambem({ pagina: 'acoes' })
+
 usePageSeo({
   title: 'Simulador de ações com dividendos reinvestidos',
   description:
     'Simule quanto PETR4, ITUB4, VALE3 e outras ações da B3 teriam rendido com dividendos reinvestidos, com o histórico real da B3. Grátis.',
   path: '/calculadora/acoes',
-  breadcrumbs: [
-    { name: 'Home', path: '/' },
-    { name: 'Calculadoras', path: '/calculadoras' },
-    { name: 'Simulador de Ações e Dividendos', path: '/calculadora/acoes' },
-  ],
+  breadcrumbs: trilha,
   structuredData: [
     {
       '@type': 'WebApplication',
@@ -231,7 +234,7 @@ usePageSeo({
          CLUSTER acima), por isso não vira pergunta como nas outras. Até 23/09
          era "Histórico real da B3 com Dividendos.", que não tinha nenhum dos
          termos que a página ranqueava; a frase desceu pra linha de apoio. -->
-    <CalcTopo desc="Histórico real da B3: quanto teria rendido investir em qualquer ação ou FII, com dividendos e JCP reinvestidos.">
+    <CalcTopo desc="Histórico real da B3: quanto teria rendido investir em qualquer ação ou FII, com dividendos e JCP reinvestidos." :trilha="trilha">
       Simulador de ações e dividendos
     </CalcTopo>
 
@@ -490,6 +493,8 @@ usePageSeo({
         </NuxtLink>
       </div>
     </CalcBand>
+
+    <NuVejaTambem :links="veja" />
 
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta

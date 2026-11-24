@@ -116,17 +116,20 @@ const notaCapital = computed(() => {
 
 const kind = computed(() => (qr.value.isFii ? 'rendimentos' : 'proventos'))
 
+const trilha = [
+  { name: 'Início', path: '/' },
+  { name: ticker, path: `/asset/${ticker}` },
+  { name: 'Quanto rende', path: `/quanto-rende/${ticker}` },
+]
+const veja = linksVejaTambem({ pagina: 'quanto-rende', ticker })
+
 if (data.value) {
   usePageSeo({
     title: qr.value.seo.title,
     description: qr.value.seo.description,
     path: `/quanto-rende/${ticker}`,
     dateModified: qr.value.dataDate,
-    breadcrumbs: [
-      { name: 'Início', path: '/' },
-      { name: ticker, path: `/asset/${ticker}` },
-      { name: 'Quanto rende', path: `/quanto-rende/${ticker}` },
-    ],
+    breadcrumbs: trilha,
   })
 }
 </script>
@@ -134,6 +137,7 @@ if (data.value) {
 <template>
   <div v-if="data">
     <NuPageHero :eyebrow="`${qr.nome} · ${ticker}`" :subtitle="`Os ${kind} dos últimos 12 meses aplicados a um valor, no preço de hoje.`">
+      <template #trilha><NuTrilha :crumbs="trilha" /></template>
       <template #title>Quanto rende {{ ticker }}.</template>
       <p v-if="renamedFrom" class="qr-page__renamed">{{ renamedFrom }} agora negocia como {{ ticker }}.</p>
     </NuPageHero>
@@ -199,6 +203,7 @@ if (data.value) {
         </NuxtLink>
       </div>
     </CalcBand>
+    <NuVejaTambem :links="veja" />
   </div>
 </template>
 

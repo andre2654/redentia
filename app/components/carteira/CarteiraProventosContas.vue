@@ -18,7 +18,7 @@ const { hidden, mask } = useHiddenValues()
 const { connections, loading, ensure, refresh, saldoTotal } = useContasConectadas()
 onMounted(ensure)
 
-const { openWidget, opening, registering, error } = usePluggyConnect()
+const { openWidget, opening, registering, error, falha, pedirContato } = usePluggyConnect()
 const conectado = ref(false)
 function conectar() {
   if (opening.value || registering.value) return
@@ -131,6 +131,7 @@ const rotuloConectar = computed(() => (opening.value || registering.value ? 'Abr
         </button>
         <p v-if="conectado" class="cpc__ok" role="status">Conta conectada. As posições dela chegam aqui em alguns minutos.</p>
         <p v-else-if="error" class="cpc__erro" role="alert">{{ error }}</p>
+        <CarteiraAjudaConexao v-if="!conectado" :falha="falha" :pedir="pedirContato" />
       </article>
     </div>
   </section>

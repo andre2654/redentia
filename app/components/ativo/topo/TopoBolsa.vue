@@ -94,6 +94,7 @@ onMounted(() => {
 
 <template>
   <section v-contexto-chat="contexto" class="tbo" :class="{ 'tbo--da-capa': daCapa }" aria-labelledby="tbo-h1">
+    <NuTrilha :crumbs="trilhaAtivo(t)" class="tbo__trilha" />
     <p v-if="renamedFrom" class="tbo__trocou">{{ renamedFrom }} agora negocia como {{ t }}.</p>
     <div class="tbo__grade">
       <div class="tbo__id">
@@ -172,6 +173,7 @@ onMounted(() => {
   padding: clamp(28px, 3.4vw, 48px) var(--g) clamp(28px, 3.4vw, 48px);
   background: var(--nu-page); color: var(--nu-ink);
 }
+.tbo__trilha { max-width: 1240px; margin: 0 auto 12px; }
 .tbo__trocou { max-width: 1240px; margin: 0 auto 16px; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
 .tbo__grade {
   max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr);

@@ -11,6 +11,7 @@
 // curva do patrimônio com os aportes. Na fileira: quanto eu tenho, se tem algo
 // para olhar (abre o modal dos avisos) e quanto vai cair (leva aos proventos).
 // O R$ segue o olho da visita (useValoresVisiveis); o % nunca se esconde.
+import type { ResultadoDaCarteira } from '~/utils/resultadoDaCarteira'
 import type { CarteiraAgoraVM } from '~/types/carteira'
 import type { AvisosVisao, ConexaoVisao, RendaVisao } from '~/types/carteiraVisao'
 import { contraABolsa, pctComSinal } from '~/utils/diaDaCarteira'
@@ -31,6 +32,10 @@ const props = defineProps<{
   renda: RendaVisao | null
   dadosDe: string | null
   mock?: boolean
+  /** o ganho em R$ sobre o preço médio (24/11); null sem preço de compra */
+  resultado?: ResultadoDaCarteira | null
+  /** proventos recebidos em 12 meses, em R$ */
+  proventos12m?: number | null
 }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
@@ -39,6 +44,19 @@ const mascarar = (t: string) => (revelado.value ? t : t.replace(/R\$\s?[\d.,]+(\
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const pct2 = (n: number) => `${nf2.format(n).replace('-', '−')}%`
+
+/* ————— quanto eu ganhei: a valorização sobre o preço médio ————— */
+const ganho = computed(() => {
+  const r = props.resultado
+  if (!r || r.ganho == null || r.ganhoPct == null) return null
+  return {
+    reais: reaisComSinal(r.ganho),
+    pct: pctComSinal(r.ganhoPct),
+    dir: direcao(r.ganho),
+    proventos: props.proventos12m ? `R$ ${nf0.format(props.proventos12m)}` : null,
+    parcial: r.comCusto < r.linhas.length ? `Conta ${r.comCusto} de ${r.linhas.length} ativos: os outros vieram sem preço de compra.` : null,
+  }
+})
 
 /* ————— os avisos: o modal de sempre, sem o sino ————— */
 const avisosRef = ref<InstanceType<typeof CarteiraAvisos> | null>(null)
@@ -270,10 +288,18 @@ const contexto = computed(() => ({
       <NuSkeleton v-else-if="carregando" tone="navy" height="var(--chv-esqueleto)" radius="card" class="chv2__palco" />
 
       <dl class="chv2__fatos">
-        <div class="chv2__fato nu-cartao">
+        <div class="chv2__fato chv2__fato--dinheiro nu-cartao">
           <dt>Quanto eu tenho?</dt>
           <dd>{{ patrimonio }}</dd>
           <dd v-if="diaNum" class="chv2__fato-s"><b :class="`chv__dir--${agora.diaDir}`">{{ diaNum }}</b> {{ quando }}</dd>
+        </div>
+        <!-- quanto eu ganhei (24/11): a valorização em R$ e em %; os proventos, nomeados à parte (não se somam: são janelas diferentes) -->
+        <div v-if="ganho" class="chv2__fato chv2__fato--dinheiro nu-cartao">
+          <dt>Quanto eu ganhei?</dt>
+          <dd :class="`chv__dir--${ganho.dir}`">{{ revelado ? ganho.reais : ganho.pct }}</dd>
+          <dd class="chv2__fato-s"><template v-if="revelado"><b :class="`chv__dir--${ganho.dir}`">{{ ganho.pct }}</b>{{ ' ' }}</template>sobre o que você pagou</dd>
+          <dd v-if="ganho.proventos" class="chv2__fato-s">Mais {{ revelado ? ganho.proventos : 'R$ ••••' }} em proventos em 12 meses</dd>
+          <dd v-if="ganho.parcial" class="chv2__fato-s">{{ ganho.parcial }}</dd>
         </div>
         <!-- cartão da base (.nu-cartao); o que abre algo é o vivo (sobe 2px e a sombra cresce no hover, afunda ao apertar) -->
         <div v-for="r in respostas" :key="r.id" class="chv2__fato nu-cartao" :class="{ 'chv2__fato--clica nu-cartao--vivo': !r.espera, 'chv2__fato--atencao': r.id === 'olhar' && !r.espera && pedem.length > 0 }">
@@ -424,6 +450,9 @@ const contexto = computed(() => ({
 .chv2__link:focus-visible { outline: none; }
 .chv2__link:focus-visible::after { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 
+/* empilhado (24/11): os números (quanto tenho, quanto ganhei e o resto) sobem para antes do gráfico. Com o gráfico alto
+   em cima, "quanto eu ganhei" só aparecia depois de uma tela inteira de rolagem. */
+@media (max-width: 1000px) { .chv2__fatos { order: -1; } }
 @media (max-width: 1000px) {
   /* numa coluna só o cartão tem a largura da tela (no computador, pouco mais da metade): a mesma proporção pede 60vw,
      senão o gráfico do tablet ficava com a largura do de computador e 60% da altura. A legenda cabe numa linha, e o

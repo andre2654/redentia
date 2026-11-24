@@ -91,6 +91,10 @@ usePageSeo({
           <span class="sth__card-cta"><span class="sth__cta-txt">Ver setor</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
         </NuxtLink>
       </div>
+      <p class="sth__nota">
+        Segmentos com pelo menos cinco ativos no cadastro de 17/11/2026, como bancos e energia elétrica, estão em
+        <NuxtLink to="/setores">segmentos da B3</NuxtLink>.
+      </p>
     </section>
 
     <!-- ============ Fecho: o painel azul da marca, com o corte de fundo ============ -->
@@ -118,6 +122,13 @@ usePageSeo({
 .sth__grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 16px;
+}
+.sth__nota {
+  margin: 20px 0 0; max-width: 68ch; color: var(--nu-gray-3); font-size: 15px; line-height: 1.5;
+}
+.sth__nota a {
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio);
+  text-decoration: underline; text-underline-offset: 3px;
 }
 .sth__card {
   display: flex; flex-direction: column; gap: 12px;

@@ -48,7 +48,7 @@ interface AchadosDoTopo {
 }
 /** a /carteira nova (06/11/2026): os avisos do motor e o frescor de cada conexão; `mock` (só no dev) não grava nada */
 interface VisaoDoTopo { avisos: AvisosVisao; conexoes: ConexaoVisao[]; ativos: number; dadosDe: string | null; mock?: boolean }
-const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null }>()
+const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null; /** 24/11: a tela nova entra com o topo já aberto (o patrimônio, a fileira e o gráfico), como na tela antiga */ aberto?: boolean; /** 24/11 (o meio-termo): o topo vira um cartão dentro da página; o patrimônio e a fileira de números moram no trilho ao lado (CarteiraTrilho) */ cartao?: boolean; /** 24/11 (o Início do canvas): do cartão fica só o gráfico, com o título, a legenda e o período; o estado, o dia, os botões, as perguntas e as contas saem (o olho mora no trilho) */ soGrafico?: boolean }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
 // os onMounted dos composables vêm antes do await
@@ -64,7 +64,7 @@ const rel = useCarteiraRelatorio({ mock: props.visao?.mock })
 /* ——— as contas e o Pluggy ——— */
 const RECONECTAR = new Set(['LOGIN_ERROR', 'WAITING_USER_INPUT', 'ERROR', 'ITEM_NOT_FOUND'])
 const Link = resolveComponent('NuxtLink')
-const { openWidget, opening, registering, error: erroConexao } = usePluggyConnect()
+const { openWidget, opening, registering, error: erroConexao, falha: falhaConexao, pedirContato } = usePluggyConnect()
 const conectou = ref(false)
 function adicionarConta() {
   if (opening.value || registering.value) return
@@ -125,7 +125,10 @@ const avisosRef = ref<InstanceType<typeof CarteiraAvisos> | null>(null)
 // dia quando houver; o gráfico fica baixo, e o topo inteiro cabe numa tela.
 // A tela antiga (sem `visao`) segue com o gráfico alto; o losango saiu dela em
 // 11/11 (é a logo da marca antiga), e a linha do dia ganhou o provento.
-const enxuto = computed(() => !!props.visao)
+// 24/11 (o dono, vendo a tela nova: "pode fazer essa carteira virar o hero, igual quando não tem o env marcado"): com
+// `aberto`, a tela nova usa o topo inteiro da antiga (a fileira com o retorno em R$, o gráfico alto, as perguntas) e
+// mantém o que é dela: os avisos e o frescor das conexões.
+const enxuto = computed(() => !!props.visao && !props.aberto)
 /** ' Provento: R$ 48,20 de ITSA4 hoje.' quando caiu algum no dia; senão, nada */
 const proventoNaLinha = computed(() => (props.agora.provento ? ` Provento: ${subDoProvento(props.agora, quando.value ?? 'hoje', revelado.value)}.` : ''))
 /** 'Caiu menos que a bolsa (−0,52%). R$ 48,20 de ITSA4 hoje.' */
@@ -317,7 +320,7 @@ onMounted(desenharGrafico)
    do dia e o que pede atenção, cada item abrindo o aviso. "Ver detalhes" monta
    o patrimônio e o gráfico (montado só ao abrir: o gráfico mede a largura) ——— */
 type FaseTopo = 'recolhido' | 'abrindo' | 'aberto'
-const fase = ref<FaseTopo>('recolhido')
+const fase = ref<FaseTopo>(props.aberto ? 'aberto' : 'recolhido')
 const detalhes = computed(() => fase.value !== 'recolhido')
 const recolhido = computed(() => enxuto.value && fase.value === 'recolhido')
 /* A abertura em onda (06/11; o dono: "uma animação foda no formato da logo",
@@ -509,11 +512,11 @@ const olhouLinha = computed(() => {
 </script>
 
 <template>
-  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao, 'cto--enxuto': enxuto }" aria-labelledby="cto-h1" data-clarity-mask="true">
+  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao, 'cto--enxuto': enxuto, 'cto--cartao': cartao, 'cto--so-grafico': soGrafico }" aria-labelledby="cto-h1" data-clarity-mask="true">
     <div class="tbo__luz" aria-hidden="true" />
     <div class="tbo__linha1">
       <div class="tbo__id">
-        <h1 id="cto-h1" class="tbo__empresa">Sua carteira <span class="tbo__bolsa">{{ agora.ativos }}<template v-if="agora.atualizado"> · atualizado {{ agora.atualizado }}</template></span></h1>
+        <component :is="cartao ? 'p' : 'h1'" id="cto-h1" class="tbo__empresa">Sua carteira <span class="tbo__bolsa">{{ agora.ativos }}<template v-if="agora.atualizado"> · atualizado {{ agora.atualizado }}</template></span></component>
       </div>
       <div class="cto__acoes">
         <!-- o olho vale também recolhido (10/11): o patrimônio aparece já no topo recolhido -->
@@ -649,7 +652,7 @@ const olhouLinha = computed(() => {
           <span v-if="enxuto && cdiPct != null" class="tbo__leg cto__leg-cdi">CDI <b>{{ pctAtivo(cdiPct) }}</b></span>
           <span v-if="legenda.meta" class="tbo__leg cto__leg-meta"><i class="tbo__traco" aria-hidden="true" />{{ legenda.meta }}</span>
         </p>
-        <AtivoPeriodo v-if="enxuto && opcoes.length > 1" v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="cto__periodo-cab" />
+        <AtivoPeriodo v-if="(enxuto || soGrafico) && opcoes.length > 1" v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="cto__periodo-cab" />
       </div>
       <div class="tbo__grafico">
         <AtivoGrafico
@@ -658,7 +661,7 @@ const olhouLinha = computed(() => {
         />
       </div>
       <div class="tbo__horizonte" aria-hidden="true" />
-      <div v-if="!enxuto && opcoes.length > 1" class="tbo__periodo">
+      <div v-if="!enxuto && !soGrafico && opcoes.length > 1" class="tbo__periodo">
         <AtivoPeriodo v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="tbo__seg" :style="{ maxWidth: `${opcoes.length * 130}px` }" />
       </div>
       <p v-if="!enxuto" class="tbo__uso" aria-hidden="true">Passe o cursor para ler um dia; arraste para medir entre dois.</p>
@@ -712,6 +715,7 @@ const olhouLinha = computed(() => {
         </template>
         <span v-if="conectou" class="cto__aviso" role="status">Conta conectada. As posições dela chegam aqui em alguns minutos.</span>
         <span v-else-if="erroConexao" class="cto__aviso cto__aviso--erro" role="alert">{{ erroConexao }}</span>
+        <CarteiraAjudaConexao v-if="!conectou" :falha="falhaConexao" :pedir="pedirContato" />
       </div>
     </div>
   </section>
@@ -850,4 +854,20 @@ const olhouLinha = computed(() => {
 @media (prefers-reduced-motion: reduce) {
   .cto__frase--link { transition: none; }
 }
+/* o cartão (24/11, o meio-termo): o topo cabe na coluna do conteúdo, com cantos; o patrimônio grande e a fileira de
+   números saem (estão no trilho ao lado), e ficam o estado do dia, a leitura do gráfico, o gráfico e as contas */
+.cto--cartao { --g: clamp(18px, 2.2vw, 28px); padding: 20px var(--g) 22px; border-radius: 16px; box-shadow: var(--nu-shadow-escuro); }
+.cto--cartao .tbo__empresa { font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); }
+.cto--cartao .tbo__preco, .cto--cartao .tbo__nums, .cto--cartao .tbo__uso { display: none; }
+.cto--cartao .cto__dia-linha { min-height: 28px; }
+.cto--cartao :deep(.tbo__grafico), .cto--cartao .tbo__grafico { height: clamp(200px, 22vw, 290px); }
+.cto--cartao .tbo__palco { margin-top: 18px; }
+/* os botões do topo em linha, sem o rótulo embaixo: o rótulo segue para o leitor de tela e no title */
+.cto--cartao .cto__acoes { gap: 8px; }
+.cto--cartao .cto__acoes :deep(.tac__r) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* só o gráfico (o Início do canvas): o cabeçalho do gráfico vira o topo do cartão, com o período à direita */
+.cto--so-grafico .tbo__linha1, .cto--so-grafico .cto__corpo, .cto--so-grafico .tbo__pe { display: none; }
+.cto--so-grafico .tbo__palco { margin-top: 0; }
+.cto--so-grafico .tbo__palco-cab { justify-content: flex-start; }
+.cto--so-grafico .cto__periodo-cab { margin-left: auto; }
 </style>

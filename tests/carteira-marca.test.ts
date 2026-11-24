@@ -151,5 +151,6 @@ test('a tela antiga da carteira não desenha mais a logo da marca antiga', () =>
   const montagem = conteudo.match(/<CarteiraAgora\b[^>]*>/g) ?? []
   assert.equal(montagem.length, 1)
   assert.doesNotMatch(montagem[0]!, /:visao=/)
-  assert.match(agora, /const enxuto = computed\(\(\) => !!props\.visao\)/)
+  // 24/11: a tela nova passou a usar o topo inteiro (`aberto`); o enxuto, e com ele a onda, só existe com `visao` e sem `aberto`
+  assert.match(agora, /const enxuto = computed\(\(\) => !!props\.visao && !props\.aberto\)/)
 })

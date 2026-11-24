@@ -29,6 +29,8 @@
  * O antes são os pilares e os valores do relatorioMock, e o "Ver o relatório"
  * abre o relatório na própria página.
  */
+import { montarResultado } from '../utils/resultadoDaCarteira.ts'
+import type { ResultadoDaCarteira } from '~/utils/resultadoDaCarteira'
 import type { Aviso, CarteiraVisao, CaminhoVisao, ImpostoVisao, MesHistorico, MesImposto, OperacaoImposto, PosicaoVisao } from '~/types/carteiraVisao'
 import type { CarteiraRelatorio, IndicadorRelatorio, PilarRelatorio, UnidadeRelatorio } from '~/types/carteiraRelatorio'
 import type { CarteiraHeatmapVM, CarteiraMovementsVM, CarteiraMovementVM } from '~/types/carteira'
@@ -544,4 +546,26 @@ export function heatmapMock(): CarteiraHeatmapVM {
     }),
     note: 'nov/2026 é parcial · células vazias são meses sem carteira ou futuros',
   }
+}
+
+/**
+ * O ganho e o dia de cada ativo do mock (24/11/2026), para a /dev/carteira-nova:
+ * números inventados e fixos, no formato do utils/resultadoDaCarteira.ts.
+ */
+const RET_DIA: Record<string, [number, number | null]> = {
+  AUPO11: [9.8, 0.05], BRSTNCNTB476: [6.1, null], BRSTNCNTB666: [7.4, null], BRSTNCNTB7T1: [8.9, null], ITSA4: [31.2, 0.84], PETR4: [-6.4, -2.31],
+  CPLE3: [44.8, 1.12], BBSE3: [12.3, -0.42], CXSE3: [18.9, 0.21], GARE11: [-3.8, -0.35], MCCI11: [4.2, 0.11], FLRY3: [-11.7, -1.64], WEGE3: [22.5, 1.93],
+  CPTS11: [-8.9, -0.52], HGLG11: [2.6, 0.34], PRIO3: [-14.2, -3.05], VALE3: [-4.1, 1.47], BTLG11: [5.9, 0.18], GOLD11: [37.6, 0.92], HSML11: [-2.2, -0.61],
+  XPML11: [9.3, 0.27], RANI3: [-19.5, -0.84],
+}
+export function resultadoMock(): ResultadoDaCarteira {
+  const portfolio = POSICOES.map((p) => {
+    const [ret] = RET_DIA[p.ticker] ?? [0, null]
+    return { ticker: p.ticker, asset_class: p.classe, name: p.nome, quantity: 1, average_price: p.valor / (1 + ret / 100), current_price: p.valor, current_value: p.valor, sector: null, industry: null, institution_name: null, connection_status: null, dividend_yield: null }
+  })
+  const positions = POSICOES.filter((p) => RET_DIA[p.ticker]?.[1] != null).map((p) => {
+    const dia = RET_DIA[p.ticker]![1] as number
+    return { ticker: p.ticker, name: p.nome, logo: null, asset_class: p.classe, quantity: 1, price_now: p.valor, value_now: p.valor, day_change_amount: p.valor - p.valor / (1 + dia / 100), day_change_pct: dia, pnl_pct: null, sector_key: null, flags: [] }
+  })
+  return montarResultado(portfolio, { as_of: '', price_dates: { today: null, previous: null }, totals: { value_now: 0, value_d1: 0, day_change_amount: null, day_change_pct: null }, positions, flags: [] })!
 }

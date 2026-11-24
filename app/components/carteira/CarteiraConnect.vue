@@ -4,7 +4,7 @@
 // conectado (emite 'connected' pro pai dar refresh). Erro em qualquer etapa
 // degrada pra instrução clara embaixo do botão — NUNCA botão morto.
 const emit = defineEmits<{ (e: 'connected'): void }>()
-const { openWidget, opening, registering, error } = usePluggyConnect()
+const { openWidget, opening, registering, error, falha, pedirContato } = usePluggyConnect()
 
 const connected = ref(false)
 
@@ -35,6 +35,7 @@ function connect() {
       em alguns minutos.
     </p>
     <p v-else-if="error" class="cct__error">{{ error }}</p>
+    <CarteiraAjudaConexao v-if="!connected" :falha="falha" :pedir="pedirContato" />
   </div>
 </template>
 

@@ -40,6 +40,22 @@ if (renamedTo) {
 
 const view = computed(() => data.value!)
 
+const trilha = computed(() => {
+  const v = data.value
+  if (!v) return []
+  return [
+    { name: 'Home', path: '/' },
+    { name: 'Calculadoras', path: '/calculadoras' },
+    { name: 'Preço Teto', path: '/calculadora/preco-teto' },
+    { name: v.ticker, path: `/calculadora/preco-teto/${v.ticker}` },
+  ]
+})
+const veja = computed(() => linksVejaTambem({
+  pagina: 'preco-teto-ticker',
+  ticker: data.value?.ticker,
+  proprioJaLinkado: true,
+}))
+
 if (data.value) {
   const v = data.value
   usePageSeo({
@@ -48,12 +64,7 @@ if (data.value) {
     path: `/calculadora/preco-teto/${v.ticker}`,
     dateModified: v.dataISO,
     robots: robotsDePrecoTeto(v.ticker),
-    breadcrumbs: [
-      { name: 'Home', path: '/' },
-      { name: 'Calculadoras', path: '/calculadoras' },
-      { name: 'Preço Teto', path: '/calculadora/preco-teto' },
-      { name: v.ticker, path: `/calculadora/preco-teto/${v.ticker}` },
-    ],
+    breadcrumbs: trilha,
   })
 }
 
@@ -73,7 +84,7 @@ const metodos = computed(() => {
 <template>
   <div v-if="data" class="ptt">
     <section class="ptt__hero">
-      <NuxtLink to="/calculadora/preco-teto" class="ptt__back">← Calculadora de preço teto</NuxtLink>
+      <NuTrilha :crumbs="trilha" class="ptt__trilha" />
       <h1 class="ptt__h1">Preço teto {{ view.ticker }} hoje</h1>
       <p class="ptt__lead">{{ view.resposta }}</p>
       <p v-if="view.dataTexto" class="ptt__updated">Atualizado em {{ view.dataTexto }}</p>
@@ -159,6 +170,7 @@ const metodos = computed(() => {
       <NuFaqAccordion :items="view.faq" surface="white" />
       <p v-if="view.dataTexto" class="ptt__updated ptt__updated--end">Atualizado em {{ view.dataTexto }}</p>
     </section>
+    <NuVejaTambem :links="veja" />
     <NuAcompanheAndre lugar="calculadora" />
   </div>
 </template>
@@ -175,7 +187,7 @@ const metodos = computed(() => {
 /* o cartão do convite (var(--nu-cream)) lê melhor no creme de faixa sobre a página */
 .ptt__nums { --nu-cream: var(--nu-band); }
 
-.ptt__back { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
+.ptt__trilha { margin: 0 0 4px; }
 .ptt__h1 {
   margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(34px, 4.6vw, 58px);
   font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1.04; max-width: 18ch;

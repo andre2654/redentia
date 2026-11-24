@@ -173,16 +173,19 @@ const faqItems = [
   { q: 'Posso usar a mesma carteira a vida toda?', a: 'Não. A regra geral é diminuir gradualmente a renda variável conforme se aproxima dos objetivos. Aos 25-35 anos, 70-80% renda variável. 35-50 anos, 50-60% renda variável. 50+ anos, 30-40% renda variável. Próximo do uso (1-2 anos), migre tudo pra renda fixa segura pra evitar perdas em crises.' },
 ]
 
+const trilha = [
+  { name: 'Home', path: '/' },
+  { name: 'Calculadoras', path: '/calculadoras' },
+  { name: 'Quanto Investir', path: '/calculadora/quanto-investir' },
+]
+const veja = linksVejaTambem({ pagina: 'quanto-investir' })
+
 usePageSeo({
   title: 'Quanto investir por mês para sua meta',
   description:
     'Calcule o aporte mensal para juntar R$ 100 mil, R$ 500 mil ou R$ 1 milhão. Com taxa, prazo e patrimônio. Grátis.',
   path: '/calculadora/quanto-investir',
-  breadcrumbs: [
-    { name: 'Home', path: '/' },
-    { name: 'Calculadoras', path: '/calculadoras' },
-    { name: 'Quanto Investir', path: '/calculadora/quanto-investir' },
-  ],
+  breadcrumbs: trilha,
   structuredData: [
     {
       '@type': 'WebApplication',
@@ -223,7 +226,7 @@ usePageSeo({
   <div>
     <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
     <!-- "calculadora de aporte mensal" fica no <title>, no JSON-LD e na faixa "Como Usar…" -->
-    <CalcTopo desc="Responda quatro coisas e veja quanto guardar por mês.">
+    <CalcTopo desc="Responda quatro coisas e veja quanto guardar por mês." :trilha="trilha">
       Quanto investir por mês para chegar à sua meta?
     </CalcTopo>
 
@@ -470,6 +473,8 @@ usePageSeo({
         </p>
       </aside>
     </CalcBand>
+
+    <NuVejaTambem :links="veja" />
 
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta

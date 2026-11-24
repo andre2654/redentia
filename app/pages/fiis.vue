@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// /fiis — hub de fundos imobiliários. O filtro de rankings continua em
-// /rankings?classe=fiis. Os números desta página só existem se o ranking de
+// /fiis — hub de fundos imobiliários. Os rankings só de FIIs ficam em
+// /rankings/fiis. O filtro do hub continua em /rankings?classe=fiis. Os números desta página só existem se o ranking de
 // dividend yield devolver cotação e data de pregão; sem isso, a lista some.
 import type { LinhaFii } from '~/utils/graficos'
 import {
@@ -46,7 +46,7 @@ usePageSeo({
     <NuPageHero eyebrow="Fundos imobiliários" :subtitle="FIIS_SUBTITLE">
       <template #title>{{ FIIS_H1 }}</template>
       <div class="fiis__atalhos">
-        <NuLinkSeta to="/rankings?classe=fiis">Rankings de FIIs</NuLinkSeta>
+        <NuLinkSeta to="/rankings/fiis">Rankings de FIIs</NuLinkSeta>
         <NuLinkSeta to="/calculadora/dividend-yield">Calculadora de dividend yield</NuLinkSeta>
         <NuLinkSeta to="/calculadora/imposto-renda">Calculadora de IR</NuLinkSeta>
       </div>
@@ -165,9 +165,9 @@ usePageSeo({
           <h3>Gráfico de DY</h3>
           <p>O mesmo recorte de fundos imobiliários, em barras, com a data do pregão.</p>
         </NuxtLink>
-        <NuxtLink to="/rankings?classe=fiis" class="fiis__card">
+        <NuxtLink to="/rankings/fiis" class="fiis__card">
           <h3>Rankings de FIIs</h3>
-          <p>As listas que o site já publica, filtradas para fundos imobiliários.</p>
+          <p>Dividend yield de 12 meses e volume do pregão, só de fundos imobiliários, com a data do dado.</p>
         </NuxtLink>
       </div>
     </CalcBand>
