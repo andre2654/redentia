@@ -19,15 +19,26 @@
 
 <style scoped>
 .cmo-caixa { container: moldura / inline-size; background: var(--nu-page); }
-.cmo { display: grid; grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); align-items: stretch; }
-.cmo__trilho { background: var(--nu-card); border-right: 1px solid var(--nu-line-2); min-width: 0; }
-/* preso abaixo da barra do topo e da faixa das seções (60 + 44 px quando a página rola) */
-.cmo__preso { position: sticky; top: var(--nu-topo-altura, 112px); padding: 28px 28px 32px clamp(20px, 2.6vw, 38px); }
-/* o conteúdo também é contêiner: as seções antigas, que olhavam a janela, passam a olhar a coluna (ver CarteiraVisao) */
-.cmo__conteudo { min-width: 0; container: doc / inline-size; }
+/* A moldura mora na MESMA coluna do topo do site (1240px centrada, a --nu-coluna): o trilho começa onde começa o
+   logo e o conteúdo termina onde termina o avatar (24/11, o dono: "ainda não está tão polido quanto no canvas";
+   o trilho encostava na borda da janela enquanto o topo ficava centrado). O trilho não tem fundo próprio: um fio
+   o separa do conteúdo, e a página é uma superfície só.
+   --cmo-g é o respiro entre o fio e o conteúdo; as seções leem o mesmo valor em --cvi-g. */
+.cmo {
+  --cmo-borda: max(clamp(20px, 5.5cqi, 80px), calc((100cqi - 1240px) / 2));
+  --cmo-g: 40px; --cvi-g: 40px;
+  display: grid; grid-template-columns: 320px minmax(0, 1fr); align-items: stretch; padding-inline: var(--cmo-borda);
+}
+.cmo__trilho { border-right: 1px solid var(--nu-line-2); min-width: 0; }
+/* preso logo abaixo da barra do topo (a --nuh-h que o NuHeader põe no <html>); a faixa de baixo dela saiu destas telas */
+.cmo__preso { position: sticky; top: var(--nuh-h, 72px); padding: 32px 28px 32px 0; }
+/* o conteúdo também é contêiner: as seções antigas, que olhavam a janela, passam a olhar a coluna (ver CarteiraVisao).
+   A margem negativa devolve o respiro da direita: a borda das seções encosta na borda da coluna do topo */
+.cmo__conteudo { min-width: 0; margin-right: calc(-1 * var(--cmo-g)); container: doc / inline-size; }
 @container moldura (max-width: 1040px) {
-  .cmo { grid-template-columns: minmax(0, 1fr); }
-  .cmo__trilho { border-right: 0; border-bottom: 1px solid var(--nu-line-2); }
+  .cmo { --cmo-g: 20px; --cvi-g: 20px; grid-template-columns: minmax(0, 1fr); padding-inline: 0; }
+  .cmo__trilho { border-right: 0; border-bottom: 1px solid var(--nu-line-2); background: var(--nu-card); }
   .cmo__preso { position: static; padding: 22px 20px 24px; }
+  .cmo__conteudo { margin-right: 0; }
 }
 </style>

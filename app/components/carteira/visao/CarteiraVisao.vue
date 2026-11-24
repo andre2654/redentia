@@ -102,9 +102,9 @@ const parada = computed(() => {
   return nome ? `a conexão ${nome}` : 'a conexão'
 })
 
-/* ————— o rail ————— */
-// renda e imposto vêm null quando o bloco quebra no servidor: a seção some, e o rail junto
-const railSections = computed<RailSection[]>(() => [
+/* ————— o índice do documento ————— */
+// renda e imposto vêm null quando o bloco quebra no servidor: a seção some, e o item do índice junto
+const secoes = computed<{ id: string; label: string }[]>(() => [
   { id: 'hoje', label: 'Hoje' },
   { id: 'onde', label: 'Onde está' },
   { id: 'mundo', label: 'No mundo' },
@@ -113,7 +113,8 @@ const railSections = computed<RailSection[]>(() => [
   { id: 'relatorio', label: 'Desempenho' },
   ...(visao.value.imposto ? [{ id: 'imposto', label: 'Imposto' }] : []),
 ])
-useSectionRail(railSections, { pageLabel: 'Carteira' })
+// 24/11 (o dono: "tirar esse carrossel ali e passar para dentro do scroll"): a faixa das seções não fica mais presa
+// embaixo do topo (layouts/default.vue tira a faixa na /carteira); o índice mora no documento, logo abaixo da abertura
 
 /* ————— o documento como no canvas (24/11): as seções e o que abre sob pedido —————
    "Onde está" tinha quatro lentes em abas (Ativos, No mundo, Na cadeia, Riscos). No documento, as classes e o mundo são
@@ -193,6 +194,9 @@ const abertura = computed(() => {
         </dl>
         <p class="cvi__nota">Conta pelo preço médio de cada ativo. Proventos e vendas passadas ficam fora.</p>
       </template>
+      <nav class="cvi__indice" aria-label="Nesta página">
+        <a v-for="s in secoes" :key="s.id" :href="`#${s.id}`">{{ s.label }}</a>
+      </nav>
     </header>
     <div class="cvi__cartao">
       <CarteiraAgora
@@ -252,8 +256,7 @@ const abertura = computed(() => {
   --nu-class-etf: var(--nu-sage);
   /* a coluna da página: 1240 centrada, 32px de lado (20px no celular), a mesma da home logada.
      O % resolve na largura de quem usa (as seções vão de ponta a ponta) */
-  /* a coluna de leitura do documento: 900px centrada no conteúdo, a mesma do cartão do gráfico */
-  --cvi-g: max(clamp(20px, 3.4vw, 56px), calc(50% - 450px));
+  /* o respiro lateral das seções (--cvi-g) vem da moldura: 40px ao lado do trilho, 20px quando ele sobe ao topo */
   --cvi-v: clamp(44px, 5vw, 68px);
   /* a régua calma do meio-termo (24/11), pelos mesmos tokens que as seções já leem: a frase de cada seção deixa de ser
      manchete e vira título de documento; os cartões perdem a sombra e ganham fio; os cantos encolhem */
@@ -265,9 +268,8 @@ const abertura = computed(() => {
   --nu-shadow-quente: 0 0 0 1px var(--nu-line-2);
   background: var(--nu-page);
 }
-@media (max-width: 640px) { .cvi { --cvi-g: 20px; } }
 /* a abertura do documento: a coluna de leitura (820px) dentro do conteúdo */
-.cvi__abre { max-width: 900px; margin: 0 auto; padding: clamp(32px, 4vw, 52px) var(--cvi-g) 0; box-sizing: content-box; }
+.cvi__abre { max-width: 900px; margin: 0; padding: clamp(32px, 4vw, 52px) var(--cvi-g) 0; box-sizing: content-box; }
 .cvi__h1 { margin: 0; font-size: clamp(34px, 3.4vw, 42px); line-height: 1.1; font-weight: var(--nu-w-display); letter-spacing: -0.035em; }
 .cvi__resumo { margin: 24px 0 0; color: var(--nu-gray); font-size: 17.5px; font-weight: 400; line-height: 1.75; }
 .cvi__pos { display: flex; gap: 3px; height: 10px; margin-top: 36px; }
@@ -281,7 +283,10 @@ const abertura = computed(() => {
 .cvi__pos-leg dt i { width: 10px; height: 10px; border-radius: 3px; }
 .cvi__pos-leg dd { margin: 0; font-size: 16.5px; font-weight: var(--nu-w-display); font-variant-numeric: tabular-nums; }
 .cvi__nota { margin: 6px 0 0; color: var(--nu-gray); font-size: 13.5px; }
-.cvi__cartao { max-width: 900px; margin: clamp(36px, 4vw, 52px) auto clamp(8px, 2vw, 24px); padding: 0 var(--cvi-g); box-sizing: content-box; }
+.cvi__indice { display: flex; flex-wrap: wrap; gap: 0 22px; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--nu-line-2); }
+.cvi__indice a { display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-gray); font-size: 15px; text-decoration: none; transition: color var(--nu-dur-rapida, .15s) var(--nu-ease-saida, ease); }
+.cvi__indice a:hover { color: var(--nu-ink); text-decoration: underline; text-underline-offset: 4px; }
+.cvi__cartao { max-width: 900px; margin: clamp(36px, 4vw, 52px) 0 clamp(8px, 2vw, 24px); padding: 0 var(--cvi-g); box-sizing: content-box; }
 /* as seções, uma embaixo da outra na mesma página, separadas por um fio: sem faixa de cor alternada */
 .cvi :deep(:is(.voe, .vrd, .cfu, .vim, .vrl, .can)) { background: transparent; }
 .cvi :deep(:is(.voe, .vrd, .vim, .vrl)) { position: relative; }

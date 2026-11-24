@@ -3,7 +3,13 @@
 // o ticker "Mercado agora" por um rail de seções; todo o resto mantém o ticker,
 // automático. Ver useSectionRail.ts p/ a nota de SSR (rail entra na hidratação).
 const railSections = useState<RailState | null>('nu:section-rail', () => null)
+// 24/11 (o dono: "tirar esse carrossel ali e passar para dentro do scroll"): o Início logado e a /carteira nova
+// dispensam a faixa presa embaixo do topo e mostram o mesmo conteúdo dentro da página. A decisão é DAQUI, pela rota e
+// pela sessão: o layout é desenhado antes da página, e um aviso vindo dela chegava tarde (a faixa saía no HTML do
+// servidor e sumia na hidratação). Na /carteira antiga a faixa das seções (railSections) continua valendo.
 const route = useRoute()
+const { isAuthenticated } = useAuthState()
+const semFaixa = computed(() => route.path === '/carteira' || (route.path === '/' && isAuthenticated.value))
 </script>
 
 <template>
@@ -13,7 +19,7 @@ const route = useRoute()
          nem o hero do ativo. -->
     <ConsentBanner />
     <NuSectionRail v-if="railSections" />
-    <NuMarketTicker v-else />
+    <NuMarketTicker v-else-if="!semFaixa" />
     <!-- A faixa do recado do André (26/10/2026, pedido do dono): abre a
          janela NuRecado e some sozinha na data do recado. -->
     <NuRecadoFaixa />
