@@ -149,16 +149,19 @@ const faqItems = [
   { q: 'Como compartilhar uma simulação específica?', a: 'Basta copiar a URL com os parâmetros: https://aportou.com.br/calculadora/juros-compostos?initial=10000&monthly=500&rate=10.5&years=20 já abre a calculadora preenchida e calcula automaticamente. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a meta nos favoritos.' },
 ]
 
+const trilha = [
+  { name: 'Home', path: '/' },
+  { name: 'Calculadoras', path: '/calculadoras' },
+  { name: 'Juros Compostos', path: '/calculadora/juros-compostos' },
+]
+const veja = linksVejaTambem({ pagina: 'juros' })
+
 usePageSeo({
   title: 'Calculadora de juros compostos com aporte mensal',
   description:
     'Simule quanto você junta guardando R$ 500 ou outro valor por mês, de 5 a 30 anos. Compare poupança, Tesouro Selic e CDB na tabela. Grátis.',
   path: '/calculadora/juros-compostos',
-  breadcrumbs: [
-    { name: 'Home', path: '/' },
-    { name: 'Calculadoras', path: '/calculadoras' },
-    { name: 'Juros Compostos', path: '/calculadora/juros-compostos' },
-  ],
+  breadcrumbs: trilha,
   structuredData: [
     {
       '@type': 'WebApplication',
@@ -198,7 +201,7 @@ usePageSeo({
     <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
     <!-- sem o prefixo, o termo "juros compostos" vai na própria pergunta do h1;
          "calculadora de juros compostos" fica no <title>, no JSON-LD e na faixa "Como Usar…" -->
-    <CalcTopo desc="Quatro números e a conta sai na hora.">
+    <CalcTopo desc="Quatro números e a conta sai na hora." :trilha="trilha">
       Quanto o seu dinheiro rende com juros compostos?
     </CalcTopo>
 
@@ -473,6 +476,8 @@ usePageSeo({
         </p>
       </aside>
     </CalcBand>
+
+    <NuVejaTambem :links="veja" />
 
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta

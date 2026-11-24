@@ -243,16 +243,19 @@ const lastUpdated = new Date(CONTENT_VERSION)
 const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
 const lastUpdatedISO = lastUpdated.toISOString()
 
+const trilha = [
+  { name: 'Home', path: '/' },
+  { name: 'Calculadoras', path: '/calculadoras' },
+  { name: 'Juros Compostos', path: '/calculadora/juros-compostos' },
+  { name: scenario.h1, path: route.path },
+]
+const veja = linksVejaTambem({ pagina: 'juros' })
+
 usePageSeo({
   title: scenario.title,
   description: scenario.metaDescription,
   path: route.path,
-  breadcrumbs: [
-    { name: 'Home', path: '/' },
-    { name: 'Calculadoras', path: '/calculadoras' },
-    { name: 'Juros Compostos', path: '/calculadora/juros-compostos' },
-    { name: scenario.h1, path: route.path },
-  ],
+  breadcrumbs: trilha,
   structuredData: [
     {
       '@type': 'WebApplication',
@@ -276,6 +279,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
   <div>
     <!-- ============ Hero do cenário (texto verbatim, visual Nu) ============ -->
     <section class="jcs__hero">
+      <NuTrilha :crumbs="trilha" class="jcs__trilha" />
       <div class="jcs__status">
         <span class="jcs__live"><span class="jcs__live-dot" /> Simulador ao vivo</span>
         <span aria-hidden>·</span>
@@ -340,6 +344,8 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
       <NuFaqAccordion :key="slug" :items="scenario.faq" surface="white" />
     </CalcSplit>
 
+    <NuVejaTambem :links="veja" />
+
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta
       titulo="Quer mais controle sobre seus investimentos?"
@@ -353,6 +359,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
 <style scoped>
 /* ——— hero ——— */
 /* Aportou (11/11/2026): creme da página, eyebrow com o corte, selos de raio 8 */
+.jcs__trilha { margin: 0 0 8px; }
 .jcs__hero {
   background: var(--nu-page);
   padding: clamp(48px, 6.5vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 5vw, 64px);

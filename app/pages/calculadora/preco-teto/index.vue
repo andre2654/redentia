@@ -498,16 +498,19 @@ const faqItems: NuFaqItem[] = [
   { q: 'O que fazer se as 4 metodologias derem resultados muito diferentes?', a: 'É normal. Cada método olha a empresa por um ângulo. Se Graham, Bazin, P/L e VPA divergem bastante, dê mais peso ao método que faz mais sentido para aquela empresa: bancos tendem a responder bem a VPA e P/L, pagadoras de dividendos ao Bazin, industriais a Graham. Use a média ponderada como consenso.' },
 ]
 
+const trilha = [
+  { name: 'Home', path: '/' },
+  { name: 'Calculadoras', path: '/calculadoras' },
+  { name: 'Preço Teto', path: '/calculadora/preco-teto' },
+]
+const veja = linksVejaTambem({ pagina: 'preco-teto' })
+
 usePageSeo({
   title: 'Calculadora de Preço Teto 2026 - Grátis',
   description:
     'Calcule o preço teto de uma ação da B3 por Graham, Bazin, P/L e VPA. A conta mostra a distância até a régua de cada método. Grátis.',
   path: '/calculadora/preco-teto',
-  breadcrumbs: [
-    { name: 'Home', path: '/' },
-    { name: 'Calculadoras', path: '/calculadoras' },
-    { name: 'Preço Teto', path: '/calculadora/preco-teto' },
-  ],
+  breadcrumbs: trilha,
   structuredData: [
     {
       '@type': 'WebApplication',
@@ -542,7 +545,7 @@ usePageSeo({
 <template>
   <div>
     <!-- ============ Topo e conta na primeira tela, no padrão das outras calculadoras ============ -->
-    <CalcTopo desc="Descubra até quanto vale pagar por uma ação, em segundos.">
+    <CalcTopo desc="Descubra até quanto vale pagar por uma ação, em segundos." :trilha="trilha">
       Calculadora de Preço Teto e Preço Justo:
       <em>Graham, Bazin, P/L e VPA.</em>
     </CalcTopo>
@@ -992,6 +995,7 @@ usePageSeo({
         </div>
       </div>
     </CalcBand>
+    <NuVejaTambem :links="veja" />
     <NuAcompanheAndre lugar="calculadora" />
   </div>
 </template>

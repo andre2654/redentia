@@ -109,6 +109,13 @@ const eduTones = computed(() => {
 const faqTone = computed(() => flip(eduTones.value[eduTones.value.length - 1] ?? histTone.value))
 const crossTone = computed(() => flip(faqTone.value))
 
+const trilha = [
+  { name: 'Início', path: '/' },
+  { name: ticker, path: `/asset/${ticker}` },
+  { name: 'Dividendos', path: `/dividendos/${ticker}` },
+]
+const veja = linksVejaTambem({ pagina: 'dividendos', ticker, proprioJaLinkado: true })
+
 if (data.value) {
   usePageSeo({
     title: div.value.seo.title,
@@ -119,11 +126,7 @@ if (data.value) {
     dateModified: div.value.dataDate,
     // sem provento no histórico: fora do índice, links continuam seguíveis
     robots: robotsDeDividendos(div.value.temHistorico),
-    breadcrumbs: [
-      { name: 'Início', path: '/' },
-      { name: ticker, path: `/asset/${ticker}` },
-      { name: 'Dividendos', path: `/dividendos/${ticker}` },
-    ],
+    breadcrumbs: trilha,
   })
 }
 
@@ -139,6 +142,7 @@ const painel = useChatPainel()
     <section class="dvt__topo" :class="{ 'dvt__topo--so': !div.hero.stats.length }">
       <div class="dvt__topo-grade">
         <div class="dvt__topo-texto">
+          <NuTrilha :crumbs="trilha" class="dvt__trilha" />
           <NuEyebrow como="p">{{ div.hero.companyLine }}</NuEyebrow>
           <h1 class="dvt__h1">Dividendos de {{ ticker }}.</h1>
           <p class="dvt__lead">{{ div.hero.sub }}</p>
@@ -298,6 +302,7 @@ const painel = useChatPainel()
         />
       </div>
     </CalcBand>
+    <NuVejaTambem :links="veja" />
   </div>
 </template>
 
@@ -311,6 +316,7 @@ const painel = useChatPainel()
 }
 .dvt__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(32px, 3.4vw, 40px); }
 .dvt__topo-texto { min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+.dvt__trilha { margin: 0 0 8px; }
 .dvt__h1 { margin: 16px 0 0; font-size: clamp(40px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance; }
 .dvt__lead { margin: 20px 0 0; max-width: 46ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; text-wrap: pretty; }
 @media (min-width: 1080px) {
