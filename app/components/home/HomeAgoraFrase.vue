@@ -149,10 +149,15 @@ const avisoDoMotor = computed(() => aviso.urgente.value && !!estado.value && avi
 const selo = computed(() => seloDoDia(frases.value, !!dia.value?.alerta, avisoDoMotor.value))
 
 const ESCONDIDO = 'R$ ••••••'
+// 'hoje' no dia do pregão; fora dele, o dia do preço em minúscula ('sexta, 21/11')
+const quandoDoDia = computed(() => {
+  const r = frases.value?.diaRotulo
+  return !r || r === 'Hoje' ? 'hoje' : `em ${r.charAt(0).toLowerCase()}${r.slice(1)}`
+})
 const fatos = computed(() => {
   const r = props.resumo
   if (!r || r.state !== 'patrimonio') return []
-  const lista: { k: string; rotulo: string; valor: string; to: string; tom?: 'up' | 'down'; atencao?: boolean }[] = []
+  const lista: { k: string; rotulo: string; valor: string; to: string; tom?: 'up' | 'down'; atencao?: boolean; sub?: string }[] = []
   if (r.patrimonio) lista.push({ k: 'patrimonio', rotulo: 'Quanto eu tenho?', valor: visiveis.value ? r.patrimonio : ESCONDIDO, to: '/carteira' })
   const v = dia.value?.diaValor
   if (v != null && frases.value) {
@@ -162,6 +167,17 @@ const fatos = computed(() => {
       tom: visiveis.value && Math.abs(v) >= 0.005 ? (v < 0 ? 'down' : 'up') : undefined,
       // o dia com alerta (um papel que caiu 5% ou mais) é o cartão de atenção
       atencao: !!dia.value?.alerta,
+      sub: dia.value?.carteiraPct != null ? pctComSinal(dia.value.carteiraPct) : undefined,
+    })
+  }
+  // quanto eu ganhei (24/11): a valorização sobre o preço médio, em R$ e em %; com o olho fechado fica o % (que nunca se esconde)
+  const g = r.resultado
+  if (g?.ganho != null && g.ganhoPct != null) {
+    lista.push({
+      k: 'ganho', rotulo: 'Quanto eu ganhei?', to: '/carteira#onde',
+      valor: visiveis.value ? reaisComSinal(g.ganho) : pctComSinal(g.ganhoPct),
+      sub: visiveis.value ? `${pctComSinal(g.ganhoPct)} sobre o que você pagou` : 'sobre o que você pagou',
+      tom: Math.abs(g.ganho) >= 0.5 ? (g.ganho < 0 ? 'down' : 'up') : undefined,
     })
   }
   if (r.proventos12m) lista.push({ k: 'proventos', rotulo: 'Proventos em 12 meses', valor: visiveis.value ? r.proventos12m : ESCONDIDO, to: '/carteira#renda' })
@@ -341,8 +357,11 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg>
             </NuxtLink>
           </dd>
+          <dd v-if="f.sub" class="haf__fato-sub">{{ f.sub }}</dd>
         </div>
       </dl>
+      <!-- quem subiu e quem caiu no dia: de onde veio o número de cima -->
+      <CarteiraSobeDesce v-if="podeVerNumeros && resumo?.resultado" :resultado="resumo.resultado" :mostrar-reais="visiveis" :quando="quandoDoDia" />
       <!-- carregando: os três cartões com as duas linhas da altura final (o rótulo e o número) -->
       <div v-else class="haf__fatos" aria-hidden="true">
         <div v-for="i in 3" :key="i" class="haf__fato">
@@ -553,13 +572,14 @@ a.haf__graf .haf__legenda, a.haf__graf .haf__graf-area { animation: nu-surgir va
 .haf__graf--vivo:hover .haf__leque-selo { --nsl-fundo: color-mix(in srgb, var(--nu-blue-on-dark) 30%, transparent); }
 
 /* os três fatos: cartões creme do contrato; o de atenção, em âmbar */
-.haf__fatos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: clamp(12px, 1.4vw, 16px); margin: clamp(24px, 3vw, 40px) 0 0; }
+.haf__fatos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: clamp(12px, 1.4vw, 16px); margin: clamp(24px, 3vw, 40px) 0 0; }
 .haf__fato {
   position: relative; display: flex; flex-direction: column; justify-content: center; padding: clamp(18px, 2vw, 24px) clamp(20px, 2.2vw, 28px);
   border-radius: var(--nu-r-card); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
   transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 /* o dado que chega no cartão (depois do esqueleto): fade em cascata de 60 ms; o cartão fica onde está */
+.haf__fato-sub { margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.4; font-variant-numeric: tabular-nums; }
 dl.haf__fatos .haf__fato > * { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
 dl.haf__fatos .haf__fato:nth-child(2) > * { animation-delay: 60ms; }
 dl.haf__fatos .haf__fato:nth-child(3) > * { animation-delay: 120ms; }

@@ -7,6 +7,7 @@
 // Mundo e Cadeia são as seções de 05/11 por inteiro (as mesmas buscas e
 // contas), sem a moldura delas. A lente só monta quando é aberta, e o
 // KeepAlive guarda as que já abriram (o globo não refaz a busca).
+import type { ResultadoDaCarteira } from '~/utils/resultadoDaCarteira'
 import type { CarteiraVisao, PosicaoVisao } from '~/types/carteiraVisao'
 import type { CarteiraPosicaoMundo } from '~/types/carteira'
 import { nomeCurto } from '~/utils/carteiraVisao'
@@ -14,7 +15,7 @@ import VisaoLenteAtivos from './VisaoLenteAtivos.vue'
 import VisaoLenteRiscos from './VisaoLenteRiscos.vue'
 import { REVELACAO } from '~/utils/revelar'
 
-const props = defineProps<{ visao: CarteiraVisao }>()
+const props = defineProps<{ visao: CarteiraVisao; resultado?: ResultadoDaCarteira | null }>()
 
 const LENTES = [
   { id: 'ativos', nome: 'Ativos' },
@@ -67,7 +68,7 @@ watch(lente, () => {
 
     <div :id="`voe-lente-${lente}`" ref="lenteRef" v-revelar class="voe__lente" role="tabpanel" :aria-labelledby="`voe-aba-${lente}`">
       <KeepAlive>
-        <VisaoLenteAtivos v-if="lente === 'ativos'" :visao="visao" />
+        <VisaoLenteAtivos v-if="lente === 'ativos'" :visao="visao" :resultado="resultado" />
         <CarteiraMundo v-else-if="lente === 'mundo'" :posicoes="posicoesMundo" />
         <CarteiraCadeia v-else-if="lente === 'cadeia'" :posicoes="posicoesMundo" />
         <VisaoLenteRiscos v-else :visao="visao" />

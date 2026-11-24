@@ -24,7 +24,7 @@
 // que troca o ?cenario= (normal, calmo,
 // velho, semgasto ou a carteira real local, app/dev/*.local.json).
 import type { CarteiraPayload, CarteiraAgoraVM } from '~/types/carteira'
-import { CENARIOS as CENARIOS_MOCK, visaoMock, type CenarioVisao } from '~/dev/carteiraVisaoMock'
+import { CENARIOS as CENARIOS_MOCK, resultadoMock, visaoMock, type CenarioVisao } from '~/dev/carteiraVisaoMock'
 import type { CarteiraVisao as Visao } from '~/types/carteiraVisao'
 import { brl2, marcaNaResposta } from '~/utils/carteiraVisao'
 import { marcaNoTexto } from '~/utils/marcaNoTexto'
@@ -62,6 +62,8 @@ const visao = computed<Visao>(() => (props.visao ?? doMock.value)!)
 // o futuro (os 2.000 caminhos do motor) é pedido uma vez e dividido entre o gráfico do topo e a seção dos 5 anos; no mock não há motor
 if (!mock.value) proverCarteiraFuturo()
 
+// o ganho e o dia de cada ativo (24/11): do /portfolio de verdade; no mock, o de exemplo
+const resultado = computed(() => props.payload.resultado ?? (mock.value ? resultadoMock() : null))
 /* ————— o topo ————— */
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const agora = computed<CarteiraAgoraVM>(() => {
@@ -99,6 +101,8 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
 <template>
   <div class="cvi">
     <CarteiraHeroi
+      :resultado="resultado"
+      :proventos12m="payload.proventos12mValor ?? null"
       id="hoje" :agora="agora" :avisos="visao.avisos" :conexoes="visao.conexoes" :ativos="visao.posicoes.length"
       :renda="visao.renda" :dados-de="visao.dadosDe" :mock="mock" @connected="emit('connected')"
     />
@@ -108,7 +112,7 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
       <span class="cvi__parcial-p" aria-hidden="true" />
       O que está abaixo é de {{ visao.dadosDe }}, a última vez que {{ parada }} atualizou. Os números de imposto e risco esperam a reconexão.
     </p>
-    <VisaoOndeEsta id="onde" :visao="visao" />
+    <VisaoOndeEsta id="onde" :visao="visao" :resultado="resultado" />
     <VisaoRenda v-if="visao.renda" id="renda" :visao="visao" />
     <!-- e daqui a 5 anos? os 2.000 caminhos do motor (GET /me/carteira/futuro; no mock não há motor) -->
     <ClientOnly><CarteiraFuturo v-if="!mock" id="futuro" /></ClientOnly>

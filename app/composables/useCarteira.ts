@@ -871,6 +871,8 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
 
   return {
     hero: buildHero(rows, today, income, totalValue),
+    resultado: montarResultado(portfolio, today),
+    proventos12mValor: income?.summary?.totalAll && income.summary.totalAll > 0 ? income.summary.totalAll : null,
     agora: buildAgora(rows, today, ibov12m.length ? ibov12m : null, totalValue, income),
     allocation: buildAllocation(rows),
     chart: buildEquityChartVM(curve, ibov12m.length ? ibov12m : null, cdiRate, totalValue),
@@ -1016,6 +1018,8 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
       ibov: ibov12m.length ? ibov12m : null,
       income,
     }),
+    resultado: montarResultado(portfolio, today),
+    proventos12mValor: totalAll > 0 ? totalAll : null,
   }
 }
 
