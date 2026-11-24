@@ -152,16 +152,19 @@ const faqItems = [
 // yield. O title volta ao de antes de 03/08, como o critério mandava. O guia
 // NÃO volta a "Calculadora de dividendos": seria o terceiro candidato ao
 // mesmo termo; fica "Como calcular dividendos", intenção de artigo.
+const trilha = [
+  { name: 'Home', path: '/' },
+  { name: 'Calculadoras', path: '/calculadoras' },
+  { name: 'Dividend Yield', path: '/calculadora/dividend-yield' },
+]
+const veja = linksVejaTambem({ pagina: 'dy' })
+
 usePageSeo({
   title: 'Calculadora de Dividend Yield 2026 - Grátis',
   description:
     'Calcule o dividend yield atual, on cost e projetado de qualquer ação ou FII da B3, e quanto a carteira paga por mês em reais. Tributação 2026. Grátis.',
   path: '/calculadora/dividend-yield',
-  breadcrumbs: [
-    { name: 'Home', path: '/' },
-    { name: 'Calculadoras', path: '/calculadoras' },
-    { name: 'Dividend Yield', path: '/calculadora/dividend-yield' },
-  ],
+  breadcrumbs: trilha,
   structuredData: [
     {
       '@type': 'WebApplication',
@@ -201,7 +204,7 @@ usePageSeo({
          desde 23/09 (o bloco CANIBALIZAÇÃO acima conta por quê), por isso este
          h1 segue com o nome da calculadora, sem virar pergunta como os outros.
          "Calculadora de dividendos" é o termo da /calculadora/acoes. -->
-    <CalcTopo desc="Escolha a conta e mude os números na frase. Em reais ou em percentual, de qualquer ação ou FII.">
+    <CalcTopo desc="Escolha a conta e mude os números na frase. Em reais ou em percentual, de qualquer ação ou FII." :trilha="trilha">
       Calculadora de dividend yield de ações e FIIs
     </CalcTopo>
 
@@ -430,6 +433,8 @@ usePageSeo({
         </p>
       </aside>
     </CalcBand>
+
+    <NuVejaTambem :links="veja" />
 
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta
