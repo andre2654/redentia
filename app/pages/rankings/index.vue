@@ -9,18 +9,6 @@
 // cascata e o fecho é o painel azul com o corte (MercadoFecho).
 import type { RankingClasse, RankingMeta, RankingRowApi } from '~/types/rankings'
 import { RANKINGS, RANKING_TEMAS } from '~/content/rankings/registry'
-import {
-  FIIS_DESCRIPTION,
-  FIIS_H1,
-  FIIS_PATH,
-  FIIS_SUBTITLE,
-  FIIS_TITLE,
-  canonicalDeRankings,
-} from '~/content/seo/fiis-hub'
-
-definePageMeta({
-  alias: ['/fiis'],
-})
 
 const route = useRoute()
 const router = useRouter()
@@ -39,21 +27,17 @@ const pillItems = Object.keys(CLASSE_LABELS)
 const opcoesDoTrilho = pillItems.map((l) => ({ valor: l, rotulo: l }))
 
 const activeClasse = computed<RankingClasse | null>(() => {
-  if (route.path === FIIS_PATH) return 'fiis'
   const q = String(route.query.classe ?? '')
   return (['acoes', 'fiis', 'bdrs', 'renda-fixa'] as const).includes(q as RankingClasse)
     ? (q as RankingClasse)
     : null
 })
+const filtroFiis = computed(() => activeClasse.value === 'fiis')
 const activePill = computed(
   () => pillItems.find((l) => CLASSE_LABELS[l] === activeClasse.value) ?? 'Todos',
 )
 function setPill(label: string) {
   const classe = CLASSE_LABELS[label]
-  if (route.path === FIIS_PATH) {
-    if (classe === 'fiis') return
-    return navigateTo(classe ? { path: '/rankings', query: { classe } } : '/rankings')
-  }
   const query = { ...route.query }
   if (classe) query.classe = classe
   else delete query.classe
@@ -158,39 +142,27 @@ watch(grupos, () => nextTick(observeCards))
 onBeforeUnmount(() => observer?.disconnect())
 
 // ————— SEO —————
-// /fiis e /rankings?classe=fiis mostram o mesmo filtro. O canonical é /fiis
-// nos dois, para a URL curta ser a indexável e a query continuar funcionando.
-const paginaFiis = computed(() => canonicalDeRankings(route.path, activeClasse.value) === FIIS_PATH)
-const listasDoSeo = computed(() => (paginaFiis.value ? ALL.filter((m) => m.classe.includes('fiis')) : ALL))
+// /fiis é o hub educativo. Este filtro (?classe=fiis) fica com canonical
+// /rankings: é uma vista da mesma página, não uma segunda URL indexável.
 usePageSeo({
-  title: computed(() => (paginaFiis.value ? FIIS_TITLE : 'Rankings da B3 2026: Top Ações, FIIs, BDRs e Tesouro')),
-  description: computed(() => (paginaFiis.value
-    ? FIIS_DESCRIPTION
-    : 'Todos os rankings da bolsa brasileira em um lugar: dividend yield, valor de mercado, Graham, Bazin, ROE, crescimento, Aportou Score e Tesouro Direto. Atualizados diariamente.')),
-  path: computed(() => (paginaFiis.value ? FIIS_PATH : '/rankings')),
-  breadcrumbs: computed(() => (paginaFiis.value
-    ? [
-        { name: 'Início', path: '/' },
-        { name: 'Rankings', path: '/rankings' },
-        { name: 'FIIs', path: FIIS_PATH },
-      ]
-    : [
-        { name: 'Início', path: '/' },
-        { name: 'Rankings', path: '/rankings' },
-      ])),
-  structuredData: computed(() => [
-    {
-      '@type': 'ItemList',
-      name: paginaFiis.value ? FIIS_TITLE : `Rankings da B3 - ${MARCA.nome}`,
-      numberOfItems: listasDoSeo.value.length,
-      itemListElement: listasDoSeo.value.map((m, i) => ({
-        '@type': 'ListItem',
-        position: i + 1,
-        name: m.title,
-        url: `/ranking/${m.slug}`,
-      })),
-    },
-  ]),
+  title: 'Rankings da B3 2026: Top Ações, FIIs, BDRs e Tesouro',
+  description: 'Todos os rankings da bolsa brasileira em um lugar: dividend yield, valor de mercado, Graham, Bazin, ROE, crescimento, Aportou Score e Tesouro Direto. Atualizados diariamente.',
+  path: '/rankings',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Rankings', path: '/rankings' },
+  ],
+  structuredData: [{
+    '@type': 'ItemList',
+    name: `Rankings da B3 - ${MARCA.nome}`,
+    numberOfItems: ALL.length,
+    itemListElement: ALL.map((m, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: m.title,
+      url: `/ranking/${m.slug}`,
+    })),
+  }],
 })
 
 function cardTypes(meta: RankingMeta): string[] {
@@ -207,14 +179,15 @@ function contagemDoGrupo(g: { tema: string; items: RankingMeta[] }): number {
     <!-- ============ Hero ============ -->
     <NuPageHero
       size="lg" eyebrow="Ferramentas"
-      :subtitle="paginaFiis ? FIIS_SUBTITLE : 'A B3 inteira ranqueada do maior pro menor: dividendos, tamanho, valuation, crescimento e o Aportou Score. Atualizado diariamente após o pregão.'"
+      subtitle="A B3 inteira ranqueada do maior pro menor: dividendos, tamanho, valuation, crescimento e o Aportou Score. Atualizado diariamente após o pregão."
     >
-      <template #title>{{ paginaFiis ? FIIS_H1 : 'Rankings da B3.' }}</template>
+      <template #title>Rankings da B3.</template>
       <NuTrilho :opcoes="opcoesDoTrilho" :model-value="activePill" rotulo="Filtrar rankings por classe" @update:model-value="setPill" />
+      <p class="rkh__fiis"><NuLinkSeta to="/fiis">O que é um fundo imobiliário</NuLinkSeta></p>
     </NuPageHero>
 
     <!-- ============ Destaque: Redentia Score top 5 (SSR real) ============ -->
-    <section v-if="scoreTop.length && !paginaFiis" class="rkh__spot-wrap">
+    <section v-if="scoreTop.length && !filtroFiis" class="rkh__spot-wrap">
       <NuxtLink v-contexto-chat="{ id: 'ranking:redentia-score', tipo: 'ranking', rotulo: 'Ranking · Aportou Score' }" to="/ranking/redentia-score" class="rkh__spot">
         <NuFaixaMarca rotulo="Exclusivo Aportou" como="span" :altura="52" class="rkh__spot-card">
           <div class="rkh__spot-in">
@@ -302,6 +275,7 @@ function contagemDoGrupo(g: { tema: string; items: RankingMeta[] }): number {
 </template>
 
 <style scoped>
+.rkh__fiis { margin: 20px 0 0; }
 /* Robustez (11/11/2026): a margem é a da coluna (--nu-coluna), o movimento e
    a cor por token, os selos (tipo do cartão, contagem do tema) são o NuSelo e
    os cartões entram ao rolar (v-revelar), sobem 2px no hover e afundam ao
