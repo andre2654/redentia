@@ -216,7 +216,7 @@ usePageSeo({
       <div class="ir__tiles ir__tiles--duo">
         <div class="ir__tile">
           <h3 class="ir__tile-title">Regra Vigente desde 2026</h3>
-          <p class="ir__card-p">Lucros e dividendos pagos por uma mesma empresa a uma mesma pessoa física acima de R$ 50.000 num mesmo mês têm 10% de IR retido na fonte, calculado sobre o total pago no mês, sem deduções. Até R$ 50.000 por empresa por mês, o dividendo segue sem retenção. JCP (Juros sobre Capital Próprio) tem 17,5% retidos na fonte desde 2026 (Lei Complementar 224/2025).</p>
+          <p class="ir__card-p">Lucros e dividendos pagos por uma mesma empresa a uma mesma pessoa física acima de R$ 50.000 num mesmo mês têm 10% de IR retido na fonte, calculado sobre o total pago no mês, sem deduções. Até R$ 50.000 por empresa por mês, o dividendo segue sem retenção. JCP (Juros sobre Capital Próprio) tem 17,5% retidos na fonte desde 2026 (Lei Complementar 224/2025). O verbete de <NuxtLink to="/glossario/jscp">juros sobre capital próprio</NuxtLink> mostra a conta do líquido.</p>
         </div>
         <div class="ir__tile">
           <h3 class="ir__tile-title">Quem Entra na Retenção</h3>

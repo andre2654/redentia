@@ -78,6 +78,16 @@ usePageSeo({
           <p class="agd__card-p">O que cada data decide, e por que vender na data ex não tira o provento.</p>
           <span class="agd__ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
+        <NuxtLink to="/glossario/data-com" class="agd__card">
+          <h3 class="agd__card-titulo">O que é data com</h3>
+          <p class="agd__card-p">O último pregão em que a compra ainda entra na lista do provento.</p>
+          <span class="agd__ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+        </NuxtLink>
+        <NuxtLink to="/glossario/data-ex" class="agd__card">
+          <h3 class="agd__card-titulo">O que é data ex</h3>
+          <p class="agd__card-p">O pregão sem o provento, e a conta do preço de referência.</p>
+          <span class="agd__ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+        </NuxtLink>
       </div>
     </CalcBand>
   </div>
