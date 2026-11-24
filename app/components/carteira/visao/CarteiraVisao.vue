@@ -244,6 +244,38 @@ const abertura = computed(() => {
 .cvi :deep(.vrd__trilho) { height: 12px; gap: 3px; }
 .cvi :deep(.vim__trilho) { height: 10px; gap: 3px; }
 .cvi :deep(.cfu__frase) { line-height: 1.2; }
+
+/* ————— os painéis do canvas (24/11, o dono vendo a produção: "ainda parece o layout antigo") —————
+   Cada seção é uma frase e painéis calmos: fundo quente sem sombra, o título do painel como rótulo pequeno em caixa alta,
+   os números em peso médio. O azul cheio e os títulos grandes dentro de cartão saem. */
+.cvi :deep(:is(.vrd__sub, .vim__sub, .vrl__sub)) { max-width: 820px; color: var(--nu-gray); font-size: 17.5px; font-weight: 400; line-height: 1.7; }
+/* a legenda da régua: números do tamanho dos do trilho, não manchete */
+.cvi :deep(.vrd__legenda dd) { font-size: 18.5px; font-weight: var(--nu-w-display); letter-spacing: -0.015em; }
+.cvi :deep(.vrd__legenda dt) { color: var(--nu-gray); font-weight: 400; }
+/* a renda numa coluna: o mês a mês, o que já está marcado e os 5 anos, um painel embaixo do outro */
+.cvi :deep(.vrd__grade) { grid-template-columns: minmax(0, 1fr); gap: 16px; max-width: none; margin-top: clamp(28px, 3.4vw, 40px); }
+.cvi :deep(.vrd__parte), .cvi :deep(.vrd__futuro) { padding: 26px 30px 24px; border-radius: 14px; background: var(--nu-band); box-shadow: none; }
+.cvi :deep(.vrd__parte--marcados) { margin-top: 16px; color: var(--nu-ink); }
+.cvi :deep(.vrd__h3), .cvi :deep(.vrd__parte--marcados .vrd__h3) { color: var(--nu-gray); font-size: 12px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.4; }
+.cvi :deep(.vrd__parte--marcados .vrd__agenda li) { border-top-color: var(--nu-line-2); }
+.cvi :deep(.vrd__parte--marcados :is(.vrd__ag-t, .vrd__ag-v)) { color: var(--nu-ink); font-weight: 400; }
+.cvi :deep(.vrd__parte--marcados .vrd__ag-total .vrd__ag-v) { font-weight: var(--nu-w-display); }
+.cvi :deep(.vrd__parte--marcados :is(.vrd__ag-d, .vrd__ag-total)) { color: var(--nu-gray); font-weight: 400; }
+.cvi :deep(.vrd__parte--marcados .vrd__prox) { background: var(--nu-page); color: var(--nu-gray-3); }
+.cvi :deep(.vrd__parte--marcados .vrd__prox b) { color: var(--nu-ink); }
+.cvi :deep(.vrd__parte--marcados .vrd__marc-total) { color: var(--nu-gray); }
+.cvi :deep(.vrd__parte--marcados .vrd__marc-total b) { color: var(--nu-ink); font-size: 30px; letter-spacing: -0.025em; }
+.cvi :deep(.vrd__parte--marcados .vrd__k--acoes) { background: var(--nu-blue); }
+/* os caminhos dos 5 anos: o escolhido em contorno, sem cartão branco com sombra */
+.cvi :deep(.vrd__cam--on) { background: var(--nu-page); box-shadow: 0 0 0 1px var(--nu-line-2); }
+.cvi :deep(:is(.vrd__cam-n, .vrd__cam-r)) { font-weight: var(--nu-w-display); }
+/* os cartões de classe e as listas de ativos: painel quente, cabeçalho menor */
+.cvi :deep(:is(.vla__grupo, .vla__fila)) { background: var(--nu-band); box-shadow: none; }
+.cvi :deep(.vla__grupo-n) { font-size: 18px; font-weight: var(--nu-w-display); }
+.cvi :deep(.vla__grupo-pct) { font-size: 22px; font-weight: var(--nu-w-display); }
+/* o imposto e o relatório: os cartões viram painéis sem sombra */
+.cvi :deep(:is(.vim__cartao, .vrl__grupo, .vrl__bench, .can__botao)) { box-shadow: none; }
+.cvi :deep(:is(.vrl__grupo, .vrl__bench)) { background: var(--nu-band); }
 /* o cartão dos 5 anos e o imposto moram os dois na página: o respiro entre eles é o do imposto */
 .cvi :deep(.cfu) { padding-bottom: 0; }
 /* o esqueleto padrão (areia e creme) some sobre a página e a faixa: um tom acima, com o mesmo brilho */
