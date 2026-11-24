@@ -870,4 +870,6 @@ const olhouLinha = computed(() => {
 .cto--so-grafico .tbo__palco { margin-top: 0; }
 .cto--so-grafico .tbo__palco-cab { justify-content: flex-start; }
 .cto--so-grafico .cto__periodo-cab { margin-left: auto; }
+/* o balão da leitura mora DENTRO do gráfico: acima dele está o título, a legenda e o período, e o cartão corta o que vaza */
+.cto--so-grafico :deep(.agr__dica) { transform: translate(var(--agr-dica-x, -50%), 10px); }
 </style>

@@ -55,6 +55,8 @@ export function useAvisoDaCarteira() {
   /** os avisos do dia, o urgente primeiro, para o Início listar (24/11); null antes da resposta ou sem a visão liberada.
    *  Só na memória da aba: o texto do aviso fala do dinheiro da pessoa e não vai para o sessionStorage. */
   const itens = useState<AvisoDoInicio[] | null>('carteira:aviso-itens', () => null)
+  /** quantas coisas o motor conferiu hoje (o `olhados` da visão): o Início diz isso quando nada pede atenção */
+  const olhados = useState<number | null>('carteira:aviso-olhados', () => null)
   /** a consulta já voltou (com resposta ou sem) para esta sessão */
   const consultado = useState<boolean>('carteira:aviso-consultado', () => false)
 
@@ -75,7 +77,7 @@ export function useAvisoDaCarteira() {
 
   async function buscar(t: string) {
     try {
-      const v = await $fetch<{ avisos?: { urgente?: string | null; itens?: { id: string; titulo?: string; curto?: string; texto?: string; prazo?: string | null }[] } }>('/api/backend/me/carteira/visao', {
+      const v = await $fetch<{ avisos?: { urgente?: string | null; itens?: { id: string; titulo?: string; curto?: string; texto?: string; prazo?: string | null }[]; olhados?: unknown[] } }>('/api/backend/me/carteira/visao', {
         headers: { Accept: 'application/json', Authorization: `Bearer ${t}` },
       })
       if (token.value !== t) return
@@ -83,6 +85,7 @@ export function useAvisoDaCarteira() {
       urgente.value = !!id && !!v.avisos?.itens?.some((a) => a.id === id)
       const lista = (v.avisos?.itens ?? []).filter((a) => !!(a.titulo || a.curto)).map((a) => ({ id: a.id, titulo: (a.titulo || a.curto)!, texto: a.texto ?? null, prazo: a.prazo ?? null }))
       itens.value = [...lista.filter((a) => a.id === id), ...lista.filter((a) => a.id !== id)]
+      olhados.value = Array.isArray(v.avisos?.olhados) ? v.avisos.olhados.length : null
       respondidoPara = t
       respondidoEm = Date.now()
       guardarAviso(guardaDaAba(), t, urgente.value, respondidoEm)
@@ -140,5 +143,5 @@ export function useAvisoDaCarteira() {
     if (import.meta.client && opcoes.saiu) esquecerAvisosGuardados(guardaDaAba())
   }
 
-  return { urgente, consultado, consultar, esquecer, itens }
+  return { urgente, consultado, consultar, esquecer, itens, olhados }
 }
