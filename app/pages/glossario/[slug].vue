@@ -29,7 +29,7 @@ const ehRessalva = (html: string) => html.startsWith('Ressalva honesta:')
 // anda para o lado dela; "Ver todos os termos" é o NuLinkSeta; tudo em token.
 
 usePageSeo({
-  title: `O que é ${term.term}? Significado e como usar na B3`,
+  title: term.seoTitle ?? `O que é ${term.term}? Significado e como usar na B3`,
   description: term.short,
   path: `/glossario/${term.slug}`,
   structuredData: [{
