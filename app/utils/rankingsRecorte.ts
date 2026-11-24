@@ -2,11 +2,11 @@
  * Rankings só de FIIs e a lista de small caps.
  *
  * O recorte de FIIs sai do mesmo ranking de dividend yield que o hub /fiis
- * já usa (até 100 linhas). P/VP é o price_to_book dessa resposta. Volume
- * financeiro não vem na lista: chega do cadastro de cada ticker, e a linha
- * só entra com volume e data. Small caps saem do valor de mercado da base
- * de tickers, com um corte declarado. Sem número ou sem data, a linha não
- * entra. A função não completa com número inventado.
+ * já usa (até 100 linhas). Volume financeiro não vem na lista: chega do
+ * cadastro de cada ticker, e a linha só entra com volume e data. Não há
+ * lista ordenada por P/VP. Small caps saem do valor de mercado da base de
+ * tickers, com um corte declarado, ordenadas por esse valor. Sem número ou
+ * sem data, a linha não entra. A função não completa com número inventado.
  */
 import { MONTHS_PT } from './format.ts'
 import { DY_TETO, pareceFii } from './graficos.ts'
@@ -19,8 +19,6 @@ export const SMALL_CAPS_LIMITE = 50
 /** Corte declarado da página. Não é a carteira do índice Small Cap da B3. */
 export const SMALL_CAPS_CORTE = 2_000_000_000
 export const SMALL_CAPS_CORTE_TEXTO = 'R$ 2 bilhões'
-/** P/VP acima disto sai: no recorte vivo o maior foi 2,79. O teto só barra lixo. */
-export const PVP_TETO = 30
 
 export interface LinhaBruta {
   ticker?: string | null
@@ -29,7 +27,6 @@ export interface LinhaBruta {
   market_price?: number | string | null
   close?: number | string | null
   dividend_yield?: number | string | null
-  price_to_book?: number | string | null
   price_date?: string | null
   market_cap?: number | string | null
   alias_of?: string | null
@@ -125,7 +122,6 @@ interface BaseFii {
   preco: number
   dataIso: string
   dy: number | null
-  pvp: number | null
 }
 
 function baseFiis(rows: readonly LinhaBruta[] | null): BaseFii[] {
@@ -144,14 +140,12 @@ function baseFiis(rows: readonly LinhaBruta[] | null): BaseFii[] {
     if (!dia) continue
     vistos.add(ticker)
     const dy = num(row.dividend_yield)
-    const pvp = num(row.price_to_book)
     saida.push({
       ticker,
       nome: nomeDoPapel(name, ticker),
       preco,
       dataIso: dia,
       dy: dy != null && dy > 0 && dy <= DY_TETO ? dy : null,
-      pvp: pvp != null && pvp > 0 && pvp <= PVP_TETO ? pvp : null,
     })
   }
   return saida
@@ -212,24 +206,6 @@ export function recorteDyFiis(rows: readonly LinhaBruta[] | null, limite = FIIS_
     'dividend yield de 12 meses',
     'avisos de proventos da B3 e Brapi (B3), no ranking de dividend yield. O recorte é esse ranking, até 100 linhas, não a lista de todos os FIIs da B3.',
     'desc',
-  )
-}
-
-export function recortePvpFiis(rows: readonly LinhaBruta[] | null, limite = FIIS_RANK_LIMITE): Recorte {
-  const uteis = baseFiis(rows).filter((b) => b.pvp != null)
-  uteis.sort((a, b) => a.pvp! - b.pvp! || a.ticker.localeCompare(b.ticker))
-  const top = uteis.slice(0, Math.max(0, limite))
-  return publicar(
-    top.map((b) => ({
-      ticker: b.ticker,
-      nome: b.nome,
-      dataIso: b.dataIso,
-      numeros: linhaDePreco(b, { rotulo: 'P/VP', valor: nf2.format(b.pvp!) }),
-    })),
-    uteis.length,
-    'P/VP',
-    'preço sobre valor patrimonial no mesmo ranking de dividend yield. Entram só linhas com P/VP maior que zero e até 30. O recorte não é a lista de todos os FIIs da B3.',
-    'asc',
   )
 }
 
@@ -297,8 +273,8 @@ export function recorteSmallCaps(rows: readonly LinhaBruta[] | null, limite = SM
   uteis.sort((a, b) => a.valor - b.valor || a.ticker.localeCompare(b.ticker))
   const top = uteis.slice(0, Math.max(0, limite))
   const faixa = top.length < uteis.length
-    ? `A tabela mostra as ${top.length} menores de ${uteis.length} que passam.`
-    : `A tabela mostra as ${uteis.length} que passam no corte.`
+    ? `A tabela mostra ${top.length} de ${uteis.length} que passam no corte, ordenadas pelo valor de mercado, do menor para o maior.`
+    : `A tabela mostra as ${uteis.length} que passam no corte, ordenadas pelo valor de mercado, do menor para o maior.`
   return publicar(
     top.map((u) => ({
       ticker: u.ticker,

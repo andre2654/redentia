@@ -1,12 +1,11 @@
 <script setup lang="ts">
 // /rankings/fiis — rankings só de FIIs. O filtro do hub continua em
 // /rankings?classe=fiis. Sem cotação e data, a lista daquele critério some.
-import type { Recorte, VolumeLido } from '~/utils/rankingsRecorte'
+import type { VolumeLido } from '~/utils/rankingsRecorte'
 import {
   candidatosFiis,
   recorteDyFiis,
   recorteLiquidezFiis,
-  recortePvpFiis,
   type LinhaBruta,
 } from '~/utils/rankingsRecorte'
 import {
@@ -21,7 +20,6 @@ import {
 
 const vazio = {
   dy: recorteDyFiis(null),
-  pvp: recortePvpFiis(null),
   liquidez: recorteLiquidezFiis(null, null),
 }
 
@@ -52,22 +50,20 @@ const { data: pacote } = await useAsyncData('rankings-fiis', async () => {
   }
   return {
     dy: recorteDyFiis(rows),
-    pvp: recortePvpFiis(rows),
     liquidez: recorteLiquidezFiis(rows, volumes),
   }
 }, { default: () => vazio })
 
 const dy = computed(() => pacote.value?.dy ?? vazio.dy)
-const pvp = computed(() => pacote.value?.pvp ?? vazio.pvp)
 const liquidez = computed(() => pacote.value?.liquidez ?? vazio.liquidez)
 
-const dataIso = computed(() => [dy.value.dataIso, pvp.value.dataIso, liquidez.value.dataIso]
+const dataIso = computed(() => [dy.value.dataIso, liquidez.value.dataIso]
   .filter((d): d is string => !!d)
   .sort()
   .at(-1) ?? null)
 
 const origin = useSiteOrigin()
-const itemLists = computed(() => [dy.value, pvp.value, liquidez.value]
+const itemLists = computed(() => [dy.value, liquidez.value]
   .filter((b) => b.itens.length)
   .map((b) => ({
     '@type': 'ItemList',
@@ -100,7 +96,6 @@ usePageSeo({
 
 const blocos = computed(() => [
   { id: 'dy', recorte: dy.value, criterio: FIIS_RANK_CRITERIOS.dy, vazio: 'Nenhum FII deste recorte trouxe dividend yield, cotação e data de pregão.' },
-  { id: 'pvp', recorte: pvp.value, criterio: FIIS_RANK_CRITERIOS.pvp, vazio: 'Nenhum FII deste recorte trouxe P/VP, cotação e data de pregão.' },
   {
     id: 'volume',
     recorte: liquidez.value,

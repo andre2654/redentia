@@ -167,7 +167,7 @@ usePageSeo({
         </NuxtLink>
         <NuxtLink to="/rankings/fiis" class="fiis__card">
           <h3>Rankings de FIIs</h3>
-          <p>Dividend yield de 12 meses, volume do pregão e P/VP, só de fundos imobiliários, com a data do dado.</p>
+          <p>Dividend yield de 12 meses e volume do pregão, só de fundos imobiliários, com a data do dado.</p>
         </NuxtLink>
       </div>
     </CalcBand>

@@ -41,7 +41,7 @@ export const NAV_DO_TOPO: NavItem[] = [
       { label: 'Mais baratas por Bazin', to: '/ranking/mais-baratas-bazin', desc: 'O filtro de renda do método Bazin.', vig: 'rank-bazin' },
       { label: 'Ações baratas', to: '/ranking/acoes-baratas', desc: 'Listas por Graham, Bazin e P/VP, pela fórmula.', vig: 'rank-baratas' },
       { label: 'Todos os rankings', to: '/rankings', desc: 'Todos os cortes, por classe e por critério.', vig: 'rank-todos' },
-      { label: 'Rankings de FIIs', to: '/rankings/fiis', desc: 'DY de 12 meses, volume do pregão e P/VP, só de fundos imobiliários.', vig: 'rank-fiis' },
+      { label: 'Rankings de FIIs', to: '/rankings/fiis', desc: 'DY de 12 meses e volume do pregão, só de fundos imobiliários.', vig: 'rank-fiis' },
       { label: 'Small caps', to: '/rankings/small-caps', desc: 'Ações com valor de mercado abaixo de R$ 2 bilhões, corte declarado.', vig: 'rank-small' },
     ],
   },

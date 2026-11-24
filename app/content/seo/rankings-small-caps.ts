@@ -15,7 +15,7 @@ export const SMALL_CAPS_SUBTITLE =
   'Lista de ações com valor de mercado abaixo de um corte declarado, com a data do pregão. Não é recomendação de compra.'
 
 export const SMALL_CAPS_CRITERIO =
-  `Critério: ação da B3 com valor de mercado informado maior que zero e abaixo de ${SMALL_CAPS_CORTE_TEXTO}. A tabela mostra as ${SMALL_CAPS_LIMITE} menores que passam no corte, da menor para a maior, quando há mais do que isso. ON e PN da mesma empresa podem aparecer juntas. Não é o índice Small Cap da B3.`
+  `Critério: ação da B3 com valor de mercado informado maior que zero e abaixo de ${SMALL_CAPS_CORTE_TEXTO}. A ordem é pelo valor de mercado, do menor para o maior. Quando passam mais de ${SMALL_CAPS_LIMITE}, a tabela mostra ${SMALL_CAPS_LIMITE}. ON e PN da mesma empresa podem aparecer juntas. Não é o índice Small Cap da B3.`
 
 export const SMALL_CAPS_FAQ: NuFaqItem[] = [
   {
@@ -25,7 +25,7 @@ export const SMALL_CAPS_FAQ: NuFaqItem[] = [
   },
   {
     q: 'Esta lista indica ação para comprar?',
-    a: 'Não. Ela aplica o corte e ordena pelo valor de mercado. Estar na lista não é indicação de compra ou venda, nem promessa de retorno. O guia explica o que muda na leitura de uma empresa menor.',
+    a: 'Não. Ela aplica o corte e ordena pelo valor de mercado. Estar na lista não é indicação de compra ou venda, nem promessa de retorno. O guia explica como ler essas ações.',
     link: { texto: 'guia', to: '/guias/small-caps-guia-completo' },
   },
   {

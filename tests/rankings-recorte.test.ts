@@ -19,13 +19,11 @@ import {
   smallCapsCabeNoSerp,
 } from '../app/content/seo/rankings-small-caps.ts'
 import {
-  PVP_TETO,
   SMALL_CAPS_CORTE,
   candidatosFiis,
   lerVolumeTicker,
   recorteDyFiis,
   recorteLiquidezFiis,
-  recortePvpFiis,
   recorteSmallCaps,
   type LinhaBruta,
 } from '../app/utils/rankingsRecorte.ts'
@@ -41,7 +39,6 @@ const fii = (o: Partial<LinhaBruta>): LinhaBruta => ({
   type: 'REIT',
   market_price: 160,
   dividend_yield: 0.09,
-  price_to_book: 0.98,
   price_date: '2026-11-23',
   ...o,
 })
@@ -55,7 +52,8 @@ test('o title e a description cabem no SERP e não indicam compra', () => {
   assert.ok(SMALL_CAPS_DESCRIPTION.length >= 120 && SMALL_CAPS_DESCRIPTION.length <= 155)
   assert.doesNotMatch(`${FIIS_RANK_TITLE} ${FIIS_RANK_DESCRIPTION} ${SMALL_CAPS_TITLE} ${SMALL_CAPS_DESCRIPTION}`, PROIBIDO)
   assert.equal(SMALL_CAPS_CORTE, 2_000_000_000)
-  assert.equal(PVP_TETO, 30)
+  assert.doesNotMatch(SMALL_CAPS_TITLE, /menores/i)
+  assert.doesNotMatch(`${FIIS_RANK_TITLE} ${FIIS_RANK_DESCRIPTION} ${SMALL_CAPS_TITLE} ${SMALL_CAPS_DESCRIPTION}`, /barat|descont/i)
 })
 
 test('DY de FIIs: maior primeiro, com data, e fora quem não é FII ou passa de 50%', () => {
@@ -77,21 +75,6 @@ test('DY de FIIs: maior primeiro, com data, e fora quem não é FII ou passa de 
   assert.equal(lista.dataIso, '2026-11-23')
   assert.deepEqual(recorteDyFiis(null).itens, [])
   assert.doesNotMatch(lista.rotulo + lista.fonte, PROIBIDO)
-})
-
-test('P/VP: o menor primeiro, zero e ausência ficam de fora', () => {
-  const lista = recortePvpFiis([
-    fii({ ticker: 'AAAA11', name: 'FII A', price_to_book: 1.2 }),
-    fii({ ticker: 'BBBB11', name: 'FII B', price_to_book: 0.4 }),
-    fii({ ticker: 'CCCC11', name: 'FII C', price_to_book: 0 }),
-    fii({ ticker: 'DDDD11', name: 'FII D', price_to_book: null }),
-    fii({ ticker: 'EEEE11', name: 'FII E', price_to_book: 40 }),
-  ])
-  assert.deepEqual(lista.itens.map((i) => i.ticker), ['BBBB11', 'AAAA11'])
-  assert.equal(lista.itens[0]!.numeros[0]!.rotulo, 'P/VP')
-  assert.equal(lista.itens[0]!.numeros[0]!.valor, '0,40')
-  assert.equal(lista.ordem, 'asc')
-  assert.match(lista.rotulo, /Ranking por P\/VP em 23 nov 2026/)
 })
 
 test('volume: só entra com data, e a cotação de outro pregão não se mistura', () => {
@@ -135,6 +118,8 @@ test('small caps: abaixo de R$ 2 bi, com data, ação, sem alias', () => {
   assert.equal(lista.total, 3)
   assert.match(lista.rotulo, /Ranking por valor de mercado abaixo de R\$ 2 bilhões nos pregões de 21 nov 2026 a 23 nov 2026/)
   assert.match(lista.fonte, /R\$ 2 bilhões/)
+  assert.match(lista.fonte, /ordenadas pelo valor de mercado, do menor para o maior/)
+  assert.doesNotMatch(lista.fonte, /as \d+ menores/)
   assert.match(lista.fonte, /ON e PN/)
   assert.equal(lista.ordem, 'asc')
   assert.equal(lista.itens[0]!.numeros[0]!.rotulo, 'Valor de mercado')
@@ -151,6 +136,7 @@ test('as páginas linkam dividendos, quanto rende e o ativo, e entram no sitemap
       assert.match(vue, /\/asset\/\$\{item\.ticker\}/)
     }
     assert.doesNotMatch(vue, PROIBIDO)
+    assert.doesNotMatch(vue, /barat|descont|menor P\/VP|recortePvp/i)
     assert.doesNotMatch(vue, /noindex/i)
   }
   const fiis = ler('app/pages/rankings/fiis.vue')
@@ -177,4 +163,15 @@ test('as páginas linkam dividendos, quanto rende e o ativo, e entram no sitemap
   assert.equal(destinoSemBarra('/small-caps/'), SMALL_CAPS_PATH)
   assert.equal(RANKINGS['mais-baratas-graham']!.title, 'Mais Baratas (Graham)')
   assert.equal(existsSync(new URL('../tests/cvm-textos-neutros.test.ts', import.meta.url)), false)
+  const seo = ler('app/content/seo/rankings-fiis.ts') + ler('app/content/seo/rankings-small-caps.ts')
+  assert.doesNotMatch(seo, /barat|descont|as menores|menor P\/VP/i)
+  const semente = ler('server/data/sitemap-semente.ts')
+  assert.match(semente, /\/rankings\/fiis</)
+  assert.match(semente, /\/rankings\/small-caps</)
+  assert.match(semente, /\/fiis</)
+  assert.match(semente, /\/ranking\/mais-baratas-graham</)
+  assert.match(semente, /\/ranking\/tesouro-direto</)
+  const llms = ler('server/routes/llms.txt.ts').split('\n')
+  const novas = llms.filter((l) => l.includes('/rankings/fiis') || l.includes('/rankings/small-caps')).join('\n')
+  assert.doesNotMatch(novas, /barat|descont|as menores/i)
 })

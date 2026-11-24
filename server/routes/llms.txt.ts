@@ -89,7 +89,7 @@ Cada ticker tem página própria em /asset/{TICKER} com cotação, gráfico, fun
 
 - [Hub de rankings](${o}/rankings): todos os rankings agrupados por tema
 - [Fundos imobiliários](${o}/fiis): o que é um FII, os tipos tijolo, papel, híbrido e fundo de fundos, os rendimentos e a isenção de IR. Não é recomendação. O filtro de rankings continua em /rankings?classe=fiis
-- [Rankings de FIIs](${o}/rankings/fiis): rankings só de fundos imobiliários, por dividend yield de 12 meses, volume do pregão e P/VP, com a data do dado. Não é recomendação
+- [Rankings de FIIs](${o}/rankings/fiis): rankings só de fundos imobiliários, por dividend yield de 12 meses e volume do pregão, com a data do dado. Não é recomendação
 - [Small caps](${o}/rankings/small-caps): ações com valor de mercado abaixo de R$ 2 bilhões, corte declarado desta página, com a data do dado. Não é recomendação. /small-caps redireciona para cá
 - [${MARCA.nome} Score](${o}/ranking/redentia-score): score proprietário 0 a 100 que cruza 15 rankings fundamentalistas
 - [Maiores Dividend Yields](${o}/ranking/maiores-dividend-yield): ações e FIIs com maior DY dos últimos 12 meses
