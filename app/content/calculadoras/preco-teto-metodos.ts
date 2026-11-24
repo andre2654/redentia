@@ -123,6 +123,7 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
       },
     ],
     relacionados: [
+      { to: '/glossario/preco-teto-bazin', titulo: 'Preço teto de Bazin', texto: 'O que é o método, a fórmula com 6% e um exemplo ilustrativo. Estimativa educacional.' },
       { to: '/glossario/dividend-yield', titulo: 'Dividend yield', texto: 'O rendimento que a fórmula de Bazin inverte: proventos de 12 meses divididos pelo preço.' },
       { to: '/glossario/dividendos', titulo: 'Dividendos', texto: 'O que é o provento em dinheiro que entra no numerador da conta.' },
       { to: '/glossario/jscp', titulo: 'Juros sobre capital próprio', texto: 'Provento com retenção na fonte, diferente do dividendo de ação.' },
@@ -183,6 +184,15 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
       { q: 'A fórmula de Graham funciona para qualquer ação?', a: 'Não. Ela depende de LPA e VPA positivos e assume que o patrimônio líquido representa bem o valor da empresa. Falha em empresas com prejuízo, em negócios de ativos intangíveis (software, marcas, serviços) e ignora completamente o endividamento.' },
       { q: 'Qual a diferença entre valor intrínseco e preço teto?', a: 'Na prática do mercado brasileiro os dois termos são usados como sinônimos para o resultado dessa fórmula. Tecnicamente, valor intrínseco é a estimativa do que a empresa vale e preço teto é o máximo que você aceita pagar, que costuma ser o valor intrínseco menos uma margem de segurança adicional.' },
       { q: 'Onde encontro o LPA e o VPA de uma ação?', a: 'Nos releases de resultado trimestral da própria empresa (área de Relações com Investidores) e nas demonstrações financeiras enviadas à CVM. A calculadora desta página busca esses dados automaticamente quando você digita o ticker.' },
+    ],
+    relacionados: [
+      { to: '/glossario/graham', titulo: 'Fórmula de Graham', texto: 'A definição da raiz de 22,5 × LPA × VPA, com exemplo ilustrativo e os limites da conta.' },
+      { to: '/glossario/p-vp', titulo: 'P/VP', texto: 'Preço dividido pelo valor patrimonial por ação. O 1,5 desse múltiplo entra no 22,5.' },
+      { to: '/glossario/lpa', titulo: 'Lucro por ação', texto: 'O LPA que a fórmula multiplica debaixo da raiz.' },
+      { to: '/glossario/vpa', titulo: 'Valor patrimonial por ação', texto: 'O VPA, o outro insumo da conta.' },
+      { to: '/glossario/preco-teto-bazin', titulo: 'Preço teto de Bazin', texto: 'A outra régua clássica, feita com os proventos de 12 meses e o yield de 6%.' },
+      { to: '/calculadora/preco-teto', titulo: 'Calculadora de preço teto', texto: 'As cinco contas no mesmo lugar, com os números que você informar.' },
+      { to: '/guias/como-calcular-preco-teto', titulo: 'Como calcular preço teto', texto: 'O passo a passo das cinco fórmulas e a diferença entre preço teto e preço justo.' },
     ],
   },
 

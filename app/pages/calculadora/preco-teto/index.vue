@@ -959,7 +959,7 @@ usePageSeo({
         <p>Os indicadores que entram em cada fórmula de preço teto, explicados um a um.</p>
       </template>
       <div class="pt__band-body">
-        <CalcGlossaryLinks :slugs="['analise-fundamentalista', 'lpa', 'vpa', 'p-l', 'p-vp', 'dividend-yield', 'payout', 'blue-chips']" />
+        <CalcGlossaryLinks :slugs="['analise-fundamentalista', 'lpa', 'vpa', 'p-l', 'p-vp', 'dividend-yield', 'payout', 'blue-chips', 'preco-teto-bazin', 'graham']" />
       </div>
     </CalcBand>
 
