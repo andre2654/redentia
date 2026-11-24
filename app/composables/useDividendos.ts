@@ -597,8 +597,8 @@ function buildPayload(c: Core): DividendosPayload {
     },
   ]
 
-  /* SEO */
-  const year = new Date().getFullYear()
+  /* SEO. O número fica na description e na página: o title tem 50 caracteres
+     antes de " · Aportou" e não cabe ticker, ano, valor e DY juntos. */
   const descBits: string[] = []
   if (c.sum12 > 0) descBits.push(`${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses${dyFmt && c.dyMatchesSum ? `, dividend yield de ${dyFmt}` : ''}.`)
   else if (capOnly) descBits.push(capOnly)
@@ -624,16 +624,7 @@ function buildPayload(c: Core): DividendosPayload {
     simuladorHref: simuladorAcoesHref(c.ticker, c.type),
     quantoRendeHref: c.sum12 > 0 ? `/quanto-rende/${c.ticker}` : null,
     seo: {
-      // TITLE NUMÉRICO (03/08/2026). O title genérico custava caro: as 124 URLs
-      // de /dividendos e /tesouro somam 18.165 impressões/mês e devolvem 75
-      // cliques (CTR 0,41%). O padrão de consulta é literal e pede um NÚMERO —
-      // "taee11 dividendos últimos 12 meses valor por unit" fez 455 impressões
-      // na posição 8,2 com ZERO clique, e existem 6 variações da mesma pergunta.
-      // A resposta já estava na página (heroSub, acima), só não estava no title,
-      // que é o que a pessoa lê na SERP antes de decidir clicar.
-      title: c.sum12 > 0
-        ? `Dividendos ${c.ticker} ${year}: ${sum12Fmt} por ${unit} em 12 meses${dyFmt && c.dyMatchesSum ? ` (DY ${dyFmt})` : ''}`
-        : `Dividendos ${c.ticker} ${year}: histórico, DY e próximos pagamentos`,
+      title: tituloDividendos(c.ticker, c.name),
       description: descBits.join(' '),
     },
   }

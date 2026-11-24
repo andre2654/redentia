@@ -354,9 +354,10 @@ test('nome longo não estoura o title e o ticker permanece', () => {
     data: '2026-10-28',
   }))
   assert.ok(r)
+  assert.equal(r.title, 'PCAR3 cotação hoje: Companhia Brasileira na B3')
   assert.ok(r.title.length <= TETO_TITULO_PAGINA, r.title)
-  assert.match(r.title, /^PCAR3 cotação hoje:/)
   assert.equal(r.title.includes('Companhia Brasileira de Distribuição e Logística Integrada Nacional'), false)
+  assert.doesNotMatch(r.title, /\b(da|de|do|das|dos)\s+na B3/)
   assert.match(r.h1, /Companhia Brasileira de Distribuição/)
   assert.ok(r.description.length <= TETO_DESCRICAO)
   assert.match(r.description, /PCAR3/)
