@@ -342,6 +342,11 @@ const painel = useChatPainel()
              /calculadora/acoes (bloco DONO DO CLUSTER em
              pages/calculadora/acoes.vue). Vem primeiro de propósito. O card de
              DY ao lado segue com a âncora de DY, que é o termo da página dele. -->
+        <NuxtLink v-if="tickerNaListaImpostoRenda(ticker)" :to="`/imposto-de-renda/${ticker}`" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
+          <h3 class="dvt__card-link-title">Como declarar {{ ticker }} no IR</h3>
+          <p class="dvt__card-p">Ficha, rendimentos e ganho de capital. Conteúdo educativo, não é consultoria tributária.</p>
+          <span class="dvt__card-link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+        </NuxtLink>
         <NuxtLink v-if="div.quantoRendeHref" :to="div.quantoRendeHref" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
           <h3 class="dvt__card-link-title">Quanto rende um valor em {{ ticker }}</h3>
           <p class="dvt__card-p">Os proventos dos últimos 12 meses aplicados a um valor, no preço de hoje</p>

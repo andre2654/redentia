@@ -70,6 +70,7 @@ const PREFIXOS: Array<[string, string]> = [
   ['/asset/', 'public, s-maxage=120, stale-while-revalidate=600'],
   ['/tesouro/', DEZ_MIN],
   ['/dividendos/', HORA],
+  ['/imposto-de-renda/', HORA],
   ['/guias/', HORA],
   ['/glossario/', DIA],
   ['/tese/', CINCO_MIN],

@@ -31,6 +31,7 @@ export default defineEventHandler((event) => {
   const nRankings = contagemDaSemente('rankings')
   const nTesouro = contagemDaSemente('tesouro')
   const nDividendos = contagemDaSemente('dividendos')
+  const nImpostoRenda = contagemDaSemente('imposto-de-renda')
   const nQuantoRende = contagemDaSemente('quanto-rende')
   const nTeses = contagemDaSemente('teses')
   const nGlossario = contagemDaSemente('glossario')
@@ -117,6 +118,14 @@ Cada pagadora relevante tem página própria em /dividendos/{TICKER} com histór
 - [Dividendos de PETR4](${o}/dividendos/PETR4)
 - [Dividendos de TAEE11](${o}/dividendos/TAEE11)
 - [Dividendos de MXRF11](${o}/dividendos/MXRF11)
+
+### Como declarar no Imposto de Renda (${nImpostoRenda} ativos)
+
+Páginas educativas de como declarar o papel no IR, só para os mais líquidos. Não é consultoria tributária e não é recomendação.
+
+- [Como declarar PETR4 no IR](${o}/imposto-de-renda/PETR4)
+- [Como declarar VALE3 no IR](${o}/imposto-de-renda/VALE3)
+- [Como declarar ITUB4 no IR](${o}/imposto-de-renda/ITUB4)
 
 ### Agenda de dividendos
 

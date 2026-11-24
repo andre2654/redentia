@@ -150,6 +150,7 @@ function normalizarCaixa(sem: string): string {
     return `/asset/${encodeURIComponent(upper)}`
   }
   if (partes.length === 3 && partes[1] === 'dividendos' && seg) return caixaDeTickerB3(sem, '/dividendos', seg)
+  if (partes.length === 3 && partes[1] === 'imposto-de-renda' && seg) return caixaDeTickerB3(sem, '/imposto-de-renda', seg)
   if (partes.length === 3 && partes[1] === 'quanto-rende' && seg) return caixaDeTickerB3(sem, '/quanto-rende', seg)
   if (partes.length === 4 && partes[1] === 'quanto-rende' && partes[2] === 'tesouro' && seg) {
     return caixaDeSlug(sem, '/quanto-rende/tesouro', seg)
