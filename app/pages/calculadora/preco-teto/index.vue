@@ -25,7 +25,7 @@ const route = useRoute()
 // (novas FAQs, mudanca em metodologia, ano novo). Google usa
 // dateModified como sinal de relevancia, manter mensal evita pagina
 // "envelhecer" no indice.
-const CONTENT_VERSION = '2026-10-26'
+const CONTENT_VERSION = '2026-11-24'
 const lastUpdated = new Date(CONTENT_VERSION)
 const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', {
   day: '2-digit',
@@ -496,6 +496,13 @@ const faqItems: NuFaqItem[] = [
   { q: 'De onde vêm os dados da calculadora?', a: 'A Aportou utiliza dados públicos da B3 (Bolsa brasileira), Comissão de Valores Mobiliários (CVM) e demonstrações financeiras oficiais das empresas, atualizados automaticamente após cada pregão e divulgação de balanço.' },
   { q: 'Vale usar preço teto para small caps?', a: 'Sim, com cautela. Small caps tendem a ter P/L mais alto porque o mercado paga pelo crescimento futuro. Use P/L setorial ajustado para small caps (15-20), exija margem de segurança maior (30-40%) e diversifique, já que esses papéis têm volatilidade e risco de liquidez maiores.' },
   { q: 'O que fazer se as 4 metodologias derem resultados muito diferentes?', a: 'É normal. Cada método olha a empresa por um ângulo. Se Graham, Bazin, P/L e VPA divergem bastante, dê mais peso ao método que faz mais sentido para aquela empresa: bancos tendem a responder bem a VPA e P/L, pagadoras de dividendos ao Bazin, industriais a Graham. Use a média ponderada como consenso.' },
+  // Busca real (autocomplete Google, 24 nov 2026, 10:03 UTC). Entra no mesmo
+  // array do acordeão, que emite o único FAQPage da página.
+  { q: 'O que é preço teto de uma ação?', a: 'Preço teto de uma ação é o valor máximo que a régua de um método aceita, calculado com fundamentos como lucro por ação, valor patrimonial e dividendos dos últimos 12 meses. Esta calculadora mostra quatro réguas: Graham, raiz de 22,5 × LPA × VPA; Bazin, dividendo de 12 meses ÷ 0,06; P/L setorial, LPA × P/L médio do setor; e valor patrimonial, VPA × 1,5. Cotação abaixo do teto é distância até essa régua. Cotação acima significa que o preço passou do teto. Não é recomendação de compra ou venda.' },
+  { q: 'O que é preço teto de Bazin?', a: 'O preço teto de Bazin é o dividendo por ação dos últimos 12 meses dividido pelo dividend yield mínimo da régua. Na régua clássica de Décio Bazin, esse rendimento é 6% ao ano, escrito como 0,06. A conta olha o dividendo já pago. Não diz o que a empresa vai distribuir depois e não é recomendação de compra ou venda. A página do método escreve a fórmula e um exemplo hipotético fechado.' },
+  { q: 'O que é preço teto projetivo?', a: 'O preço teto projetivo aplica a régua de Bazin ao dividendo estimado do próximo ciclo, não ao dividendo já pago: dividendo projetado dividido pelo yield desejado. Com crescimento zero, o projetivo repete o Bazin, porque sem estimativa não há projeção. A premissa entra dividida por um número pequeno, então um erro de dividendo futuro muda bastante o teto. É um cenário, não um fato e não uma recomendação de compra ou venda.' },
+  { q: 'Qual a fórmula do preço teto de Bazin?', a: 'Preço teto de Bazin = dividendos por ação dos últimos 12 meses ÷ 0,06. O 0,06 é o yield de 6% ao ano da régua clássica. Em um exemplo hipotético, R$ 1,20 de dividendos por ação levam a R$ 20,00, porque 1,20 ÷ 0,06 = 20. Trocar o percentual produz outra régua e deixa de ser o preço teto de Bazin. O número é estimativa educacional, não recomendação de compra ou venda.' },
+  { q: 'Qual a diferença entre o preço teto de Bazin e o de Graham?', a: 'Bazin divide o dividendo dos últimos 12 meses por 0,06. Graham tira a raiz de 22,5 × LPA × VPA e não usa o dividendo. As duas contas olham números diferentes da mesma empresa, então os tetos podem se afastar. Esta calculadora mostra as duas e a média dos métodos que têm número. Nenhuma das duas é recomendação de compra ou venda.' },
 ]
 
 usePageSeo({
