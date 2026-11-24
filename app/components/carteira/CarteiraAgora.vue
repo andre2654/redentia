@@ -48,7 +48,7 @@ interface AchadosDoTopo {
 }
 /** a /carteira nova (06/11/2026): os avisos do motor e o frescor de cada conexão; `mock` (só no dev) não grava nada */
 interface VisaoDoTopo { avisos: AvisosVisao; conexoes: ConexaoVisao[]; ativos: number; dadosDe: string | null; mock?: boolean }
-const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null; /** 24/11: a tela nova entra com o topo já aberto (o patrimônio, a fileira e o gráfico), como na tela antiga */ aberto?: boolean; /** 24/11 (o meio-termo): o topo vira um cartão dentro da página; o patrimônio e a fileira de números moram no trilho ao lado (CarteiraTrilho) */ cartao?: boolean }>()
+const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null; /** 24/11: a tela nova entra com o topo já aberto (o patrimônio, a fileira e o gráfico), como na tela antiga */ aberto?: boolean; /** 24/11 (o meio-termo): o topo vira um cartão dentro da página; o patrimônio e a fileira de números moram no trilho ao lado (CarteiraTrilho) */ cartao?: boolean; /** 24/11 (o Início do canvas): do cartão fica só o gráfico, com o título, a legenda e o período; o estado, o dia, os botões, as perguntas e as contas saem (o olho mora no trilho) */ soGrafico?: boolean }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
 // os onMounted dos composables vêm antes do await
@@ -512,7 +512,7 @@ const olhouLinha = computed(() => {
 </script>
 
 <template>
-  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao, 'cto--enxuto': enxuto, 'cto--cartao': cartao }" aria-labelledby="cto-h1" data-clarity-mask="true">
+  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao, 'cto--enxuto': enxuto, 'cto--cartao': cartao, 'cto--so-grafico': soGrafico }" aria-labelledby="cto-h1" data-clarity-mask="true">
     <div class="tbo__luz" aria-hidden="true" />
     <div class="tbo__linha1">
       <div class="tbo__id">
@@ -652,7 +652,7 @@ const olhouLinha = computed(() => {
           <span v-if="enxuto && cdiPct != null" class="tbo__leg cto__leg-cdi">CDI <b>{{ pctAtivo(cdiPct) }}</b></span>
           <span v-if="legenda.meta" class="tbo__leg cto__leg-meta"><i class="tbo__traco" aria-hidden="true" />{{ legenda.meta }}</span>
         </p>
-        <AtivoPeriodo v-if="enxuto && opcoes.length > 1" v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="cto__periodo-cab" />
+        <AtivoPeriodo v-if="(enxuto || soGrafico) && opcoes.length > 1" v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="cto__periodo-cab" />
       </div>
       <div class="tbo__grafico">
         <AtivoGrafico
@@ -661,7 +661,7 @@ const olhouLinha = computed(() => {
         />
       </div>
       <div class="tbo__horizonte" aria-hidden="true" />
-      <div v-if="!enxuto && opcoes.length > 1" class="tbo__periodo">
+      <div v-if="!enxuto && !soGrafico && opcoes.length > 1" class="tbo__periodo">
         <AtivoPeriodo v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="tbo__seg" :style="{ maxWidth: `${opcoes.length * 130}px` }" />
       </div>
       <p v-if="!enxuto" class="tbo__uso" aria-hidden="true">Passe o cursor para ler um dia; arraste para medir entre dois.</p>
@@ -865,4 +865,9 @@ const olhouLinha = computed(() => {
 /* os botões do topo em linha, sem o rótulo embaixo: o rótulo segue para o leitor de tela e no title */
 .cto--cartao .cto__acoes { gap: 8px; }
 .cto--cartao .cto__acoes :deep(.tac__r) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* só o gráfico (o Início do canvas): o cabeçalho do gráfico vira o topo do cartão, com o período à direita */
+.cto--so-grafico .tbo__linha1, .cto--so-grafico .cto__corpo, .cto--so-grafico .tbo__pe { display: none; }
+.cto--so-grafico .tbo__palco { margin-top: 0; }
+.cto--so-grafico .tbo__palco-cab { justify-content: flex-start; }
+.cto--so-grafico .cto__periodo-cab { margin-left: auto; }
 </style>

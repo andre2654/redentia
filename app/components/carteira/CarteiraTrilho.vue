@@ -25,7 +25,7 @@ const props = defineProps<{
   fonte?: string | null
 }>()
 
-const { visiveis } = useValoresVisiveis()
+const { visiveis, alternar } = useValoresVisiveis()
 const OCULTO = 'R$ ••••'
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const reais = (v: string | null | undefined) => (v == null ? null : visiveis.value ? v : OCULTO)
@@ -55,7 +55,14 @@ const Link = resolveComponent('NuxtLink')
 <template>
   <div class="ctr" data-clarity-mask="true">
     <div class="ctr__grupo">
-      <NuxtLink to="/carteira" class="ctr__rotulo">Patrimônio <span aria-hidden="true">›</span></NuxtLink>
+      <div class="ctr__topo">
+        <NuxtLink to="/carteira" class="ctr__rotulo">Patrimônio <span aria-hidden="true">›</span></NuxtLink>
+        <!-- o olho da tela: vale para o trilho, as frases e o gráfico -->
+        <button type="button" class="ctr__olho" :aria-pressed="visiveis" :aria-label="visiveis ? 'Esconder os valores' : 'Mostrar os valores'" :title="visiveis ? 'Esconder os valores' : 'Mostrar os valores'" @click="alternar">
+          <svg v-if="visiveis" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.500 9.500 6.500-3.500 6.500-9.500 6.500S2.500 12 2.500 12Z" /><circle cx="12" cy="12" r="2.8" /></svg>
+          <svg v-else width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l16 16" /><path d="M9.900 5.800A9.700 9.700 0 0 1 12 5.500c6 0 9.500 6.500 9.500 6.500a17 17 0 0 1-2.700 3.500M6.300 7.400A16.600 16.600 0 0 0 2.500 12s3.500 6.500 9.500 6.500a9.300 9.300 0 0 0 4.200-1" /><path d="M10 10.100a2.800 2.800 0 0 0 3.900 3.900" /></svg>
+        </button>
+      </div>
       <p class="ctr__total">{{ reais(patrimonio) }}</p>
       <div v-if="fatias.length" class="ctr__barra" role="img" :aria-label="rotuloAlocacao">
         <span v-for="a in fatias" :key="a.name" :style="{ flexGrow: a.pctNum, background: a.color }" :title="`${a.name} ${a.pct}`" />
@@ -103,6 +110,10 @@ const Link = resolveComponent('NuxtLink')
 .ctr__grupo { display: flex; flex-direction: column; min-width: 0; }
 .ctr__rotulo { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; min-height: 28px; color: var(--nu-gray); font-size: 15px; font-weight: 400; text-decoration: none; transition: color var(--nu-dur-rapida, .15s) var(--nu-ease-saida, ease); }
 .ctr__rotulo:hover { color: var(--nu-ink); }
+.ctr__topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ctr__olho { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: -8px -12px -8px 0; border: 0; border-radius: 50%; background: transparent; color: var(--nu-gray); cursor: pointer; transition: color var(--nu-dur-rapida, .15s) var(--nu-ease-saida, ease), background var(--nu-dur-rapida, .15s) var(--nu-ease-saida, ease); }
+.ctr__olho:hover { background: var(--nu-band); color: var(--nu-ink); }
+.ctr__olho:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 1px; }
 .ctr__rotulo span { color: var(--nu-gray); opacity: .7; }
 .ctr__total { margin: 0; font-size: 30px; line-height: 1.25; font-weight: var(--nu-w-display); letter-spacing: -0.025em; white-space: nowrap; }
 .ctr__barra { display: flex; gap: 3px; height: 5px; margin-top: 14px; }

@@ -46,10 +46,15 @@ function abrindoUmAtivo(): boolean {
   return h.contains('nu-espiar-aberto') || h.contains('nu-maximizando')
 }
 
+export interface AvisoDoInicio { id: string; titulo: string; texto: string | null; prazo: string | null }
+
 export function useAvisoDaCarteira() {
   const { token } = useAuthState()
   /** o aviso urgente do motor existe e está na lista do dia */
   const urgente = useState<boolean>('carteira:aviso-urgente', () => false)
+  /** os avisos do dia, o urgente primeiro, para o Início listar (24/11); null antes da resposta ou sem a visão liberada.
+   *  Só na memória da aba: o texto do aviso fala do dinheiro da pessoa e não vai para o sessionStorage. */
+  const itens = useState<AvisoDoInicio[] | null>('carteira:aviso-itens', () => null)
   /** a consulta já voltou (com resposta ou sem) para esta sessão */
   const consultado = useState<boolean>('carteira:aviso-consultado', () => false)
 
@@ -70,12 +75,14 @@ export function useAvisoDaCarteira() {
 
   async function buscar(t: string) {
     try {
-      const v = await $fetch<{ avisos?: { urgente?: string | null; itens?: { id: string }[] } }>('/api/backend/me/carteira/visao', {
+      const v = await $fetch<{ avisos?: { urgente?: string | null; itens?: { id: string; titulo?: string; curto?: string; texto?: string; prazo?: string | null }[] } }>('/api/backend/me/carteira/visao', {
         headers: { Accept: 'application/json', Authorization: `Bearer ${t}` },
       })
       if (token.value !== t) return
       const id = v.avisos?.urgente
       urgente.value = !!id && !!v.avisos?.itens?.some((a) => a.id === id)
+      const lista = (v.avisos?.itens ?? []).filter((a) => !!(a.titulo || a.curto)).map((a) => ({ id: a.id, titulo: (a.titulo || a.curto)!, texto: a.texto ?? null, prazo: a.prazo ?? null }))
+      itens.value = [...lista.filter((a) => a.id === id), ...lista.filter((a) => a.id !== id)]
       respondidoPara = t
       respondidoEm = Date.now()
       guardarAviso(guardaDaAba(), t, urgente.value, respondidoEm)
@@ -95,11 +102,12 @@ export function useAvisoDaCarteira() {
    * Pergunta ao motor, uma vez por sessão a cada 5 minutos. Só no cliente.
    * `adiado`: só quando a página já carregou e o navegador está ocioso (a régua).
    */
-  function consultar(opcoes: { adiado?: boolean } = {}): Promise<void> {
+  function consultar(opcoes: { adiado?: boolean; /** o Início quer a lista: a resposta guardada na aba só tem o selo, então busca de novo */ comItens?: boolean } = {}): Promise<void> {
     if (!import.meta.client) return Promise.resolve()
     const t = token.value
     if (!t) return Promise.resolve()
-    if (vale(t) || daAba(t)) return Promise.resolve()
+    const faltaLista = !!opcoes.comItens && itens.value === null
+    if (!faltaLista && (vale(t) || daAba(t))) return Promise.resolve()
     if (emVoo) return emVoo
     if (!opcoes.adiado) return pedir(t)
     if (agendada?.token === t) return agendada.p
@@ -132,5 +140,5 @@ export function useAvisoDaCarteira() {
     if (import.meta.client && opcoes.saiu) esquecerAvisosGuardados(guardaDaAba())
   }
 
-  return { urgente, consultado, consultar, esquecer }
+  return { urgente, consultado, consultar, esquecer, itens }
 }
