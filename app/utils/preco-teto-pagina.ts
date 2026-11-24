@@ -518,7 +518,7 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
     passos,
     paragrafo,
     resposta,
-    faq: montarFaq({ ticker, nome, unidade, preco: i.preco, bazin, graham, consenso, dividendo: i.dividendo, tabela }),
+    faq: montarFaq({ ticker, nome, unidade, preco: i.preco, dataTexto, bazin, graham, consenso, dividendo: i.dividendo, tabela }),
     title,
     description,
     segmento,
@@ -750,6 +750,7 @@ function montarFaq(p: {
   nome: string
   unidade: 'ação' | 'cota'
   preco: number
+  dataTexto: string | null
   bazin: number
   graham: number
   consenso: number
@@ -788,6 +789,27 @@ function montarFaq(p: {
   faq.push({
     q: `O preço teto de ${p.ticker} é uma recomendação?`,
     a: `Não. O preço teto de ${p.ticker} é a conta de Bazin, Graham, P/L setorial e valor patrimonial sobre os números dos últimos 12 meses. Diz até onde cada método chega. Estimativa educacional, não é recomendação.`,
+  })
+
+  // Busca real (autocomplete Google, 24 nov 2026, 10:03 UTC): "o que é preço
+  // teto", "preço teto {ticker}", "preço teto bazin formula", "calculadora
+  // preço teto". Número citado é o desta página, com o pregão quando existe.
+  const quando = p.dataTexto ? ` no pregão de ${p.dataTexto}` : ''
+  faq.push({
+    q: `O que é o preço teto de ${p.ticker}?`,
+    a: p.consenso > 0
+      ? `O preço teto de ${p.ticker} é o limite de cada método desta página, a partir dos fundamentos. A média dos métodos com número é ${brl(p.consenso)}, com a cotação a ${brl(p.preco)}${quando}. Não é ordem de compra nem previsão de cotação. Estimativa educacional, não é recomendação.`
+      : `O preço teto de ${p.ticker} seria a média dos métodos com número. Com os dados atuais não há média. A cotação desta página é ${brl(p.preco)}${quando}. Estimativa educacional, não é recomendação.`,
+  })
+  faq.push({
+    q: `Qual a fórmula do preço teto de Bazin de ${p.ticker}?`,
+    a: p.bazin > 0
+      ? `A fórmula de Bazin é o dividendo de renda dos últimos 12 meses dividido por 0,06. Em ${p.ticker}, ${brl(p.dividendo)} por ${p.unidade} ÷ 0,06 = ${brl(p.bazin)}. A cotação usada nesta página é ${brl(p.preco)}${quando}. Estimativa educacional, não é recomendação.`
+      : `A fórmula de Bazin é o dividendo de renda dos últimos 12 meses dividido por 0,06. ${p.ticker} não teve esse dividendo, então a conta não produz preço teto. A cotação usada nesta página é ${brl(p.preco)}${quando}. Estimativa educacional, não é recomendação.`,
+  })
+  faq.push({
+    q: `Como calcular o preço teto de ${p.ticker}?`,
+    a: `A conta desta página aplica, quando há número, Bazin (dividendo de 12 meses ÷ 0,06), Graham (raiz de 22,5 × LPA × VPA), P/L setorial (LPA × P/L médio do setor) e valor patrimonial (VPA × 1,5). A média usa só os métodos com número. O projetivo fica de fora porque repete o Bazin sobre o mesmo dividendo. ${p.consenso > 0 ? `Para ${p.ticker}, a média é ${brl(p.consenso)}, com a cotação a ${brl(p.preco)}${quando}.` : `Para ${p.ticker}, não há média com os números atuais. A cotação é ${brl(p.preco)}${quando}.`} Estimativa educacional, não é recomendação.`,
   })
   return faq
 }
