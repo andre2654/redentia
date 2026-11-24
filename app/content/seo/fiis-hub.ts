@@ -1,7 +1,8 @@
 /**
  * /fiis é o hub educativo de fundos imobiliários.
+ * /rankings/fiis é a página dos rankings só de FIIs.
  * /rankings?classe=fiis continua o filtro do hub de rankings, com canonical
- * /rankings: as duas páginas não mostram a mesma coisa.
+ * /rankings: as páginas não mostram a mesma coisa.
  */
 import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO } from '../../utils/serp.ts'
 import type { NuFaqItem } from '../../types/market.ts'

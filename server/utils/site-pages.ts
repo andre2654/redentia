@@ -35,6 +35,16 @@ import {
   ACOES_BARATAS_PATH,
   ACOES_BARATAS_TITLE,
 } from '../../app/content/seo/acoes-baratas'
+import {
+  FIIS_RANK_DESCRIPTION,
+  FIIS_RANK_PATH,
+  FIIS_RANK_TITLE,
+} from '../../app/content/seo/rankings-fiis'
+import {
+  SMALL_CAPS_DESCRIPTION,
+  SMALL_CAPS_PATH,
+  SMALL_CAPS_TITLE,
+} from '../../app/content/seo/rankings-small-caps'
 import { SETORES } from '../../app/content/setores'
 import { paginasSitemapSetoresLista } from '../../app/utils/setoresLista'
 import { GUIDE_DOCS } from '../../app/content/guias'
@@ -781,6 +791,18 @@ function rankingPages(marketDate: string | undefined): SitePage[] {
     path: ACOES_BARATAS_PATH,
     title: ACOES_BARATAS_TITLE,
     description: ACOES_BARATAS_DESCRIPTION,
+    lastmod: marketDate,
+  })
+  listas.push({
+    path: FIIS_RANK_PATH,
+    title: FIIS_RANK_TITLE,
+    description: FIIS_RANK_DESCRIPTION,
+    lastmod: marketDate,
+  })
+  listas.push({
+    path: SMALL_CAPS_PATH,
+    title: SMALL_CAPS_TITLE,
+    description: SMALL_CAPS_DESCRIPTION,
     lastmod: marketDate,
   })
   return listas
