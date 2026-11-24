@@ -179,6 +179,7 @@ export const GRUPO_2: GlossaryTerm[] = [
       'Pra decisão da companhia, o JCP costuma ser vantajoso porque o abatimento no imposto compensa. Pro investidor, o que chega é o valor líquido dos 17,5%, e por isso o JCP entra na conta do <a href="/glossario/dividend-yield">dividend yield</a> e do <a href="/glossario/payout">payout</a> ao lado dos dividendos, formando o total de proventos.',
       '<strong>Exemplo ilustrativo:</strong> se a empresa decide destinar R$ 100 por lote de ações, pagando como dividendo você receberia R$ 100 isentos; pagando como JCP você receberia R$ 82,50 (R$ 100 menos 17,5% de IR na fonte), enquanto a empresa deduz os R$ 100 da base do imposto dela. Os números são redondos só pra mostrar o mecanismo.',
       'Ressalva honesta: <strong>o IR do JCP já sai retido, mas ainda precisa ser declarado</strong> no ajuste anual, na ficha de rendimentos sujeitos à tributação exclusiva. E como a legislação de tributação de proventos muda (a retenção do JCP passou de 15% para 17,5% em 2026), comparar dividendo e JCP sempre depende das regras vigentes no momento.',
+      'A redação da alíquota, a data com, a data ex e o informe de rendimentos estão na <a href="/jcp">página de juros sobre capital próprio</a>.',
     ],
     related: ['dividendos', 'proventos', 'dividend-yield', 'payout', 'lucro-liquido'],
     backlink: {

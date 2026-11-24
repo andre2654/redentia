@@ -267,7 +267,7 @@ function simular() {
   <section class="vrd" :class="{ 'vrd--foco': emFoco, 'vrd--palco': noPalco }" aria-labelledby="vrd-titulo" data-clarity-mask="true">
     <!-- a pergunta, a frase e a linha de apoio entram juntas ao rolar, em cascata (v-revelar) -->
     <div v-revelar="{ alvo: 'filhos' }" class="vrd__cab">
-    <NuEyebrow class="vrd__eyebrow">Quanto ele me paga?</NuEyebrow>
+    <NuEyebrow class="vrd__eyebrow">Renda</NuEyebrow>
     <h2 id="vrd-titulo" class="vrd__frase"><FraseDestaque :texto="frase" /></h2>
     <p v-if="cob != null" class="vrd__sub">
       Em {{ r.mesFechado }} caíram {{ mask(brl0(r.caiu)) }} na sua conta, e você gasta uns {{ mask(brl0(r.gastoMedio!)) }} por mês.

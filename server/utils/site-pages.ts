@@ -46,6 +46,7 @@ import {
   SMALL_CAPS_TITLE,
 } from '../../app/content/seo/rankings-small-caps'
 import { SETORES } from '../../app/content/setores'
+import { JCP_DESCRIPTION, JCP_TITLE } from '../../app/content/jcp'
 import { paginasSitemapSetoresLista } from '../../app/utils/setoresLista'
 import { GUIDE_DOCS } from '../../app/content/guias'
 import { allTerms as glossaryTerms } from '../../app/content/glossario'
@@ -134,6 +135,7 @@ const CORE_PAGES: SitePage[] = [
   { path: '/tesouro', title: 'Tesouro Direto hoje', description: 'As taxas de todos os títulos do Tesouro Direto, com preço e vencimento.' },
   { path: '/setor', title: 'Hub de setores', description: 'Os setores da B3 com empresas, valor de mercado somado e variação do dia.' },
   { path: '/glossario', title: 'Glossário do investidor', description: 'Dicionário do mercado financeiro brasileiro: os principais termos da bolsa explicados de forma clara, de A a Z.' },
+  { path: '/jcp', title: JCP_TITLE, description: JCP_DESCRIPTION, lastmod: '2026-11-24' },
   { path: '/benchmark-ia', title: 'Ranking de IAs em finanças', description: 'Dez IAs na mesma prova de finanças, corrigida por gabarito: números inventados, planos ruins, golpes e uma carteira de R$ 10 mil. Placar com margem de erro e custo declarado.' },
   { path: '/metodologia', title: 'Metodologia', description: 'Como cada calculadora e ranking funciona, fórmulas, fontes oficiais e limitações.' },
   // As páginas do produto de escritório (a landing e a de campanha) saíram com

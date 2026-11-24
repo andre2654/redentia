@@ -140,6 +140,11 @@ if (data.value) {
           <p>Swing trade, day trade, isenção de R$ 20 mil e o DARF 6015.</p>
           <span class="ir-t__link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
+        <NuxtLink to="/jcp" class="ir-t__link" :class="{ 'ir-t__link--white': linksTone === 'cream' }">
+          <h3>Juros sobre capital próprio</h3>
+          <p>O que é JCP, a diferença para o dividendo e a retenção de 17,5% desde 2026.</p>
+          <span class="ir-t__link-ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+        </NuxtLink>
         <NuxtLink :to="`/asset/${ticker}`" class="ir-t__link" :class="{ 'ir-t__link--white': linksTone === 'cream' }">
           <h3>Página de {{ ticker }}</h3>
           <p>Cotação, fundamentos e o histórico de proventos no ativo.</p>

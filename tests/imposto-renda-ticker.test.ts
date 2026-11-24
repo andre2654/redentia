@@ -165,7 +165,7 @@ test('a página, o sitemap e o link em /dividendos ficam nos 50', () => {
   assert.match(pagina, /NuFaqAccordion/)
   assert.match(pagina, /\/dividendos\/\$\{ticker\}/)
   assert.match(pagina, /\/calculadora\/imposto-renda/)
-  assert.doesNotMatch(pagina, /\/jcp/)
+  assert.match(pagina, /to="\/jcp"/)
   assert.match(pagina, /ir\.aviso/)
   assert.match(ler('app/utils/impostoRendaPagina.ts'), /Não é consultoria tributária/)
   assert.match(dividendos, /tickerNaListaImpostoRenda\(ticker\)/)

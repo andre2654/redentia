@@ -149,8 +149,10 @@ const avisoDoMotor = computed(() => aviso.urgente.value && !!estado.value && avi
 const esconderReais = (s: string) => (visiveis.value ? s : s.replace(/R\$\s?[\d.,]+( mil| milhões?| bi)?/g, 'R$ ••••'))
 const pontos = computed(() => {
   const l = aviso.itens.value
-  if (!l?.length || !estado.value || !avisosLiberados(estado.value)) return null
-  return { total: l.length, itens: l.slice(0, 2).map((a) => ({ id: a.id, titulo: esconderReais(a.titulo).replace(/\.$/, ''), texto: a.texto ? esconderReais(a.texto) : null })) }
+  // null = sem resposta da visão (a carteira nova não liberada para a pessoa, rede): a seção não aparece.
+  // Lista vazia = o motor olhou e nada pede atenção: a seção aparece e diz isso.
+  if (!l || !estado.value || !avisosLiberados(estado.value)) return null
+  return { total: l.length, olhados: aviso.olhados.value, itens: l.slice(0, 2).map((a) => ({ id: a.id, titulo: esconderReais(a.titulo).replace(/\.$/, ''), texto: a.texto ? esconderReais(a.texto) : null })) }
 })
 
 /** o estado ao lado do nome: 'Tudo normal' no dia comum, 'Pede atenção' no alerta do dia ou no aviso urgente do motor; em dia de movimento forte, só a data (seloDoDia, a mesma regra da régua) */
@@ -272,6 +274,9 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
             <span class="hmt__aviso-t"><i aria-hidden="true" />{{ a.titulo }}</span>
             <span v-if="a.texto" class="hmt__aviso-s">{{ a.texto }}</span>
           </NuxtLink>
+          <p v-if="!pontos.itens.length" class="hmt__nada">
+            <i aria-hidden="true" />Nada pede a sua atenção hoje.<template v-if="pontos.olhados"> A {{ MARCA.nome }} conferiu {{ pontos.olhados }} {{ pontos.olhados === 1 ? 'ponto' : 'pontos' }} da sua carteira.</template>
+          </p>
         </section>
         <NuxtLink v-else-if="avisoDoMotor" to="/carteira" class="hmt__aviso hmt__aviso--so">
           <span class="hmt__aviso-t"><i aria-hidden="true" />Sua carteira tem um ponto de atenção</span>
@@ -686,6 +691,8 @@ dl.haf__fatos .haf__fato:active { transform: scale(.995); transition-duration: v
 .hmt__h2 { margin: 0; font-size: 22px; font-weight: var(--nu-w-display); letter-spacing: -0.02em; }
 .hmt__todos { display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-blue-text); font-size: 15px; text-underline-offset: 3px; }
 .hmt__aviso--so { margin-top: 32px; }
+.hmt__nada { display: flex; align-items: center; gap: 10px; margin: 14px 0 0; padding: 18px 22px; border: 1px solid var(--nu-line-2); border-radius: 12px; color: var(--nu-gray-3); font-size: 16px; line-height: 1.5; }
+.hmt__nada i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--nu-green); }
 .hmt__ir { margin: 28px 0 0; }
 .hmt__aviso { display: flex; flex-direction: column; gap: 4px; margin-top: 14px; padding: 18px 22px; border: 1px solid var(--nu-line-2); border-radius: 12px; color: var(--nu-ink); text-decoration: none; transition: border-color var(--nu-dur-media) var(--nu-ease-saida), background var(--nu-dur-media) var(--nu-ease-saida); }
 .hmt__aviso:hover { border-color: var(--nu-line); background: var(--nu-card); }
