@@ -21,6 +21,11 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/tokens.css', '~/assets/css/fontes.css', '~/assets/css/base.css'],
 
+  // Embute também o CSS global (tokens, fontes, base). O padrão só embute
+  // arquivo .vue; a folha de entrada seguia bloqueando a primeira pintura.
+  // Os <link rel="stylesheet"> que sobram não bloqueiam: server/plugins/css-sem-bloquear.ts.
+  features: { inlineStyles: true },
+
   // Hover só onde há mouse (11/11/2026, robustez): no toque, o realce ficava
   // preso depois de tocar (o cartão erguido, a linha acesa, a seta adiantada).
   // Toda regra com :hover vai para dentro de @media (hover: hover), no mesmo
