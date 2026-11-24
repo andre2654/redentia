@@ -21,8 +21,6 @@ const props = defineProps<{
   diaDir?: NuDir
   /** proventos recebidos em 12 meses, em R$ */
   proventos?: number | null
-  /** a linha do pé: 'Nubank, atualizado hoje às 9h12' */
-  fonte?: string | null
 }>()
 
 const { visiveis, alternar } = useValoresVisiveis()
@@ -109,7 +107,8 @@ const Link = resolveComponent('NuxtLink')
       </div>
     </div>
 
-    <p v-if="fonte" class="ctr__fonte"><i aria-hidden="true" />{{ fonte }}</p>
+    <!-- as contas (só na /carteira, que sabe das conexões): de quando é cada uma e o "Adicionar conta" -->
+    <slot name="contas" />
   </div>
 </template>
 
@@ -141,8 +140,6 @@ a.ctr__papel:hover .ctr__tk { text-decoration: underline; text-underline-offset:
 .ctr__dir--up { color: var(--nu-green-text); }
 .ctr__dir--down { color: var(--nu-red-text); }
 .ctr__dir--flat { color: var(--nu-gray); }
-.ctr__fonte { display: flex; align-items: center; gap: 8px; margin: -4px 0 0; padding-top: 20px; border-top: 1px solid var(--nu-line-2); color: var(--nu-gray); font-size: 13.5px; }
-.ctr__fonte i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--nu-green); }
 /* o trilho no topo da página (a moldura estreita: celular, tablet, ou o painel do chat aberto ao lado):
    em vez de uma coluna comprida, o patrimônio e quem mexeu lado a lado, e os números numa linha embaixo */
 @container moldura (max-width: 1040px) {
@@ -152,6 +149,6 @@ a.ctr__papel:hover .ctr__tk { text-decoration: underline; text-underline-offset:
   .ctr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px clamp(28px, 6cqi, 64px); align-items: start; }
   .ctr__grupo:nth-child(2) { grid-column: 1 / -1; order: 3; }
   .ctr__fatos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .ctr__fonte { grid-column: 1 / -1; order: 4; }
+  .ctr > :deep(.cct) { grid-column: 1 / -1; order: 4; }
 }
 </style>

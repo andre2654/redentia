@@ -48,7 +48,7 @@ interface AchadosDoTopo {
 }
 /** a /carteira nova (06/11/2026): os avisos do motor e o frescor de cada conexão; `mock` (só no dev) não grava nada */
 interface VisaoDoTopo { avisos: AvisosVisao; conexoes: ConexaoVisao[]; ativos: number; dadosDe: string | null; mock?: boolean }
-const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null; /** 24/11: a tela nova entra com o topo já aberto (o patrimônio, a fileira e o gráfico), como na tela antiga */ aberto?: boolean; /** 24/11 (o meio-termo): o topo vira um cartão dentro da página; o patrimônio e a fileira de números moram no trilho ao lado (CarteiraTrilho) */ cartao?: boolean; /** 24/11 (o Início do canvas): do cartão fica só o gráfico, com o título, a legenda e o período; o estado, o dia, os botões, as perguntas e as contas saem (o olho mora no trilho) */ soGrafico?: boolean }>()
+const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null; /** 24/11: a tela nova entra com o topo já aberto (o patrimônio, a fileira e o gráfico), como na tela antiga */ aberto?: boolean; /** 24/11 (o meio-termo): o topo vira um cartão dentro da página; o patrimônio e a fileira de números moram no trilho ao lado (CarteiraTrilho) */ cartao?: boolean; /** 24/11 (o Início do canvas): do cartão fica só o gráfico, com o título, a legenda e o período; o estado, o dia, os botões, as perguntas e as contas saem (o olho mora no trilho) */ soGrafico?: boolean; /** 24/11 (a /carteira no meio-termo): o pé sai do cartão; as contas moram no trilho (CarteiraContas) e a pergunta, na barra do chat. O período sobe para o cabeçalho do gráfico */ semPe?: boolean }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
 // os onMounted dos composables vêm antes do await
@@ -512,19 +512,19 @@ const olhouLinha = computed(() => {
 </script>
 
 <template>
-  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao, 'cto--enxuto': enxuto, 'cto--cartao': cartao, 'cto--so-grafico': soGrafico }" aria-labelledby="cto-h1" data-clarity-mask="true">
+  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao, 'cto--enxuto': enxuto, 'cto--cartao': cartao, 'cto--so-grafico': soGrafico, 'cto--sem-pe': semPe }" aria-labelledby="cto-h1" data-clarity-mask="true">
     <div class="tbo__luz" aria-hidden="true" />
     <div class="tbo__linha1">
       <div class="tbo__id">
         <component :is="cartao ? 'p' : 'h1'" id="cto-h1" class="tbo__empresa">Sua carteira <span class="tbo__bolsa">{{ agora.ativos }}<template v-if="agora.atualizado"> · atualizado {{ agora.atualizado }}</template></span></component>
       </div>
       <div class="cto__acoes">
-        <!-- o olho vale também recolhido (10/11): o patrimônio aparece já no topo recolhido -->
-        <TopoBotao :rotulo="revelado ? 'Esconder valores' : 'Mostrar valores'" :aria-pressed="revelado" :title="revelado ? 'Esconder os valores' : 'Mostrar os valores'" @click="alternarRevelado">
+        <!-- o olho vale também recolhido (10/11): o patrimônio aparece já no topo recolhido; na /carteira do meio-termo ele mora no trilho -->
+        <TopoBotao v-if="!semPe" :rotulo="revelado ? 'Esconder valores' : 'Mostrar valores'" :aria-pressed="revelado" :title="revelado ? 'Esconder os valores' : 'Mostrar os valores'" @click="alternarRevelado">
           <svg v-if="revelado" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
           <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><path d="M1 1l22 22" /></svg>
         </TopoBotao>
-        <TopoBotao v-if="!enxuto" :rotulo="abrindo ? 'Abrindo…' : 'Adicionar conta'" title="Adicionar uma conta pelo Open Finance" :disabled="abrindo" :aria-busy="abrindo || undefined" @click="adicionarConta">
+        <TopoBotao v-if="!enxuto && !semPe" :rotulo="abrindo ? 'Abrindo…' : 'Adicionar conta'" title="Adicionar uma conta pelo Open Finance" :disabled="abrindo" :aria-busy="abrindo || undefined" @click="adicionarConta">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
         </TopoBotao>
         <!-- o sino: recolhido, os avisos abrem pelo "+N" e ele só guarda o lugar; aberto, é a entrada dos avisos -->
@@ -652,7 +652,7 @@ const olhouLinha = computed(() => {
           <span v-if="enxuto && cdiPct != null" class="tbo__leg cto__leg-cdi">CDI <b>{{ pctAtivo(cdiPct) }}</b></span>
           <span v-if="legenda.meta" class="tbo__leg cto__leg-meta"><i class="tbo__traco" aria-hidden="true" />{{ legenda.meta }}</span>
         </p>
-        <AtivoPeriodo v-if="(enxuto || soGrafico) && opcoes.length > 1" v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="cto__periodo-cab" />
+        <AtivoPeriodo v-if="(enxuto || soGrafico || semPe) && opcoes.length > 1" v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="cto__periodo-cab" />
       </div>
       <div class="tbo__grafico">
         <AtivoGrafico
@@ -661,7 +661,7 @@ const olhouLinha = computed(() => {
         />
       </div>
       <div class="tbo__horizonte" aria-hidden="true" />
-      <div v-if="!enxuto && !soGrafico && opcoes.length > 1" class="tbo__periodo">
+      <div v-if="!enxuto && !soGrafico && !semPe && opcoes.length > 1" class="tbo__periodo">
         <AtivoPeriodo v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="tbo__seg" :style="{ maxWidth: `${opcoes.length * 130}px` }" />
       </div>
       <p v-if="!enxuto" class="tbo__uso" aria-hidden="true">Passe o cursor para ler um dia; arraste para medir entre dois.</p>
@@ -680,7 +680,7 @@ const olhouLinha = computed(() => {
       </div>
     </dl>
 
-    <div class="tbo__pe">
+    <div v-if="!semPe" class="tbo__pe">
       <AtivoPerguntaChips v-if="!enxuto" :perguntas="perguntas" tom="escuro" :rotulo="null" @perguntar="perguntar" />
       <!-- a tela nova: de quando é cada conexão, e o que ela traz -->
       <div v-if="visao" class="tbo__sim cto__contas cto__frescor">
@@ -869,7 +869,8 @@ const olhouLinha = computed(() => {
 .cto--so-grafico .tbo__linha1, .cto--so-grafico .cto__corpo, .cto--so-grafico .tbo__pe { display: none; }
 .cto--so-grafico .tbo__palco { margin-top: 0; }
 .cto--so-grafico .tbo__palco-cab { justify-content: flex-start; }
-.cto--so-grafico .cto__periodo-cab { margin-left: auto; }
+.cto--so-grafico .cto__periodo-cab, .cto--sem-pe .cto__periodo-cab { margin-left: auto; }
+.cto--sem-pe .tbo__palco-cab { justify-content: flex-start; }
 /* o balão da leitura mora DENTRO do gráfico: acima dele está o título, a legenda e o período, e o cartão corta o que vaza */
 .cto--so-grafico :deep(.agr__dica) { transform: translate(var(--agr-dica-x, -50%), 10px); }
 </style>

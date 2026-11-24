@@ -39,6 +39,7 @@ import type { CarteiraPosicaoMundo } from '~/types/carteira'
 import CarteiraAgora from '~/components/carteira/CarteiraAgora.vue'
 import CarteiraMoldura from '~/components/carteira/CarteiraMoldura.vue'
 import CarteiraTrilho from '~/components/carteira/CarteiraTrilho.vue'
+import CarteiraContas from '~/components/carteira/CarteiraContas.vue'
 import VisaoRenda from './VisaoRenda.vue'
 import CarteiraFuturo from '~/components/carteira/CarteiraFuturo.vue'
 import VisaoImposto from './VisaoImposto.vue'
@@ -146,13 +147,6 @@ watch(lente, (l) => {
 /* ————— o meio-termo (24/11): o trilho e a abertura do documento ————— */
 const { visiveis } = useValoresVisiveis()
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
-const fonteDoTrilho = computed(() => {
-  const c = visao.value.conexoes
-  if (!c.length) return null
-  const paradas = c.filter((x) => x.estado !== 'ok').length
-  const nomes = c.length === 1 ? c[0]!.instituicao : `${c.length} contas`
-  return paradas ? `${nomes}: ${paradas === 1 ? 'uma conexão parada' : `${paradas} conexões paradas`}` : `${nomes}, em dia`
-})
 /** "Você pôs R$ X e hoje tem R$ Y": só com preço médio em todos os ativos; senão o documento abre só com o título */
 const abertura = computed(() => {
   const r = resultado.value
@@ -176,8 +170,10 @@ const abertura = computed(() => {
       <CarteiraTrilho
         :patrimonio="agora.patrimonio" :alocacao="payload.allocation" :resultado="resultado"
         :dia-valor="agora.diaValor" :dia-pct="agora.diaPct" :dia-dir="agora.diaDir"
-        :proventos="payload.proventos12mValor" :fonte="fonteDoTrilho"
-      />
+        :proventos="payload.proventos12mValor"
+      >
+        <template #contas><CarteiraContas :conexoes="visao.conexoes" @connected="emit('connected')" /></template>
+      </CarteiraTrilho>
     </template>
     <!-- o documento (24/11, o meio-termo aprovado no canvas): o título, o resumo numa frase e a barra do que a pessoa pôs
          contra o que ganhou; depois o gráfico no cartão escuro e as seções, cada uma respondendo a uma pergunta -->
@@ -200,7 +196,7 @@ const abertura = computed(() => {
     </header>
     <div class="cvi__cartao">
       <CarteiraAgora
-        id="hoje" aberto cartao :agora="agora" :chart="payload.chart" :stats="statsDoTopo"
+        id="hoje" aberto cartao sem-pe :agora="agora" :chart="payload.chart" :stats="statsDoTopo"
         :visao="{ avisos: visao.avisos, conexoes: visao.conexoes, ativos: visao.posicoes.length, dadosDe: visao.dadosDe, mock }"
         @connected="emit('connected')"
       />
