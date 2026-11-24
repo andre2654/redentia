@@ -8,7 +8,7 @@
  * Não consulta a API. Quem chama (useAcao) entrega o que o SSR já baixou.
  */
 import type { NuFaqItem } from '../types/market'
-import { TETO_DESCRICAO, TETO_TITULO_PAGINA, descricaoQueCabe, juntaAte, tituloQueCabe } from './serp.ts'
+import { TETO_DESCRICAO, TETO_TITULO_PAGINA, descricaoQueCabe, encurtaNome, juntaAte, tituloQueCabe } from './serp.ts'
 
 export const AVISO_RESUMO = 'Não é recomendação de compra ou venda.'
 const AVISO_META = 'Não é recomendação.'
@@ -295,11 +295,12 @@ function titulo(i: ResumoAtivoInput): string {
   const prefixo = `${i.ticker} cotação hoje: `
   const cheio = `${prefixo}${i.nome}${cauda}`
   if (cheio.length <= TETO_TITULO_PAGINA) return cheio
-  const orcamento = TETO_TITULO_PAGINA - prefixo.length - cauda.length
-  if (orcamento >= 3) {
-    const nome = tituloQueCabe(i.nome, orcamento)
+  // Nome curto em palavra inteira. Preposição solta ("Livetech da") não entra;
+  // se nem ela cabe, o título fica só com o ticker.
+  const nome = encurtaNome(i.nome, TETO_TITULO_PAGINA - prefixo.length - cauda.length)
+  if (nome) {
     const montado = `${prefixo}${nome}${cauda}`
-    if (nome && montado.length <= TETO_TITULO_PAGINA) return montado
+    if (montado.length <= TETO_TITULO_PAGINA) return montado
   }
   const semNome = `${i.ticker} cotação hoje${cauda}`
   return semNome.length <= TETO_TITULO_PAGINA ? semNome : tituloQueCabe(`${i.ticker} cotação hoje`)
@@ -553,7 +554,7 @@ function descricao(i: ResumoAtivoInput): string {
       const base = corpoMeta(i, null, indicadores)
       const tetoNome = orcamento - base.length - 3
       if (tetoNome >= 3) {
-        const curto = tituloQueCabe(nomeCheio, tetoNome)
+        const curto = encurtaNome(nomeCheio, tetoNome)
         if (curto && tentar(curto, indicadores)) break
       }
     }
