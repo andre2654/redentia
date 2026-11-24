@@ -73,6 +73,11 @@ usePageSeo({
           <p class="agd__card-p">Dividend yield e P/VP dos fundos. Não é a lista de pagamentos do mês.</p>
           <span class="agd__ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
         </NuxtLink>
+        <NuxtLink to="/jcp" class="agd__card">
+          <h3 class="agd__card-titulo">Juros sobre capital próprio</h3>
+          <p class="agd__card-p">O que é JCP, a diferença para o dividendo e a retenção de 17,5% desde 2026.</p>
+          <span class="agd__ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+        </NuxtLink>
         <NuxtLink to="/guias/data-com-e-data-ex" class="agd__card">
           <h3 class="agd__card-titulo">Data com e data ex</h3>
           <p class="agd__card-p">O que cada data decide, e por que vender na data ex não tira o provento.</p>
