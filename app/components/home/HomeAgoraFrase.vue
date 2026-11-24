@@ -157,7 +157,16 @@ const quandoDoDia = computed(() => {
 // o topo escuro da /carteira como herói do Início: só para quem vê os números (assinante) e tem carteira
 const topoEscuro = computed(() => {
   const t = props.resumo?.topo
-  return comCarteira.value && podeVerNumeros.value && t?.agora ? { agora: t.agora, chart: t.chart, stats: t.stats } : null
+  return comCarteira.value && podeVerNumeros.value && t?.agora ? { agora: t.agora, chart: t.chart, stats: t.stats, alocacao: t.alocacao ?? null } : null
+})
+// a frase do Início (24/11, o meio-termo): quanto a pessoa está à frente do que pôs; o R$ segue o olho da tela
+const nfInteiro = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
+const fraseDoGanho = computed(() => {
+  const r = props.resumo?.resultado
+  if (!r || r.ganho == null || Math.abs(r.ganho) < 0.5) return 'Aqui está a sua carteira hoje.'
+  const v = visiveis.value ? `R$ ${nfInteiro.format(Math.abs(r.ganho))}` : 'R$ ••••'
+  const parcial = r.comCusto < r.linhas.length ? `, em ${r.comCusto} de ${r.linhas.length} ativos` : ''
+  return r.ganho > 0 ? `Você está ${v} à frente do que pôs${parcial}.` : `Você está ${v} abaixo do que pôs${parcial}.`
 })
 const fatos = computed(() => {
   const r = props.resumo
@@ -235,14 +244,27 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
   <!-- 24/11 (o dono: "no início também"): com carteira e assinatura, o herói do Início é o topo escuro da /carteira
        (o patrimônio grande, o dia, o retorno em R$ e o gráfico); embaixo, quem subiu e quem caiu e o caminho para a carteira -->
   <template v-if="topoEscuro">
-    <CarteiraAgora aberto :agora="topoEscuro.agora" :chart="topoEscuro.chart" :stats="topoEscuro.stats" />
-    <section class="haf haf--depois" aria-label="Seus ativos hoje">
-      <CarteiraSobeDesce v-if="resumo?.resultado" :resultado="resumo.resultado" :mostrar-reais="visiveis" :quando="quandoDoDia" class="haf__sobe" />
-      <div class="haf__acoes haf__acoes--depois">
-        <NuBotaoSeta to="/carteira">Abrir minha carteira</NuBotaoSeta>
-        <NuLinkSeta to="/carteira#futuro" tom="tinta">Ver a carteira em 5 anos</NuLinkSeta>
-      </div>
-    </section>
+    <CarteiraMoldura>
+      <template #trilho>
+        <CarteiraTrilho
+          :patrimonio="topoEscuro.agora.patrimonio" :alocacao="topoEscuro.alocacao" :resultado="resumo?.resultado"
+          :dia-valor="topoEscuro.agora.diaValor" :dia-pct="topoEscuro.agora.diaPct" :dia-dir="topoEscuro.agora.diaDir"
+          :proventos="resumo?.proventos12mValor"
+        />
+      </template>
+      <section class="hmt" aria-labelledby="hmt-h1">
+        <h1 id="hmt-h1" class="hmt__h1" data-clarity-mask="true"><span>{{ ola }}</span>{{ fraseDoGanho }}</h1>
+        <CarteiraAgora aberto cartao :agora="topoEscuro.agora" :chart="topoEscuro.chart" :stats="topoEscuro.stats" />
+        <NuxtLink v-if="avisoDoMotor" to="/carteira" class="hmt__aviso">
+          <span class="hmt__aviso-t"><i aria-hidden="true" />Sua carteira tem um ponto de atenção</span>
+          <span class="hmt__aviso-s">Abra a carteira para ver o que é e o que dá para fazer.</span>
+        </NuxtLink>
+        <div class="haf__acoes haf__acoes--depois">
+          <NuBotaoSeta to="/carteira">Abrir minha carteira</NuBotaoSeta>
+          <NuLinkSeta to="/carteira#futuro" tom="tinta">Ver a carteira em 5 anos</NuLinkSeta>
+        </div>
+      </section>
+    </CarteiraMoldura>
   </template>
   <section v-else class="haf" aria-labelledby="haf-titulo">
     <!-- a linha do nome: quem é, o estado do dia e o olho -->
@@ -639,4 +661,14 @@ dl.haf__fatos .haf__fato:active { transform: scale(.995); transition-duration: v
   .haf__futuro { animation: none; }
   .haf__graf--vivo:hover, .haf__graf--vivo:active, dl.haf__fatos .haf__fato:hover, dl.haf__fatos .haf__fato:active { transform: none; }
 }
+/* o Início de quem tem carteira no meio-termo (24/11): a saudação em duas linhas (a primeira em cinza), o gráfico no
+   cartão escuro e o ponto de atenção em cartão de contorno; os números moram no trilho ao lado */
+.hmt { max-width: 900px; margin: 0 auto; padding: clamp(28px, 3.4vw, 44px) clamp(20px, 3.4vw, 44px) clamp(40px, 5vw, 64px); box-sizing: content-box; }
+.hmt__h1 { margin: 0 0 30px; font-size: clamp(26px, 2.8vw, 34px); line-height: 1.22; font-weight: var(--nu-w-display); letter-spacing: -0.03em; }
+.hmt__h1 span { display: block; color: var(--nu-gray); opacity: .8; }
+.hmt__aviso { display: flex; flex-direction: column; gap: 4px; margin-top: 28px; padding: 18px 22px; border: 1px solid var(--nu-line-2); border-radius: 12px; color: var(--nu-ink); text-decoration: none; transition: border-color var(--nu-dur-media) var(--nu-ease-saida), background var(--nu-dur-media) var(--nu-ease-saida); }
+.hmt__aviso:hover { border-color: var(--nu-line); background: var(--nu-card); }
+.hmt__aviso-t { display: flex; align-items: center; gap: 10px; font-size: 17.5px; }
+.hmt__aviso-t i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--nu-amber-fill); }
+.hmt__aviso-s { color: var(--nu-gray); font-size: 15.5px; line-height: 1.5; }
 </style>

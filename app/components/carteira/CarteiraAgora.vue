@@ -48,7 +48,7 @@ interface AchadosDoTopo {
 }
 /** a /carteira nova (06/11/2026): os avisos do motor e o frescor de cada conexão; `mock` (só no dev) não grava nada */
 interface VisaoDoTopo { avisos: AvisosVisao; conexoes: ConexaoVisao[]; ativos: number; dadosDe: string | null; mock?: boolean }
-const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null; /** 24/11: a tela nova entra com o topo já aberto (o patrimônio, a fileira e o gráfico), como na tela antiga */ aberto?: boolean }>()
+const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null; /** 24/11: a tela nova entra com o topo já aberto (o patrimônio, a fileira e o gráfico), como na tela antiga */ aberto?: boolean; /** 24/11 (o meio-termo): o topo vira um cartão dentro da página; o patrimônio e a fileira de números moram no trilho ao lado (CarteiraTrilho) */ cartao?: boolean }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
 // os onMounted dos composables vêm antes do await
@@ -512,11 +512,11 @@ const olhouLinha = computed(() => {
 </script>
 
 <template>
-  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao, 'cto--enxuto': enxuto }" aria-labelledby="cto-h1" data-clarity-mask="true">
+  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao, 'cto--enxuto': enxuto, 'cto--cartao': cartao }" aria-labelledby="cto-h1" data-clarity-mask="true">
     <div class="tbo__luz" aria-hidden="true" />
     <div class="tbo__linha1">
       <div class="tbo__id">
-        <h1 id="cto-h1" class="tbo__empresa">Sua carteira <span class="tbo__bolsa">{{ agora.ativos }}<template v-if="agora.atualizado"> · atualizado {{ agora.atualizado }}</template></span></h1>
+        <component :is="cartao ? 'p' : 'h1'" id="cto-h1" class="tbo__empresa">Sua carteira <span class="tbo__bolsa">{{ agora.ativos }}<template v-if="agora.atualizado"> · atualizado {{ agora.atualizado }}</template></span></component>
       </div>
       <div class="cto__acoes">
         <!-- o olho vale também recolhido (10/11): o patrimônio aparece já no topo recolhido -->
@@ -854,4 +854,15 @@ const olhouLinha = computed(() => {
 @media (prefers-reduced-motion: reduce) {
   .cto__frase--link { transition: none; }
 }
+/* o cartão (24/11, o meio-termo): o topo cabe na coluna do conteúdo, com cantos; o patrimônio grande e a fileira de
+   números saem (estão no trilho ao lado), e ficam o estado do dia, a leitura do gráfico, o gráfico e as contas */
+.cto--cartao { --g: clamp(18px, 2.2vw, 28px); padding: 20px var(--g) 22px; border-radius: 16px; box-shadow: var(--nu-shadow-escuro); }
+.cto--cartao .tbo__empresa { font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); }
+.cto--cartao .tbo__preco, .cto--cartao .tbo__nums, .cto--cartao .tbo__uso { display: none; }
+.cto--cartao .cto__dia-linha { min-height: 28px; }
+.cto--cartao :deep(.tbo__grafico), .cto--cartao .tbo__grafico { height: clamp(200px, 22vw, 290px); }
+.cto--cartao .tbo__palco { margin-top: 18px; }
+/* os botões do topo em linha, sem o rótulo embaixo: o rótulo segue para o leitor de tela e no title */
+.cto--cartao .cto__acoes { gap: 8px; }
+.cto--cartao .cto__acoes :deep(.tac__r) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 </style>

@@ -1025,6 +1025,7 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
       agora: buildAgora(rows, today, ibov12m.length ? ibov12m : null, totalValue, income),
       chart: buildEquityChartVM(ok(curveR)?.data ?? null, ibov12m.length ? ibov12m : null, null, totalValue),
       stats: buildHero(rows, today, income, totalValue).stats,
+      alocacao: buildAllocation(rows),
     },
   }
 }
