@@ -35,6 +35,7 @@ const REDIRECT_EXATO: Record<string, string> = {
   '/mercado': '/',
   '/raio-x': '/',
   '/calculadora': '/calculadoras',
+  '/jcp': '/glossario/jscp',
   '/ranking': '/rankings',
   '/rankings/acoes': '/rankings?classe=acoes',
   '/rankings/fiis': '/rankings?classe=fiis',

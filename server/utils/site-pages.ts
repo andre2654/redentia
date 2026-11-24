@@ -148,6 +148,7 @@ const CALCULADORA_PAGES: SitePage[] = [
   { path: '/calculadora/preco-teto', title: 'Calculadora de Preço Teto', description: 'Graham, Bazin, P/L Setorial e VPA aplicados na hora a qualquer ação da B3.', lastmod: '2026-10-26' },
   { path: '/calculadora/dividend-yield', title: 'Calculadora de Dividend Yield', description: 'DY atual, projetado e on cost. Fórmula DY = (Dividendos Anuais / Preço) × 100.', lastmod: '2026-10-20' },
   { path: '/calculadora/imposto-renda', title: 'Calculadora de IR sobre Ações', description: '15% swing trade, 20% day trade, isenção de até R$ 20 mil/mês (DARF 6015 nos dois casos).', lastmod: '2026-10-15' },
+  { path: '/calculadora/ir-dividendos-jcp', title: 'Calculadora de IR sobre dividendos e JCP', description: 'Líquido de dividendos (10% sobre o total acima de R$ 50 mil no mês) e de JCP (17,5% desde 1º de janeiro de 2026).', lastmod: '2026-11-24' },
   { path: '/calculadora/aposentadoria', title: 'Calculadora de Aposentadoria', description: 'Regra dos 4% aplicada com inflação, INSS e expectativa de vida (FIRE).', lastmod: '2026-05-01' },
   { path: '/calculadora/quanto-investir', title: 'Calculadora: Quanto Investir por Mês', description: 'Quanto aportar pra atingir uma meta financeira em prazo definido.', lastmod: '2026-05-01' },
   { path: '/calculadora/planejamento', title: 'Planejamento Patrimonial', description: 'Carteira recomendada da B3 baseada em dados históricos reais.', lastmod: '2026-05-01' },
