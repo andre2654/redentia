@@ -263,6 +263,8 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
         />
       </template>
       <section class="hmt" aria-labelledby="hmt-h1">
+        <!-- a régua do mercado, dentro da página: rola junto (antes ficava presa embaixo do topo) -->
+        <NuMarketTicker class="hmt__regua" />
         <h1 id="hmt-h1" class="hmt__h1" data-clarity-mask="true"><span>{{ ola }}</span>{{ fraseDoGanho }}</h1>
         <CarteiraAgora aberto cartao so-grafico :agora="topoEscuro.agora" :chart="topoEscuro.chart" :stats="topoEscuro.stats" />
         <section v-if="pontos" class="hmt__pontos" aria-labelledby="hmt-pontos">
@@ -286,7 +288,9 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
       </section>
     </CarteiraMoldura>
   </template>
-  <section v-else class="haf" aria-labelledby="haf-titulo">
+  <template v-else>
+  <NuMarketTicker class="haf__regua" />
+  <section class="haf" aria-labelledby="haf-titulo">
     <!-- a linha do nome: quem é, o estado do dia e o olho -->
     <header class="haf__cab">
       <div class="haf__id">
@@ -475,6 +479,7 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
       </div>
     </template>
   </section>
+  </template>
 </template>
 
 <style scoped>
@@ -683,7 +688,10 @@ dl.haf__fatos .haf__fato:active { transform: scale(.995); transition-duration: v
 }
 /* o Início de quem tem carteira no meio-termo (24/11): a saudação em duas linhas (a primeira em cinza), o gráfico no
    cartão escuro e o ponto de atenção em cartão de contorno; os números moram no trilho ao lado */
-.hmt { max-width: 900px; margin: 0 auto; padding: clamp(28px, 3.4vw, 44px) clamp(20px, 3.4vw, 44px) clamp(40px, 5vw, 64px); box-sizing: content-box; }
+.hmt { max-width: 900px; padding: 32px var(--cmo-g, 20px) clamp(40px, 5vw, 64px); box-sizing: content-box; }
+/* a régua dentro da página: solta do topo, na largura do conteúdo, com um fio embaixo */
+.hmt__regua, .haf__regua { position: static; }
+.hmt__regua { --nu-coluna: 0px; margin: -8px 0 28px; background: transparent; }
 .hmt__h1 { margin: 0 0 30px; font-size: clamp(26px, 2.8vw, 34px); line-height: 1.22; font-weight: var(--nu-w-display); letter-spacing: -0.03em; }
 .hmt__h1 span { display: block; color: var(--nu-gray); opacity: .8; }
 .hmt__pontos { margin-top: 40px; }

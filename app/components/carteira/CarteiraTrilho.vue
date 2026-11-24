@@ -29,6 +29,14 @@ const { visiveis, alternar } = useValoresVisiveis()
 const OCULTO = 'R$ ••••'
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const reais = (v: string | null | undefined) => (v == null ? null : visiveis.value ? v : OCULTO)
+/** o R$ do dia sem os centavos: no trilho todo número fora o patrimônio é redondo ('+R$ 1.978,92' vira '+R$ 1.979') */
+const semCentavos = (v: string | null | undefined) => {
+  if (v == null) return null
+  const m = v.match(/^([+−-]?)R\$\s?([\d.]+),(\d{2})$/)
+  if (!m) return v
+  const n = Math.round(Number(m[2]!.replace(/\./g, '') + '.' + m[3]))
+  return `${m[1]}R$ ${nf0.format(n)}`
+}
 
 const ganho = computed(() => {
   const r = props.resultado
@@ -79,7 +87,7 @@ const Link = resolveComponent('NuxtLink')
           <dd>{{ ganho.pct }}</dd><dt>Sobre o que pôs</dt>
         </div>
         <div v-if="diaValor || diaPct" class="ctr__fato">
-          <dd>{{ reais(diaValor) ?? diaPct }}</dd><dt>Hoje<template v-if="diaValor && diaPct">, <b :class="`ctr__dir--${diaDir ?? 'flat'}`">{{ diaPct }}</b></template></dt>
+          <dd>{{ reais(semCentavos(diaValor)) ?? diaPct }}</dd><dt>Hoje<template v-if="diaValor && diaPct">, <b :class="`ctr__dir--${diaDir ?? 'flat'}`">{{ diaPct }}</b></template></dt>
         </div>
         <div v-if="provento" class="ctr__fato">
           <dd>{{ provento }}</dd><dt>Proventos, 12 meses</dt>
@@ -123,9 +131,11 @@ const Link = resolveComponent('NuxtLink')
 .ctr__fato dd { margin: 0; font-size: 18.5px; font-weight: var(--nu-w-display); letter-spacing: -0.015em; white-space: nowrap; }
 .ctr__fato dt { order: 2; color: var(--nu-gray); font-size: 13.5px; font-weight: 400; line-height: 1.35; }
 .ctr__fato dt b { font-weight: 400; }
-.ctr__mexeu { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 32px; margin-top: 8px; }
+.ctr__mexeu { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; margin-top: 8px; }
 .ctr__lista { margin: 0; padding: 0; list-style: none; }
-.ctr__papel { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; min-height: 30px; color: inherit; font-size: 15px; text-decoration: none; }
+.ctr__papel { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-height: 30px; color: inherit; font-size: 14.5px; text-decoration: none; }
+/* o % nunca encolhe; quem cede é o nome, e um ticker de seis letras cabe inteiro na coluna */
+.ctr__papel > span:last-child { flex: none; }
 a.ctr__papel:hover .ctr__tk { text-decoration: underline; text-underline-offset: 3px; }
 .ctr__tk { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ctr__dir--up { color: var(--nu-green-text); }
