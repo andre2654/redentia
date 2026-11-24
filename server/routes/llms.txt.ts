@@ -183,6 +183,7 @@ Proventos dos últimos 12 meses aplicados a um valor, em /quanto-rende/{TICKER},
 - [Guia: Open Finance](${o}/guias/open-finance): como conectar corretoras e ver a carteira consolidada
 - [Como calcular preço teto](${o}/guias/como-calcular-preco-teto): fórmulas de Bazin, Graham, P/L setorial, valor patrimonial e projetivo. Não é recomendação de compra ou venda
 - [Glossário do investidor](${o}/glossario): ${nGlossario} termos do mercado brasileiro, cada um com página própria em /glossario/{slug}
+- [Juros sobre capital próprio](${o}/jcp): o que é JCP, a diferença para o dividendo, a retenção de 17,5% desde 1º de janeiro de 2026 (art. 8º da Lei Complementar 224/2025), data com, data ex e o informe de rendimentos. Não é recomendação de compra ou venda
 - [O que é dividend yield](${o}/glossario/dividend-yield): proventos de 12 meses divididos pelo preço. Exemplo ilustrativo, não é recomendação
 - [O que é JCP](${o}/glossario/jscp): juros sobre capital próprio, com 17,5% de IR retido na fonte
 - [O que é data com](${o}/glossario/data-com): último pregão em que a compra ainda dá direito ao provento

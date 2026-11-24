@@ -133,7 +133,15 @@ a.ctr__papel:hover .ctr__tk { text-decoration: underline; text-underline-offset:
 .ctr__dir--flat { color: var(--nu-gray); }
 .ctr__fonte { display: flex; align-items: center; gap: 8px; margin: -4px 0 0; padding-top: 20px; border-top: 1px solid var(--nu-line-2); color: var(--nu-gray); font-size: 13.5px; }
 .ctr__fonte i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--nu-green); }
-@media (max-width: 1023px) {
+/* o trilho no topo da página (a moldura estreita: celular, tablet, ou o painel do chat aberto ao lado):
+   em vez de uma coluna comprida, o patrimônio e quem mexeu lado a lado, e os números numa linha embaixo */
+@container moldura (max-width: 1040px) {
   .ctr { gap: 24px; }
+}
+@container moldura (min-width: 620px) and (max-width: 1040px) {
+  .ctr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px clamp(28px, 6cqi, 64px); align-items: start; }
+  .ctr__grupo:nth-child(2) { grid-column: 1 / -1; order: 3; }
+  .ctr__fatos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ctr__fonte { grid-column: 1 / -1; order: 4; }
 }
 </style>

@@ -154,6 +154,11 @@ const copy: RankingCopy = {
       desc: 'Pagamentos do mês na B3, com data com e data de pagamento. Não é recomendação.',
       href: '/dividendos/agenda',
     },
+    {
+      title: 'Juros sobre capital próprio',
+      desc: 'O que é JCP, a diferença para o dividendo e a retenção na fonte. Não é recomendação.',
+      href: '/jcp',
+    },
   ],
 
   // h2 keyword-bearing da página antiga (não o genérico do template).

@@ -61,6 +61,8 @@ const EXATAS: Record<string, string> = {
   '/setores': QUINZE_MIN,
   // Legais/editoriais que quase nunca mudam.
   '/metodologia': DIA,
+  // /jcp: texto estável e a lista de avisos, que muda com a base da B3.
+  '/jcp': HORA,
 }
 
 /** Rotas '/x/**' (tudo DEBAIXO de /x/). */
