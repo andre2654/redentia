@@ -142,8 +142,16 @@ const apoioDoDia = computed(() => {
 // A consulta mora no useAvisoDaCarteira desde 12/11/2026: a régua do topo diz o
 // mesmo selo ("Sua carteira +0,11% · pede atenção") e as duas leem uma resposta só.
 const aviso = useAvisoDaCarteira()
-watch(() => comCarteira.value && podeVerNumeros.value, (pode) => { if (pode && import.meta.client) void aviso.consultar() }, { immediate: true })
+watch(() => comCarteira.value && podeVerNumeros.value, (pode) => { if (pode && import.meta.client) void aviso.consultar({ comItens: true }) }, { immediate: true })
 const avisoDoMotor = computed(() => aviso.urgente.value && !!estado.value && avisosLiberados(estado.value))
+// os pontos de atenção do Início (24/11, o canvas): os dois primeiros do motor, o urgente na frente; o R$ do texto segue o olho.
+// A mesma regra de horário da carteira (avisosLiberados): nada antes das 10h de um dia de pregão.
+const esconderReais = (s: string) => (visiveis.value ? s : s.replace(/R\$\s?[\d.,]+( mil| milhões?| bi)?/g, 'R$ ••••'))
+const pontos = computed(() => {
+  const l = aviso.itens.value
+  if (!l?.length || !estado.value || !avisosLiberados(estado.value)) return null
+  return { total: l.length, itens: l.slice(0, 2).map((a) => ({ id: a.id, titulo: esconderReais(a.titulo).replace(/\.$/, ''), texto: a.texto ? esconderReais(a.texto) : null })) }
+})
 
 /** o estado ao lado do nome: 'Tudo normal' no dia comum, 'Pede atenção' no alerta do dia ou no aviso urgente do motor; em dia de movimento forte, só a data (seloDoDia, a mesma regra da régua) */
 const selo = computed(() => seloDoDia(frases.value, !!dia.value?.alerta, avisoDoMotor.value))
@@ -254,15 +262,22 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
       </template>
       <section class="hmt" aria-labelledby="hmt-h1">
         <h1 id="hmt-h1" class="hmt__h1" data-clarity-mask="true"><span>{{ ola }}</span>{{ fraseDoGanho }}</h1>
-        <CarteiraAgora aberto cartao :agora="topoEscuro.agora" :chart="topoEscuro.chart" :stats="topoEscuro.stats" />
-        <NuxtLink v-if="avisoDoMotor" to="/carteira" class="hmt__aviso">
+        <CarteiraAgora aberto cartao so-grafico :agora="topoEscuro.agora" :chart="topoEscuro.chart" :stats="topoEscuro.stats" />
+        <section v-if="pontos" class="hmt__pontos" aria-labelledby="hmt-pontos">
+          <header class="hmt__pontos-cab">
+            <h2 id="hmt-pontos" class="hmt__h2">Pontos de atenção</h2>
+            <NuxtLink v-if="pontos.total > pontos.itens.length" to="/carteira" class="hmt__todos">Ver os {{ pontos.total }}</NuxtLink>
+          </header>
+          <NuxtLink v-for="a in pontos.itens" :key="a.id" to="/carteira" class="hmt__aviso" data-clarity-mask="true">
+            <span class="hmt__aviso-t"><i aria-hidden="true" />{{ a.titulo }}</span>
+            <span v-if="a.texto" class="hmt__aviso-s">{{ a.texto }}</span>
+          </NuxtLink>
+        </section>
+        <NuxtLink v-else-if="avisoDoMotor" to="/carteira" class="hmt__aviso hmt__aviso--so">
           <span class="hmt__aviso-t"><i aria-hidden="true" />Sua carteira tem um ponto de atenção</span>
           <span class="hmt__aviso-s">Abra a carteira para ver o que é e o que dá para fazer.</span>
         </NuxtLink>
-        <div class="haf__acoes haf__acoes--depois">
-          <NuBotaoSeta to="/carteira">Abrir minha carteira</NuBotaoSeta>
-          <NuLinkSeta to="/carteira#futuro" tom="tinta">Ver a carteira em 5 anos</NuLinkSeta>
-        </div>
+        <p class="hmt__ir"><NuLinkSeta to="/carteira" tom="tinta">Abrir minha carteira</NuLinkSeta></p>
       </section>
     </CarteiraMoldura>
   </template>
@@ -666,9 +681,15 @@ dl.haf__fatos .haf__fato:active { transform: scale(.995); transition-duration: v
 .hmt { max-width: 900px; margin: 0 auto; padding: clamp(28px, 3.4vw, 44px) clamp(20px, 3.4vw, 44px) clamp(40px, 5vw, 64px); box-sizing: content-box; }
 .hmt__h1 { margin: 0 0 30px; font-size: clamp(26px, 2.8vw, 34px); line-height: 1.22; font-weight: var(--nu-w-display); letter-spacing: -0.03em; }
 .hmt__h1 span { display: block; color: var(--nu-gray); opacity: .8; }
-.hmt__aviso { display: flex; flex-direction: column; gap: 4px; margin-top: 28px; padding: 18px 22px; border: 1px solid var(--nu-line-2); border-radius: 12px; color: var(--nu-ink); text-decoration: none; transition: border-color var(--nu-dur-media) var(--nu-ease-saida), background var(--nu-dur-media) var(--nu-ease-saida); }
+.hmt__pontos { margin-top: 40px; }
+.hmt__pontos-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.hmt__h2 { margin: 0; font-size: 22px; font-weight: var(--nu-w-display); letter-spacing: -0.02em; }
+.hmt__todos { display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-blue-text); font-size: 15px; text-underline-offset: 3px; }
+.hmt__aviso--so { margin-top: 32px; }
+.hmt__ir { margin: 28px 0 0; }
+.hmt__aviso { display: flex; flex-direction: column; gap: 4px; margin-top: 14px; padding: 18px 22px; border: 1px solid var(--nu-line-2); border-radius: 12px; color: var(--nu-ink); text-decoration: none; transition: border-color var(--nu-dur-media) var(--nu-ease-saida), background var(--nu-dur-media) var(--nu-ease-saida); }
 .hmt__aviso:hover { border-color: var(--nu-line); background: var(--nu-card); }
 .hmt__aviso-t { display: flex; align-items: center; gap: 10px; font-size: 17.5px; }
 .hmt__aviso-t i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--nu-amber-fill); }
-.hmt__aviso-s { color: var(--nu-gray); font-size: 15.5px; line-height: 1.5; }
+.hmt__aviso-s { display: -webkit-box; overflow: hidden; color: var(--nu-gray); font-size: 15.5px; line-height: 1.5; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 </style>
