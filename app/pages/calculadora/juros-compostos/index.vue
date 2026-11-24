@@ -159,16 +159,19 @@ const faqItems = [
   { q: 'Onde investir com juros compostos?', a: 'A calculadora não escolhe o produto e não indica compra nem venda. Você informa a taxa, e a fórmula aplica essa taxa ao valor inicial e aos aportes. A tabela Poupança vs Juros Compostos desta página só ilustra, com as taxas escritas nela, poupança, Tesouro Selic, CDB e LCI/LCA no mesmo aporte e no mesmo prazo. A diferença entre as linhas é o efeito da taxa na conta, não uma ordem para aplicar em um deles.' },
 ]
 
+const trilha = [
+  { name: 'Home', path: '/' },
+  { name: 'Calculadoras', path: '/calculadoras' },
+  { name: 'Juros Compostos', path: '/calculadora/juros-compostos' },
+]
+const veja = linksVejaTambem({ pagina: 'juros' })
+
 usePageSeo({
   title: 'Calculadora de juros compostos com aporte mensal',
   description:
     'Simule quanto você junta guardando R$ 500 ou outro valor por mês, de 5 a 30 anos. Compare poupança, Tesouro Selic e CDB na tabela. Grátis.',
   path: '/calculadora/juros-compostos',
-  breadcrumbs: [
-    { name: 'Home', path: '/' },
-    { name: 'Calculadoras', path: '/calculadoras' },
-    { name: 'Juros Compostos', path: '/calculadora/juros-compostos' },
-  ],
+  breadcrumbs: trilha,
   structuredData: [
     {
       '@type': 'WebApplication',
@@ -208,7 +211,7 @@ usePageSeo({
     <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
     <!-- sem o prefixo, o termo "juros compostos" vai na própria pergunta do h1;
          "calculadora de juros compostos" fica no <title>, no JSON-LD e na faixa "Como Usar…" -->
-    <CalcTopo desc="Quatro números e a conta sai na hora.">
+    <CalcTopo desc="Quatro números e a conta sai na hora." :trilha="trilha">
       Quanto o seu dinheiro rende com juros compostos?
     </CalcTopo>
 
@@ -483,6 +486,8 @@ usePageSeo({
         </p>
       </aside>
     </CalcBand>
+
+    <NuVejaTambem :links="veja" />
 
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta

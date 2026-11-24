@@ -8,10 +8,39 @@
 // (fraseDosAtivos). A linha "os ativos somam o mesmo valor do topo" saiu: era
 // conferência de teste. Fica só o aviso de quando a soma NÃO bate.
 import type { CarteiraVisao, PosicaoVisao } from '~/types/carteiraVisao'
+import { direcao, reaisComSinal, type LinhaDoResultado, type ResultadoDaCarteira } from '~/utils/resultadoDaCarteira'
+import { pctComSinal } from '~/utils/diaDaCarteira'
 import FraseDestaque from './FraseDestaque.vue'
 import { GRUPOS_DA_CARTEIRA, brl0, brl2, confereComOTopo, fraseDosAtivos, grupoDaPosicao, pctTxt } from '~/utils/carteiraVisao'
 
-const props = defineProps<{ visao: CarteiraVisao }>()
+const props = defineProps<{ visao: CarteiraVisao; resultado?: ResultadoDaCarteira | null }>()
+
+/* ————— o dia e o resultado de cada ativo (24/11/2026) —————
+ * A lista só dizia o peso e o valor: para saber quem subiu, quem caiu e quanto
+ * cada um rendeu, a pessoa ia a outro site. Agora cada linha traz o resultado
+ * sobre o preço médio e o dia, e a lista se reordena por um ou por outro. */
+const porTicker = computed(() => new Map((props.resultado?.linhas ?? []).map((l) => [l.ticker.toUpperCase(), l])))
+const linhaDe = (p: PosicaoVisao): LinhaDoResultado | undefined => porTicker.value.get(p.ticker.toUpperCase())
+const temResultado = computed(() => porTicker.value.size > 0)
+type Ordem = 'classe' | 'dia' | 'resultado'
+const ordem = ref<Ordem>('classe')
+const ORDENS = [
+  { valor: 'classe' as const, rotulo: 'Por classe' },
+  { valor: 'dia' as const, rotulo: 'Quem mexeu hoje' },
+  { valor: 'resultado' as const, rotulo: 'Quanto rendeu' },
+]
+/** todos os ativos numa fila só, do que mais subiu ao que mais caiu; quem não tem o número vai para o fim */
+const fila = computed(() => {
+  const chave = (p: PosicaoVisao) => (ordem.value === 'dia' ? linhaDe(p)?.diaPct : linhaDe(p)?.ganhoPct) ?? null
+  return [...props.visao.posicoes].sort((a, b) => {
+    const x = chave(a), y = chave(b)
+    if (x == null && y == null) return b.valor - a.valor
+    if (x == null) return 1
+    if (y == null) return -1
+    return y - x
+  })
+})
+const corDe = (p: PosicaoVisao) => (GRUPOS_DA_CARTEIRA[grupoDaPosicao(p)] ?? { cor: 'var(--nu-gray)' }).cor
 const { mask } = useHiddenValues()
 
 const total = computed(() => props.visao.patrimonio)
@@ -64,8 +93,43 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
       <li v-for="g in grupos" :key="g.classe" :class="{ 'vla__leg--apagada': aberto && aberto !== g.classe }"><i :style="{ background: g.cor }" />{{ g.nome }} <b>{{ pctTxt(g.pct) }}</b></li>
     </ul>
 
+    <!-- a ordem da lista: por classe (o padrão), por quem mexeu no dia ou por quanto rendeu -->
+    <div v-if="temResultado" class="vla__ordem">
+      <NuTrilho v-model="ordem" :opcoes="ORDENS" tamanho="p" largo="celular" rotulo="Ordem da lista de ativos" />
+    </div>
+
+    <!-- a fila única: todos os ativos, do que mais subiu ao que mais caiu -->
+    <div v-if="ordem !== 'classe'" class="vla__fila">
+      <div class="vla__fila-cab" aria-hidden="true">
+        <span>Ativo</span><span>Hoje</span><span>Rendeu</span><span>Valor</span>
+      </div>
+      <ul class="vla__lista">
+        <li v-for="p in fila" :key="p.ticker" class="vla__linha vla__linha--fila" :class="{ 'vla__linha--link': !!hrefDe(p) }">
+          <component :is="hrefDe(p) ? Link : 'span'" :to="hrefDe(p) ?? undefined" class="vla__nome">
+            <span class="vla__nome-t"><i class="vla__bolinha" :style="{ background: corDe(p) }" aria-hidden="true" />{{ p.classe === 'TREASURY' ? p.nome : p.ticker }}</span>
+            <span v-if="p.classe !== 'TREASURY' && p.nome !== p.ticker" class="vla__nome-s">{{ p.nome }}</span>
+          </component>
+          <span class="vla__cel" :class="{ 'vla__cel--foco': ordem === 'dia' }">
+            <template v-if="linhaDe(p)?.diaPct != null">
+              <b :class="`vla__dir--${direcao(linhaDe(p)!.diaPct)}`">{{ pctComSinal(linhaDe(p)!.diaPct!) }}</b>
+              <span>{{ mask(reaisComSinal(linhaDe(p)!.diaValor ?? 0)) }}</span>
+            </template>
+            <b v-else class="vla__dir--flat" title="Sem preço do dia">—</b>
+          </span>
+          <span class="vla__cel" :class="{ 'vla__cel--foco': ordem === 'resultado' }">
+            <template v-if="linhaDe(p)?.ganhoPct != null">
+              <b :class="`vla__dir--${direcao(linhaDe(p)!.ganhoPct)}`">{{ pctComSinal(linhaDe(p)!.ganhoPct!) }}</b>
+              <span>{{ mask(reaisComSinal(linhaDe(p)!.ganho ?? 0)) }}</span>
+            </template>
+            <b v-else class="vla__dir--flat" title="Sem preço de compra">—</b>
+          </span>
+          <span class="vla__v">{{ mask(brl0(p.valor)) }}</span>
+        </li>
+      </ul>
+    </div>
+
     <!-- os cartões entram em cascata ao rolar (v-revelar, 60ms entre um e outro) -->
-    <div v-revelar="{ alvo: 'filhos' }" class="vla__grupos">
+    <div v-else v-revelar="{ alvo: 'filhos' }" class="vla__grupos">
       <div v-for="g in grupos" :key="g.classe" class="vla__grupo" @pointerenter="aberto = g.classe" @pointerleave="aberto = null">
         <div class="vla__grupo-cab">
           <span class="vla__ponto" :style="{ background: g.cor }" aria-hidden="true" />
@@ -83,6 +147,12 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
             <span class="vla__peso" aria-hidden="true"><i :style="{ width: `${Math.max(2, (p.valor / maior!.valor) * 100)}%`, background: g.cor }" /></span>
             <span class="vla__pct">{{ pctTxt((p.valor / total) * 100) }}</span>
             <span class="vla__v">{{ mask(brl0(p.valor)) }}</span>
+            <!-- o resultado sobre o preço médio e, embaixo, o dia: o que cada ativo fez -->
+            <span v-if="temResultado" class="vla__res">
+              <b v-if="linhaDe(p)?.ganhoPct != null" :class="`vla__dir--${direcao(linhaDe(p)!.ganhoPct)}`">{{ pctComSinal(linhaDe(p)!.ganhoPct!) }}</b>
+              <b v-else class="vla__dir--flat" title="Sem preço de compra">—</b>
+              <span v-if="linhaDe(p)?.diaPct != null" :class="`vla__dir--${direcao(linhaDe(p)!.diaPct)}`">hoje {{ pctComSinal(linhaDe(p)!.diaPct!) }}</span>
+            </span>
           </li>
         </ul>
         <!-- o resto da classe sob pedido: o link da base (NuLinkSeta) e, à direita, quanto ele soma -->
@@ -93,7 +163,7 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
       </div>
     </div>
     <!-- o que cada número quer dizer (a unidade e, com a conexão parada, a data) -->
-    <p class="vla__nota">Os percentuais são do total da carteira{{ visao.dadosDe ? `, com os dados de ${visao.dadosDe}` : '' }}.</p>
+    <p class="vla__nota">Os percentuais em preto são do total da carteira{{ visao.dadosDe ? `, com os dados de ${visao.dadosDe}` : '' }}.<template v-if="temResultado"> O que rendeu é a valorização sobre o preço médio de compra, sem contar proventos; “hoje” é a variação do dia.</template></p>
 
     <!-- só quando a soma das linhas não bate com o topo (o backend garante que bate) -->
     <p v-if="!confere" class="vla__confere vla__confere--nao">
@@ -140,15 +210,36 @@ a.vla__nome:hover .vla__nome-t { color: var(--nu-blue-text); }
 .vla__peso i { display: block; height: 100%; border-radius: 3px; }
 .vla__pct { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; text-align: right; }
 .vla__v { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; text-align: right; }
+.vla__res { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.25; font-variant-numeric: tabular-nums; }
+.vla__res b { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); }
+.vla__res span { font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); white-space: nowrap; }
+.vla__dir--up { color: var(--nu-green-text); }
+.vla__dir--down { color: var(--nu-red-text); }
+.vla__dir--flat { color: var(--nu-gray); }
+.vla__ordem { display: flex; margin-top: clamp(20px, 2.6vw, 28px); }
+.vla__fila { margin-top: clamp(14px, 1.6vw, 20px); padding: clamp(12px, 1.6vw, 20px) clamp(16px, 2.2vw, 24px) clamp(8px, 1.2vw, 12px); border-radius: var(--nu-r-card); background: var(--nu-page); box-shadow: var(--nu-shadow-quente); }
+.vla__fila-cab, .vla__linha--fila { grid-template-columns: minmax(0, 1fr) 104px 104px 96px; }
+.vla__fila-cab { display: grid; gap: 12px; padding: 0 0 10px; border-bottom: 1px solid var(--nu-line); color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
+.vla__fila-cab span:not(:first-child) { text-align: right; }
+.vla__bolinha { display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 50%; vertical-align: middle; }
+.vla__cel { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.25; font-variant-numeric: tabular-nums; opacity: .72; }
+.vla__cel--foco { opacity: 1; }
+.vla__cel b { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); }
+.vla__cel--foco b { font-size: var(--nu-fs-md); }
+.vla__cel span { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); white-space: nowrap; }
 .vla__mais { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; margin: 4px 0 0; padding-top: 4px; border-top: 1px solid var(--nu-line-2); font-size: var(--nu-fs-sm); }
 .vla__mais-v { color: var(--nu-gray); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .vla__nota { margin: 16px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: var(--nu-w-texto); line-height: 1.45; }
 .vla__confere { display: flex; align-items: center; gap: 8px; margin: clamp(22px, 3vw, 32px) 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .vla__check { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--nu-green-bg, var(--nu-cream)); color: var(--nu-green-text, var(--nu-green)); }
 .vla__confere--nao .vla__check { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
+.vla__linha:has(.vla__res) { grid-template-columns: minmax(0, 1fr) 48px 52px 88px 84px; }
 @media (max-width: 900px) { .vla__grupos { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 480px) {
   .vla__linha { grid-template-columns: minmax(0, 1fr) 48px 84px; }
+  .vla__linha:has(.vla__res) { grid-template-columns: minmax(0, 1fr) 44px 80px 76px; }
+  .vla__fila-cab, .vla__linha--fila { grid-template-columns: minmax(0, 1fr) 76px 76px; }
+  .vla__fila-cab span:last-child, .vla__linha--fila .vla__v { display: none; }
   .vla__peso { display: none; }
   .vla__barra { height: 24px; }
 }

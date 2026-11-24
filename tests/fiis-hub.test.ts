@@ -1,5 +1,6 @@
 /**
  * /fiis é o hub educativo: 200, indexável, canonical dele mesmo.
+ * /rankings/fiis é a página dos rankings só de FIIs. A barra cai nela.
  * /rankings?classe=fiis continua o filtro do hub de rankings, com canonical
  * /rankings. A barra de /fiis não volta para o filtro: isso fecharia um loop.
  */
@@ -42,13 +43,13 @@ test('o title e a description de FIIs cabem no SERP e não indicam compra', () =
 test('a barra de /fiis termina na própria página e o routeRules não redireciona', () => {
   assert.equal(destinoSemBarra('/fiis/'), FIIS_PATH)
   assert.equal(destinoSemBarra('/fiis'), null)
-  assert.equal(destinoSemBarra('/rankings/fiis/'), '/rankings?classe=fiis')
+  assert.equal(destinoSemBarra('/rankings/fiis/'), '/rankings/fiis')
   const config = ler('nuxt.config.ts')
   assert.doesNotMatch(config, /'\/fiis': \{ redirect:/)
-  assert.match(config, /'\/rankings\/fiis': \{ redirect: \{ to: '\/rankings\?classe=fiis'/)
+  assert.doesNotMatch(config, /'\/rankings\/fiis': \{ redirect:/)
   const mapa = ler('server/utils/sem-barra.ts')
   assert.doesNotMatch(mapa, /'\/fiis': '\/rankings\?classe=fiis'/)
-  assert.match(mapa, /'\/rankings\/fiis': '\/rankings\?classe=fiis'/)
+  assert.doesNotMatch(mapa, /'\/rankings\/fiis': '\/rankings\?classe=fiis'/)
 })
 
 test('a página é o hub, com sitemap, llms, cache e link a partir de um hub existente', () => {

@@ -110,7 +110,12 @@ const proventosHrefs = computed(() => hrefsDeProventos({
   renda12: data.value?.dividends?.sum12 ?? 0,
 }))
 const quantoRendeHref = computed(() => proventosHrefs.value.quantoRende)
-const relacionados = computed(() => relacionadosComProventos(data.value?.relacionados ?? [], proventosHrefs.value, ticker))
+const vejaCtr = linksVejaTambem({ pagina: 'asset', ticker, proprioJaLinkado: true })
+const relacionados = computed(() => relacionadosComProventos(
+  [...(data.value?.relacionados ?? []), ...vejaCtr],
+  proventosHrefs.value,
+  ticker,
+))
 // "EMBR3 agora negocia como EMBJ3." — só com `?de=` confirmado pelo backend
 const renamedFrom = data.value ? await useRenamedFrom(ticker) : computed(() => null)
 
@@ -163,10 +168,7 @@ if (data.value) {
     structuredData,
     // pregão do dado exibido (price_date da cotação), nunca o calendário
     dateModified: acao.value.dataDate,
-    breadcrumbs: [
-      { name: 'Início', path: '/' },
-      { name: ticker, path: `/asset/${ticker}` },
-    ],
+    breadcrumbs: trilhaAtivo(ticker),
   })
 }
 </script>

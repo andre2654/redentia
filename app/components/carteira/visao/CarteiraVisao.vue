@@ -24,12 +24,14 @@
 // que troca o ?cenario= (normal, calmo,
 // velho, semgasto ou a carteira real local, app/dev/*.local.json).
 import type { CarteiraPayload, CarteiraAgoraVM } from '~/types/carteira'
-import { CENARIOS as CENARIOS_MOCK, visaoMock, type CenarioVisao } from '~/dev/carteiraVisaoMock'
+import { CENARIOS as CENARIOS_MOCK, resultadoMock, visaoMock, type CenarioVisao } from '~/dev/carteiraVisaoMock'
 import type { CarteiraVisao as Visao } from '~/types/carteiraVisao'
 import { brl2, marcaNaResposta } from '~/utils/carteiraVisao'
 import { marcaNoTexto } from '~/utils/marcaNoTexto'
 import VisaoOndeEsta from './VisaoOndeEsta.vue'
-import CarteiraHeroi from './CarteiraHeroi.vue'
+import CarteiraAgora from '~/components/carteira/CarteiraAgora.vue'
+import CarteiraMoldura from '~/components/carteira/CarteiraMoldura.vue'
+import CarteiraTrilho from '~/components/carteira/CarteiraTrilho.vue'
 import VisaoRenda from './VisaoRenda.vue'
 import CarteiraFuturo from '~/components/carteira/CarteiraFuturo.vue'
 import VisaoImposto from './VisaoImposto.vue'
@@ -62,6 +64,16 @@ const visao = computed<Visao>(() => (props.visao ?? doMock.value)!)
 // o futuro (os 2.000 caminhos do motor) é pedido uma vez e dividido entre o gráfico do topo e a seção dos 5 anos; no mock não há motor
 if (!mock.value) proverCarteiraFuturo()
 
+// o ganho e o dia de cada ativo (24/11): do /portfolio de verdade; no mock, o de exemplo
+const resultado = computed(() => props.payload.resultado ?? (mock.value ? resultadoMock() : null))
+// os números da fileira do topo: os do /portfolio; sem o "Retorno total" de lá (falta preço médio em algum ativo), o
+// ganho dos ativos que têm preço médio, dito como parcial
+const statsDoTopo = computed(() => {
+  const st = props.payload.hero?.stats ?? []
+  const r = resultado.value
+  if (st.some((x) => x.label === 'Retorno total') || !r || r.ganho == null || r.ganhoPct == null) return st
+  return [{ label: `Retorno (${r.comCusto} de ${r.linhas.length} ativos)`, value: `${reaisComSinal(r.ganho)} (${pctComSinal(r.ganhoPct)})`, tone: r.ganho >= 0 ? 'green' as const : 'red' as const }, ...st]
+})
 /* ————— o topo ————— */
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const agora = computed<CarteiraAgoraVM>(() => {
@@ -94,21 +106,73 @@ const railSections = computed<RailSection[]>(() => [
   { id: 'relatorio', label: 'Relatório' },
 ])
 useSectionRail(railSections, { pageLabel: 'Carteira' })
+
+/* ————— o meio-termo (24/11): o trilho e a abertura do documento ————— */
+const { visiveis } = useValoresVisiveis()
+const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
+const fonteDoTrilho = computed(() => {
+  const c = visao.value.conexoes
+  if (!c.length) return null
+  const paradas = c.filter((x) => x.estado !== 'ok').length
+  const nomes = c.length === 1 ? c[0]!.instituicao : `${c.length} contas`
+  return paradas ? `${nomes}: ${paradas === 1 ? 'uma conexão parada' : `${paradas} conexões paradas`}` : `${nomes}, em dia`
+})
+/** "Você pôs R$ X e hoje tem R$ Y": só com preço médio em todos os ativos; senão o documento abre só com o título */
+const abertura = computed(() => {
+  const r = resultado.value
+  if (!r || r.ganho == null || r.custo == null || r.ganhoPct == null || r.comCusto < r.linhas.length || r.custo <= 0) return null
+  const hoje = r.custo + r.ganho
+  const v = (n: number) => (visiveis.value ? `R$ ${nf0.format(Math.abs(n))}` : 'R$ ••••')
+  return {
+    frase: `Você pôs ${v(r.custo)} e hoje tem ${v(hoje)}: são ${v(r.ganho)} ${r.ganho >= 0 ? 'a mais' : 'a menos'}, ${r.ganho >= 0 ? 'uma alta' : 'uma queda'} de ${pctComSinal(Math.abs(r.ganhoPct)).replace('+', '')}.`,
+    pos: r.ganho >= 0,
+    // a barra: o que pôs e o que ganhou; na perda, o que sobrou e o que perdeu
+    a: Math.max(0, Math.min(r.custo, hoje)), b: Math.abs(r.ganho),
+    rotuloA: r.ganho >= 0 ? 'O que você pôs' : 'O que você tem', rotuloB: r.ganho >= 0 ? 'O que ganhou' : 'O que perdeu',
+    valorA: v(Math.min(r.custo, hoje)), valorB: v(r.ganho),
+  }
+})
 </script>
 
 <template>
-  <div class="cvi">
-    <CarteiraHeroi
-      id="hoje" :agora="agora" :avisos="visao.avisos" :conexoes="visao.conexoes" :ativos="visao.posicoes.length"
-      :renda="visao.renda" :dados-de="visao.dadosDe" :mock="mock" @connected="emit('connected')"
-    />
+  <CarteiraMoldura class="cvi">
+    <template #trilho>
+      <CarteiraTrilho
+        :patrimonio="agora.patrimonio" :alocacao="payload.allocation" :resultado="resultado"
+        :dia-valor="agora.diaValor" :dia-pct="agora.diaPct" :dia-dir="agora.diaDir"
+        :proventos="payload.proventos12mValor" :fonte="fonteDoTrilho"
+      />
+    </template>
+    <!-- o documento (24/11, o meio-termo aprovado no canvas): o título, o resumo numa frase e a barra do que a pessoa pôs
+         contra o que ganhou; depois o gráfico no cartão escuro e as seções, cada uma respondendo a uma pergunta -->
+    <header class="cvi__abre">
+      <h1 class="cvi__h1">Sua carteira</h1>
+      <template v-if="abertura">
+        <p class="cvi__resumo" data-clarity-mask="true">{{ abertura.frase }}</p>
+        <div class="cvi__pos" role="img" :aria-label="`${abertura.rotuloA} e ${abertura.rotuloB.toLowerCase()}`">
+          <span class="cvi__pos-a" :style="{ flexGrow: abertura.a }" /><span class="cvi__pos-b" :class="{ 'cvi__pos-b--perda': !abertura.pos }" :style="{ flexGrow: abertura.b }" />
+        </div>
+        <dl class="cvi__pos-leg" data-clarity-mask="true">
+          <div><dt><i class="cvi__pos-a" aria-hidden="true" />{{ abertura.rotuloA }}</dt><dd>{{ abertura.valorA }}</dd></div>
+          <div><dt><i class="cvi__pos-b" :class="{ 'cvi__pos-b--perda': !abertura.pos }" aria-hidden="true" />{{ abertura.rotuloB }}</dt><dd>{{ abertura.valorB }}</dd></div>
+        </dl>
+        <p class="cvi__nota">Conta pelo preço médio de cada ativo. Proventos e vendas passadas ficam fora.</p>
+      </template>
+    </header>
+    <div class="cvi__cartao">
+      <CarteiraAgora
+        id="hoje" aberto cartao :agora="agora" :chart="payload.chart" :stats="statsDoTopo"
+        :visao="{ avisos: visao.avisos, conexoes: visao.conexoes, ativos: visao.posicoes.length, dadosDe: visao.dadosDe, mock }"
+        @connected="emit('connected')"
+      />
+    </div>
     <!-- o "Reconectar" mora uma linha acima, no pé do topo, junto da conexão parada (e no cartão de atenção):
          a mesma ação num lugar só (robustez 11/11; antes eram três "Reconectar" em 300px) -->
     <p v-if="visao.dadosDe" class="cvi__parcial" role="status">
       <span class="cvi__parcial-p" aria-hidden="true" />
       O que está abaixo é de {{ visao.dadosDe }}, a última vez que {{ parada }} atualizou. Os números de imposto e risco esperam a reconexão.
     </p>
-    <VisaoOndeEsta id="onde" :visao="visao" />
+    <VisaoOndeEsta id="onde" :visao="visao" :resultado="resultado" />
     <VisaoRenda v-if="visao.renda" id="renda" :visao="visao" />
     <!-- e daqui a 5 anos? os 2.000 caminhos do motor (GET /me/carteira/futuro; no mock não há motor) -->
     <ClientOnly><CarteiraFuturo v-if="!mock" id="futuro" /></ClientOnly>
@@ -124,7 +188,7 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
         :aria-pressed="cenario === c.id" @click="trocarCenario(c.id)"
       >{{ c.nome }}</button>
     </div>
-  </div>
+  </CarteiraMoldura>
 </template>
 
 <style scoped>
@@ -138,11 +202,80 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
   --nu-class-etf: var(--nu-sage);
   /* a coluna da página: 1240 centrada, 32px de lado (20px no celular), a mesma da home logada.
      O % resolve na largura de quem usa (as seções vão de ponta a ponta) */
-  --cvi-g: max(32px, calc(50% - 620px));
-  --cvi-v: clamp(64px, 7vw, 100px);
+  /* a coluna de leitura do documento: 900px centrada no conteúdo, a mesma do cartão do gráfico */
+  --cvi-g: max(clamp(20px, 3.4vw, 56px), calc(50% - 450px));
+  --cvi-v: clamp(44px, 5vw, 68px);
+  /* a régua calma do meio-termo (24/11), pelos mesmos tokens que as seções já leem: a frase de cada seção deixa de ser
+     manchete e vira título de documento; os cartões perdem a sombra e ganham fio; os cantos encolhem */
+  --nu-fs-h2-sm: clamp(23px, 2.1vw, 27px);
+  --nu-fs-h2: clamp(26px, 2.6vw, 32px);
+  --nu-ls-display: -0.022em;
+  --nu-r-card: 14px;
+  --nu-r-card-lg: 16px;
+  --nu-shadow-quente: 0 0 0 1px var(--nu-line-2);
   background: var(--nu-page);
 }
 @media (max-width: 640px) { .cvi { --cvi-g: 20px; } }
+/* a abertura do documento: a coluna de leitura (820px) dentro do conteúdo */
+.cvi__abre { max-width: 900px; margin: 0 auto; padding: clamp(32px, 4vw, 52px) var(--cvi-g) 0; box-sizing: content-box; }
+.cvi__h1 { margin: 0; font-size: clamp(34px, 3.4vw, 42px); line-height: 1.1; font-weight: var(--nu-w-display); letter-spacing: -0.035em; }
+.cvi__resumo { margin: 24px 0 0; color: var(--nu-gray); font-size: 17.5px; font-weight: 400; line-height: 1.75; }
+.cvi__pos { display: flex; gap: 3px; height: 10px; margin-top: 36px; }
+.cvi__pos span { flex: 0 0 0; min-width: 4px; }
+.cvi__pos-a { background: var(--nu-blue-deep, var(--nu-ink)); border-radius: 5px 2px 2px 5px; }
+.cvi__pos-b { background: var(--nu-blue-soft); border-radius: 2px 5px 5px 2px; }
+.cvi__pos-b--perda { background: var(--nu-red); }
+.cvi__pos-leg { margin: 14px 0 0; }
+.cvi__pos-leg div { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; }
+.cvi__pos-leg dt { display: flex; align-items: center; gap: 12px; font-size: 16.5px; }
+.cvi__pos-leg dt i { width: 10px; height: 10px; border-radius: 3px; }
+.cvi__pos-leg dd { margin: 0; font-size: 16.5px; font-weight: var(--nu-w-display); font-variant-numeric: tabular-nums; }
+.cvi__nota { margin: 6px 0 0; color: var(--nu-gray); font-size: 13.5px; }
+.cvi__cartao { max-width: 900px; margin: clamp(36px, 4vw, 52px) auto clamp(8px, 2vw, 24px); padding: 0 var(--cvi-g); box-sizing: content-box; }
+/* as seções, uma embaixo da outra na mesma página, separadas por um fio: sem faixa de cor alternada */
+.cvi :deep(:is(.voe, .vrd, .cfu, .vim, .vrl, .can)) { background: transparent; }
+.cvi :deep(:is(.voe, .vrd, .vim, .vrl)) { position: relative; }
+.cvi :deep(:is(.voe, .vrd, .vim, .vrl))::before { content: ''; position: absolute; top: 0; left: var(--cvi-g); right: var(--cvi-g); height: 1px; background: var(--nu-line-2); }
+/* a pergunta em cinza, a resposta em tinta: o mesmo par da saudação do Início */
+.cvi :deep(.nu-eyebrow) { color: var(--nu-gray); font-size: 15px; font-weight: 400; letter-spacing: 0; text-transform: none; }
+.cvi :deep([class$='__frase']) { line-height: 1.25; }
+/* as barras de composição afinam: 10px, cantos de 5 */
+.cvi :deep(.vla__barra) { height: 10px; gap: 3px; }
+.cvi :deep(.vrd__trilho) { height: 12px; gap: 3px; }
+.cvi :deep(.vim__trilho) { height: 10px; gap: 3px; }
+.cvi :deep(.cfu__frase) { line-height: 1.2; }
+
+/* ————— os painéis do canvas (24/11, o dono vendo a produção: "ainda parece o layout antigo") —————
+   Cada seção é uma frase e painéis calmos: fundo quente sem sombra, o título do painel como rótulo pequeno em caixa alta,
+   os números em peso médio. O azul cheio e os títulos grandes dentro de cartão saem. */
+.cvi :deep(:is(.vrd__sub, .vim__sub, .vrl__sub)) { max-width: 820px; color: var(--nu-gray); font-size: 17.5px; font-weight: 400; line-height: 1.7; }
+/* a legenda da régua: números do tamanho dos do trilho, não manchete */
+.cvi :deep(.vrd__legenda dd) { font-size: 18.5px; font-weight: var(--nu-w-display); letter-spacing: -0.015em; }
+.cvi :deep(.vrd__legenda dt) { color: var(--nu-gray); font-weight: 400; }
+/* a renda numa coluna: o mês a mês, o que já está marcado e os 5 anos, um painel embaixo do outro */
+.cvi :deep(.vrd__grade) { grid-template-columns: minmax(0, 1fr); gap: 16px; max-width: none; margin-top: clamp(28px, 3.4vw, 40px); }
+.cvi :deep(.vrd__parte), .cvi :deep(.vrd__futuro) { padding: 26px 30px 24px; border-radius: 14px; background: var(--nu-band); box-shadow: none; }
+.cvi :deep(.vrd__parte--marcados) { margin-top: 16px; color: var(--nu-ink); }
+.cvi :deep(.vrd__h3), .cvi :deep(.vrd__parte--marcados .vrd__h3) { color: var(--nu-gray); font-size: 12px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.4; }
+.cvi :deep(.vrd__parte--marcados .vrd__agenda li) { border-top-color: var(--nu-line-2); }
+.cvi :deep(.vrd__parte--marcados :is(.vrd__ag-t, .vrd__ag-v)) { color: var(--nu-ink); font-weight: 400; }
+.cvi :deep(.vrd__parte--marcados .vrd__ag-total .vrd__ag-v) { font-weight: var(--nu-w-display); }
+.cvi :deep(.vrd__parte--marcados :is(.vrd__ag-d, .vrd__ag-total)) { color: var(--nu-gray); font-weight: 400; }
+.cvi :deep(.vrd__parte--marcados .vrd__prox) { background: var(--nu-page); color: var(--nu-gray-3); }
+.cvi :deep(.vrd__parte--marcados .vrd__prox b) { color: var(--nu-ink); }
+.cvi :deep(.vrd__parte--marcados .vrd__marc-total) { color: var(--nu-gray); }
+.cvi :deep(.vrd__parte--marcados .vrd__marc-total b) { color: var(--nu-ink); font-size: 30px; letter-spacing: -0.025em; }
+.cvi :deep(.vrd__parte--marcados .vrd__k--acoes) { background: var(--nu-blue); }
+/* os caminhos dos 5 anos: o escolhido em contorno, sem cartão branco com sombra */
+.cvi :deep(.vrd__cam--on) { background: var(--nu-page); box-shadow: 0 0 0 1px var(--nu-line-2); }
+.cvi :deep(:is(.vrd__cam-n, .vrd__cam-r)) { font-weight: var(--nu-w-display); }
+/* os cartões de classe e as listas de ativos: painel quente, cabeçalho menor */
+.cvi :deep(:is(.vla__grupo, .vla__fila)) { background: var(--nu-band); box-shadow: none; }
+.cvi :deep(.vla__grupo-n) { font-size: 18px; font-weight: var(--nu-w-display); }
+.cvi :deep(.vla__grupo-pct) { font-size: 22px; font-weight: var(--nu-w-display); }
+/* o imposto e o relatório: os cartões viram painéis sem sombra */
+.cvi :deep(:is(.vim__cartao, .vrl__grupo, .vrl__bench, .can__botao)) { box-shadow: none; }
+.cvi :deep(:is(.vrl__grupo, .vrl__bench)) { background: var(--nu-band); }
 /* o cartão dos 5 anos e o imposto moram os dois na página: o respiro entre eles é o do imposto */
 .cvi :deep(.cfu) { padding-bottom: 0; }
 /* o esqueleto padrão (areia e creme) some sobre a página e a faixa: um tom acima, com o mesmo brilho */

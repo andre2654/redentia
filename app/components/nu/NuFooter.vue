@@ -35,7 +35,7 @@ const COLUMNS = [
   { title: 'Produto', links: [{ label: 'Mercado', to: '/' }, { label: 'Rankings', to: '/rankings' }, { label: 'Teses', to: '/teses' }, { label: 'Aportou MCP', to: '/mcp' }] },
   // Direto pras calculadoras, não só pro hub: são as URLs que sustentam o site.
   { title: 'Calculadoras', links: [{ label: 'Preço teto', to: '/calculadora/preco-teto' }, { label: 'Simulador de ações e dividendos', to: '/calculadora/acoes' }, { label: 'Dividend yield', to: '/calculadora/dividend-yield' }, { label: 'Juros compostos', to: '/calculadora/juros-compostos' }, { label: 'Imposto de renda', to: '/calculadora/imposto-renda' }] },
-  { title: 'Recursos', links: [{ label: 'Notícias', to: '/noticias' }, { label: 'Guias', to: '/guias' }, { label: 'Glossário', to: '/glossario' }, { label: 'Fundos imobiliários', to: '/fiis' }, { label: 'Setores da B3', to: '/setor' }, { label: 'Tesouro Direto', to: '/tesouro' }] },
+  { title: 'Recursos', links: [{ label: 'Notícias', to: '/noticias' }, { label: 'Guias', to: '/guias' }, { label: 'Glossário', to: '/glossario' }, { label: 'Fundos imobiliários', to: '/fiis' }, { label: 'Rankings de FIIs', to: '/rankings/fiis' }, { label: 'Small caps', to: '/rankings/small-caps' }, { label: 'Setores da B3', to: '/setor' }, { label: 'Tesouro Direto', to: '/tesouro' }] },
   { title: 'Empresa', links: [{ label: 'Sobre', to: '/institucional/about' }, { label: 'Como funciona', to: '/institucional/how-works' }, { label: 'Metodologia', to: '/metodologia' }, { label: 'Contato', to: '/institucional/contact' }] },
   { title: 'Legal', links: [{ label: 'Privacidade', to: '/institucional/privacy' }, { label: 'Cookies', to: '/institucional/cookies' }, { label: 'Termos de Uso', to: '/institucional/terms' }] },
 ]

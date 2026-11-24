@@ -13,6 +13,7 @@
 // Por isso a tabela mostra só Cotação/Variação/Valor de mercado e a faixa de
 // aggregates omite os campos nulos (DY médio e P/L médio somem).
 import { SETORES, SETORES_BY_PT } from '~/content/setores'
+import { SETORES_LISTA_DATA_PT, segmentosDoSetorAmplo } from '~/utils/setoresLista'
 import type { NuFaqItem } from '~/types/market'
 import type { RankingRowApi } from '~/types/rankings'
 
@@ -114,6 +115,13 @@ const crossLinks = computed(() => {
       title: `Analisar ${t}`,
       desc: `A maior empresa do setor por valor de mercado. Cotação, fundamentos e análise.`,
       href: `/asset/${t}`,
+    })
+  }
+  for (const segmento of segmentosDoSetorAmplo(entry.apiSlug)) {
+    links.push({
+      title: segmento.nome.charAt(0).toLocaleUpperCase('pt-BR') + segmento.nome.slice(1),
+      desc: `Segmento no cadastro de ativos de ${SETORES_LISTA_DATA_PT}.`,
+      href: `/setores/${segmento.slug}`,
     })
   }
   return links

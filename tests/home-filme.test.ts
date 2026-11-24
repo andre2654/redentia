@@ -46,6 +46,13 @@ test('a capa é o quadro em que o filme começa: imagem primeiro, e a primeira v
   assert.match(molde, /<source :media="EM_PE" :srcset="`\$\{BASE\}-9x16\.webp`" width="864" height="1536">/)
   assert.match(molde, /<img ref="capa" class="hfi__capa" :src="`\$\{BASE\}-16x9\.webp`" width="1920" height="1080" alt="" fetchpriority="high" decoding="async" @load="medir">/)
   assert.match(filme, /const EM_PE = '\(max-width: 640px\) and \(orientation: portrait\)'/)
+  // a capa entra no <head> com a mesma media do <picture>: o celular em pé não baixa as duas
+  assert.match(filme, /href: `\$\{BASE\}-9x16\.webp`/)
+  assert.match(filme, /media: EM_PE/)
+  assert.match(filme, /const DEITADO = '\(min-width: 641px\), \(orientation: landscape\)'/)
+  assert.match(filme, /href: `\$\{BASE\}-16x9\.webp`/)
+  assert.match(filme, /media: DEITADO/)
+  assert.match(filme, /fetchpriority: 'high'/)
   // a primeira volta começa no quadro da capa, e o vídeo só toma o lugar dela quando chega lá
   assert.match(filme, /daCapa = true\n  v\.muted = true\n  v\.currentTime = COMECA_EM\n  void tocar\(\)/)
   assert.match(filme, /if \(daCapa && !v\.paused && v\.currentTime >= COMECA_EM - 0\.05\) \{ daCapa = false; noAr\.value = true; ligarLaterais\(\) \}/)

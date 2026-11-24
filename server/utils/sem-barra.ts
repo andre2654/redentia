@@ -37,7 +37,7 @@ const REDIRECT_EXATO: Record<string, string> = {
   '/calculadora': '/calculadoras',
   '/ranking': '/rankings',
   '/rankings/acoes': '/rankings?classe=acoes',
-  '/rankings/fiis': '/rankings?classe=fiis',
+  // /rankings/fiis é página. A barra cai nela, não no filtro.
   '/rankings/bdrs': '/rankings?classe=bdrs',
   '/rankings/renda-fixa': '/ranking/tesouro-direto',
   '/help': '/busca',
@@ -49,7 +49,7 @@ const REDIRECT_EXATO: Record<string, string> = {
   '/acoes': '/rankings?classe=acoes',
   // /fiis é página. A barra cai em /fiis, não no filtro, senão o 301 volta.
   '/etfs': '/rankings',
-  '/small-caps': '/rankings',
+  '/small-caps': '/rankings/small-caps',
   '/tesouro/tesouro-renda-aposentadoria-extra-2033': '/tesouro/tesouro-renda-aposentadoria-extra-2030',
   '/tesouro/tesouro-renda-aposentadoria-extra-2038': '/tesouro/tesouro-renda-aposentadoria-extra-2035',
   '/tesouro/tesouro-renda-aposentadoria-extra-2043': '/tesouro/tesouro-renda-aposentadoria-extra-2040',
