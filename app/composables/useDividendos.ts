@@ -31,6 +31,7 @@
 import type { AcaoDividendBar, AcaoStatRow, TickerProfileApi } from '~/types/acao'
 import type { NuFaqItem } from '~/types/market'
 import type { BlocoDividendos } from '~/utils/dividendosBlocos'
+import type { BlocoProximos, ParesSegmento } from '~/utils/dividendosExtras'
 import type { ProventoRow } from '~/utils/proventos'
 import type { RenamedRota } from '~/utils/delisted'
 
@@ -100,6 +101,10 @@ export interface DividendosPayload {
   blocos: BlocoDividendos[]
   /** Aviso CVM já usado na agenda. A página mostra uma vez. */
   notaCvm: string
+  /** Avisos com data com ou pagamento futuro. Não entra no FAQ. */
+  proximos: BlocoProximos
+  /** Outras empresas do mesmo industry_category, por volume. Não entra no FAQ. */
+  pares: ParesSegmento
   /** simulador de /calculadora/acoes com o ativo preenchido; null se o tipo não é coberto (utils/simulador.ts) */
   simuladorHref: string | null
   /** /quanto-rende/{TICKER} só com renda em 12 meses; sem isso a página é 404 */
@@ -188,6 +193,8 @@ interface Core {
   strongest: { year: string; valFmt: string } | null
   /** 'ok' = histórico com linhas · 'vazio' = a API respondeu sem nenhuma · 'indisponivel' = o fetch falhou */
   hist: 'ok' | 'vazio' | 'indisponivel'
+  /** industry_category do perfil. null se não veio. O cadastro cobre o buraco. */
+  segmentoBruto: string | null
   /** linhas da tabela — null = fetch do histórico falhou (indisponível) */
   historyRows: string[][] | null
   /** null = fetch do histórico falhou. [] = a API respondeu sem provento. */
@@ -310,7 +317,14 @@ function coreFromApi(
     historyRows,
     rows,
     type: profile.type ?? null,
+    segmentoBruto: segmentoDoPerfil(profile.industry_category),
   }
+}
+
+function segmentoDoPerfil(industry: string | null | undefined): string | null {
+  const t = String(industry ?? '').trim()
+  if (!t || t.toLowerCase() === 'n/a') return null
+  return t
 }
 
 /* ————— builders de copy (regras honestas; sem travessão em copy pública) ————— */
@@ -621,6 +635,12 @@ function buildPayload(c: Core): DividendosPayload {
     faq,
     blocos: blocosPack.blocos,
     notaCvm: blocosPack.notaCvm,
+    proximos: montarProximosPagamentos({
+      rows: c.rows,
+      hoje: c.hoje,
+      unidade: c.isFii ? 'cota' : isBdr ? 'BDR' : 'ação',
+    }),
+    pares: montarParesSegmento(c.ticker, c.segmentoBruto),
     simuladorHref: simuladorAcoesHref(c.ticker, c.type),
     quantoRendeHref: c.sum12 > 0 ? `/quanto-rende/${c.ticker}` : null,
     seo: {
@@ -667,6 +687,7 @@ function petr4Seed(): DividendosPayload {
     strongest: { year: '2022', valFmt: 'R$ 6,84' },
     historyRows: null, // sem histórico inventado: aviso honesto no lugar da tabela
     rows: null,
+    segmentoBruto: null,
   })
 }
 

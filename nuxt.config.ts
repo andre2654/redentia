@@ -21,6 +21,11 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/tokens.css', '~/assets/css/fontes.css', '~/assets/css/base.css'],
 
+  // Embute também o CSS global (tokens, fontes, base). O padrão só embute
+  // arquivo .vue; a folha de entrada seguia bloqueando a primeira pintura.
+  // Os <link rel="stylesheet"> que sobram não bloqueiam: server/plugins/css-sem-bloquear.ts.
+  features: { inlineStyles: true },
+
   // Hover só onde há mouse (11/11/2026, robustez): no toque, o realce ficava
   // preso depois de tocar (o cartão erguido, a linha acesa, a seta adiantada).
   // Toda regra com :hover vai para dentro de @media (hover: hover), no mesmo
@@ -200,7 +205,8 @@ export default defineNuxtConfig({
     // Rotas antigas por classe morrem (stub [classe].vue deletado): as 3 de
     // equity viram filtro do hub; renda-fixa vira o detalhe do tesouro.
     '/rankings/acoes': { redirect: { to: '/rankings?classe=acoes', statusCode: 301 } },
-    '/rankings/fiis': { redirect: { to: '/rankings?classe=fiis', statusCode: 301 } },
+    // /rankings/fiis é a página dos rankings só de FIIs (200). O filtro
+    // /rankings?classe=fiis continua no hub, com canonical /rankings.
     '/rankings/bdrs': { redirect: { to: '/rankings?classe=bdrs', statusCode: 301 } },
     '/rankings/renda-fixa': { redirect: { to: '/ranking/tesouro-direto', statusCode: 301 } },
     // Setores (SEO programático /setor): hub /setor + detalhe /setor/{ptSlug}.
@@ -239,7 +245,7 @@ export default defineNuxtConfig({
     // /fiis é o hub educativo (200), canonical dele mesmo. /rankings?classe=fiis
     // continua o filtro do hub de rankings, sem 301, para não formar loop com a barra.
     '/etfs': { redirect: { to: '/rankings', statusCode: 301 } },
-    '/small-caps': { redirect: { to: '/rankings', statusCode: 301 } },
+    '/small-caps': { redirect: { to: '/rankings/small-caps', statusCode: 301 } },
     // /tesouro e /tesouro/[slug]: páginas reais em construção (frente
     // paralela) — os redirects provisórios pro ranking saíram; as regras de
     // cache vivem no bloco de cache acima.

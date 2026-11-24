@@ -183,7 +183,11 @@ function contagemDoGrupo(g: { tema: string; items: RankingMeta[] }): number {
     >
       <template #title>Rankings da B3.</template>
       <NuTrilho :opcoes="opcoesDoTrilho" :model-value="activePill" rotulo="Filtrar rankings por classe" @update:model-value="setPill" />
-      <p class="rkh__fiis"><NuLinkSeta to="/fiis">O que é um fundo imobiliário</NuLinkSeta></p>
+      <div class="rkh__atalhos">
+        <NuLinkSeta to="/fiis">O que é um fundo imobiliário</NuLinkSeta>
+        <NuLinkSeta to="/rankings/fiis">Rankings só de FIIs</NuLinkSeta>
+        <NuLinkSeta to="/rankings/small-caps">Small caps por valor de mercado</NuLinkSeta>
+      </div>
     </NuPageHero>
 
     <!-- ============ Destaque: Redentia Score top 5 (SSR real) ============ -->
@@ -275,7 +279,8 @@ function contagemDoGrupo(g: { tema: string; items: RankingMeta[] }): number {
 </template>
 
 <style scoped>
-.rkh__fiis { margin: 20px 0 0; }
+.rkh__atalhos { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px 28px; margin: 20px 0 0; max-width: 720px; }
+.rkh__atalhos :deep(.nls) { margin: 0; }
 /* Robustez (11/11/2026): a margem é a da coluna (--nu-coluna), o movimento e
    a cor por token, os selos (tipo do cartão, contagem do tema) são o NuSelo e
    os cartões entram ao rolar (v-revelar), sobem 2px no hover e afundam ao

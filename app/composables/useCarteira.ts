@@ -871,6 +871,8 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
 
   return {
     hero: buildHero(rows, today, income, totalValue),
+    resultado: montarResultado(portfolio, today),
+    proventos12mValor: income?.summary?.totalAll && income.summary.totalAll > 0 ? income.summary.totalAll : null,
     agora: buildAgora(rows, today, ibov12m.length ? ibov12m : null, totalValue, income),
     allocation: buildAllocation(rows),
     chart: buildEquityChartVM(curve, ibov12m.length ? ibov12m : null, cdiRate, totalValue),
@@ -1016,6 +1018,15 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
       ibov: ibov12m.length ? ibov12m : null,
       income,
     }),
+    resultado: montarResultado(portfolio, today),
+    proventos12mValor: totalAll > 0 ? totalAll : null,
+    // o topo escuro da /carteira, com os MESMOS builders de lá (sem o CDI do período: a home não busca o macro)
+    topo: {
+      agora: buildAgora(rows, today, ibov12m.length ? ibov12m : null, totalValue, income),
+      chart: buildEquityChartVM(ok(curveR)?.data ?? null, ibov12m.length ? ibov12m : null, null, totalValue),
+      stats: buildHero(rows, today, income, totalValue).stats,
+      alocacao: buildAllocation(rows),
+    },
   }
 }
 

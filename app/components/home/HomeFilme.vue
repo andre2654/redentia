@@ -81,6 +81,35 @@ const COMECA_EM = 1.5
 const BASE = '/video/aportou-lancamento'
 /** o celular em pé recebe o 9:16 */
 const EM_PE = '(max-width: 640px) and (orientation: portrait)'
+/** o complemento do EM_PE: o mesmo arquivo que a <img> usa fora do celular em pé */
+const DEITADO = '(min-width: 641px), (orientation: landscape)'
+
+// A capa é o LCP da home. O preload no começo do <head> pede o arquivo certo
+// antes de o parser chegar na imagem (o HTML da home é grande; sem isso a
+// descoberta esperava o fim do documento). A media é a mesma do <picture>,
+// para o celular não baixar as duas.
+useHead({
+  link: [
+    {
+      rel: 'preload',
+      as: 'image',
+      href: `${BASE}-9x16.webp`,
+      type: 'image/webp',
+      media: EM_PE,
+      fetchpriority: 'high',
+      tagPriority: 'high',
+    },
+    {
+      rel: 'preload',
+      as: 'image',
+      href: `${BASE}-16x9.webp`,
+      type: 'image/webp',
+      media: DEITADO,
+      fetchpriority: 'high',
+      tagPriority: 'high',
+    },
+  ],
+})
 
 const emit = defineEmits<{ /** a seta de rolar: o herói leva a página ao título */ descer: [] }>()
 

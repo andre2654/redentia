@@ -94,20 +94,39 @@ const renamedFrom = data.value ? await useRenamedFrom(ticker) : computed(() => n
 
 // Alternância de bandas: o histórico vem depois do resumo (branco) quando ele
 // existe; sem resumo, o histórico encosta no hero (creme) e inverte o ciclo.
+// Próximos pagamentos entra sempre. Outras empresas do setor só com segmento.
 const histTone = computed<'cream' | 'white'>(() => (div.value?.resumo ? 'cream' : 'white'))
 const flip = (t: 'cream' | 'white'): 'cream' | 'white' => (t === 'cream' ? 'white' : 'cream')
-const blocosTone = computed<'cream' | 'white'>(() => flip(histTone.value))
+const proximosTone = computed<'cream' | 'white'>(() => flip(histTone.value))
+const mostraPares = computed(() => !!div.value?.pares.segmento)
+const paresTone = computed<'cream' | 'white'>(() => flip(proximosTone.value))
+const blocosTone = computed<'cream' | 'white'>(() => flip(mostraPares.value ? paresTone.value : proximosTone.value))
+const tomAntesDaEdu = computed<'cream' | 'white'>(() => {
+  if ((div.value?.blocos.length ?? 0) > 0) return blocosTone.value
+  if (mostraPares.value) return paresTone.value
+  return proximosTone.value
+})
 const eduTones = computed(() => {
   const tones: ('cream' | 'white')[] = []
-  let t = (div.value?.blocos.length ?? 0) > 0 ? blocosTone.value : histTone.value
+  let t = tomAntesDaEdu.value
   for (let i = 0; i < (div.value?.edu.length ?? 0); i++) {
     t = flip(t)
     tones.push(t)
   }
   return tones
 })
-const faqTone = computed(() => flip(eduTones.value[eduTones.value.length - 1] ?? histTone.value))
+const faqTone = computed(() => flip(eduTones.value[eduTones.value.length - 1] ?? tomAntesDaEdu.value))
 const crossTone = computed(() => flip(faqTone.value))
+// A rota /setores/{slug} chega com o PR das páginas de segmento. Sem o arquivo, o link não sai.
+const temRotaSetores = Object.keys(import.meta.glob('../setores/*.vue')).some((caminho) => caminho.includes('[slug]'))
+const hrefSegmento = computed(() => (div.value ? hrefSetorSeRota(div.value.pares, temRotaSetores) : null))
+
+const trilha = [
+  { name: 'Início', path: '/' },
+  { name: ticker, path: `/asset/${ticker}` },
+  { name: 'Dividendos', path: `/dividendos/${ticker}` },
+]
+const veja = linksVejaTambem({ pagina: 'dividendos', ticker, proprioJaLinkado: true })
 
 if (data.value) {
   usePageSeo({
@@ -119,11 +138,7 @@ if (data.value) {
     dateModified: div.value.dataDate,
     // sem provento no histórico: fora do índice, links continuam seguíveis
     robots: robotsDeDividendos(div.value.temHistorico),
-    breadcrumbs: [
-      { name: 'Início', path: '/' },
-      { name: ticker, path: `/asset/${ticker}` },
-      { name: 'Dividendos', path: `/dividendos/${ticker}` },
-    ],
+    breadcrumbs: trilha,
   })
 }
 
@@ -139,6 +154,7 @@ const painel = useChatPainel()
     <section class="dvt__topo" :class="{ 'dvt__topo--so': !div.hero.stats.length }">
       <div class="dvt__topo-grade">
         <div class="dvt__topo-texto">
+          <NuTrilha :crumbs="trilha" class="dvt__trilha" />
           <NuEyebrow como="p">{{ div.hero.companyLine }}</NuEyebrow>
           <h1 class="dvt__h1">Dividendos de {{ ticker }}.</h1>
           <p class="dvt__lead">{{ div.hero.sub }}</p>
@@ -211,6 +227,68 @@ const painel = useChatPainel()
         </div>
       </div>
       <p v-if="!div.blocos.length" class="dvt__cvm">{{ div.notaCvm }}</p>
+    </CalcBand>
+
+    <!-- Avisos com data com ou pagamento futuro. Sem linha futura, a frase
+         neutra traz a data da consulta. A agenda fica ao lado da fonte. -->
+    <CalcBand :tone="proximosTone" title="Próximos pagamentos.">
+      <template #dek>
+        <p v-if="div.proximos.vazio">{{ div.proximos.vazio }}</p>
+        <p v-else-if="div.proximos.indisponivel">Os avisos de proventos da B3 não puderam ser lidos nesta página.</p>
+        <p v-else>Avisos já registrados, com data com ou pagamento posterior à consulta.</p>
+      </template>
+      <div v-if="div.proximos.itens.length" class="dvt__avisos">
+        <ul class="dvt__aviso-cards">
+          <li v-for="(item, i) in div.proximos.itens" :key="`avc-${i}`" class="dvt__aviso-card" :class="{ 'dvt__aviso-card--white': proximosTone === 'cream' }">
+            <div class="dvt__aviso-top">
+              <span class="dvt__aviso-tipo">{{ item.tipo }}</span>
+              <span class="dvt__aviso-valor">{{ item.valor }}</span>
+            </div>
+            <dl class="dvt__aviso-dl">
+              <div><dt>Data com</dt><dd>{{ item.dataCom }}</dd></div>
+              <div><dt>Pagamento</dt><dd>{{ item.pagamento }}</dd></div>
+            </dl>
+          </li>
+        </ul>
+        <div class="dvt__aviso-tabela" :class="{ 'dvt__aviso-tabela--white': proximosTone === 'cream' }">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Tipo</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Data com</th>
+                <th scope="col">Pagamento</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, i) in div.proximos.itens" :key="`avt-${i}`">
+                <td>{{ item.tipo }}</td>
+                <td class="dvt__num">{{ item.valor }}</td>
+                <td class="dvt__num">{{ item.dataCom }}</td>
+                <td class="dvt__num">{{ item.pagamento }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="dvt__fonte dvt__miolo">{{ div.proximos.fonte }}</p>
+      <p class="dvt__agenda dvt__miolo">
+        <NuxtLink to="/dividendos/agenda">Agenda de dividendos</NuxtLink>
+      </p>
+    </CalcBand>
+
+    <CalcBand v-if="mostraPares" :tone="paresTone" title="Outras empresas do setor.">
+      <template #dek>
+        <p>{{ div.pares.nota }}</p>
+      </template>
+      <ul v-if="div.pares.itens.length" class="dvt__pares">
+        <li v-for="par in div.pares.itens" :key="par.ticker">
+          <NuxtLink :to="par.href" class="dvt__par" :class="{ 'dvt__par--white': paresTone === 'cream' }">{{ par.ticker }}</NuxtLink>
+        </li>
+      </ul>
+      <p v-if="hrefSegmento" class="dvt__agenda dvt__miolo">
+        <NuxtLink :to="hrefSegmento">Lista do segmento</NuxtLink>
+      </p>
     </CalcBand>
 
     <!-- H2s da demanda: data com, pagamento, valor, último, JCP 2026, 2027 e DY.
@@ -303,6 +381,7 @@ const painel = useChatPainel()
         />
       </div>
     </CalcBand>
+    <NuVejaTambem :links="veja" />
   </div>
 </template>
 
@@ -316,6 +395,7 @@ const painel = useChatPainel()
 }
 .dvt__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(32px, 3.4vw, 40px); }
 .dvt__topo-texto { min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+.dvt__trilha { margin: 0 0 8px; }
 .dvt__h1 { margin: 16px 0 0; font-size: clamp(40px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance; }
 .dvt__lead { margin: 20px 0 0; max-width: 46ch; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; text-wrap: pretty; }
 @media (min-width: 1080px) {
@@ -352,6 +432,69 @@ const painel = useChatPainel()
 .dvt__fonte {
   margin: 16px 0 0; color: var(--nu-gray); font-size: 13px;
   font-weight: var(--nu-w-texto); line-height: 1.5; max-width: 72ch;
+}
+.dvt__miolo { max-width: 1080px; margin-left: auto; margin-right: auto; }
+
+.dvt__avisos { max-width: 1080px; margin: clamp(28px, 4vw, 40px) auto 0; min-width: 0; }
+.dvt__aviso-cards { display: none; list-style: none; margin: 0; padding: 0; }
+.dvt__aviso-card {
+  min-width: 0; padding: 16px; border-radius: var(--nu-r-panel);
+  background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
+}
+.dvt__aviso-card--white { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
+.dvt__aviso-card + .dvt__aviso-card { margin-top: 10px; }
+.dvt__aviso-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-width: 0; }
+.dvt__aviso-tipo { min-width: 0; color: var(--nu-ink); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); overflow-wrap: anywhere; }
+.dvt__aviso-valor { flex: 0 1 auto; color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; text-align: right; overflow-wrap: anywhere; }
+.dvt__aviso-dl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin: 12px 0 0; }
+.dvt__aviso-dl div { min-width: 0; }
+.dvt__aviso-dl dt { margin: 0; color: var(--nu-gray); font-size: 12px; font-weight: var(--nu-w-medio); }
+.dvt__aviso-dl dd { margin: 2px 0 0; color: var(--nu-ink); font-size: 14px; font-weight: var(--nu-w-medio); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.dvt__aviso-tabela {
+  overflow: hidden; border-radius: var(--nu-r-card-lg);
+  background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
+}
+.dvt__aviso-tabela--white { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
+.dvt__aviso-tabela table { width: 100%; border-collapse: collapse; }
+.dvt__aviso-tabela th {
+  text-align: left; padding: 14px 16px; color: var(--nu-gray); font-size: 12px; font-weight: var(--nu-w-medio);
+  letter-spacing: 0.04em; text-transform: uppercase; border-bottom: 1px solid var(--nu-line);
+}
+.dvt__aviso-tabela td {
+  padding: 14px 16px; border-bottom: 1px solid var(--nu-line-2); color: var(--nu-ink);
+  font-size: 15px; vertical-align: middle; overflow-wrap: anywhere;
+}
+.dvt__aviso-tabela tr:last-child td { border-bottom: 0; }
+.dvt__num { font-variant-numeric: tabular-nums; }
+.dvt__agenda { margin-top: 18px; }
+.dvt__agenda a {
+  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); text-decoration: none;
+}
+.dvt__agenda a:hover { text-decoration: underline; }
+.dvt__agenda a:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; border-radius: 4px; }
+
+.dvt__pares {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 12px; max-width: 1080px; margin: clamp(28px, 4vw, 40px) auto 0; padding: 0; list-style: none;
+}
+.dvt__par {
+  display: flex; align-items: center; justify-content: center; min-height: 56px; min-width: 0;
+  padding: 12px 10px; border-radius: var(--nu-r-tile);
+  background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
+  color: var(--nu-ink); font-weight: var(--nu-w-forte); letter-spacing: 0.02em;
+  text-decoration: none; font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
+}
+.dvt__par--white { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
+.dvt__par:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); color: var(--nu-blue-text); }
+.dvt__par:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+@media (max-width: 800px) {
+  .dvt__aviso-cards { display: flex; flex-direction: column; }
+  .dvt__aviso-tabela { display: none; }
+}
+@media (max-width: 420px) {
+  .dvt__aviso-dl { grid-template-columns: 1fr; }
+  .dvt__aviso-top { flex-wrap: wrap; }
 }
 
 .dvt__blocos {
@@ -441,8 +584,8 @@ const painel = useChatPainel()
   .dvt__card-link { padding: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .dvt__card-link, .dvt__card-link-ir svg, .dvt__card-link-title { transition: none; }
-  .dvt__card-link:hover, .dvt__card-link:active, .dvt__card-link:hover .dvt__card-link-ir svg { transform: none; }
+  .dvt__card-link, .dvt__card-link-ir svg, .dvt__card-link-title, .dvt__par { transition: none; }
+  .dvt__card-link:hover, .dvt__card-link:active, .dvt__card-link:hover .dvt__card-link-ir svg, .dvt__par:hover { transform: none; }
   .dvt__topo-texto { animation: none; }
 }
 </style>

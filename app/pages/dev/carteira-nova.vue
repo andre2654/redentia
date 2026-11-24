@@ -52,6 +52,7 @@ const payload = {
     priceDate: new Date().toISOString().slice(0, 10), carteiraPct: -0.31, bolsaPct: -0.52, diaValor: '−R$ 2.005,60', diaPct: '−0,31%', diaDir: 'down',
     alerta: null, patrimonio: brl2(v.patrimonio), ativos: `${v.posicoes.length} ativos`, atualizado: null, provento: false, proventoDoDia: null,
   },
+  proventos12mValor: 12940,
   allocation: [], groups: [], positionsSub: null, raiox: null, income: null, movements: movimentosMock(), heatmap: heatmapMock(),
   chart: { points: pontos, collecting: false, currentLabel: brl2(v.patrimonio), ibov12m: ibov, cdiRate: 14.9 },
 } as unknown as CarteiraPayload
