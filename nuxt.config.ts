@@ -236,8 +236,8 @@ export default defineNuxtConfig({
     '/guias/open-finance-carteira-espalhada': { redirect: { to: '/guias/open-finance', statusCode: 301 } },
     // Hubs de categoria da antiga → filtros do hub de rankings.
     '/acoes': { redirect: { to: '/rankings?classe=acoes', statusCode: 301 } },
-    // /fiis é página (200), canonical dela mesma. /rankings?classe=fiis
-    // continua o mesmo filtro, sem 301, para não formar loop com a barra.
+    // /fiis é o hub educativo (200), canonical dele mesmo. /rankings?classe=fiis
+    // continua o filtro do hub de rankings, sem 301, para não formar loop com a barra.
     '/etfs': { redirect: { to: '/rankings', statusCode: 301 } },
     '/small-caps': { redirect: { to: '/rankings', statusCode: 301 } },
     // /tesouro e /tesouro/[slug]: páginas reais em construção (frente
