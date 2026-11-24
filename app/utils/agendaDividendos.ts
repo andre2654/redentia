@@ -522,7 +522,7 @@ function faqDoMes(alvo: MesAlvo): FaqAgenda[] {
     {
       q: `Onde ver os FIIs na agenda de dividendos de ${quando}?`,
       a: `Nesta página, no filtro FIIs. O fundo entra com o tipo que o aviso usa, em geral Rendimento, quando a data de pagamento cai em ${quando}. O ranking de FIIs por dividend yield é outra página.`,
-      link: { texto: 'ranking de FIIs', to: '/fiis' },
+      link: { texto: 'ranking de FIIs', to: '/ranking/maiores-dividend-yield?type=fiis' },
     },
     {
       q: 'Esta agenda é recomendação de compra?',
@@ -619,7 +619,7 @@ const FAQ_HUB: FaqAgenda[] = [
   {
     q: 'Onde ver os FIIs na agenda?',
     a: 'Na página do mês, no filtro FIIs. O fundo aparece com o tipo do aviso, em geral Rendimento. O ranking de FIIs por dividend yield reúne o yield de 12 meses, que é outra conta.',
-    link: { texto: 'ranking de FIIs', to: '/fiis' },
+    link: { texto: 'ranking de FIIs', to: '/ranking/maiores-dividend-yield?type=fiis' },
   },
   {
     q: 'A agenda é recomendação de investimento?',
