@@ -154,6 +154,11 @@ const quandoDoDia = computed(() => {
   const r = frases.value?.diaRotulo
   return !r || r === 'Hoje' ? 'hoje' : `em ${r.charAt(0).toLowerCase()}${r.slice(1)}`
 })
+// o topo escuro da /carteira como herói do Início: só para quem vê os números (assinante) e tem carteira
+const topoEscuro = computed(() => {
+  const t = props.resumo?.topo
+  return comCarteira.value && podeVerNumeros.value && t?.agora ? { agora: t.agora, chart: t.chart, stats: t.stats } : null
+})
 const fatos = computed(() => {
   const r = props.resumo
   if (!r || r.state !== 'patrimonio') return []
@@ -227,7 +232,19 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
 </script>
 
 <template>
-  <section class="haf" aria-labelledby="haf-titulo">
+  <!-- 24/11 (o dono: "no início também"): com carteira e assinatura, o herói do Início é o topo escuro da /carteira
+       (o patrimônio grande, o dia, o retorno em R$ e o gráfico); embaixo, quem subiu e quem caiu e o caminho para a carteira -->
+  <template v-if="topoEscuro">
+    <CarteiraAgora aberto :agora="topoEscuro.agora" :chart="topoEscuro.chart" :stats="topoEscuro.stats" />
+    <section class="haf haf--depois" aria-label="Seus ativos hoje">
+      <CarteiraSobeDesce v-if="resumo?.resultado" :resultado="resumo.resultado" :mostrar-reais="visiveis" :quando="quandoDoDia" class="haf__sobe" />
+      <div class="haf__acoes haf__acoes--depois">
+        <NuBotaoSeta to="/carteira">Abrir minha carteira</NuBotaoSeta>
+        <NuLinkSeta to="/carteira#futuro" tom="tinta">Ver a carteira em 5 anos</NuLinkSeta>
+      </div>
+    </section>
+  </template>
+  <section v-else class="haf" aria-labelledby="haf-titulo">
     <!-- a linha do nome: quem é, o estado do dia e o olho -->
     <header class="haf__cab">
       <div class="haf__id">
@@ -579,6 +596,9 @@ a.haf__graf .haf__legenda, a.haf__graf .haf__graf-area { animation: nu-surgir va
   transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 /* o dado que chega no cartão (depois do esqueleto): fade em cascata de 60 ms; o cartão fica onde está */
+.haf--depois { padding-top: clamp(8px, 1.2vw, 16px); }
+.haf--depois .haf__sobe { margin-top: clamp(16px, 2vw, 28px); }
+.haf__acoes--depois { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-top: clamp(20px, 2.4vw, 32px); }
 .haf__fato-sub { margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.4; font-variant-numeric: tabular-nums; }
 dl.haf__fatos .haf__fato > * { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
 dl.haf__fatos .haf__fato:nth-child(2) > * { animation-delay: 60ms; }

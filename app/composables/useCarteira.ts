@@ -1020,6 +1020,12 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
     }),
     resultado: montarResultado(portfolio, today),
     proventos12mValor: totalAll > 0 ? totalAll : null,
+    // o topo escuro da /carteira, com os MESMOS builders de lá (sem o CDI do período: a home não busca o macro)
+    topo: {
+      agora: buildAgora(rows, today, ibov12m.length ? ibov12m : null, totalValue, income),
+      chart: buildEquityChartVM(ok(curveR)?.data ?? null, ibov12m.length ? ibov12m : null, null, totalValue),
+      stats: buildHero(rows, today, income, totalValue).stats,
+    },
   }
 }
 

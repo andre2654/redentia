@@ -276,6 +276,8 @@ export interface CarteiraResumoVM {
   resultado?: ResultadoDaCarteira | null
   /** proventos recebidos em 12 meses, em R$ */
   proventos12mValor?: number | null
+  /** o topo escuro da /carteira no Início (24/11/2026): o mesmo `agora`, a curva e a fileira de lá; null sem carteira */
+  topo?: { agora: CarteiraAgoraVM | null; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats'] } | null
 }
 
 /** Payload único do useAsyncData da /carteira. */
