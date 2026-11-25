@@ -95,7 +95,7 @@ const faqItems = [
   { q: 'Quando vence o DARF de IR sobre ações?', a: 'Último dia útil do mês seguinte ao das operações. Se o último dia do mês cair em sábado, domingo ou feriado, o prazo antecipa pro dia útil anterior, nunca adia. Operações de janeiro de 2026 = DARF venceu em 27 de fevereiro, porque 28/02/2026 caiu num sábado. Operações de novembro de 2026 = DARF vence em 30 de dezembro, porque em 31/12 não há expediente bancário. Pague antes via Sicalc Web ou no internet banking, sem stress.' },
   { q: 'Como gerar o DARF na prática?', a: 'Três caminhos: 1) Sicalc Web da Receita Federal (gov.br/receitafederal), você preenche o código 6015 (swing ou day trade), valor, mês de competência e gera o boleto; 2) app do seu banco (Itaú, Bradesco, Nubank, etc), vá em "Pagar > Tributos" e siga; 3) gerador automático em corretoras (XP, Rico, NuInvest) que já calculam pra você. Use a calculadora desta página pra confirmar o valor antes.' },
   { q: 'IR de FIIs é diferente de IR de ações?', a: 'Sim. Os rendimentos mensais de FIIs são isentos de IR pra pessoa física (nas condições da lei), mas o ganho de capital tem alíquota de 20% (não 15%) e SEM isenção dos R$ 20 mil. Toda venda de FII com lucro paga IR de 20% sobre o ganho. Código DARF é 6015 também (mesmo de swing trade de ações), mas a alíquota é diferente. Prejuízos de FII compensam só lucros de FII, não cruzam com ações.' },
-  { q: 'IR sobre dividendos: tenho que pagar?', a: 'Depende do valor. Desde 1º de janeiro de 2026 (Lei 15.270/2025), quando uma mesma empresa paga a você mais de R$ 50.000 em dividendos num mesmo mês, ela retém 10% de IR na fonte sobre o total pago no mês. Até R$ 50.000 por empresa por mês, não há retenção. Lucros apurados até 2025, com distribuição aprovada até 31/12/2025, ficam fora da regra. Rendimentos de FIIs seguem isentos pra pessoa física, nas condições da lei. JCP (Juros sobre Capital Próprio) tem 17,5% retidos na fonte desde 2026 (Lei Complementar 224/2025).' },
+  { q: 'IR sobre dividendos: tenho que pagar?', a: 'Depende do valor. Desde 1º de janeiro de 2026 (Lei 15.270/2025), quando uma mesma empresa paga a você mais de R$ 50.000 em dividendos num mesmo mês, ela retém 10% de IR na fonte sobre o total pago no mês. Até R$ 50.000 por empresa por mês, não há retenção. Lucros apurados até 2025, com distribuição aprovada até 31/12/2025, ficam fora da regra. Rendimentos de FIIs seguem isentos pra pessoa física, nas condições da lei. JCP (Juros sobre Capital Próprio) tem 17,5% retidos na fonte desde 2026 (Lei Complementar 224/2025). A conta do líquido está na calculadora de IR sobre dividendos e JCP.', link: { texto: 'calculadora de IR sobre dividendos e JCP', to: '/calculadora/ir-dividendos-jcp' } },
   { q: 'O que acontece se eu vender ações no exterior?', a: 'Outras regras. Ganho de capital em ações estrangeiras (incluindo BDRs sem regime de fundos) tem alíquota progressiva de 15% a 22,5% conforme o lucro acumulado anual. BDRs negociados na B3 seguem regras de ações brasileiras (15% + isenção). REITs americanos têm dividendos com retenção na fonte de 30% (parte recuperável via tratado), e ganho de capital tributado pela tabela progressiva. Esta calculadora é focada em ações da B3, para o exterior consulte um contador.' },
   { q: 'Como declarar dividendos no IRPF?', a: 'Na declaração de 2026 (ano-base 2025), dividendos são rendimentos isentos. Declare em "Rendimentos Isentos e Não Tributáveis" linha 9 (lucros e dividendos recebidos). JCP entra em "Rendimentos Sujeitos à Tributação Exclusiva" linha 6. Some os valores recebidos durante o ano por empresa, com CNPJ do pagador. Os informes de rendimentos das corretoras já trazem essa separação.' },
   { q: 'FIIs têm IR sobre os dividendos?', a: 'Não. Dividendos mensais de FIIs negociados em bolsa são ISENTOS de IR pra pessoa física, desde que o FII tenha 100+ cotistas e o investidor detenha menos de 10% das cotas. O ganho de capital na venda da cota tem 20% de IR (sem isenção R$ 20k que vale só pra ações). DARF código 6015.' },
@@ -234,7 +234,7 @@ usePageSeo({
           <p class="ir__card-p">Rendimentos de FIIs e Fiagros com cotas negociadas em bolsa seguem isentos pra pessoa física, nas condições da lei, e não entram na retenção de 10% sobre dividendos. O ganho de capital na venda das cotas continua tributado em 20%.</p>
         </div>
       </div>
-      <p class="ir__note">Aviso: esta calculadora trata do IR sobre a venda de ações e não calcula a retenção sobre dividendos. Base legal: Lei 15.270/2025, em vigor desde 1º de janeiro de 2026.</p>
+      <p class="ir__note">Aviso: esta calculadora trata do IR sobre a venda de ações. A retenção sobre dividendos e JCP está na <NuxtLink to="/calculadora/ir-dividendos-jcp" class="ir__link">calculadora de IR sobre dividendos e JCP</NuxtLink>. Base legal: Lei 15.270/2025, em vigor desde 1º de janeiro de 2026.</p>
     </CalcBand>
 
     <!-- ============ Passo a passo do DARF (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
@@ -384,6 +384,10 @@ usePageSeo({
         <NuxtLink to="/calculadora/preco-teto" class="ir__card-link">
           <h3 class="ir__card-link-title">Preço Teto</h3>
           <p class="ir__card-p">Descubra se ação está barata</p>
+        </NuxtLink>
+        <NuxtLink to="/calculadora/ir-dividendos-jcp" class="ir__card-link">
+          <h3 class="ir__card-link-title">IR sobre dividendos e JCP</h3>
+          <p class="ir__card-p">Líquido do dividendo e do JCP no mês</p>
         </NuxtLink>
       </div>
 

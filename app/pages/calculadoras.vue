@@ -85,6 +85,14 @@ const calculators = [
     cta: 'Calcular IR',
   },
   {
+    to: '/calculadora/ir-dividendos-jcp',
+    icon: ['M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17z', 'M8 16l8-8', 'M9.5 9.5v.01M14.5 14.5v.01'],
+    eyebrow: 'Proventos',
+    title: 'IR dividendos e JCP',
+    body: 'Calcule o líquido de dividendos e de JCP. 10% acima de R$ 50 mil no mês e 17,5% no JCP.',
+    cta: 'Calcular líquido',
+  },
+  {
     to: '/calculadora/dividend-yield',
     icon: ['M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17z', 'M12 7v10M14.5 9.2c-.6-.8-1.5-1.2-2.5-1.2-1.4 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-1.9-.4-2.5-1.2'],
     eyebrow: 'Renda passiva',

@@ -156,6 +156,7 @@ Proventos dos últimos 12 meses aplicados a um valor, em /quanto-rende/{TICKER},
 - [Calculadora de Preço Teto](${o}/calculadora/preco-teto): Graham, Bazin, P/L Setorial e VPA aplicados na hora a qualquer ação da B3
 - [Calculadora de Dividend Yield](${o}/calculadora/dividend-yield): quanto sua carteira paga por mês em reais, quanto você precisa pra viver de dividendos, e o DY atual, on cost e projetado
 - [Calculadora de IR sobre Ações](${o}/calculadora/imposto-renda): 15% swing trade, 20% day trade, isenção de até R$ 20 mil/mês (DARF 6015 nos dois casos)
+- [Calculadora de IR sobre dividendos e JCP](${o}/calculadora/ir-dividendos-jcp): líquido de dividendos (10% sobre o total acima de R$ 50 mil no mês, Lei 15.270/2025) e de JCP (17,5% retidos na fonte desde 1º de janeiro de 2026)
 - [Calculadora de Aposentadoria](${o}/calculadora/aposentadoria): regra dos 4% aplicada com inflação, INSS e expectativa de vida (FIRE)
 - [Calculadora: Quanto Investir por Mês](${o}/calculadora/quanto-investir): quanto aportar pra atingir uma meta em prazo definido
 - [Planejamento Patrimonial](${o}/calculadora/planejamento): carteira recomendada da B3 baseada em dados históricos reais
