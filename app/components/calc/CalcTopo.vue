@@ -14,12 +14,15 @@
 defineProps<{
   /** a linha de apoio embaixo do título */
   desc: string
+  /** trilha visível, a mesma do BreadcrumbList. No lugar do link único de volta. */
+  trilha?: { name: string; path: string }[]
 }>()
 </script>
 
 <template>
   <section class="cto">
-    <NuxtLink to="/calculadoras" class="cto__voltar nu-eyebrow">
+    <NuTrilha v-if="trilha?.length" :crumbs="trilha" class="cto__trilha" />
+    <NuxtLink v-else to="/calculadoras" class="cto__voltar nu-eyebrow">
       <svg class="cto__seta" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
       <MarcaCorte />
       <span>Calculadoras</span>
@@ -35,6 +38,7 @@ defineProps<{
   padding: clamp(16px, 2.2vw, 26px) max(clamp(16px, 5.5vw, 80px), calc((100% - 1240px) / 2)) 0;
   animation: nu-fade .5s ease both;
 }
+.cto__trilha { margin: 0 0 8px; text-align: left; }
 .cto__voltar { width: fit-content; min-height: 44px; text-align: left; }
 .cto__voltar:hover { color: var(--nu-ink); }
 .cto__seta { flex: none; margin-right: -4px; color: var(--nu-gray); transition: transform .25s var(--nu-ease-saida); }

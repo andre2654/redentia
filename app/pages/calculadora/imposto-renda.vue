@@ -103,16 +103,19 @@ const faqItems = [
   { q: 'Como funciona a tributação de dividendos a partir de 2026?', a: 'A Lei 15.270/2025, sancionada em 26/11/2025, vale desde 1º de janeiro de 2026. Quando uma mesma empresa paga a uma mesma pessoa física mais de R$ 50.000 em lucros e dividendos num mesmo mês, retém 10% de IR na fonte sobre o total pago. Até esse valor, não há retenção. A lei também criou a tributação mínima anual pra quem recebe mais de R$ 600 mil no ano, a partir da declaração de 2027, e o IR retido nos dividendos é abatido nesse acerto. Rendimentos de FIIs e Fiagros listados seguem isentos pra pessoa física, nas condições da lei.' },
 ]
 
+const trilha = [
+  { name: 'Home', path: '/' },
+  { name: 'Calculadoras', path: '/calculadoras' },
+  { name: 'Imposto de Renda', path: '/calculadora/imposto-renda' },
+]
+const veja = linksVejaTambem({ pagina: 'ir' })
+
 usePageSeo({
   title: 'IR swing trade e day trade: calcule o DARF 2026',
   description:
     'Swing trade paga 15% de IR e day trade 20%, com isenção de R$ 20 mil em vendas de ações no mês no swing trade. Calcule o DARF 6015. Grátis.',
   path: '/calculadora/imposto-renda',
-  breadcrumbs: [
-    { name: 'Home', path: '/' },
-    { name: 'Calculadoras', path: '/calculadoras' },
-    { name: 'Imposto de Renda', path: '/calculadora/imposto-renda' },
-  ],
+  breadcrumbs: trilha,
   structuredData: [
     {
       '@type': 'WebApplication',
@@ -144,7 +147,7 @@ usePageSeo({
   <div>
     <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
     <!-- "calculadora de IR" fica no <title>, no JSON-LD e na faixa "Como Usar…" -->
-    <CalcTopo desc="Swing trade ou day trade: o imposto do mês, o DARF e o vencimento, em segundos.">
+    <CalcTopo desc="Swing trade ou day trade: o imposto do mês, o DARF e o vencimento, em segundos." :trilha="trilha">
       Quanto de IR você paga em swing trade e day trade?
     </CalcTopo>
 
@@ -216,7 +219,7 @@ usePageSeo({
       <div class="ir__tiles ir__tiles--duo">
         <div class="ir__tile">
           <h3 class="ir__tile-title">Regra Vigente desde 2026</h3>
-          <p class="ir__card-p">Lucros e dividendos pagos por uma mesma empresa a uma mesma pessoa física acima de R$ 50.000 num mesmo mês têm 10% de IR retido na fonte, calculado sobre o total pago no mês, sem deduções. Até R$ 50.000 por empresa por mês, o dividendo segue sem retenção. JCP (Juros sobre Capital Próprio) tem 17,5% retidos na fonte desde 2026 (Lei Complementar 224/2025).</p>
+          <p class="ir__card-p">Lucros e dividendos pagos por uma mesma empresa a uma mesma pessoa física acima de R$ 50.000 num mesmo mês têm 10% de IR retido na fonte, calculado sobre o total pago no mês, sem deduções. Até R$ 50.000 por empresa por mês, o dividendo segue sem retenção. JCP (Juros sobre Capital Próprio) tem 17,5% retidos na fonte desde 2026 (Lei Complementar 224/2025). O verbete de <NuxtLink to="/glossario/jscp">juros sobre capital próprio</NuxtLink> mostra a conta do líquido.</p>
         </div>
         <div class="ir__tile">
           <h3 class="ir__tile-title">Quem Entra na Retenção</h3>
@@ -400,6 +403,8 @@ usePageSeo({
         </p>
       </aside>
     </CalcBand>
+
+    <NuVejaTambem :links="veja" />
 
     <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
     <CalcFaixaCta

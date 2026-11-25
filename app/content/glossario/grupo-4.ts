@@ -547,7 +547,7 @@ export const GRUPO_4: GlossaryTerm[] = [
     body: [
       'Os <strong>proventos</strong> são o termo guarda-chuva para tudo o que uma empresa distribui aos seus acionistas. Sempre que você ouvir falar em remuneração ao investidor por deter uma ação ou uma cota, provavelmente está diante de algum tipo de provento.',
       'Os principais são quatro. Os <a href="/glossario/dividendos">dividendos</a>, parcela do lucro distribuída em dinheiro e isenta de imposto de renda para a pessoa física até R$ 50 mil por mês da mesma empresa. O <a href="/glossario/jscp">JCP</a> (juros sobre capital próprio), semelhante em dinheiro, mas com 17,5% de imposto retido na fonte. A <a href="/glossario/bonificacao">bonificação</a>, distribuição de ações novas. E o direito de subscrição, a preferência para comprar novas ações, geralmente com desconto, que pode ser exercido ou vendido.',
-      'Os proventos seguem um calendário próprio, com datas que vale conhecer: a data com (último dia para comprar e ter direito), a data ex (a partir da qual a ação passa a negociar sem o provento) e a data de pagamento (quando o valor efetivamente cai na conta). Fundos imobiliários, por regra, distribuem a maior parte do resultado com frequência costumeiramente mensal.',
+      'Os proventos seguem um calendário próprio, com datas que vale conhecer: a <a href="/glossario/data-com">data com</a> (último dia para comprar e ter direito), a <a href="/glossario/data-ex">data ex</a> (a partir da qual a ação passa a negociar sem o provento) e a data de pagamento (quando o valor efetivamente cai na conta). A <a href="/dividendos/agenda">agenda de dividendos</a> reúne os avisos do mês. Fundos imobiliários, por regra, distribuem a maior parte do resultado com frequência costumeiramente mensal.',
       'Reinvestir proventos é uma das formas mais poderosas de acelerar o crescimento do patrimônio no longo prazo, pelo efeito dos juros compostos. Indicadores como <a href="/glossario/dividend-yield">dividend yield</a> e <a href="/glossario/payout">payout</a> ajudam a avaliar quanto uma empresa distribui e se essa distribuição é sustentável.',
     ],
     related: ['dividendos', 'jscp', 'bonificacao', 'payout'],
@@ -563,6 +563,138 @@ export const GRUPO_4: GlossaryTerm[] = [
       {
         q: 'Todo provento paga imposto de renda?',
         a: 'Não. Os dividendos são isentos de imposto de renda para a pessoa física até R$ 50 mil por mês da mesma empresa (acima disso, desde 2026, há retenção de 10% sobre o total), enquanto os juros sobre capital próprio sofrem 17,5% de retenção na fonte. A bonificação em geral só gera imposto na venda futura das ações. As regras variam conforme o tipo de provento e a classe do ativo.',
+      },
+    ],
+  },
+  {
+    slug: 'data-com',
+    term: 'Data com',
+    letter: 'D',
+    seoTitle: 'O que é data com de dividendos',
+    short:
+      'Data com é o último pregão em que a compra ainda dá direito ao provento. A regra, um exemplo de calendário ilustrativo e o que essa data não decide.',
+    body: [
+      'A <strong>data com</strong> é o último pregão em que comprar a ação, a cota ou o fundo ainda dá direito ao <a href="/glossario/proventos">provento</a> anunciado. Quem está com o ativo no fechamento desse pregão entra na lista de quem recebe. A data de pagamento, o dia em que o dinheiro cai na conta, não muda essa lista. O mesmo calendário vale para <a href="/glossario/dividendos">dividendo</a>, <a href="/glossario/jscp">JCP</a> e rendimento de fundo imobiliário.',
+      'A sequência de um anúncio tem quatro marcas: a data do anúncio, a data com, a <a href="/glossario/data-ex">data ex</a> (o pregão seguinte, já sem o direito) e a data de pagamento. Comprar durante a data com e carregar até o fechamento dá direito ao provento. Vender na data ex não tira o direito de quem estava posicionado no fechamento anterior. A <a href="/glossario/b3">B3</a> liquida o negócio em D+2, mas o direito ao provento é apurado pela data da negociação, não pela data da liquidação. A <a href="/dividendos/agenda">agenda de dividendos</a> mostra os pagamentos anunciados com essas datas.',
+      '<strong>Exemplo ilustrativo:</strong> um comunicado hipotético marca a data com numa quarta-feira e a data ex na quinta-feira. Quem compra na quarta e segue até o fechamento entra na lista. Quem compra na quinta não entra. Quem vendeu na abertura da quinta, depois de ter fechado a quarta com o ativo, mantém o provento. Não há empresa, ticker, valor nem data real neste exemplo. É só a ordem dos pregões.',
+      'Ressalva honesta: as limitações do calendário são estas. A data com decide o direito, não o valor que vai cair na conta nem se o anúncio ainda pode ser ajustado antes da assembleia. Entre a data com e o pagamento podem passar dias ou meses, e a assembleia pode fixar outro prazo, dentro do que a lei permite. Ter direito ao provento também não descreve se o ativo é adequado a alguém. A queda de preço na data ex é o ajuste do direito que saiu da cotação, assunto da página de data ex. Não é recomendação de compra ou venda.',
+    ],
+    related: ['data-ex', 'dividendos', 'jscp', 'proventos', 'dividend-yield'],
+    backlink: {
+      label: 'Ver a agenda de dividendos e as datas anunciadas',
+      to: '/dividendos/agenda',
+    },
+    faq: [
+      {
+        q: 'Comprar na data com ainda dá direito ao provento?',
+        a: 'Sim. A data com é o último pregão em que a compra, se for carregada até o fechamento, entra na lista de quem recebe o provento anunciado. Não é preciso ter o ativo há vários dias. A regra descreve o calendário. Não é recomendação de comprar nesse dia.',
+      },
+      {
+        q: 'Vender na data ex faz perder o dividendo?',
+        a: 'Não, se a posição existia no fechamento da data com. O direito já foi fixado. A venda na data ex transfere o ativo sem aquele provento, e o crédito segue programado para quem estava na lista.',
+      },
+      {
+        q: 'Data com e data de pagamento são a mesma coisa?',
+        a: 'Não. A data com decide quem tem direito. A data de pagamento é o dia em que o valor é creditado, e pode vir semanas ou meses depois. Estar na conta no dia do pagamento não cria direito para quem comprou depois da data com.',
+      },
+    ],
+  },
+  {
+    slug: 'data-ex',
+    term: 'Data ex',
+    letter: 'D',
+    seoTitle: 'O que é data ex (ex-dividendos)',
+    short:
+      'Data ex é o pregão em que o ativo negocia sem o provento. A conta do preço de referência, um exemplo ilustrativo e por que a queda do dia não é prejuízo.',
+    body: [
+      'A <strong>data ex</strong>, também chamada de ex-dividendos, é o pregão seguinte à <a href="/glossario/data-com">data com</a>. A partir dela o ativo passa a ser negociado sem o direito ao <a href="/glossario/proventos">provento</a> daquele anúncio. Quem compra na data ex não recebe aquele pagamento. Quem já tinha o ativo no fechamento da data com mantém o direito, mesmo se vender na data ex.',
+      'O preço de referência costuma ser ajustado para baixo porque o direito saiu da cotação. A conta do ajuste teórico é <strong>preço de referência na data ex = fechamento da data com − provento bruto por ação</strong>. O pregão seguinte negocia a partir daí e pode fechar acima ou abaixo desse ponto, como em qualquer outro dia. Para quem já era dono, o que saiu do preço está programado para chegar em dinheiro na data de pagamento. Medir o retorno do dia sem somar o provento de volta lê a transferência como se fosse perda. A <a href="/dividendos/agenda">agenda de dividendos</a> publica as datas dos avisos.',
+      '<strong>Exemplo ilustrativo:</strong> o fechamento hipotético da data com é R$ 30,00 e o provento anunciado é R$ 1,00 por ação. O preço de referência na data ex é R$ 29,00 (30 − 1). O real que saiu da cotação fica a receber. São números redondos para mostrar o ajuste. Não são cotação, provento nem dado real de nenhum ativo. O pregão do exemplo pode negociar a R$ 28,70 ou a R$ 29,40 sem que a fórmula mude.',
+      'Ressalva honesta: as limitações do ajuste são concretas. A fórmula usa o provento bruto anunciado. No <a href="/glossario/jscp">JCP</a> o investidor recebe o líquido, depois de 17,5% retidos na fonte, e o preço de referência em geral desconta o bruto, não o líquido. Amortização de cota devolve capital e não é rendimento. <a href="/glossario/bonificacao">Bonificação</a> e <a href="/glossario/desdobramento">desdobramento</a> também têm data ex e ajustam o preço, sem depositar reais. A queda do dia ex não é, por si, notícia sobre o negócio. Não é recomendação de compra ou venda.',
+    ],
+    related: ['data-com', 'dividendos', 'jscp', 'proventos', 'dividend-yield'],
+    backlink: {
+      label: 'Ver a agenda de dividendos e a data ex dos avisos',
+      to: '/dividendos/agenda',
+    },
+    faq: [
+      {
+        q: 'O que significa uma ação estar ex-dividendos?',
+        a: 'Significa que ela está na data ex, ou depois dela, em relação a um provento já anunciado. Quem compra nessa condição não leva aquele provento. O direito ficou com quem tinha o ativo no fechamento da data com.',
+      },
+      {
+        q: 'Por que o preço cai na data ex?',
+        a: 'Porque o preço até a data com embutia o direito de receber aquele provento. Na data ex o direito sai, e o preço de referência é reduzido pelo valor bruto anunciado. A diferença fica programada como pagamento. O pregão pode negociar acima ou abaixo dessa referência.',
+      },
+      {
+        q: 'A queda da data ex é prejuízo?',
+        a: 'Para quem já tinha direito, a queda teórica do preço de referência é o provento trocando de forma: sai da cotação e vai para o pagamento. Comparar o preço de antes com o de depois, sem somar o provento, descreve mal o resultado do dia. O pregão ainda pode variar por outros motivos, como em qualquer sessão.',
+      },
+    ],
+  },
+  {
+    slug: 'preco-teto-bazin',
+    term: 'Preço teto de Bazin',
+    letter: 'P',
+    seoTitle: 'Método Bazin: o que é o preço teto',
+    short:
+      'O preço teto de Bazin divide os proventos de 12 meses por 6% ao ano. A fórmula, um exemplo ilustrativo e as limitações do método. Não é recomendação.',
+    body: [
+      'O <strong>preço teto de Bazin</strong> é o preço em que os proventos por ação dos últimos 12 meses ainda rendem o dividend yield mínimo que Décio Bazin adotou. No livro Faça Fortuna com Ações, publicado em 1992, esse piso é 6% ao ano. A conta inverte o <a href="/glossario/dividend-yield">dividend yield</a>: em vez de perguntar qual é o rendimento de um preço, pergunta qual preço produz 6%. É uma estimativa educacional. Não é recomendação de compra ou venda.',
+      'A fórmula é <strong>preço teto = proventos por ação dos últimos 12 meses ÷ 0,06</strong>. O 0,06 é o 6% escrito em decimal. Trocar o percentual produz outra régua e deixa de ser o método de Bazin. Os proventos do numerador incluem o que foi distribuído em 12 meses. <a href="/glossario/jscp">JCP</a> bruto e líquido não são o mesmo número: usar o bruto no lugar do líquido aumenta o teto. O passo a passo das cinco fórmulas do site está no <a href="/guias/como-calcular-preco-teto">guia de como calcular preço teto</a>. A conta desta página roda na <a href="/calculadora/preco-teto/bazin">calculadora do método de Bazin</a> e também na <a href="/calculadora/preco-teto">calculadora de preço teto</a>.',
+      '<strong>Exemplo ilustrativo:</strong> proventos hipotéticos de R$ 1,20 por ação nos últimos 12 meses, divididos por 0,06, dão preço teto de R$ 20,00 (1,20 ÷ 0,06). Sobre R$ 20,00, esses R$ 1,20 equivalem a 6% de dividend yield. São números redondos para fechar a divisão. Não são provento, cotação nem dado real de nenhum ativo.',
+      'Ressalva honesta: as limitações do método estão no que a fórmula ignora. Ela olha os últimos 12 meses e não diz o que será distribuído depois. Ignora crescimento: uma empresa que reinveste o lucro e paga pouco sai com teto baixo ou zero, e isso não descreve o negócio. Ignora dívida: dois papéis com o mesmo provento recebem o mesmo teto. Um provento extraordinário entra na soma e eleva o resultado. O 6% é o piso do livro, escolhido num contexto de juros, não uma constante de mercado. A <a href="/glossario/graham">fórmula de Graham</a> usa lucro e patrimônio, não o dividendo, e as duas contas podem divergir.',
+    ],
+    related: ['dividend-yield', 'dividendos', 'jscp', 'graham', 'payout'],
+    backlink: {
+      label: 'Calcular o preço teto de Bazin com o yield de 6%',
+      to: '/calculadora/preco-teto',
+    },
+    faq: [
+      {
+        q: 'O que é o método Bazin?',
+        a: 'É a conta que divide os proventos por ação dos últimos 12 meses por 6% ao ano, o dividend yield mínimo que Décio Bazin usou em Faça Fortuna com Ações (1992). O resultado é um preço de referência. Não é previsão de cotação e não é recomendação.',
+      },
+      {
+        q: 'Por que o método Bazin usa 6%?',
+        a: 'Porque 6% ao ano é o piso de dividend yield que Bazin adotou naquele livro, no contexto de juros em que escreveu, para comparar renda variável com renda fixa. Não é uma lei de mercado. Outro percentual deixa de ser a régua clássica do método.',
+      },
+      {
+        q: 'O preço teto de Bazin serve para FIIs?',
+        a: 'A mesma divisão pode ser feita com o rendimento por cota dos últimos 12 meses. O resultado segue sendo uma estimativa educacional, com as mesmas limitações de olhar para trás e de não separar pagamento recorrente de pagamento único. Não escolhe fundo.',
+      },
+    ],
+  },
+  {
+    slug: 'graham',
+    term: 'Fórmula de Graham',
+    letter: 'F',
+    seoTitle: 'Fórmula de Graham: o que é e a conta',
+    short:
+      'A fórmula de Graham é a raiz de 22,5 vezes o lucro e o patrimônio por ação. A conta, um exemplo ilustrativo e os limites. Não é recomendação.',
+    body: [
+      'A <strong>fórmula de Graham</strong> estima um valor de referência com o lucro por ação e o valor patrimonial por ação. Benjamin Graham, em O Investidor Inteligente, propôs que o investidor defensivo não passasse de P/L 15 nem de <a href="/glossario/p-vp">P/VP</a> 1,5. O número 22,5 é o produto desses dois limites (15 × 1,5). A fórmula compacta os dois numa conta só. O resultado é educacional. Não é recomendação de compra ou venda e não ordena ativos.',
+      'A fórmula é <strong>valor de referência = √(22,5 × LPA × VPA)</strong>. <a href="/glossario/lpa">LPA</a> é o lucro por ação. <a href="/glossario/vpa">VPA</a> é o patrimônio líquido por ação. A raiz faz com que um P/L acima de 15 possa conviver com um P/VP abaixo de 1,5, e o contrário, desde que o produto dos dois múltiplos não passe de 22,5. A conta exige LPA e VPA positivos: prejuízo zera o produto. A <a href="/calculadora/preco-teto/graham">página da fórmula de Graham</a> e a <a href="/calculadora/preco-teto">calculadora de preço teto</a> aplicam essa conta aos números informados. O <a href="/guias/como-calcular-preco-teto">guia de como calcular preço teto</a> compara a fórmula com as outras quatro.',
+      '<strong>Exemplo ilustrativo:</strong> LPA de R$ 2,00 e VPA de R$ 20,00. O produto 22,5 × 2 × 20 é 900, e a raiz de 900 é R$ 30,00. Se alguém informa uma cotação de R$ 24,00 no mesmo exemplo, a distância até R$ 30,00 é de 20% ((30 − 24) ÷ 30). A distância é aritmética. Não descreve nenhum ativo, não é cotação real e não escolhe papel.',
+      'Ressalva honesta: as limitações são as que o próprio critério carrega. A fórmula isolada ignora dívida: duas empresas com o mesmo LPA e o mesmo VPA recebem o mesmo número, ainda que uma deva muito e a outra tenha caixa. Ignora intangíveis: software, marca e serviço costumam ter VPA baixo em relação ao caixa que geram, e a conta fica sistematicamente abaixo. Graham tratava os múltiplos como triagem, junto de outros filtros de tamanho, solidez, histórico de lucro e de dividendos. Sem lucro positivo a fórmula não roda. Esta página explica a conta. Não publica lista de ativos ordenada por ela. O <a href="/glossario/preco-teto-bazin">método Bazin</a> usa o dividendo, não o LPA, e as duas réguas podem divergir.',
+    ],
+    related: ['p-vp', 'p-l', 'lpa', 'vpa', 'preco-teto-bazin'],
+    backlink: {
+      label: 'Calcular a fórmula de Graham na calculadora de preço teto',
+      to: '/calculadora/preco-teto',
+    },
+    faq: [
+      {
+        q: 'De onde vem o 22,5 da fórmula de Graham?',
+        a: 'É 15 multiplicado por 1,5. No critério de Graham para o investidor defensivo, 15 é o teto de P/L e 1,5 é o teto de P/VP. A raiz de 22,5 × LPA × VPA é uma forma compacta de escrever o preço em que o produto desses dois múltiplos chega a 22,5.',
+      },
+      {
+        q: 'A fórmula de Graham funciona com prejuízo?',
+        a: 'Não. LPA negativo zera ou inviabiliza o produto debaixo da raiz. A fórmula se recusa a produzir um número quando não há lucro por ação positivo. Isso é um limite do método, não um veredito sobre a empresa.',
+      },
+      {
+        q: 'O resultado da fórmula é uma recomendação?',
+        a: 'Não. O número é uma estimativa educacional feita com LPA, VPA e a constante 22,5. Não escolhe ativo, não ordena uma lista e não é preço-alvo. A distância entre uma cotação informada e o resultado é só a conta.',
       },
     ],
   },

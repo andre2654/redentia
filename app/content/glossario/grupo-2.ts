@@ -171,19 +171,20 @@ export const GRUPO_2: GlossaryTerm[] = [
     slug: 'jscp',
     term: 'Juros sobre Capital Próprio (JCP)',
     letter: 'J',
+    seoTitle: 'O que é JCP (juros sobre capital próprio)',
     short:
-      'JCP (Juros sobre Capital Próprio) é uma forma de a empresa remunerar acionistas parecida com dividendo, mas dedutível pra companhia e tributada em 17,5% de IR na fonte pro investidor.',
+      'JCP é a remuneração do acionista dedutível para a empresa, com 17,5% de IR retido na fonte. Veja a conta do líquido, um exemplo e os limites.',
     body: [
-      'Os <strong>Juros sobre Capital Próprio</strong>, ou <strong>JCP</strong>, são uma forma de a empresa remunerar os acionistas como se pagasse juros sobre o capital que eles investiram nela. Na prática, é um tipo de <a href="/glossario/proventos">provento</a>, primo dos <a href="/glossario/dividendos">dividendos</a>, mas com regras fiscais próprias.',
+      'Os <strong>juros sobre capital próprio</strong>, ou <strong>JCP</strong>, são um <a href="/glossario/proventos">provento</a>: a empresa remunera o acionista com base no capital próprio, em vez de distribuir só <a href="/glossario/dividendos">dividendo</a>. O calendário é o mesmo dos outros proventos. A <a href="/glossario/data-com">data com</a> fixa quem tem direito, e a <a href="/dividendos/agenda">agenda de dividendos</a> mostra os pagamentos anunciados, inclusive os classificados como JCP.',
       'A diferença central é tributária. O <strong>dividendo é pago do lucro já tributado e chega isento de IR</strong> pra pessoa física até R$ 50 mil por mês da mesma empresa (acima disso, desde 2026, a empresa retém 10% sobre o total); o <strong>JCP é dedutível pra empresa</strong> (reduz a base de cálculo do imposto dela) mas sofre <strong>17,5% de IR retido na fonte</strong> pro investidor, sem limite de isenção. Ou seja, o mesmo real distribuído tem eficiência fiscal diferente pros dois lados.',
-      'Pra decisão da companhia, o JCP costuma ser vantajoso porque o abatimento no imposto compensa. Pro investidor, o que chega é o valor líquido dos 17,5%, e por isso o JCP entra na conta do <a href="/glossario/dividend-yield">dividend yield</a> e do <a href="/glossario/payout">payout</a> ao lado dos dividendos, formando o total de proventos.',
-      '<strong>Exemplo ilustrativo:</strong> se a empresa decide destinar R$ 100 por lote de ações, pagando como dividendo você receberia R$ 100 isentos; pagando como JCP você receberia R$ 82,50 (R$ 100 menos 17,5% de IR na fonte), enquanto a empresa deduz os R$ 100 da base do imposto dela. Os números são redondos só pra mostrar o mecanismo.',
-      'Ressalva honesta: <strong>o IR do JCP já sai retido, mas ainda precisa ser declarado</strong> no ajuste anual, na ficha de rendimentos sujeitos à tributação exclusiva. E como a legislação de tributação de proventos muda (a retenção do JCP passou de 15% para 17,5% em 2026), comparar dividendo e JCP sempre depende das regras vigentes no momento.',
+      'A conta do que chega na pessoa física é <strong>JCP líquido = JCP bruto × (1 − 0,175)</strong>, ou seja, bruto × 0,825. O valor bruto é o que a empresa anuncia e o que ela deduz. O valor líquido é o que o investidor recebe depois da retenção. Quando o <a href="/glossario/dividend-yield">dividend yield</a> soma dividendos e JCP, misturar bruto com líquido muda o percentual. A <a href="/calculadora/dividend-yield">calculadora de dividend yield</a> faz a conta do yield. O detalhe do imposto está na <a href="/calculadora/imposto-renda">calculadora de imposto de renda</a>. A redação da alíquota, a data com, a data ex e o informe de rendimentos estão na <a href="/jcp">página de juros sobre capital próprio</a>. Não é recomendação de preferir um provento ao outro.',
+      '<strong>Exemplo ilustrativo:</strong> um anúncio hipotético de R$ 100 de JCP bruto por lote rende R$ 82,50 líquidos (100 × 0,825), porque 17,5% de R$ 100 são R$ 17,50 retidos na fonte. Os mesmos R$ 100 pagos como dividendo, dentro do limite mensal, chegariam integrais. São números redondos para mostrar a retenção. Não são provento, lote nem dado real de nenhuma empresa.',
+      'Ressalva honesta: as limitações fiscais importam tanto quanto a fórmula. O IR do JCP já sai retido e ainda precisa ser declarado no ajuste anual, na ficha de rendimentos sujeitos à tributação exclusiva. A alíquota de retenção passou de 15% para 17,5% em 2026, então comparar um anúncio antigo com a regra de hoje sem olhar a data erra o líquido. O JCP também segue a <a href="/glossario/data-ex">data ex</a>: a partir dela o ativo negocia sem aquele provento, e o preço de referência costuma cair pelo valor bruto anunciado, não pelo líquido.',
     ],
-    related: ['dividendos', 'proventos', 'dividend-yield', 'payout', 'lucro-liquido'],
+    related: ['dividendos', 'proventos', 'dividend-yield', 'payout', 'data-com'],
     backlink: {
-      label: 'Ver o ranking de maiores pagadoras de proventos',
-      to: '/ranking/maiores-dividend-yield',
+      label: 'Ver a página de juros sobre capital próprio',
+      to: '/jcp',
     },
     faq: [
       {

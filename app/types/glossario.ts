@@ -31,8 +31,14 @@ export interface GlossaryTerm {
    * Derive com `glossaryLetter(term)` (registry) pra manter consistência.
    */
   letter: string
-  /** 1 frase — vira a base da meta description e o subtítulo do card. */
+  /** 1 frase — vira a meta description (120–155) e o subtítulo do card. */
   short: string
+  /**
+   * Title da SERP, sem o sufixo " · Aportou" (o titleTemplate acrescenta os
+   * 10 caracteres). Com o sufixo, o total cabe em 60. Ausente: a página usa
+   * a fórmula genérica.
+   */
+  seoTitle?: string
   /**
    * Parágrafos do corpo. HTML local e confiável: só <strong> e
    * <a href="/rota-interna"> (links internos pra outros termos/superfícies).

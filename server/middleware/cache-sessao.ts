@@ -54,11 +54,15 @@ const EXATAS: Record<string, string> = {
   '/graficos': 'public, s-maxage=86400',
   // Rankings e setores: o backend cacheia 15 min → s-maxage=900.
   '/rankings': QUINZE_MIN,
+  '/rankings/fiis': QUINZE_MIN,
+  '/rankings/small-caps': QUINZE_MIN,
   '/fiis': QUINZE_MIN,
   '/setor': QUINZE_MIN,
   '/setores': QUINZE_MIN,
   // Legais/editoriais que quase nunca mudam.
   '/metodologia': DIA,
+  // /jcp: texto estável e a lista de avisos, que muda com a base da B3.
+  '/jcp': HORA,
 }
 
 /** Rotas '/x/**' (tudo DEBAIXO de /x/). */
@@ -66,6 +70,7 @@ const PREFIXOS: Array<[string, string]> = [
   ['/asset/', 'public, s-maxage=120, stale-while-revalidate=600'],
   ['/tesouro/', DEZ_MIN],
   ['/dividendos/', HORA],
+  ['/imposto-de-renda/', HORA],
   ['/guias/', HORA],
   ['/glossario/', DIA],
   ['/tese/', CINCO_MIN],

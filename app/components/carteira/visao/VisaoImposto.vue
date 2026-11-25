@@ -88,7 +88,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
     <!-- a resposta e o cartão das vendas entram ao rolar, um depois do outro (v-revelar) -->
     <div v-revelar="{ alvo: 'filhos', passo: 90 }" class="vim__grade">
     <div class="vim__texto">
-    <NuEyebrow>Devo imposto?</NuEyebrow>
+    <NuEyebrow>Imposto</NuEyebrow>
     <h2 id="vim-titulo" class="vim__frase"><FraseDestaque :texto="frase" /></h2>
     <p v-if="sub" class="vim__sub">{{ sub }}</p>
 

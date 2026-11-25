@@ -7,13 +7,12 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { TEXTO_ALIQUOTA_JCP } from '../app/utils/dividendosBlocos.ts'
+import { URL_LC_224, URL_LEI_15270 } from '../app/utils/impostoRendaPagina.ts'
 import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO } from '../app/utils/serp.ts'
 import {
   ALIQUOTA_DIVIDENDOS,
   ALIQUOTA_JCP,
   LIMITE_MENSAL_DIVIDENDOS,
-  URL_LC_224,
-  URL_LEI_15270,
   calcularIrProventos,
   centavos,
   classeDoAviso,
@@ -129,8 +128,7 @@ test('a página usa a regra do repo, o texto do JCP e os links pedidos', () => {
   assert.equal(URL_LC_224, 'https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp224.htm')
   assert.match(junto, /art\. 6º-A da Lei 9\.250\/1995/)
   assert.match(junto, /Lei 15\.270\/2025/)
-  assert.match(junto, /to="\/glossario\/jscp"/)
-  assert.doesNotMatch(junto, /to="\/jcp"/)
+  assert.match(junto, /to="\/jcp"/)
   assert.match(junto, /to="\/calculadora\/imposto-renda"/)
   assert.match(junto, /\/dividendos\//)
   assert.doesNotMatch(junto, /PL 1\.087/)

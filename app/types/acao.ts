@@ -87,7 +87,7 @@ export interface FundamentalsOverviewApi {
      * Cadastro da empresa. No BDR, company_name é o nome inteiro da matriz
      * ('Palantir Technologies Inc. Shs -A-'), que a coluna da B3 corta em 12.
      */
-    identity?: { company_name: string | null } | null
+    identity?: { company_name: string | null; cnpj?: string | null } | null
     /** presente só em FIIs (asset_type: 'fii') */
     fii?: {
       dividend_yield_12m: number | null

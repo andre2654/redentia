@@ -51,6 +51,7 @@ const semCarteira = computed(() => !isAuthenticated.value || resumo.value?.state
 // quem tem conta e não assina também lê o "como funciona" (o snapshot da
 // assinatura chega pelo cliente, carregado pelo HomeAgoraFrase)
 const assinatura = useAssinatura()
+// logado, a régua do mercado sai de baixo do topo (layouts/default.vue) e entra na página (HomeAgoraFrase)
 const mostrarComoFunciona = computed(() =>
   semCarteira.value || (assinatura.carregado.value && !assinatura.assinante.value))
 </script>

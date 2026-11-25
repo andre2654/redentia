@@ -37,7 +37,7 @@ const REDIRECT_EXATO: Record<string, string> = {
   '/calculadora': '/calculadoras',
   '/ranking': '/rankings',
   '/rankings/acoes': '/rankings?classe=acoes',
-  '/rankings/fiis': '/rankings?classe=fiis',
+  // /rankings/fiis é página. A barra cai nela, não no filtro.
   '/rankings/bdrs': '/rankings?classe=bdrs',
   '/rankings/renda-fixa': '/ranking/tesouro-direto',
   '/help': '/busca',
@@ -49,7 +49,7 @@ const REDIRECT_EXATO: Record<string, string> = {
   '/acoes': '/rankings?classe=acoes',
   // /fiis é página. A barra cai em /fiis, não no filtro, senão o 301 volta.
   '/etfs': '/rankings',
-  '/small-caps': '/rankings',
+  '/small-caps': '/rankings/small-caps',
   '/tesouro/tesouro-renda-aposentadoria-extra-2033': '/tesouro/tesouro-renda-aposentadoria-extra-2030',
   '/tesouro/tesouro-renda-aposentadoria-extra-2038': '/tesouro/tesouro-renda-aposentadoria-extra-2035',
   '/tesouro/tesouro-renda-aposentadoria-extra-2043': '/tesouro/tesouro-renda-aposentadoria-extra-2040',
@@ -150,6 +150,7 @@ function normalizarCaixa(sem: string): string {
     return `/asset/${encodeURIComponent(upper)}`
   }
   if (partes.length === 3 && partes[1] === 'dividendos' && seg) return caixaDeTickerB3(sem, '/dividendos', seg)
+  if (partes.length === 3 && partes[1] === 'imposto-de-renda' && seg) return caixaDeTickerB3(sem, '/imposto-de-renda', seg)
   if (partes.length === 3 && partes[1] === 'quanto-rende' && seg) return caixaDeTickerB3(sem, '/quanto-rende', seg)
   if (partes.length === 4 && partes[1] === 'quanto-rende' && partes[2] === 'tesouro' && seg) {
     return caixaDeSlug(sem, '/quanto-rende/tesouro', seg)

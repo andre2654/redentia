@@ -31,6 +31,7 @@ export default defineEventHandler((event) => {
   const nRankings = contagemDaSemente('rankings')
   const nTesouro = contagemDaSemente('tesouro')
   const nDividendos = contagemDaSemente('dividendos')
+  const nImpostoRenda = contagemDaSemente('imposto-de-renda')
   const nQuantoRende = contagemDaSemente('quanto-rende')
   const nTeses = contagemDaSemente('teses')
   const nGlossario = contagemDaSemente('glossario')
@@ -89,6 +90,8 @@ Cada ticker tem página própria em /asset/{TICKER} com cotação, gráfico, fun
 
 - [Hub de rankings](${o}/rankings): todos os rankings agrupados por tema
 - [Fundos imobiliários](${o}/fiis): o que é um FII, os tipos tijolo, papel, híbrido e fundo de fundos, os rendimentos e a isenção de IR. Não é recomendação. O filtro de rankings continua em /rankings?classe=fiis
+- [Rankings de FIIs](${o}/rankings/fiis): rankings só de fundos imobiliários, por dividend yield de 12 meses e volume do pregão, com a data do dado. Não é recomendação
+- [Small caps](${o}/rankings/small-caps): ações com valor de mercado abaixo de R$ 2 bilhões, corte declarado desta página, com a data do dado. Não é recomendação. /small-caps redireciona para cá
 - [${MARCA.nome} Score](${o}/ranking/redentia-score): score proprietário 0 a 100 que cruza 15 rankings fundamentalistas
 - [Maiores Dividend Yields](${o}/ranking/maiores-dividend-yield): ações e FIIs com maior DY dos últimos 12 meses
 - [Mais Baratas pela Fórmula de Graham](${o}/ranking/mais-baratas-graham)
@@ -115,6 +118,14 @@ Cada pagadora relevante tem página própria em /dividendos/{TICKER} com histór
 - [Dividendos de PETR4](${o}/dividendos/PETR4)
 - [Dividendos de TAEE11](${o}/dividendos/TAEE11)
 - [Dividendos de MXRF11](${o}/dividendos/MXRF11)
+
+### Como declarar no Imposto de Renda (${nImpostoRenda} ativos)
+
+Páginas educativas de como declarar o papel no IR, só para os mais líquidos. Não é consultoria tributária e não é recomendação.
+
+- [Como declarar PETR4 no IR](${o}/imposto-de-renda/PETR4)
+- [Como declarar VALE3 no IR](${o}/imposto-de-renda/VALE3)
+- [Como declarar ITUB4 no IR](${o}/imposto-de-renda/ITUB4)
 
 ### Agenda de dividendos
 
@@ -182,6 +193,14 @@ Proventos dos últimos 12 meses aplicados a um valor, em /quanto-rende/{TICKER},
 - [Guia: Open Finance](${o}/guias/open-finance): como conectar corretoras e ver a carteira consolidada
 - [Como calcular preço teto](${o}/guias/como-calcular-preco-teto): fórmulas de Bazin, Graham, P/L setorial, valor patrimonial e projetivo. Não é recomendação de compra ou venda
 - [Glossário do investidor](${o}/glossario): ${nGlossario} termos do mercado brasileiro, cada um com página própria em /glossario/{slug}
+- [Juros sobre capital próprio](${o}/jcp): o que é JCP, a diferença para o dividendo, a retenção de 17,5% desde 1º de janeiro de 2026 (art. 8º da Lei Complementar 224/2025), data com, data ex e o informe de rendimentos. Não é recomendação de compra ou venda
+- [O que é dividend yield](${o}/glossario/dividend-yield): proventos de 12 meses divididos pelo preço. Exemplo ilustrativo, não é recomendação
+- [O que é JCP](${o}/glossario/jscp): juros sobre capital próprio, com 17,5% de IR retido na fonte
+- [O que é data com](${o}/glossario/data-com): último pregão em que a compra ainda dá direito ao provento
+- [O que é data ex](${o}/glossario/data-ex): pregão sem o provento e o ajuste do preço de referência
+- [O que é P/VP](${o}/glossario/p-vp): preço dividido pelo valor patrimonial por ação. Página educacional, sem lista de ativos
+- [Método Bazin](${o}/glossario/preco-teto-bazin): proventos de 12 meses ÷ 6%. Estimativa educacional, não é recomendação
+- [Fórmula de Graham](${o}/glossario/graham): raiz de 22,5 × LPA × VPA. Estimativa educacional, sem lista de ativos
 
 ## ${MARCA.nome} MCP (servidor MCP para agentes de IA)
 

@@ -14,6 +14,7 @@ defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
 
 <template>
   <div class="nph" :class="{ 'nph--lg': size === 'lg' }">
+    <div v-if="$slots.trilha" class="nph__trilha"><slot name="trilha" /></div>
     <NuEyebrow como="div" class="nph__eyebrow">{{ eyebrow }}</NuEyebrow>
     <h1 class="nph__title"><slot name="title" /></h1>
     <div v-if="subtitle" class="nph__sub">{{ subtitle }}</div>
@@ -27,6 +28,7 @@ defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
   padding: clamp(48px, 6.5vw, 88px) var(--nu-coluna) clamp(36px, 4.5vw, 56px);
   animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both;
 }
+.nph__trilha { margin: 0 0 4px; }
 .nph__title {
   margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(40px, 5.5vw, 76px);
   font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 0.98;

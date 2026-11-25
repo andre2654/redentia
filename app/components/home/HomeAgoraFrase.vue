@@ -142,17 +142,46 @@ const apoioDoDia = computed(() => {
 // A consulta mora no useAvisoDaCarteira desde 12/11/2026: a régua do topo diz o
 // mesmo selo ("Sua carteira +0,11% · pede atenção") e as duas leem uma resposta só.
 const aviso = useAvisoDaCarteira()
-watch(() => comCarteira.value && podeVerNumeros.value, (pode) => { if (pode && import.meta.client) void aviso.consultar() }, { immediate: true })
+watch(() => comCarteira.value && podeVerNumeros.value, (pode) => { if (pode && import.meta.client) void aviso.consultar({ comItens: true }) }, { immediate: true })
 const avisoDoMotor = computed(() => aviso.urgente.value && !!estado.value && avisosLiberados(estado.value))
+// os pontos de atenção do Início (24/11, o canvas): os dois primeiros do motor, o urgente na frente; o R$ do texto segue o olho.
+// A mesma regra de horário da carteira (avisosLiberados): nada antes das 10h de um dia de pregão.
+const esconderReais = (s: string) => (visiveis.value ? s : s.replace(/R\$\s?[\d.,]+( mil| milhões?| bi)?/g, 'R$ ••••'))
+const pontos = computed(() => {
+  const l = aviso.itens.value
+  // null = sem resposta da visão (a carteira nova não liberada para a pessoa, rede): a seção não aparece.
+  // Lista vazia = o motor olhou e nada pede atenção: a seção aparece e diz isso.
+  if (!l || !estado.value || !avisosLiberados(estado.value)) return null
+  return { total: l.length, olhados: aviso.olhados.value, itens: l.slice(0, 2).map((a) => ({ id: a.id, titulo: esconderReais(a.titulo).replace(/\.$/, ''), texto: a.texto ? esconderReais(a.texto) : null })) }
+})
 
 /** o estado ao lado do nome: 'Tudo normal' no dia comum, 'Pede atenção' no alerta do dia ou no aviso urgente do motor; em dia de movimento forte, só a data (seloDoDia, a mesma regra da régua) */
 const selo = computed(() => seloDoDia(frases.value, !!dia.value?.alerta, avisoDoMotor.value))
 
 const ESCONDIDO = 'R$ ••••••'
+// 'hoje' no dia do pregão; fora dele, o dia do preço em minúscula ('sexta, 21/11')
+const quandoDoDia = computed(() => {
+  const r = frases.value?.diaRotulo
+  return !r || r === 'Hoje' ? 'hoje' : `em ${r.charAt(0).toLowerCase()}${r.slice(1)}`
+})
+// o topo escuro da /carteira como herói do Início: só para quem vê os números (assinante) e tem carteira
+const topoEscuro = computed(() => {
+  const t = props.resumo?.topo
+  return comCarteira.value && podeVerNumeros.value && t?.agora ? { agora: t.agora, chart: t.chart, stats: t.stats, alocacao: t.alocacao ?? null } : null
+})
+// a frase do Início (24/11, o meio-termo): quanto a pessoa está à frente do que pôs; o R$ segue o olho da tela
+const nfInteiro = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
+const fraseDoGanho = computed(() => {
+  const r = props.resumo?.resultado
+  if (!r || r.ganho == null || Math.abs(r.ganho) < 0.5) return 'Aqui está a sua carteira hoje.'
+  const v = visiveis.value ? `R$ ${nfInteiro.format(Math.abs(r.ganho))}` : 'R$ ••••'
+  const parcial = r.comCusto < r.linhas.length ? `, em ${r.comCusto} de ${r.linhas.length} ativos` : ''
+  return r.ganho > 0 ? `Você está ${v} à frente do que pôs${parcial}.` : `Você está ${v} abaixo do que pôs${parcial}.`
+})
 const fatos = computed(() => {
   const r = props.resumo
   if (!r || r.state !== 'patrimonio') return []
-  const lista: { k: string; rotulo: string; valor: string; to: string; tom?: 'up' | 'down'; atencao?: boolean }[] = []
+  const lista: { k: string; rotulo: string; valor: string; to: string; tom?: 'up' | 'down'; atencao?: boolean; sub?: string }[] = []
   if (r.patrimonio) lista.push({ k: 'patrimonio', rotulo: 'Quanto eu tenho?', valor: visiveis.value ? r.patrimonio : ESCONDIDO, to: '/carteira' })
   const v = dia.value?.diaValor
   if (v != null && frases.value) {
@@ -162,6 +191,17 @@ const fatos = computed(() => {
       tom: visiveis.value && Math.abs(v) >= 0.005 ? (v < 0 ? 'down' : 'up') : undefined,
       // o dia com alerta (um papel que caiu 5% ou mais) é o cartão de atenção
       atencao: !!dia.value?.alerta,
+      sub: dia.value?.carteiraPct != null ? pctComSinal(dia.value.carteiraPct) : undefined,
+    })
+  }
+  // quanto eu ganhei (24/11): a valorização sobre o preço médio, em R$ e em %; com o olho fechado fica o % (que nunca se esconde)
+  const g = r.resultado
+  if (g?.ganho != null && g.ganhoPct != null) {
+    lista.push({
+      k: 'ganho', rotulo: 'Quanto eu ganhei?', to: '/carteira#onde',
+      valor: visiveis.value ? reaisComSinal(g.ganho) : pctComSinal(g.ganhoPct),
+      sub: visiveis.value ? `${pctComSinal(g.ganhoPct)} sobre o que você pagou` : 'sobre o que você pagou',
+      tom: Math.abs(g.ganho) >= 0.5 ? (g.ganho < 0 ? 'down' : 'up') : undefined,
     })
   }
   if (r.proventos12m) lista.push({ k: 'proventos', rotulo: 'Proventos em 12 meses', valor: visiveis.value ? r.proventos12m : ESCONDIDO, to: '/carteira#renda' })
@@ -211,6 +251,45 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
 </script>
 
 <template>
+  <!-- 24/11 (o dono: "no início também"): com carteira e assinatura, o herói do Início é o topo escuro da /carteira
+       (o patrimônio grande, o dia, o retorno em R$ e o gráfico); embaixo, quem subiu e quem caiu e o caminho para a carteira -->
+  <template v-if="topoEscuro">
+    <CarteiraMoldura>
+      <template #trilho>
+        <CarteiraTrilho
+          :patrimonio="topoEscuro.agora.patrimonio" :alocacao="topoEscuro.alocacao" :resultado="resumo?.resultado"
+          :dia-valor="topoEscuro.agora.diaValor" :dia-pct="topoEscuro.agora.diaPct" :dia-dir="topoEscuro.agora.diaDir"
+          :proventos="resumo?.proventos12mValor"
+        />
+      </template>
+      <section class="hmt" aria-labelledby="hmt-h1">
+        <!-- a régua do mercado, dentro da página: rola junto (antes ficava presa embaixo do topo) -->
+        <NuMarketTicker class="hmt__regua" />
+        <h1 id="hmt-h1" class="hmt__h1" data-clarity-mask="true"><span>{{ ola }}</span>{{ fraseDoGanho }}</h1>
+        <CarteiraAgora aberto cartao so-grafico :agora="topoEscuro.agora" :chart="topoEscuro.chart" :stats="topoEscuro.stats" />
+        <section v-if="pontos" class="hmt__pontos" aria-labelledby="hmt-pontos">
+          <header class="hmt__pontos-cab">
+            <h2 id="hmt-pontos" class="hmt__h2">Pontos de atenção</h2>
+            <NuxtLink v-if="pontos.total > pontos.itens.length" to="/carteira" class="hmt__todos">Ver os {{ pontos.total }}</NuxtLink>
+          </header>
+          <NuxtLink v-for="a in pontos.itens" :key="a.id" to="/carteira" class="hmt__aviso" data-clarity-mask="true">
+            <span class="hmt__aviso-t"><i aria-hidden="true" />{{ a.titulo }}</span>
+            <span v-if="a.texto" class="hmt__aviso-s">{{ a.texto }}</span>
+          </NuxtLink>
+          <p v-if="!pontos.itens.length" class="hmt__nada">
+            <i aria-hidden="true" />Nada pede a sua atenção hoje.<template v-if="pontos.olhados"> A {{ MARCA.nome }} conferiu {{ pontos.olhados }} {{ pontos.olhados === 1 ? 'ponto' : 'pontos' }} da sua carteira.</template>
+          </p>
+        </section>
+        <NuxtLink v-else-if="avisoDoMotor" to="/carteira" class="hmt__aviso hmt__aviso--so">
+          <span class="hmt__aviso-t"><i aria-hidden="true" />Sua carteira tem um ponto de atenção</span>
+          <span class="hmt__aviso-s">Abra a carteira para ver o que é e o que dá para fazer.</span>
+        </NuxtLink>
+        <p class="hmt__ir"><NuLinkSeta to="/carteira" tom="tinta">Abrir minha carteira</NuLinkSeta></p>
+      </section>
+    </CarteiraMoldura>
+  </template>
+  <template v-else>
+  <NuMarketTicker class="haf__regua" />
   <section class="haf" aria-labelledby="haf-titulo">
     <!-- a linha do nome: quem é, o estado do dia e o olho -->
     <header class="haf__cab">
@@ -341,8 +420,11 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg>
             </NuxtLink>
           </dd>
+          <dd v-if="f.sub" class="haf__fato-sub">{{ f.sub }}</dd>
         </div>
       </dl>
+      <!-- quem subiu e quem caiu no dia: de onde veio o número de cima -->
+      <CarteiraSobeDesce v-if="podeVerNumeros && resumo?.resultado" :resultado="resumo.resultado" :mostrar-reais="visiveis" :quando="quandoDoDia" />
       <!-- carregando: os três cartões com as duas linhas da altura final (o rótulo e o número) -->
       <div v-else class="haf__fatos" aria-hidden="true">
         <div v-for="i in 3" :key="i" class="haf__fato">
@@ -397,6 +479,7 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
       </div>
     </template>
   </section>
+  </template>
 </template>
 
 <style scoped>
@@ -553,13 +636,17 @@ a.haf__graf .haf__legenda, a.haf__graf .haf__graf-area { animation: nu-surgir va
 .haf__graf--vivo:hover .haf__leque-selo { --nsl-fundo: color-mix(in srgb, var(--nu-blue-on-dark) 30%, transparent); }
 
 /* os três fatos: cartões creme do contrato; o de atenção, em âmbar */
-.haf__fatos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: clamp(12px, 1.4vw, 16px); margin: clamp(24px, 3vw, 40px) 0 0; }
+.haf__fatos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: clamp(12px, 1.4vw, 16px); margin: clamp(24px, 3vw, 40px) 0 0; }
 .haf__fato {
   position: relative; display: flex; flex-direction: column; justify-content: center; padding: clamp(18px, 2vw, 24px) clamp(20px, 2.2vw, 28px);
   border-radius: var(--nu-r-card); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
   transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 /* o dado que chega no cartão (depois do esqueleto): fade em cascata de 60 ms; o cartão fica onde está */
+.haf--depois { padding-top: clamp(8px, 1.2vw, 16px); }
+.haf--depois .haf__sobe { margin-top: clamp(16px, 2vw, 28px); }
+.haf__acoes--depois { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-top: clamp(20px, 2.4vw, 32px); }
+.haf__fato-sub { margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.4; font-variant-numeric: tabular-nums; }
 dl.haf__fatos .haf__fato > * { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
 dl.haf__fatos .haf__fato:nth-child(2) > * { animation-delay: 60ms; }
 dl.haf__fatos .haf__fato:nth-child(3) > * { animation-delay: 120ms; }
@@ -599,4 +686,25 @@ dl.haf__fatos .haf__fato:active { transform: scale(.995); transition-duration: v
   .haf__futuro { animation: none; }
   .haf__graf--vivo:hover, .haf__graf--vivo:active, dl.haf__fatos .haf__fato:hover, dl.haf__fatos .haf__fato:active { transform: none; }
 }
+/* o Início de quem tem carteira no meio-termo (24/11): a saudação em duas linhas (a primeira em cinza), o gráfico no
+   cartão escuro e o ponto de atenção em cartão de contorno; os números moram no trilho ao lado */
+.hmt { max-width: 900px; padding: 32px var(--cmo-g, 20px) clamp(40px, 5vw, 64px); box-sizing: content-box; }
+/* a régua dentro da página: solta do topo, na largura do conteúdo, com um fio embaixo */
+.hmt__regua, .haf__regua { position: static; }
+.hmt__regua { --nu-coluna: 0px; margin: -8px 0 28px; background: transparent; }
+.hmt__h1 { margin: 0 0 30px; font-size: clamp(26px, 2.8vw, 34px); line-height: 1.22; font-weight: var(--nu-w-display); letter-spacing: -0.03em; }
+.hmt__h1 span { display: block; color: var(--nu-gray); opacity: .8; }
+.hmt__pontos { margin-top: 40px; }
+.hmt__pontos-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.hmt__h2 { margin: 0; font-size: 22px; font-weight: var(--nu-w-display); letter-spacing: -0.02em; }
+.hmt__todos { display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-blue-text); font-size: 15px; text-underline-offset: 3px; }
+.hmt__aviso--so { margin-top: 32px; }
+.hmt__nada { display: flex; align-items: center; gap: 10px; margin: 14px 0 0; padding: 18px 22px; border: 1px solid var(--nu-line-2); border-radius: 12px; color: var(--nu-gray-3); font-size: 16px; line-height: 1.5; }
+.hmt__nada i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--nu-green); }
+.hmt__ir { margin: 28px 0 0; }
+.hmt__aviso { display: flex; flex-direction: column; gap: 4px; margin-top: 14px; padding: 18px 22px; border: 1px solid var(--nu-line-2); border-radius: 12px; color: var(--nu-ink); text-decoration: none; transition: border-color var(--nu-dur-media) var(--nu-ease-saida), background var(--nu-dur-media) var(--nu-ease-saida); }
+.hmt__aviso:hover { border-color: var(--nu-line); background: var(--nu-card); }
+.hmt__aviso-t { display: flex; align-items: center; gap: 10px; font-size: 17.5px; }
+.hmt__aviso-t i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--nu-amber-fill); }
+.hmt__aviso-s { display: -webkit-box; overflow: hidden; color: var(--nu-gray); font-size: 15.5px; line-height: 1.5; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 </style>

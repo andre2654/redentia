@@ -117,18 +117,21 @@ const formula = computed(() => {
   return base
 })
 
+const trilha = computed(() => [
+  { name: 'Início', path: '/' },
+  { name: 'Tesouro Direto', path: '/tesouro' },
+  { name: titulo.value.nome, path: `/tesouro/${slug}` },
+  { name: 'Quanto rende', path: `/quanto-rende/tesouro/${slug}` },
+])
+const veja = linksVejaTambem({ pagina: 'tesouro' })
+
 if (data.value) {
   usePageSeo({
     title: titulo.value.seo.title,
     description: titulo.value.seo.description,
     path: `/quanto-rende/tesouro/${slug}`,
     dateModified: titulo.value.dataDate,
-    breadcrumbs: [
-      { name: 'Início', path: '/' },
-      { name: 'Tesouro Direto', path: '/tesouro' },
-      { name: titulo.value.nome, path: `/tesouro/${slug}` },
-      { name: 'Quanto rende', path: `/quanto-rende/tesouro/${slug}` },
-    ],
+    breadcrumbs: trilha,
   })
 }
 </script>
@@ -139,6 +142,7 @@ if (data.value) {
       eyebrow="Tesouro Direto"
       :subtitle="`Taxa de hoje: ${titulo.taxaRotulo}. ${titulo.fonteTaxa}`"
     >
+      <template #trilha><NuTrilha :crumbs="trilha" /></template>
       <template #title>Quanto rende o {{ titulo.nome }}.</template>
     </NuPageHero>
 
@@ -182,6 +186,7 @@ if (data.value) {
         </NuxtLink>
       </div>
     </CalcBand>
+    <NuVejaTambem :links="veja" />
   </div>
 </template>
 

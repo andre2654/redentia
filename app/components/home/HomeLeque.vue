@@ -119,9 +119,21 @@ function geometria(w: number, h: number) {
   return { x, y, x0, x1, h, base }
 }
 
-/** desenha o leque inteiro, uma vez, num quadro fora da tela */
-function desenharQuadro(w: number, h: number, dpr: number) {
-  const el = tela.value!
+/** caminhos por quadro. 2.000 de uma vez eram um longo no fio (~800 ms no laboratório); o desenho final é o mesmo. */
+const LOTE = 80
+let loteRaf = 0
+let geracao = 0
+let quadroPronto = false
+let querRevelar = false
+
+function preparar() {
+  const el = tela.value
+  if (!el || !leque) return
+  const w = el.clientWidth, h = el.clientHeight
+  if (!w || !h) return
+  const dpr = Math.min(window.devicePixelRatio || 1, 2)
+  el.width = Math.round(w * dpr)
+  el.height = Math.round(h * dpr)
   const c = cores(el)
   quadro = document.createElement('canvas')
   quadro.width = Math.round(w * dpr)
@@ -129,23 +141,42 @@ function desenharQuadro(w: number, h: number, dpr: number) {
   const g = quadro.getContext('2d')!
   g.scale(dpr, dpr)
   const { x, y } = geometria(w, h)
-  const n = props.caminhos
   g.lineWidth = 1
   g.lineJoin = 'round'
-  for (let k = 0; k < n; k++) {
-    const i = leque!.ordem[k]!
-    const r = k / (n - 1)
-    g.strokeStyle = r >= 0.8 ? c.verde : r <= 0.2 ? c.vermelho : c.texto
-    g.globalAlpha = r >= 0.8 || r <= 0.2 ? 0.075 : 0.035
-    g.beginPath()
-    for (let m = 0; m <= MESES; m++) {
-      const v = leque!.valores[i * (MESES + 1) + m]!
-      if (m === 0) g.moveTo(x(m), y(v))
-      else g.lineTo(x(m), y(v))
+  cancelAnimationFrame(raf)
+  cancelAnimationFrame(loteRaf)
+  quadroPronto = false
+  const id = ++geracao
+  const n = props.caminhos
+  let k = 0
+  const passo = () => {
+    if (id !== geracao || !leque) return
+    const ate = Math.min(k + LOTE, n)
+    for (; k < ate; k++) {
+      const i = leque.ordem[k]!
+      const r = n <= 1 ? 1 : k / (n - 1)
+      g.strokeStyle = r >= 0.8 ? c.verde : r <= 0.2 ? c.vermelho : c.texto
+      g.globalAlpha = r >= 0.8 || r <= 0.2 ? 0.075 : 0.035
+      g.beginPath()
+      for (let m = 0; m <= MESES; m++) {
+        const v = leque.valores[i * (MESES + 1) + m]!
+        if (m === 0) g.moveTo(x(m), y(v))
+        else g.lineTo(x(m), y(v))
+      }
+      g.stroke()
     }
-    g.stroke()
+    if (k < n) {
+      loteRaf = requestAnimationFrame(passo)
+      return
+    }
+    g.globalAlpha = 1
+    quadroPronto = true
+    if (progresso >= 1) pintar(1)
+    else if (querRevelar) revelar()
+    else pintar(0)
   }
-  g.globalAlpha = 1
+  cancelAnimationFrame(loteRaf)
+  passo()
 }
 
 function pintar(p: number) {
@@ -220,18 +251,6 @@ function pintar(p: number) {
   ctx.textAlign = 'left'
 }
 
-function preparar() {
-  const el = tela.value
-  if (!el) return
-  const w = el.clientWidth, h = el.clientHeight
-  if (!w || !h) return
-  const dpr = Math.min(window.devicePixelRatio || 1, 2)
-  el.width = Math.round(w * dpr)
-  el.height = Math.round(h * dpr)
-  desenharQuadro(w, h, dpr)
-  pintar(progresso)
-}
-
 function revelar() {
   const inicio = performance.now()
   const dur = 1500
@@ -245,25 +264,31 @@ function revelar() {
 }
 
 onMounted(() => {
-  leque = sortear(props.caminhos)
   const calmo = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   progresso = calmo || !('IntersectionObserver' in window) ? 1 : 0
-  // a fonte da página precisa estar pronta para os nomes saírem nela
-  void document.fonts?.ready.then(() => preparar())
-  preparar()
+  // os nomes usam a Figtree; os caminhos não. Quando a fonte chega, só repinta o texto.
+  void document.fonts?.ready.then(() => { if (quadroPronto) pintar(progresso) })
   medida = new ResizeObserver(() => preparar())
   if (caixa.value) medida.observe(caixa.value)
   if (progresso < 1 && caixa.value) {
     olho = new IntersectionObserver((vistos) => {
       if (!vistos.some((v) => v.isIntersecting)) return
       olho?.disconnect()
-      revelar()
+      querRevelar = true
+      if (quadroPronto) revelar()
     }, { threshold: 0.4 })
     olho.observe(caixa.value)
   }
+  // fora do fio da hidratação: o sorteio e o primeiro lote não seguram o LCP
+  requestAnimationFrame(() => {
+    leque = sortear(props.caminhos)
+    preparar()
+  })
 })
 onBeforeUnmount(() => {
+  geracao += 1
   cancelAnimationFrame(raf)
+  cancelAnimationFrame(loteRaf)
   olho?.disconnect()
   medida?.disconnect()
 })

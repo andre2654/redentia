@@ -4,7 +4,7 @@
 // 9.250/1995, incluído pela Lei 15.270/2025) e TEXTO_ALIQUOTA_JCP (LC 224/2025).
 // A calculadora de /calculadora/imposto-renda segue sendo a da venda de ações.
 import { TEXTO_ALIQUOTA_JCP } from '~/utils/dividendosBlocos'
-import { URL_LC_224, URL_LEI_15270 } from '~/utils/ir-dividendos-jcp'
+import { URL_LC_224, URL_LEI_15270 } from '~/utils/impostoRendaPagina'
 
 const CONTENT_VERSION = '2026-11-24'
 const lastUpdated = new Date(`${CONTENT_VERSION}T12:00:00Z`)
@@ -128,7 +128,7 @@ usePageSeo({
 
     <CalcBand v-revelar tone="white" title="Continue a leitura">
       <div class="irj-page__links">
-        <NuxtLink to="/glossario/jscp" class="irj-page__link">
+        <NuxtLink to="/jcp" class="irj-page__link">
           <h3>JCP</h3>
           <p>Juros sobre capital próprio, a retenção na fonte e a diferença para o dividendo.</p>
         </NuxtLink>

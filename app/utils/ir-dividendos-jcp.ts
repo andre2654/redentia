@@ -22,9 +22,6 @@ export const LIMITE_MENSAL_DIVIDENDOS = 50_000
 export const ALIQUOTA_DIVIDENDOS = 0.1
 export const ALIQUOTA_JCP = 0.175
 
-export const URL_LEI_15270 = 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15270.htm'
-export const URL_LC_224 = 'https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp224.htm'
-
 export type ClasseProvento = 'dividendo' | 'jcp' | 'misto' | 'rendimento' | 'capital' | 'outro'
 
 export interface AvisoParaConta {

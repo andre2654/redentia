@@ -41,7 +41,7 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
     </span>
     <span class="abf__texto">
       <strong>{{ emTeste ? 'Seu teste de 3 dias começou.' : 'Sua assinatura está ativa.' }}</strong>
-      <span v-if="emTeste">Tudo liberado até {{ fimDoTeste }}. A primeira cobrança, de {{ PRECO_MENSAL }}, é nesse dia.</span>
+      <span v-if="emTeste">Tudo liberado até {{ fimDoTeste }}. A primeira cobrança, de {{ PRECO_MENSAL }}, é nesse dia, e a gente avisa por e-mail um dia antes. Cancelar leva um clique, em Configurações.</span>
       <span v-else>Tudo liberado: a carteira, os cenários e a IA.</span>
       <span v-if="semCarteira" class="abf__falta">Agora, o último passo: conecte o seu banco aqui embaixo.</span>
     </span>
