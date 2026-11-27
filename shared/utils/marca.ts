@@ -11,7 +11,7 @@ export const MARCA = {
   nome: 'Aportou',
   frase: 'Investir fica mais claro.',
   titulo: 'Aportou: entenda antes de investir',
-  descricao: 'A Aportou explica ações, FIIs e a sua carteira em português claro, com uma IA do seu lado. Não é corretora e não tem produto para te vender.',
+  descricao: 'A Aportou explica ações, FIIs e a sua carteira em português claro, com uma IA do seu lado. Não é corretora. O mercado do dia, as calculadoras, os rankings e os guias são grátis e não pedem conta. A carteira conectada pelo Open Finance, os 2.000 cenários e a IA fazem parte da assinatura: R$ 19,99 por mês. Os 3 primeiros dias são grátis; o cartão é pedido no começo e a primeira cobrança vem no fim do teste.',
   assinatura: 'Uma empresa Redentia',
   ia: 'IA da Aportou',
   /** o produto de escritório: desde 12/11/2026 fora deste site, em redentia.com.br */

@@ -41,12 +41,13 @@ export default defineEventHandler((event) => {
 
   return `# ${MARCA.nome}
 
-> ${MARCA.descricao} Plataforma brasileira para quem investe: cotações da B3, análise fundamentalista, rankings de ativos, teses de investimento, calculadoras financeiras gratuitas e notícias comentadas. Este arquivo descreve só o site da ${MARCA.nome} (${o}).
+> ${MARCA.descricao} Plataforma brasileira para quem investe: cotações da B3, análise fundamentalista, rankings de ativos, teses de investimento, calculadoras financeiras (grátis e sem conta) e notícias comentadas. Este arquivo descreve só o site da ${MARCA.nome} (${o}).
 
 ## Identidade
 
 - **Nome legal**: ${EMPRESA.razaoSocial} (CNPJ ${EMPRESA.cnpj}), que opera a ${MARCA.nome}
 - **Nome anterior**: a ${MARCA.nome} se chamava Redentia. Este site é o produto para quem investe.
+- **Assinatura**: ${o}/assinar — conectar e acompanhar a carteira pelo Open Finance, só leitura. O mercado do dia, as calculadoras, os rankings e os guias são grátis e não pedem conta. A carteira conectada, os 2.000 cenários e a IA fazem parte da assinatura: R$ 19,99 por mês. Os 3 primeiros dias são grátis; o cartão é pedido no começo e a primeira cobrança vem no fim do teste.
 - **País**: Brasil (pt-BR)
 - **Categoria**: Fintech, plataforma de investimentos
 - **Fundação**: 2024
@@ -167,7 +168,7 @@ Proventos dos últimos 12 meses aplicados a um valor, em /quanto-rende/{TICKER},
 
 ### Calculadoras financeiras (fórmula + exemplo numérico no topo)
 
-- [Hub de calculadoras](${o}/calculadoras): visão geral de todas as ferramentas gratuitas
+- [Hub de calculadoras](${o}/calculadoras): visão geral das calculadoras, grátis e sem conta
 - [Calculadora de Juros Compostos](${o}/calculadora/juros-compostos): simulador com aportes mensais. Fórmula M = C×(1+i)^n. Exemplo: R$ 500/mês a 10,5% a.a. por 20 anos = R$ 410 mil
 - [Calculadora de Preço Teto](${o}/calculadora/preco-teto): Graham, Bazin, P/L Setorial e VPA aplicados na hora a qualquer ação da B3
 - [Calculadora de Dividend Yield](${o}/calculadora/dividend-yield): quanto sua carteira paga por mês em reais, quanto você precisa pra viver de dividendos, e o DY atual, on cost e projetado

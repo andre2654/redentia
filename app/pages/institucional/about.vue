@@ -15,7 +15,11 @@ const doc: LegalDocData = {
   title: 'Sobre a Aportou',
   intro: [
     { kind: 'p', text: 'A Aportou é uma plataforma de investimentos que combina tecnologia de ponta com inteligência artificial para democratizar o acesso à informação financeira de qualidade.' },
-    { kind: 'p', text: 'Oferecemos cotações em tempo real, análises fundamentalistas, calculadoras financeiras e assessoria com IA, tudo em um único lugar, gratuito e acessível.' },
+    { kind: 'p', text: [
+      { text: 'O mercado do dia, as calculadoras, os rankings e os guias são grátis e não pedem conta. A carteira conectada pelo Open Finance, os 2.000 cenários e a IA fazem parte da ' },
+      { text: 'assinatura', href: '/assinar?quiz=1&de=institucional' },
+      { text: ': R$ 19,99 por mês. Os 3 primeiros dias são grátis; o cartão é pedido no começo e a primeira cobrança vem no fim do teste.' },
+    ] },
     { kind: 'p', text: 'Nossa missão é empoderar investidores de todos os níveis com ferramentas profissionais e dados confiáveis para tomadas de decisão mais inteligentes.' },
     { kind: 'p', text: 'Comprometidos com transparência, segurança e inovação, transformamos a experiência de investir no Brasil.' },
     // a casa (11/11/2026): a Aportou é a marca de investidor; a Redentia fica com os escritórios
@@ -28,7 +32,7 @@ usePageSeo({
   // SEO igual ao antigo (about.vue): brand.name resolvido = "Redentia". O app.vue
   // sufixa "· Redentia" em todo title (house style Nu).
   title: `Sobre a ${MARCA.nome} | Plataforma inteligente de investimentos`,
-  description: `Entenda a missão da ${MARCA.nome} e como combinamos consolidação de carteira e inteligência artificial para simplificar a vida do investidor brasileiro.`,
+  description: `O mercado do dia, as calculadoras, os rankings e os guias são grátis e não pedem conta. A carteira conectada pelo Open Finance, os 2.000 cenários e a IA fazem parte da assinatura da ${MARCA.nome}.`,
   path: '/institucional/about',
   breadcrumbs: [
     { name: 'Início', path: '/' },
@@ -80,7 +84,8 @@ const MAIS = [
 /* Sobre, na narrativa da marca (11/11/2026, 2ª rodada): a frase da Aportou em
    800 com o corte e a assinatura "Uma empresa Redentia" numa linha, ao lado do
    texto de sempre; depois "O que a Aportou não é" (o bloco da home) e os
-   atalhos das páginas irmãs. Nenhum fato, número ou data novos.
+   atalhos das páginas irmãs. O que é grátis e o que é a assinatura repetem
+   o FAQ da home e o /assinar, sem número novo.
    Robustez (11/11/2026): a coluna do site, a entrada em token, o que vem abaixo
    da dobra entra ao chegar (v-revelar) e os atalhos com apertado e foco. */
 .sob {

@@ -10,17 +10,17 @@
 // layout default. Cor só via var(--nu-*).
 
 const steps = [
-  { title: 'Crie sua conta grátis', description: 'Cadastro rápido, sem cartão de crédito. Comece em menos de 1 minuto.' },
-  { title: 'Explore o mercado', description: 'Acompanhe cotações em tempo real, analise fundamentos e compare ativos.' },
-  { title: 'Simule seus investimentos', description: 'Use as calculadoras para planejar aposentadoria, calcular preço teto e mais.' },
-  { title: 'Pergunte à IA', description: 'Tire dúvidas com a IA da Aportou, disponível 24/7 com respostas em segundos.' },
+  { title: 'Ferramentas abertas', description: 'O mercado do dia, as calculadoras, os rankings e os guias são grátis e não pedem conta.' },
+  { title: 'Conecte a carteira', description: 'Pelo Open Finance, só leitura. A carteira conectada, os 2.000 cenários e a IA fazem parte da assinatura: R$ 19,99 por mês. Os 3 primeiros dias são grátis; o cartão é pedido no começo e a primeira cobrança vem no fim do teste.' },
+  { title: 'Testa 2.000 futuros', description: 'A IA simula a sua carteira nos próximos cinco anos, em dinheiro de hoje. É uma simulação, não uma promessa de rendimento.' },
+  { title: 'Chama só quando importa', description: 'Abra e saiba numa frase se está tudo normal. Quando algo pede você, ela avisa na hora.' },
 ]
 
 usePageSeo({
   // SEO igual ao antigo (how-works.vue): brand.name resolvido = "Redentia". O
   // app.vue sufixa "· Redentia" em todo title (house style Nu).
   title: `Como funciona a ${MARCA.nome} | Consolide e analise seus investimentos`,
-  description: `Veja passo a passo como a plataforma ${MARCA.nome} conecta corretoras, usa IA para gerar insights e entrega dashboards completos para seus investimentos.`,
+  description: `O mercado do dia, as calculadoras, os rankings e os guias são grátis e não pedem conta. A carteira conectada pelo Open Finance, os 2.000 cenários e a IA fazem parte da assinatura da ${MARCA.nome}.`,
   path: '/institucional/how-works',
   breadcrumbs: [
     { name: 'Início', path: '/' },
@@ -49,13 +49,13 @@ useHead({ titleTemplate: null })
     </section>
 
     <!-- o fecho: a frase da marca (MARCA.frase) no painel azul e a mesma
-         chamada do topo, que é o passo 01 -->
+         chamada da home, que abre o quiz da assinatura -->
     <section v-revelar class="hwf">
       <div class="hwf__painel">
         <MarcaCorte class="hwf__corte nu-corte-fundo" :largura="620" cor="var(--nu-white)" />
         <NuEyebrow como="p" sobre="azul">{{ MARCA.nome }}</NuEyebrow>
         <p class="hwf__frase">{{ MARCA.frase }}</p>
-        <NuBotaoSeta to="/assinar?quiz=1&de=como-funciona" variante="creme" class="hwf__cta">Criar conta grátis</NuBotaoSeta>
+        <NuBotaoSeta to="/assinar?quiz=1&de=institucional" variante="creme" class="hwf__cta">Conectar carteira</NuBotaoSeta>
       </div>
     </section>
   </div>
