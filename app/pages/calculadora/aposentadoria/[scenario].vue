@@ -393,7 +393,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
     <CalcFaixaCta
       titulo="Acompanhe seu plano de aposentadoria"
       texto="Cadastre-se na Aportou e monitore o progresso rumo à independência financeira em tempo real."
-      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :primario="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=aposentadoria-cenario' }"
       :secundario="{ label: 'Voltar para a calculadora', to: '/calculadora/aposentadoria' }"
     />
   </div>

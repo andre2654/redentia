@@ -368,7 +368,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
     <CalcFaixaCta
       titulo="Acompanhe sua meta na Aportou"
       texto="Cadastre-se para monitorar o progresso da sua meta com gráficos e análises em tempo real."
-      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :primario="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=quanto-investir-cenario' }"
       :secundario="{ label: 'Voltar para a calculadora', to: '/calculadora/quanto-investir' }"
     />
   </div>

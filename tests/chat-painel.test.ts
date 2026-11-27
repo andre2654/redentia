@@ -19,6 +19,7 @@ import {
   rotuloComSobre,
   rotuloCurto,
   routeContextDaRota,
+  SUGESTOES_RENDA_FIXA,
   sugestoesDaRota,
   textoCompacto,
   textoDeLinhas,
@@ -33,6 +34,7 @@ import {
   cortarPalavraIncompleta,
   envolverPalavras,
 } from '../app/utils/revelar-palavras.ts'
+import { VALORES_QUANTO_RENDE } from '../app/utils/quanto-rende-valor.ts'
 
 const ler = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8')
 
@@ -49,9 +51,36 @@ test('sugestões conforme a página, sem "compre" nem "venda"', () => {
   assert.equal(sugestoesDaRota('/asset/petr4')[0], 'Por que a PETR4 mexeu hoje?')
   assert.match(sugestoesDaRota('/carteira')[0]!, /minha carteira/)
   assert.ok(sugestoesDaRota('/').length >= 3)
-  for (const p of ['/', '/asset/VALE3', '/carteira', '/noticias', '/tesouro', '/teses', '/dividendos/TAEE11']) {
+  for (const p of ['/', '/asset/VALE3', '/carteira', '/noticias', '/tesouro', '/teses', '/dividendos/TAEE11', '/quanto-rende/100-mil']) {
     for (const s of sugestoesDaRota(p)) assert.doesNotMatch(s, /\b(compr|vend)\w*/i, `${p}: ${s}`)
   }
+})
+
+test('quanto-rende por valor pergunta de renda fixa, não de ação', () => {
+  assert.equal(VALORES_QUANTO_RENDE.length, 12)
+  for (const v of VALORES_QUANTO_RENDE) {
+    assert.deepEqual(sugestoesDaRota(`/quanto-rende/${v.slug}`), [...SUGESTOES_RENDA_FIXA], v.slug)
+    assert.equal(sugestoesDaRota(`/quanto-rende/${v.slug}`).some((s) => /PETR4|VALE3/.test(s)), false, v.slug)
+  }
+  assert.deepEqual(sugestoesDaRota('/quanto-rende/100-mil'), [...SUGESTOES_RENDA_FIXA])
+  assert.deepEqual(sugestoesDaRota('/quanto-rende/100-MIL'), [...SUGESTOES_RENDA_FIXA])
+  assert.deepEqual(sugestoesDaRota('/quanto-rende/1-milhao/'), [...SUGESTOES_RENDA_FIXA])
+  assert.deepEqual(sugestoesDaRota('/tesouro'), [
+    'Tesouro Selic ou CDB: qual a diferença?',
+    'Quanto rende o Tesouro IPCA+ hoje?',
+    'Como funciona a marcação a mercado?',
+  ])
+  assert.equal(sugestoesDaRota('/quanto-rende/PETR4')[0], 'Por que a PETR4 mexeu hoje?')
+  for (const s of SUGESTOES_RENDA_FIXA) {
+    assert.doesNotMatch(s, /\b(compr|vend|recomend|garant)\w*/i, s)
+    assert.doesNotMatch(s, /melhor investimento|vale a pena|rentabilidade garantida/i, s)
+  }
+  const juntas = SUGESTOES_RENDA_FIXA.join(' ')
+  assert.match(juntas, /Tesouro Selic/)
+  assert.match(juntas, /CDI/)
+  assert.match(juntas, /CDB/)
+  assert.match(juntas, /poupança/)
+  assert.match(juntas, /IR regressivo/)
 })
 
 test('o ticker da rota só vale para símbolo de verdade', () => {
@@ -338,7 +367,7 @@ test('o chat fala como Aportou: nenhum texto visível diz Redentia', () => {
     // os textos montados no script (dica, convite, estado)
     for (const m of src.matchAll(/'([^'\n]*Redentia[^'\n]*)'/g)) assert.fail(`${f}: ${m[1]}`)
   }
-  for (const p of ['/', '/asset/VALE3', '/carteira', '/noticias', '/tesouro', '/teses', '/dividendos/TAEE11']) {
+  for (const p of ['/', '/asset/VALE3', '/carteira', '/noticias', '/tesouro', '/teses', '/dividendos/TAEE11', '/quanto-rende/100-mil']) {
     for (const s of sugestoesDaRota(p)) assert.doesNotMatch(s, /Redentia/, `${p}: ${s}`)
   }
   assert.match(ler('app/composables/useNuChat.ts'), /a\.error = 'A conversa é de quem assina a Aportou\.'/)

@@ -223,7 +223,7 @@ usePageSeo({
       compacta
       titulo="Veja como essa conta se adapta à sua vida."
       texto="Com a conta grátis da Aportou, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
-      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :primario="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=dividend-yield' }"
       :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
     />
 
@@ -441,7 +441,7 @@ usePageSeo({
       titulo="Encontre as melhores pagadoras de dividendos"
       texto="Compare dividend yield de todas as ações e FIIs da B3 em tempo real."
       :primario="{ label: 'Ver ranking de dividendos', to: '/ranking/maiores-dividend-yield' }"
-      :secundario="{ label: 'Criar conta grátis', to: '/login' }"
+      :secundario="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=dividend-yield' }"
     />
   </div>
 </template>

@@ -28,10 +28,40 @@ export function tickerDaRota(path: string): string | null {
 }
 
 /**
+ * Os doze slugs de /quanto-rende/{valor} (app/utils/quanto-rende-valor.ts).
+ * Ficam aqui, e não num import daquele módulo, para o chat não levar a conta
+ * da simulação. O teste exige a mesma lista.
+ */
+const SLUGS_QUANTO_RENDE_VALOR = new Set([
+  '1-mil', '5-mil', '10-mil', '20-mil', '50-mil', '100-mil',
+  '200-mil', '300-mil', '500-mil', '1-milhao', '2-milhoes', '5-milhoes',
+])
+
+/**
+ * Perguntas da barra em /quanto-rende/{valor}. A página compara poupança,
+ * CDI e Tesouro Selic com o IR regressivo: a sugestão descreve a mecânica,
+ * no mesmo tom de /tesouro. Sem recomendação e sem promessa de retorno.
+ */
+export const SUGESTOES_RENDA_FIXA = [
+  'Tesouro Selic ou CDB: qual a diferença?',
+  'O que muda entre poupança, CDI e Tesouro Selic?',
+  'Como funciona o IR regressivo da renda fixa?',
+] as const
+
+function rotaQuantoRendeValor(path: string): boolean {
+  const m = /^\/quanto-rende\/([^/?#]+)/i.exec(path)
+  if (!m?.[1]) return false
+  let slug = m[1]
+  try { slug = decodeURIComponent(slug) } catch { /* o slug cru já basta */ }
+  return SLUGS_QUANTO_RENDE_VALOR.has(slug.toLowerCase())
+}
+
+/**
  * Sugestões da barra e do painel vazio. Perguntas que a pessoa faria de
  * verdade, nunca "compre/venda": o "vale a pena" vira o que pesar antes.
  */
 export function sugestoesDaRota(path: string): string[] {
+  if (rotaQuantoRendeValor(path)) return [...SUGESTOES_RENDA_FIXA]
   const t = tickerDaRota(path)
   if (t && path.toLowerCase().startsWith('/dividendos/')) {
     return [`Quanto a ${t} paga de proventos?`, `Os proventos da ${t} são recorrentes?`, `Por que a ${t} mexeu hoje?`]

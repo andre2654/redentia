@@ -350,7 +350,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
     <CalcFaixaCta
       titulo="Quer mais controle sobre seus investimentos?"
       texto="Cadastre-se na Aportou e acompanhe sua carteira com análises em tempo real e IA."
-      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :primario="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=juros-cenario' }"
       :secundario="{ label: 'Voltar para a calculadora', to: '/calculadora/juros-compostos' }"
     />
   </div>

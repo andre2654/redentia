@@ -162,7 +162,7 @@ function perguntar(l: TeseLinhaVM) {
           <h2 class="tat__gate-title">Você viu {{ FREE }} dos {{ total }} ativos.</h2>
           <p class="tat__gate-sub">Crie sua conta grátis para abrir a tese completa: a avaliação de todos os ativos, os sinais de risco, {{ hasReport ? 'o relatório completo' : 'o risco central' }} e o diário, revalidado todo dia pela Aportou.</p>
           <div class="tat__gate-actions">
-            <NuBotaoSeta :to="loginTo" variante="azul" tamanho="m">Criar conta grátis</NuBotaoSeta>
+            <NuBotaoSeta to="/assinar?quiz=1&de=tese" variante="azul" tamanho="m">Criar conta grátis</NuBotaoSeta>
             <NuLinkSeta :to="loginTo" tom="claro">Já tenho conta</NuLinkSeta>
           </div>
           <span class="tat__gate-micro">Grátis, sem cartão de crédito</span>

@@ -19,11 +19,13 @@ import type { NavItem } from '~/utils/topo'
 // - Ferramentas e Informações abrem o painel de preview (lista + vinheta, a
 //   referência do dono de 20/08) no hover, com timer de intenção, e no
 //   clique/teclado; Teses e Carteira também têm preview.
-// - Deslogado: Entrar e Conectar carteira (/assinar?quiz=1&de=topo). Logado: o
-//   avatar com o menu da conta.
-// - Até 960px de contêiner a nav vai para o menu; até 640px saem também os
-//   botões da conta (ficam no menu). As larguras contam pelo contêiner, não
-//   pela janela: com o chat aberto a página encolhe ao lado do painel.
+// - Deslogado: Entrar e a pílula "Criar conta grátis" (/assinar?quiz=1&de=topo).
+//   Logado: o avatar com o menu da conta.
+// - Até 960px de contêiner a nav vai para o menu. Até 640px, Entrar e a pílula
+//   grande saem (ficam no menu) e entra uma pílula compacta só com "Criar conta
+//   grátis" (/assinar?quiz=1&de=topo-mobile), na mesma barra de 52px. As
+//   larguras contam pelo contêiner, não pela janela: com o chat aberto a
+//   página encolhe ao lado do painel.
 // - Sem botão da IA (dono, 02/11/2026: "pode tirar esse botão pra sempre"): a
 //   pergunta mora na barra do pé de toda página (ChatBarra).
 // - Celular: barra fina, marca menor, ícones de 20px com área de toque de 44px
@@ -128,6 +130,7 @@ const estiloRealce = computed(() => ({ width: `${realce.value.w}px`, transform: 
         <template v-else>
           <NuxtLink to="/login" class="nuh__entrar">Entrar</NuxtLink>
           <NuBotaoSeta to="/assinar?quiz=1&de=topo" variante="carvao" tamanho="p" class="nuh__chamada">Criar conta grátis</NuBotaoSeta>
+          <NuxtLink to="/assinar?quiz=1&de=topo-mobile" class="nuh__pill">Criar conta grátis</NuxtLink>
         </template>
         <button type="button" class="nuh__burger" aria-label="Abrir menu" :aria-expanded="topo.menuAberto.value" @click="topo.abrirMenu(true)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M4 9h16M4 15h16" /></svg>
@@ -200,6 +203,7 @@ const estiloRealce = computed(() => ({ width: `${realce.value.w}px`, transform: 
   color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); white-space: nowrap; border-radius: var(--nu-r-pill);
 }
 .nuh__entrar:hover { color: var(--nu-blue-text); }
+.nuh__pill { display: none; }
 .nuh__busca:active, .nuh__burger:active, .nuh__avatar:active { transform: translateY(1px); }
 .nuh__avatar {
   width: 38px; height: 38px; margin-left: 4px; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer;
@@ -215,7 +219,7 @@ const estiloRealce = computed(() => ({ width: `${realce.value.w}px`, transform: 
   align-items: center; justify-content: center; cursor: pointer; transition: background .2s;
 }
 .nuh__burger:hover { background: var(--nu-cream); }
-.nuh__busca:focus-visible, .nuh__entrar:focus-visible, .nuh__avatar:focus-visible, .nuh__burger:focus-visible {
+.nuh__busca:focus-visible, .nuh__entrar:focus-visible, .nuh__pill:focus-visible, .nuh__avatar:focus-visible, .nuh__burger:focus-visible {
   outline: 2px solid var(--nu-blue); outline-offset: 2px;
 }
 
@@ -306,6 +310,15 @@ const estiloRealce = computed(() => ({ width: `${realce.value.w}px`, transform: 
 }
 .nuh-wrap--ap .nuh__entrar:hover { background: var(--nu-band); color: var(--nu-ink); }
 .nuh-wrap--ap .nuh__chamada { margin-left: 2px; }
+/* a pílula do celular: carvão como a chamada, sem a bola da seta, para caber
+   entre a busca e o hambúrguer sem crescer a barra de 52px */
+.nuh-wrap--ap .nuh__pill {
+  align-items: center; justify-content: center; flex: none; height: 32px; margin-inline: 2px; padding: 0 12px;
+  border-radius: var(--nu-r-pill); background: var(--nu-ink); color: var(--nu-white);
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: -0.02em; line-height: 1; white-space: nowrap;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
+}
+.nuh-wrap--ap .nuh__pill:hover { background: var(--nu-ink-hover); color: var(--nu-white); }
 .nuh-wrap--ap .nuh__avatar { width: 40px; height: 40px; margin-left: 2px; }
 .nuh-wrap--ap .nuh__avatar span {
   width: 36px; height: 36px; background: var(--nu-ink); font-weight: var(--nu-w-medio);
@@ -317,8 +330,8 @@ const estiloRealce = computed(() => ({ width: `${realce.value.w}px`, transform: 
 .nuh-wrap--ap .nuh__burger { transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida); }
 .nuh-wrap--ap .nuh__burger:hover { background: var(--nu-band); }
 /* apertado: afunda 2 a 3%, como a pílula da seta */
-.nuh-wrap--ap :is(.nuh__busca, .nuh__entrar, .nuh__burger, .nuh__avatar):active { transform: scale(.97); }
-.nuh-wrap--ap :is(.nuh__busca, .nuh__entrar, .nuh__avatar, .nuh__burger):focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
+.nuh-wrap--ap :is(.nuh__busca, .nuh__entrar, .nuh__pill, .nuh__burger, .nuh__avatar):active { transform: scale(.97); }
+.nuh-wrap--ap :is(.nuh__busca, .nuh__entrar, .nuh__pill, .nuh__avatar, .nuh__burger):focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 
 @container topo (max-width: 1160px) {
   .nuh-wrap--ap .nuh__busca { background: transparent; }
@@ -333,6 +346,7 @@ const estiloRealce = computed(() => ({ width: `${realce.value.w}px`, transform: 
   .nuh-wrap--ap .nuh__marca :deep(svg) { height: 24px; width: auto; }
   .nuh-wrap--ap .nuh__dir { gap: 0; }
   .nuh-wrap--ap .nuh__chamada { display: none; }
+  .nuh-wrap--ap .nuh__pill { display: inline-flex; }
   .nuh-wrap--ap .nuh__busca { width: 44px; height: 44px; }
   .nuh-wrap--ap .nuh__avatar { width: 44px; height: 44px; margin-left: 0; }
   .nuh-wrap--ap .nuh__avatar span { width: 30px; height: 30px; }

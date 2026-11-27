@@ -266,7 +266,7 @@ usePageSeo({
         <h2 class="chb__cta-title">Pronto pra começar a investir?</h2>
         <p class="chb__cta-sub">Cadastre-se na Aportou pra ter análises com IA, acompanhamento de carteira e mais.</p>
         <div class="chb__cta-actions">
-          <NuBotaoSeta to="/login" variante="creme">Criar conta grátis</NuBotaoSeta>
+          <NuBotaoSeta to="/assinar?quiz=1&de=calculadoras" variante="creme">Criar conta grátis</NuBotaoSeta>
           <NuLinkSeta to="/" tom="claro" class="chb__cta-link">Conhecer a plataforma</NuLinkSeta>
         </div>
       </div>

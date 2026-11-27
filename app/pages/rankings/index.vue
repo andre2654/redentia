@@ -279,7 +279,7 @@ function contagemDoGrupo(g: { tema: string; items: RankingMeta[] }): number {
     <!-- ============ Fecho: o painel azul da marca, com o corte de fundo ============ -->
     <MercadoFecho
       eyebrow="Sua carteira"
-      :primary="{ label: 'Criar conta grátis', to: '/login' }"
+      :primary="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=rankings' }"
       :secondary="{ label: 'Ver como funciona', to: '/institucional/how-works' }"
     >
       <template #title>Acompanhe os rankings na sua carteira</template>
