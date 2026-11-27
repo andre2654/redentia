@@ -125,6 +125,11 @@ const calculadora = `/calculadora/juros-compostos?initial=${props.entrada.reais}
         Poupança {{ taxaFmt(tx.poupancaMensal) }} ao mês, série 195, período {{ periodoPoupanca(tx) }}.
         Fonte: <a href="https://www.bcb.gov.br" target="_blank" rel="noopener noreferrer">Banco Central do Brasil</a>.
       </p>
+      <CtaConectarCarteira
+        titulo="Compare com o que a sua carteira rendeu"
+        corpo="Esta página simula as taxas de hoje do Banco Central. Conecte a carteira pelo Open Finance (só leitura) para ver o que os seus investimentos fizeram, com os seus números."
+        to="/assinar?quiz=1&de=quanto-rende"
+      />
     </CalcBand>
 
     <CalcBand tone="cream" title="100% do CDI, 110% e 115% do CDI.">
