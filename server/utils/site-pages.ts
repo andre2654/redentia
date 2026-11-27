@@ -25,8 +25,9 @@
  *    vêm do backend. O hub /tesouro entra; o hub /dividendos não (é 301).
  *  - Quanto rende: /quanto-rende/{TICKER} só com renda (não amortização) em
  *    12 meses, lida em GET /dividends/{TICKER} com fila limitada e cache de
- *    12 h, e /quanto-rende/tesouro/{slug} quando a conta da taxa fecha. Sem
- *    fallback: lista vazia ou endpoint fora omite a seção.
+ *    12 h, /quanto-rende/tesouro/{slug} quando a conta da taxa fecha, e
+ *    /quanto-rende/{valor} para os valores em reais (lista fixa, sem fetch).
+ *    Sem fallback de ticker: lista vazia ou endpoint fora omite só os papéis.
  */
 import { FIIS_DESCRIPTION, FIIS_PATH, FIIS_TITLE } from '../../app/content/seo/fiis-hub'
 import { RANKINGS } from '../../app/content/rankings/registry'
@@ -68,6 +69,7 @@ import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 import { GRAFICOS_PAGINA } from '../../app/utils/graficos'
 import { paginasPrecoTetoIndexaveis } from './preco-teto-sitemap'
+import { paginasQuantoRendeValor } from '../../app/utils/quanto-rende-valor'
 import { pathsImpostoRenda } from '../../app/utils/impostoRendaLiquidos.ts'
 import { tituloImpostoRenda } from '../../app/utils/impostoRendaPagina.ts'
 import { entradasAgenda } from '../../app/utils/agendaDividendos.ts'
@@ -913,7 +915,7 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     description: `A taxa de hoje de ${t.name} aplicada a um valor.`,
     lastmod: t.lastmod,
   }))
-  const quantoRende = [...quantoRendeTickers, ...quantoRendeTesouro]
+  const quantoRende = [...paginasQuantoRendeValor(), ...quantoRendeTickers, ...quantoRendeTesouro]
 
   const sections: SiteSection[] = [
     { id: 'core', title: 'Páginas principais', pages: corePages },
@@ -1008,7 +1010,7 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     sections.push({
       id: 'quanto-rende',
       title: 'Quanto rende',
-      description: 'Proventos de 12 meses aplicados a um valor em /quanto-rende/{TICKER}, e a taxa de hoje de cada título em /quanto-rende/tesouro/{slug}.',
+      description: 'Proventos de 12 meses aplicados a um valor em /quanto-rende/{TICKER}, a taxa de hoje de cada título em /quanto-rende/tesouro/{slug}, e a simulação por valor em reais.',
       pages: quantoRende,
     })
   }

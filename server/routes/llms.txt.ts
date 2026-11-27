@@ -137,12 +137,24 @@ Pagamentos com data no mês, a partir dos avisos de proventos da B3. Não é rec
 
 ### Quanto rende (${nQuantoRende} páginas)
 
-Proventos dos últimos 12 meses aplicados a um valor, em /quanto-rende/{TICKER}, e a taxa de hoje de cada título do Tesouro em /quanto-rende/tesouro/{slug}. Rentabilidade passada não garante rentabilidade futura. Não é recomendação.
+Proventos dos últimos 12 meses aplicados a um valor, em /quanto-rende/{TICKER}, e a taxa de hoje de cada título do Tesouro em /quanto-rende/tesouro/{slug}. Também há simulação por valor em reais, com CDI, poupança e Tesouro Selic na taxa do Banco Central. Rentabilidade passada não garante rentabilidade futura. Não é recomendação.
 
 - [Quanto rende PETR4](${o}/quanto-rende/PETR4)
 - [Quanto rende MXRF11](${o}/quanto-rende/MXRF11)
 - [Quanto rende AAPL34](${o}/quanto-rende/AAPL34)
 - [Quanto rende o Tesouro Prefixado 2029](${o}/quanto-rende/tesouro/tesouro-prefixado-2029)
+- [Quanto rende R$ 1 mil](${o}/quanto-rende/1-mil)
+- [Quanto rende R$ 5 mil](${o}/quanto-rende/5-mil)
+- [Quanto rende R$ 10 mil](${o}/quanto-rende/10-mil)
+- [Quanto rende R$ 20 mil](${o}/quanto-rende/20-mil)
+- [Quanto rende R$ 50 mil](${o}/quanto-rende/50-mil)
+- [Quanto rende R$ 100 mil](${o}/quanto-rende/100-mil)
+- [Quanto rende R$ 200 mil](${o}/quanto-rende/200-mil)
+- [Quanto rende R$ 300 mil](${o}/quanto-rende/300-mil)
+- [Quanto rende R$ 500 mil](${o}/quanto-rende/500-mil)
+- [Quanto rende R$ 1 milhão](${o}/quanto-rende/1-milhao)
+- [Quanto rende R$ 2 milhões](${o}/quanto-rende/2-milhoes)
+- [Quanto rende R$ 5 milhões](${o}/quanto-rende/5-milhoes)
 
 ### Teses de investimento (${nTeses} teses vivas)
 
