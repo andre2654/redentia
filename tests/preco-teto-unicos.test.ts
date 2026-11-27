@@ -1,6 +1,8 @@
 /**
- * Título, description e intro (parágrafo) dos 437 indexáveis são strings únicas.
+ * Título, description e intro (parágrafo) dos indexáveis com página são strings únicas.
  * O fixture sai de scripts/gerar-preco-teto-textos.ts (API em 17/11/2026).
+ * Os 100 do lote 5 entram pela mesma conta. VVEO3 está no lote, mas a rota
+ * responde 404: LPA negativo e sem renda em 12 meses, então não há texto.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -24,14 +26,20 @@ function repetidos(valores: string[]): string[] {
   return dup
 }
 
-test('título, description e intro dos 437 indexáveis são únicos', () => {
-  assert.equal(entradas.length, 437)
+test('título, description e intro dos 537 indexáveis são únicos', () => {
+  assert.equal(entradas.length, 537)
   assert.deepEqual(entradas.map((e) => e.ticker).sort(), [...PRECO_TETO_INDEXAVEIS].sort())
-  const views = entradas.map((entrada) => {
+  const views = []
+  const semPagina: string[] = []
+  for (const entrada of entradas) {
     const view = montarPrecoTeto(entrada)
-    assert.ok(view, entrada.ticker)
-    return view
-  })
+    if (!view) {
+      semPagina.push(entrada.ticker)
+      continue
+    }
+    views.push(view)
+  }
+  assert.deepEqual(semPagina, ['VVEO3'])
   const titulos = views.map((v) => v.title)
   const descricoes = views.map((v) => v.description)
   const paragrafos = views.map((v) => v.paragrafo)
