@@ -230,7 +230,7 @@ usePageSeo({
       compacta
       titulo="Veja como essa conta se adapta à sua vida."
       texto="Com a conta grátis da Aportou, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
-      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :primario="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=juros' }"
       :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
     />
 
@@ -493,7 +493,7 @@ usePageSeo({
     <CalcFaixaCta
       titulo="Quer acompanhar seus investimentos reais?"
       texto="Cadastre-se na Aportou e monitore sua carteira com análises em tempo real e IA."
-      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :primario="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=juros' }"
       :secundario="{ label: 'Ver mais guias', to: '/guias' }"
     />
   </div>

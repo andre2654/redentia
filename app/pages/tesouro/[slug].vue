@@ -201,7 +201,7 @@ const painel = useChatPainel()
     <!-- ============ Fecho (só deslogado): o painel azul da marca, com o corte de fundo ============ -->
     <MercadoFecho
       v-if="!isAuthenticated" eyebrow="Sua carteira" fundo="faixa"
-      :primary="{ label: 'Criar conta grátis', to: '/login' }"
+      :primary="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=tesouro-titulo' }"
       :secondary="{ label: 'Ver todos os títulos', to: '/tesouro' }"
     >
       <template #title>Acompanhe seus títulos na Aportou</template>

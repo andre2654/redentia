@@ -286,7 +286,7 @@ function tentarDeNovo() { void refreshNuxtData(`setor-${entry!.ptSlug}`) }
     <!-- ============ Fecho: o painel azul da marca, com o corte de fundo ============ -->
     <MercadoFecho
       eyebrow="Sua carteira" fundo="faixa"
-      :primary="{ label: 'Criar conta grátis', to: '/login' }"
+      :primary="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=setor' }"
       :secondary="{ label: 'Ver todos os setores', to: '/setor' }"
     >
       <template #title>Acompanhe o setor {{ entry.name.toLowerCase() }} na sua carteira</template>

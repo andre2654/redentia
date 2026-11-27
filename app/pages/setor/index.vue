@@ -100,7 +100,7 @@ usePageSeo({
     <!-- ============ Fecho: o painel azul da marca, com o corte de fundo ============ -->
     <MercadoFecho
       eyebrow="Sua carteira"
-      :primary="{ label: 'Criar conta grátis', to: '/login' }"
+      :primary="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=setores' }"
       :secondary="{ label: 'Ver os rankings', to: '/rankings' }"
     >
       <template #title>Descubra os melhores ativos de cada setor</template>

@@ -293,7 +293,7 @@ function tentarDeNovo() { void refreshNuxtData(`ranking-${slug}`) }
     <!-- o nome próprio (Aportou Score) não vai para a caixa baixa -->
     <MercadoFecho
       eyebrow="Sua carteira"
-      :primary="{ label: 'Criar conta grátis', to: '/login' }"
+      :primary="{ label: 'Criar conta grátis', to: '/assinar?quiz=1&de=ranking' }"
       :secondary="{ label: 'Ver outros rankings', to: '/rankings' }"
     >
       <template #title>Acompanhe {{ isScore ? `o ${meta.title}` : meta.title.toLowerCase() }} na sua carteira</template>

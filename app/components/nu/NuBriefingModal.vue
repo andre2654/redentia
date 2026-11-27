@@ -5,9 +5,10 @@
 // localStorage via useBriefingPrefs, sem backend ainda.
 //
 // LOGADO: dois canais com toggle (WhatsApp no número mascarado, E-mail na caixa)
-// + preview + "Salvar preferências". DESLOGADO: vira CTA de cadastro (o contato
-// vem da conta) → /login. Busca o contato só quando abre E logado (nunca dispara
-// /auth/me pro anônimo → sem redirect indesejado na home pública).
+// + preview + "Salvar preferências". DESLOGADO: "Criar conta grátis" abre o quiz
+// (/assinar?quiz=1&de=briefing); "Já tenho conta" segue no /login. Busca o
+// contato só quando abre E logado (nunca dispara /auth/me pro anônimo → sem
+// redirect indesejado na home pública).
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 
@@ -135,7 +136,7 @@ function submit() {
         <template v-else>
           <p class="nbm__anon">Crie sua conta grátis pra receber o resumo do mercado e da sua carteira todo dia às 7h30, no e-mail ou no WhatsApp. Cancele quando quiser.</p>
           <div class="nbm__anon-actions">
-            <NuxtLink :to="loginTo" class="nbm__save nbm__save--link">Criar conta grátis</NuxtLink>
+            <NuxtLink to="/assinar?quiz=1&de=briefing" class="nbm__save nbm__save--link">Criar conta grátis</NuxtLink>
             <NuxtLink :to="loginTo" class="nbm__ghost">Já tenho conta</NuxtLink>
           </div>
         </template>
