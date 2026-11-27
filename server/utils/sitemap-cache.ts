@@ -1,4 +1,4 @@
-import { precoTetoIndexavel } from '../../app/content/seo/preco-teto-indexaveis.ts'
+import { precoTetoNoSitemap } from './preco-teto-sitemap.ts'
 
 /**
  * Cache da resposta XML de /sitemap.xml e de cada /sitemaps/{tipo}.xml.
@@ -70,15 +70,15 @@ export function xmlNaOrigem(xml: string, origemGuardada: string, origem: string)
 }
 
 /**
- * /calculadora/preco-teto/{TICKER} fora do conjunto indexável (cliques +
- * lotes abertos) sai do XML servido, inclusive da semente antiga e do
- * fallback da borda. O hub, os métodos (slug em minúsculas), o arquivo
- * /sitemaps/preco-teto.xml e o ticker indexável ficam.
+ * /calculadora/preco-teto/{TICKER} fora do sitemap (lote ainda fechado,
+ * HGLG11/PETR3/KNRI11, ou rota que não responde 200) sai do XML servido,
+ * inclusive da semente antiga e do fallback da borda. O hub, os métodos
+ * (slug em minúsculas) e o arquivo /sitemaps/preco-teto.xml ficam.
  */
 export function semPrecoTetoPorTicker(xml: string): string {
   return xml.replace(
     /<url><loc>[^<]*\/calculadora\/preco-teto\/([A-Z][A-Z0-9]{3,5})<\/loc>(?:<lastmod>[^<]*<\/lastmod>)?<\/url>\n?/g,
-    (cheio, ticker: string) => (precoTetoIndexavel(ticker) ? cheio : ''),
+    (cheio, ticker: string) => (precoTetoNoSitemap(ticker) ? cheio : ''),
   )
 }
 
