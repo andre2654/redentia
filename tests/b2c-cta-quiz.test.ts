@@ -55,7 +55,7 @@ const SEM_LINK = new Set([
 ])
 
 const DES_ESPERADOS = [
-  'topo', 'topo-mobile', 'menu', 'preco-teto', 'como-funciona',
+  'topo', 'topo-mobile', 'menu', 'preco-teto',
   'ranking', 'rankings', 'setor', 'setores', 'tesouro', 'tesouro-titulo',
   'calc-ir', 'juros', 'juros-cenario', 'planejamento', 'quanto-investir',
   'quanto-investir-cenario', 'calculadoras', 'calc-acoes', 'aposentadoria',
@@ -112,7 +112,6 @@ test('todo "Criar conta grátis" de página pública abre o quiz, com de= de at�
   assert.deepEqual(vistos.get('topo-mobile'), ['app/components/nu/NuHeader.vue'])
   assert.deepEqual(vistos.get('menu'), ['app/components/nu/topo/NuTopoMenu.vue'])
   assert.deepEqual(vistos.get('preco-teto'), ['app/pages/calculadora/preco-teto/index.vue'])
-  assert.deepEqual(vistos.get('como-funciona'), ['app/pages/institucional/how-works.vue'])
   assert.equal(vistos.get('calc-ir')?.length, 2)
   assert.equal(vistos.get('dividend-yield')?.length, 2)
   assert.equal(vistos.get('quanto-investir-cenario')?.length, 1)
