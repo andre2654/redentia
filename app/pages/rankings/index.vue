@@ -170,7 +170,8 @@ function cardTypes(meta: RankingMeta): string[] {
 }
 
 function contagemDoGrupo(g: { tema: string; items: RankingMeta[] }): number {
-  return g.items.length + (g.tema === 'Valuation e preço justo' ? 1 : 0)
+  const extra = (g.tema === 'Valuation e preço justo' ? 1 : 0) + (g.tema === 'Renda e dividendos' ? 1 : 0)
+  return g.items.length + extra
 }
 </script>
 
@@ -187,6 +188,7 @@ function contagemDoGrupo(g: { tema: string; items: RankingMeta[] }): number {
         <NuLinkSeta to="/fiis">O que é um fundo imobiliário</NuLinkSeta>
         <NuLinkSeta to="/rankings/fiis">Rankings só de FIIs</NuLinkSeta>
         <NuLinkSeta to="/rankings/small-caps">Small caps por valor de mercado</NuLinkSeta>
+        <NuLinkSeta to="/acoes-que-pagam-dividendos">Ações que pagam dividendos</NuLinkSeta>
       </div>
     </NuPageHero>
 
@@ -253,6 +255,14 @@ function contagemDoGrupo(g: { tema: string; items: RankingMeta[] }): number {
               </li>
             </ol>
             <span class="rkh__card-cta"><span class="rkh__cta-txt">Ver ranking</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
+          </NuxtLink>
+          <NuxtLink v-if="g.tema === 'Renda e dividendos'" to="/acoes-que-pagam-dividendos" class="rkh__card">
+            <div class="rkh__card-chips">
+              <NuSelo tom="contorno" tamanho="p">Ações</NuSelo>
+            </div>
+            <h3 class="rkh__card-title">Ações que pagam dividendos</h3>
+            <p class="rkh__card-desc">Dividend yield de 12 meses, último pagamento e meses com provento. Não é recomendação.</p>
+            <span class="rkh__card-cta"><span class="rkh__cta-txt">Ver a lista</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
           </NuxtLink>
           <NuxtLink v-if="g.tema === 'Valuation e preço justo'" to="/ranking/acoes-baratas" class="rkh__card">
             <div class="rkh__card-chips">

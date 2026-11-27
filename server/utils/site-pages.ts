@@ -37,6 +37,14 @@ import {
   ACOES_BARATAS_TITLE,
 } from '../../app/content/seo/acoes-baratas'
 import {
+  ACOES_DIV_DESCRIPTION,
+  ACOES_DIV_MENSAIS_DESCRIPTION,
+  ACOES_DIV_MENSAIS_PATH,
+  ACOES_DIV_MENSAIS_TITLE,
+  ACOES_DIV_PATH,
+  ACOES_DIV_TITLE,
+} from '../../app/content/seo/acoes-dividendos'
+import {
   FIIS_RANK_DESCRIPTION,
   FIIS_RANK_PATH,
   FIIS_RANK_TITLE,
@@ -810,6 +818,18 @@ function rankingPages(marketDate: string | undefined): SitePage[] {
     path: SMALL_CAPS_PATH,
     title: SMALL_CAPS_TITLE,
     description: SMALL_CAPS_DESCRIPTION,
+    lastmod: marketDate,
+  })
+  listas.push({
+    path: ACOES_DIV_PATH,
+    title: ACOES_DIV_TITLE,
+    description: ACOES_DIV_DESCRIPTION,
+    lastmod: marketDate,
+  })
+  listas.push({
+    path: ACOES_DIV_MENSAIS_PATH,
+    title: ACOES_DIV_MENSAIS_TITLE,
+    description: ACOES_DIV_MENSAIS_DESCRIPTION,
     lastmod: marketDate,
   })
   return listas

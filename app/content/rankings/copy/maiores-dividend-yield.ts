@@ -135,6 +135,16 @@ const copy: RankingCopy = {
 
   crossLinks: [
     {
+      title: 'Ações que pagam dividendos',
+      desc: 'Ações deste ranking, com último pagamento e meses com provento na janela de 12 meses. Não é recomendação.',
+      href: '/acoes-que-pagam-dividendos',
+    },
+    {
+      title: 'Pagamentos em muitos meses',
+      desc: 'Ações com pagamento de renda em 10 meses ou mais nos últimos 12 meses, pelo histórico. Não é recomendação.',
+      href: '/acoes-que-pagam-dividendos-mensais',
+    },
+    {
       title: 'Maiores Altas do Mês',
       desc: 'Ações que mais subiram nos últimos 30 dias na B3.',
       href: '/ranking/maiores-altas-mes',

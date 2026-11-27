@@ -94,6 +94,8 @@ Cada ticker tem página própria em /asset/{TICKER} com cotação, gráfico, fun
 - [Small caps](${o}/rankings/small-caps): ações com valor de mercado abaixo de R$ 2 bilhões, corte declarado desta página, com a data do dado. Não é recomendação. /small-caps redireciona para cá
 - [${MARCA.nome} Score](${o}/ranking/redentia-score): score proprietário 0 a 100 que cruza 15 rankings fundamentalistas
 - [Maiores Dividend Yields](${o}/ranking/maiores-dividend-yield): ações e FIIs com maior DY dos últimos 12 meses
+- [Ações que pagam dividendos](${o}/acoes-que-pagam-dividendos): ações da B3 nesse ranking, com último pagamento e meses com provento na janela de 365 dias. Não é recomendação. Dividendos passados não garantem pagamentos futuros
+- [Ações que pagam dividendos mensais](${o}/acoes-que-pagam-dividendos-mensais): ações com pagamento de renda em 10 ou mais meses distintos nos últimos 12 meses, pelo histórico de avisos. Quem teve 6 a 9 meses fica em seção separada. /acoes-que-pagam-dividendos/mensais redireciona para cá. Não é recomendação
 - [Mais Baratas pela Fórmula de Graham](${o}/ranking/mais-baratas-graham)
 - [Mais Baratas pela Fórmula de Bazin](${o}/ranking/mais-baratas-bazin)
 - [Ações baratas](${o}/ranking/acoes-baratas): hub das listas em que a cotação está abaixo da fórmula de Graham ou de Bazin, ou o P/VP está baixo. Estimativa educacional, não é recomendação
@@ -132,6 +134,8 @@ Páginas educativas de como declarar o papel no IR, só para os mais líquidos. 
 Pagamentos com data no mês, a partir dos avisos de proventos da B3. Não é recomendação de compra ou venda.
 
 - [Agenda de dividendos](${o}/dividendos/agenda): hub dos meses com lista publicada
+- [Ações que pagam dividendos](${o}/acoes-que-pagam-dividendos): a lista de ações do ranking de DY, com meses de pagamento. A agenda é o calendário do mês, outra conta
+- [Ações com pagamento em muitos meses](${o}/acoes-que-pagam-dividendos-mensais): 10 meses ou mais no histórico, e 6 a 9 meses em seção separada
 - [Agenda de dividendos novembro 2026](${o}/dividendos/agenda/novembro-2026)
 - [Agenda de dividendos dezembro 2026](${o}/dividendos/agenda/dezembro-2026)
 

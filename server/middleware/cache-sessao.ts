@@ -56,6 +56,8 @@ const EXATAS: Record<string, string> = {
   '/rankings': QUINZE_MIN,
   '/rankings/fiis': QUINZE_MIN,
   '/rankings/small-caps': QUINZE_MIN,
+  '/acoes-que-pagam-dividendos': QUINZE_MIN,
+  '/acoes-que-pagam-dividendos-mensais': QUINZE_MIN,
   '/fiis': QUINZE_MIN,
   '/setor': QUINZE_MIN,
   '/setores': QUINZE_MIN,
