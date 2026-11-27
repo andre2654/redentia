@@ -1044,7 +1044,8 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     })
   }
 
-  // Allowlist de cliques mais os lotes de liquidez já abertos. O resto de
+  // Allowlist de cliques mais os lotes de liquidez já abertos, menos o
+  // ticker cuja rota não responde 200. O resto de
   // /calculadora/preco-teto/{TICKER} segue no ar e noindex, e o filtro
   // semPrecoTetoPorTicker tira URL fora desse conjunto da semente antiga.
   // Os cinco métodos entram por precoTetoMetodoPages(), na seção calculadoras.
