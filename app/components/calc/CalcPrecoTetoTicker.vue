@@ -116,6 +116,14 @@ const metodos = computed(() => {
         <CalcCapturaTeto :ticker="view.ticker" :alvo="view.consenso > 0 ? view.consenso : null" />
       </div>
       <CalcConvitePrecoTeto :ticker="view.ticker" :alvo="view.consenso > 0 ? view.consenso : null" />
+      <!-- O alerta acima fica intacto. Este card é a faixa de conectar a
+           carteira, ainda no resultado e antes do FAQ e do "Veja também". -->
+      <CtaConectarCarteira
+        class="ptt__conectar"
+        titulo="Rode 2.000 cenários com a sua carteira"
+        corpo="Conecte pelo Open Finance, só leitura, e veja a simulação nos próximos 5 anos com os seus números. É simulação, não promessa de rendimento."
+        to="/assinar?quiz=1&de=preco-teto"
+      />
     </section>
 
     <section v-if="view.tabela.length" class="ptt__table-sec">
@@ -239,6 +247,7 @@ const metodos = computed(() => {
 .ptt__alerta :deep(.cct__bloco),
 .ptt__alerta :deep(.cct__titulo),
 .ptt__alerta :deep(.cct__texto) { min-width: 0; overflow-wrap: break-word; }
+.ptt__conectar { min-width: 0; max-width: 100%; }
 
 .ptt__h2 {
   margin: 0; color: var(--nu-ink); font-size: clamp(26px, 3vw, 36px);

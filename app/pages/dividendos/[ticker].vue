@@ -166,6 +166,14 @@ const painel = useChatPainel()
         </div>
         <DividendosStats v-if="div.hero.stats.length" :items="div.hero.stats" />
       </div>
+      <!-- Depois do cartão de números do topo e antes do resumo, do FAQ,
+           de "Continue a análise" e de "Veja também". O "Seguir" fica no hero. -->
+      <CtaConectarCarteira
+        class="dvt__conectar"
+        titulo="Veja esses proventos na sua carteira"
+        corpo="Conecte pelo Open Finance, só leitura: a Aportou mostra o que você recebeu, com os seus números, e a decisão continua sendo sua."
+        to="/assinar?quiz=1&de=dividendos"
+      />
     </section>
 
     <!-- ============ Resumo 12M: stats + barras anuais (NuDividendBars) ============ -->
@@ -394,6 +402,8 @@ const painel = useChatPainel()
   padding: clamp(40px, 4.6vw, 72px) var(--nu-coluna) clamp(40px, 4.6vw, 64px);
 }
 .dvt__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(32px, 3.4vw, 40px); }
+/* o creme do card vira a faixa, senão some no creme da página */
+.dvt__conectar { --nu-cream: var(--nu-band); min-width: 0; max-width: 100%; }
 .dvt__topo-texto { min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
 .dvt__trilha { margin: 0 0 8px; }
 .dvt__h1 { margin: 16px 0 0; font-size: clamp(40px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance; }
