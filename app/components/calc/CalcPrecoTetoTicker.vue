@@ -109,6 +109,12 @@ const metodos = computed(() => {
         </li>
       </ul>
       <p class="ptt__aviso">Estimativa educacional, não é recomendação. O preço teto é a conta dos métodos sobre os números dos últimos 12 meses, não uma previsão.</p>
+      <!-- O mesmo bloco do hub (CalcCapturaTeto): o alvo é a média já
+           calculada nesta página. Deslogado segue para /login?redirect=...&alerta=...;
+           logado grava o aviso. Sem barra fixa: o chat já ocupa a base. -->
+      <div class="ptt__alerta">
+        <CalcCapturaTeto :ticker="view.ticker" :alvo="view.consenso > 0 ? view.consenso : null" />
+      </div>
       <CalcConvitePrecoTeto :ticker="view.ticker" :alvo="view.consenso > 0 ? view.consenso : null" />
     </section>
 
@@ -222,6 +228,17 @@ const metodos = computed(() => {
 .ptt__aviso {
   margin: 22px 0 0; max-width: 68ch; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5;
 }
+/* alerta do hub, logo abaixo do resultado. Em 1440 os dois cartões dividem a
+   faixa; em 390 empilham (minmax com 100%). O creme do cartão herda o
+   remapeamento desta seção, o mesmo dos outros cartões daqui. */
+.ptt__alerta { min-width: 0; }
+.ptt__alerta :deep(.cct) {
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  margin-top: 28px;
+}
+.ptt__alerta :deep(.cct__bloco),
+.ptt__alerta :deep(.cct__titulo),
+.ptt__alerta :deep(.cct__texto) { min-width: 0; overflow-wrap: break-word; }
 
 .ptt__h2 {
   margin: 0; color: var(--nu-ink); font-size: clamp(26px, 3vw, 36px);

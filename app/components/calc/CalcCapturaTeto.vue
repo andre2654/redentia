@@ -112,16 +112,17 @@ const isca = ref('')
 </template>
 
 <style scoped>
-.cct { display: grid; gap: 12px; margin-top: 20px; }
+.cct { display: grid; gap: 12px; margin-top: 20px; min-width: 0; }
 .cct__bloco {
-  position: relative;
+  position: relative; min-width: 0;
   background: var(--nu-cream); border-radius: 18px; padding: 18px 22px;
 }
-.cct__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.1px; }
-.cct__texto { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; }
+.cct__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); letter-spacing: -.1px; overflow-wrap: break-word; }
+.cct__texto { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; overflow-wrap: break-word; }
 .cct__btn {
-  margin-top: 14px; background: var(--nu-blue); color: var(--nu-white); border: none;
+  margin-top: 14px; max-width: 100%; background: var(--nu-blue); color: var(--nu-white); border: none;
   border-radius: var(--nu-r-pill); padding: 11px 20px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte);
+  white-space: normal; overflow-wrap: break-word; text-align: center;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
@@ -139,12 +140,19 @@ const isca = ref('')
 }
 .cct__input:hover { border-color: var(--nu-borda-campo); }
 .cct__input:focus { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
-.cct__legal { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
+.cct__legal { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); overflow-wrap: break-word; }
 .cct__legal a { color: inherit; text-decoration: underline; }
-.cct__ok { margin: 12px 0 0; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; }
-.cct__nota { margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; }
+.cct__ok { margin: 12px 0 0; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; overflow-wrap: break-word; }
+.cct__nota { margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; overflow-wrap: break-word; }
 .cct__texto--cheio { flex: 1 1 100%; margin: 0; }
-.cct__erro { margin: 10px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
+.cct__erro { margin: 10px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); overflow-wrap: break-word; }
+/* 390px: o campo e o botão empilham, cada um na largura do cartão. A partir
+   de 760px voltam para a mesma linha do hub. */
+@media (max-width: 759px) {
+  .cct__linha { flex-direction: column; align-items: stretch; }
+  .cct__input { flex-basis: auto; width: 100%; }
+  .cct__btn--linha { width: 100%; }
+}
 .cct__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .cct__trocar {
   flex: 1 1 100%; justify-self: start; margin: 0; padding: 0; background: none; border: none;
