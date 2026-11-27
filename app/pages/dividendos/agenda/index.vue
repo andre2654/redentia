@@ -63,6 +63,16 @@ usePageSeo({
 
     <CalcBand tone="cream" title="Siga a partir daqui.">
       <div v-revelar="{ alvo: 'filhos' }" class="agd__cards">
+        <NuxtLink to="/acoes-que-pagam-dividendos" class="agd__card">
+          <h3 class="agd__card-titulo">Ações que pagam dividendos</h3>
+          <p class="agd__card-p">Ações do ranking de yield, com último pagamento e meses com provento. A agenda é o calendário do mês.</p>
+          <span class="agd__ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+        </NuxtLink>
+        <NuxtLink to="/acoes-que-pagam-dividendos-mensais" class="agd__card">
+          <h3 class="agd__card-titulo">Pagamentos em muitos meses</h3>
+          <p class="agd__card-p">Ações com pagamento de renda em 10 meses ou mais na janela de 12 meses. Não é a agenda.</p>
+          <span class="agd__ir">Abrir<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg></span>
+        </NuxtLink>
         <NuxtLink to="/ranking/maiores-dividend-yield" class="agd__card">
           <h3 class="agd__card-titulo">Maiores dividend yields</h3>
           <p class="agd__card-p">O ranking de 12 meses. A agenda é o calendário do mês, outra conta.</p>

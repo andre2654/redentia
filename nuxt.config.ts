@@ -246,6 +246,8 @@ export default defineNuxtConfig({
     // continua o filtro do hub de rankings, sem 301, para não formar loop com a barra.
     '/etfs': { redirect: { to: '/rankings', statusCode: 301 } },
     '/small-caps': { redirect: { to: '/rankings/small-caps', statusCode: 301 } },
+    // As duas grafias da busca. A canônica é a com hífen, para não duplicar.
+    '/acoes-que-pagam-dividendos/mensais': { redirect: { to: '/acoes-que-pagam-dividendos-mensais', statusCode: 301 } },
     // /tesouro e /tesouro/[slug]: páginas reais em construção (frente
     // paralela) — os redirects provisórios pro ranking saíram; as regras de
     // cache vivem no bloco de cache acima.

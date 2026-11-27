@@ -50,6 +50,7 @@ const REDIRECT_EXATO: Record<string, string> = {
   // /fiis é página. A barra cai em /fiis, não no filtro, senão o 301 volta.
   '/etfs': '/rankings',
   '/small-caps': '/rankings/small-caps',
+  '/acoes-que-pagam-dividendos/mensais': '/acoes-que-pagam-dividendos-mensais',
   '/tesouro/tesouro-renda-aposentadoria-extra-2033': '/tesouro/tesouro-renda-aposentadoria-extra-2030',
   '/tesouro/tesouro-renda-aposentadoria-extra-2038': '/tesouro/tesouro-renda-aposentadoria-extra-2035',
   '/tesouro/tesouro-renda-aposentadoria-extra-2043': '/tesouro/tesouro-renda-aposentadoria-extra-2040',
