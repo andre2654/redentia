@@ -10,7 +10,17 @@ const TICKER_RE = /^[A-Z][A-Z0-9]{3}\d{1,2}$/
 definePageMeta({
   middleware: [
     (to) => {
+      // A mesma lista de app/utils/quanto-rende-valor.ts. O middleware extraído
+      // não enxerga import da página, então a expressão fica aqui. O teste trava as duas.
+      const slugValor = /^(?:1|5|10|20|50|100|200|300|500)-mil$|^1-milhao$|^(?:2|5)-milhoes$/i
       const raw = String(to.params.ticker ?? '')
+      const lower = raw.toLowerCase()
+      if (slugValor.test(lower)) {
+        if (raw !== lower) {
+          return navigateTo({ path: `/quanto-rende/${lower}`, query: to.query, hash: to.hash }, { redirectCode: 301, replace: true })
+        }
+        return
+      }
       const upper = raw.toUpperCase()
       if (!TICKER_RE.test(upper)) {
         return abortNavigation(createError({ statusCode: 404, statusMessage: 'Ativo não encontrado' }))
@@ -23,36 +33,42 @@ definePageMeta({
 })
 
 const route = useRoute()
-const ticker = String(route.params.ticker ?? '').toUpperCase()
+const brutoParam = String(route.params.ticker ?? '')
+const entradaValor = valorPorSlug(brutoParam)
+const ticker = brutoParam.toUpperCase()
 // o sujeito dos cartões que vão ao chat ("P/L PETR4"): useSobreDoContexto
-proverSobreDoContexto(ticker)
-const { data, error } = await useQuantoRende(ticker)
+if (!entradaValor) proverSobreDoContexto(ticker)
+const pacote = entradaValor ? null : await useQuantoRende(ticker)
+const data = pacote?.data ?? ref(null)
+const error = pacote?.error ?? ref(null)
 
-const renamedTo = renamedTargetOfError(error.value)
-if (renamedTo) {
-  const pagina = renamedRotaOfError(error.value) === 'asset' ? 'asset' : 'quanto-rende'
-  await navigateTo(
-    { path: `/${pagina}/${renamedTo}`, query: { ...route.query, de: ticker } },
-    { redirectCode: 301, replace: true },
-  )
-} else if (error.value || !data.value) {
-  const err = error.value as { statusCode?: number, statusMessage?: string, data?: unknown } | null
-  const status = err?.statusCode
-  if (status === 410) {
+if (!entradaValor) {
+  const renamedTo = renamedTargetOfError(error.value)
+  if (renamedTo) {
+    const pagina = renamedRotaOfError(error.value) === 'asset' ? 'asset' : 'quanto-rende'
+    await navigateTo(
+      { path: `/${pagina}/${renamedTo}`, query: { ...route.query, de: ticker } },
+      { redirectCode: 301, replace: true },
+    )
+  } else if (error.value || !data.value) {
+    const err = error.value as { statusCode?: number, statusMessage?: string, data?: unknown } | null
+    const status = err?.statusCode
+    if (status === 410) {
+      throw createError({
+        statusCode: 410,
+        statusMessage: err?.statusMessage || delistedMessage(ticker, null),
+        data: err?.data ?? { ticker, delistedAt: null },
+        fatal: true,
+      })
+    }
     throw createError({
-      statusCode: 410,
-      statusMessage: err?.statusMessage || delistedMessage(ticker, null),
-      data: err?.data ?? { ticker, delistedAt: null },
+      statusCode: status === 404 ? 404 : 503,
+      statusMessage: status === 404
+        ? (err?.statusMessage || `Sem proventos em 12 meses para ${ticker}`)
+        : 'Dados temporariamente indisponíveis',
       fatal: true,
     })
   }
-  throw createError({
-    statusCode: status === 404 ? 404 : 503,
-    statusMessage: status === 404
-      ? (err?.statusMessage || `Sem proventos em 12 meses para ${ticker}`)
-      : 'Dados temporariamente indisponíveis',
-    fatal: true,
-  })
 }
 
 const qr = computed(() => data.value!)
@@ -135,7 +151,8 @@ if (data.value) {
 </script>
 
 <template>
-  <div v-if="data">
+  <QuantoRendeValor v-if="entradaValor" :entrada="entradaValor" />
+  <div v-else-if="data">
     <NuPageHero :eyebrow="`${qr.nome} · ${ticker}`" :subtitle="`Os ${kind} dos últimos 12 meses aplicados a um valor, no preço de hoje.`">
       <template #trilha><NuTrilha :crumbs="trilha" /></template>
       <template #title>Quanto rende {{ ticker }}.</template>
