@@ -997,7 +997,7 @@ usePageSeo({
         <h2 class="pt__cta-title">Analise Ações na Aportou</h2>
         <p class="pt__cta-sub">Acesse dados fundamentalistas em tempo real, compare indicadores e receba análises com IA.</p>
         <div class="pt__cta-actions">
-          <NuxtLink to="/login" class="pt__pill pt__pill--light">Criar conta grátis</NuxtLink>
+          <NuxtLink to="/assinar?quiz=1&de=preco-teto" class="pt__pill pt__pill--light">Criar conta grátis</NuxtLink>
           <NuxtLink to="/" class="pt__pill pt__pill--outline">Ver ações</NuxtLink>
         </div>
       </div>
