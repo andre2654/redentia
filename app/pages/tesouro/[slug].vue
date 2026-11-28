@@ -142,6 +142,9 @@ const painel = useChatPainel()
         <TesouroHero :hero="titulo.hero" />
         <TesouroSideCards :cards="sideCards" />
       </div>
+      <p v-if="slug.startsWith('tesouro-reserva')" class="tsd__guia">
+        <NuxtLink to="/tesouro/tesouro-reserva">Como funciona o Tesouro Reserva</NuxtLink>
+      </p>
     </section>
 
     <!-- ============ Histórico (navy, toggle preço↔taxa + ranges) ============ -->
@@ -221,6 +224,8 @@ const painel = useChatPainel()
   padding: clamp(40px, 4.4vw, 64px) var(--nu-coluna) clamp(48px, 5vw, 72px);
 }
 .tsd__topo-grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(32px, 3.4vw, 40px); }
+.tsd__guia { margin: 28px 0 0; max-width: 100%; font-size: 16px; font-weight: var(--nu-w-forte); overflow-wrap: anywhere; }
+.tsd__guia a { color: var(--nu-blue-text); text-decoration: underline; text-underline-offset: 0.15em; }
 @media (min-width: 1080px) {
   .tsd__topo-grade { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(40px, 4.4vw, 72px); align-items: center; }
 }

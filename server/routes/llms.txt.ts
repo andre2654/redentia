@@ -112,6 +112,7 @@ Cada título público tem página própria em /tesouro/{slug} com taxa do dia, p
 - [Tesouro IPCA+ 2026](${o}/tesouro/tesouro-ipca-2026)
 - [Tesouro Prefixado 2027](${o}/tesouro/tesouro-prefixado-2027)
 - [Tesouro Selic 2027](${o}/tesouro/tesouro-selic-2027)
+- [Tesouro Reserva: como funciona](${o}/tesouro/tesouro-reserva): guia do título que rende 100% da Selic, com resgate praticamente 24h, IR regressivo e custódia da B3. A taxa e o preço do dia ficam em /tesouro/tesouro-reserva-2036. Não é recomendação. A simulação não é promessa de rendimento
 
 ### Dividendos por ativo (${nDividendos} pagadoras)
 

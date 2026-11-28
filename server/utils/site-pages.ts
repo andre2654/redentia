@@ -56,6 +56,11 @@ import {
 } from '../../app/content/seo/rankings-small-caps'
 import { SETORES } from '../../app/content/setores'
 import { JCP_DESCRIPTION, JCP_TITLE } from '../../app/content/jcp'
+import {
+  TESOURO_RESERVA_DESCRIPTION,
+  TESOURO_RESERVA_PATH,
+  TESOURO_RESERVA_TITLE,
+} from '../../app/content/seo/tesouro-reserva'
 import { paginasSitemapSetoresLista } from '../../app/utils/setoresLista'
 import { GUIDE_DOCS } from '../../app/content/guias'
 import { allTerms as glossaryTerms } from '../../app/content/glossario'
@@ -986,11 +991,22 @@ export async function getSiteSections(): Promise<SiteSection[]> {
   }
 
   if (tesouro.length > 0) {
+    // O guia /tesouro/tesouro-reserva não é título. Entra na frente da lista
+    // viva e não substitui o sitemap quando o backend não devolve títulos.
+    const titulos = tesouro.filter((p) => p.path !== TESOURO_RESERVA_PATH)
     sections.push({
       id: 'tesouro',
       title: 'Tesouro Direto',
-      description: 'Cada título público tem página própria em /tesouro/{slug} com taxa do dia, preço e vencimento.',
-      pages: tesouro,
+      description: 'Cada título público tem página própria em /tesouro/{slug} com taxa do dia, preço e vencimento. O guia do Tesouro Reserva fica em /tesouro/tesouro-reserva.',
+      pages: [
+        {
+          path: TESOURO_RESERVA_PATH,
+          title: TESOURO_RESERVA_TITLE,
+          description: TESOURO_RESERVA_DESCRIPTION,
+          lastmod: '2026-11-28',
+        },
+        ...titulos,
+      ],
     })
   }
 

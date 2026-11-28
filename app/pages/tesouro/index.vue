@@ -147,6 +147,11 @@ usePageSeo({
     <!-- ============ Ferramentas relacionadas ============ -->
     <CalcBand tone="cream" title="Ferramentas relacionadas">
       <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="tsh__grid-cards">
+        <NuxtLink to="/tesouro/tesouro-reserva" class="tsh__card-link">
+          <h3 class="tsh__card-link-title">Como funciona o Tesouro Reserva</h3>
+          <p class="tsh__card-link-desc">Guia do título: rendimento de 100% da Selic, imposto, liquidez e a diferença para o Tesouro Selic.</p>
+          <span class="tsh__card-link-ir">Abrir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
+        </NuxtLink>
         <NuxtLink to="/ranking/tesouro-direto" class="tsh__card-link">
           <h3 class="tsh__card-link-title">Ranking do Tesouro Direto</h3>
           <p class="tsh__card-link-desc">Os títulos ordenados pela maior taxa de hoje, em uma lista só.</p>
