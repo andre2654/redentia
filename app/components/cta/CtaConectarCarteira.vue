@@ -7,6 +7,7 @@ export type DestinoCtaCarteira =
   | '/assinar?quiz=1&de=dividendos'
   | '/assinar?quiz=1&de=preco-teto'
   | '/assinar?quiz=1&de=quanto-rende'
+  | '/assinar?quiz=1&de=tesouro-reserva'
 
 defineProps<{
   titulo: string
